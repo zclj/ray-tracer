@@ -3,16 +3,18 @@
              [clojure.spec.alpha :as s]
              [clojure.spec.gen.alpha :as gen]
              [clojure.spec.test.alpha :as st]
-             [orchestra.spec.test :as stest]
+             [orchestra.spec.test :as or]
+             [expound.alpha :as expound]
              [book.tuples :as sut]))
 
-(stest/instrument)
-;;(stest/instrument `sut/point?)
 ;; Book Cp. 1 - Tuples.features
 
-(sut/point? {:x 1.0 :y 1.0 :z 1.0 :w 1.0})
-(st/check `sut/point?)
-;;(stest/unstrument `book.tuples)
+(or/instrument)
+
+(set! s/*explain-out* expound/printer)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Example tests
 
 (deftest a-tuple-with-w-1.0-should-be-a-point
   (let [a (sut/make-tuple 4.3 -4.2 3.1 1.0)]
@@ -33,6 +35,24 @@
       0.0  (:w a))
     (is (= false (sut/point? a)))
     (is (= true  (sut/vector? a)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Property tests
+
+(defn test-fn
+  [fn-name]
+  (let [check-result (st/abbrev-result (first (st/check fn-name)))]
+    (if (:failure check-result)
+      (expound/explain-results (st/check `sut/vector?))
+      true)))
+
+(deftest test-point?
+  (is (test-fn `sut/point?)))
+
+(deftest test-vector?
+  (is (test-fn `sut/vector?)))
+
+(or/unstrument)
 
 (comment
   (s/exercise ::sut/tuple)

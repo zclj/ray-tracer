@@ -1,4 +1,5 @@
 (ns book.tuples
+  (:refer-clojure :exclude [vector?])
   (:require [clojure.spec.alpha :as s]))
 
 (s/def ::x float?)
@@ -19,11 +20,16 @@
        :point #(and (= (get-in % [:args :tuple :w]) 1.0) (:ret %))
        :no-point #(and (not= (get-in % [:args :tuple :w]) 1.0) (not (:ret %)))))
 
-(s/exercise-fn `point?)
-
 (defn point?
   [tuple]
   (= (:w tuple) 1.0))
+
+(s/fdef vector?
+  :args (s/cat :tuple ::tuple)
+  :ret boolean?
+  :fn (s/or
+       :point #(and (= (get-in % [:args :tuple :w]) 0.0) (:ret %))
+       :no-point #(and (not= (get-in % [:args :tuple :w]) 0.0) (not (:ret %)))))
 
 (defn vector?
   [tuple]
