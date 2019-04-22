@@ -36,5 +36,26 @@
   (= (:w tuple) 0.0))
 
 (defn make-tuple
-  [x y z w]
+  [^double x ^double y ^double z ^double w]
   (s/conform ::tuple-cat [x y z w]))
+
+(defn make-point
+  [^double x ^double y ^double z]
+  (make-tuple x y z 1.0))
+
+(defn make-vector
+  [^double x ^double y ^double z]
+  (make-tuple x y z 0.0))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Operations
+
+(s/fdef add
+  :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
+  :ret ::tuple)
+(defn add
+  [t1 t2]
+  {:x (+ (:x t1) (:x t2))
+   :y (+ (:y t1) (:y t2))
+   :z (+ (:z t1) (:z t2))
+   :w (+ (:w t1) (:w t2))})

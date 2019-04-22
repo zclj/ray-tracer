@@ -36,6 +36,28 @@
     (is (= false (sut/point? a)))
     (is (= true  (sut/vector? a)))))
 
+(deftest should-be-able-to-create-a-point
+  (is (= {:x 4.0 :y -4.0 :z 3.0 :w 1.0}
+         (sut/make-point 4 -4 3))))
+
+(deftest should-be-able-to-create-a-vector
+  (is (= {:x 4.0 :y -4.0 :z 3.0 :w 0.0}
+         (sut/make-vector 4 -4 3))))
+
+;;;;
+;; Operations on tuples
+(deftest should-be-able-to-add-two-tuple
+  (let [a1 (sut/make-tuple 3 -2 5 1)
+        a2 (sut/make-tuple -2 3 1 0)]
+   (is (= (sut/make-tuple 1 1 6 1)
+          (sut/add a1 a2)))))
+
+;; Scenario: Subtracting two points
+;; Scenario: Subtracting a vector from a point
+;; Scenario: Subtracting two vectors
+;; Scenario: Subtracting a vector from the zero vector
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Property tests
 
