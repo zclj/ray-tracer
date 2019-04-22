@@ -13,6 +13,9 @@
 (s/def ::tuple-cat (s/cat :x float? :y float? :z float? :w float?))
 (s/def ::tuple (s/keys :req-un [::x ::y ::z ::w]))
 
+;; (s/def ::vector (s/and (s/keys :req-un [::x ::y ::z ::w])
+;;                        ()))
+
 (s/fdef point?
   :args (s/cat :tuple ::tuple)
   :ret boolean?
@@ -59,3 +62,53 @@
    :y (+ (:y t1) (:y t2))
    :z (+ (:z t1) (:z t2))
    :w (+ (:w t1) (:w t2))})
+
+(s/fdef sub
+  :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
+  :ret ::tuple)
+(defn sub
+  [t1 t2]
+  {:x (- (:x t1) (:x t2))
+   :y (- (:y t1) (:y t2))
+   :z (- (:z t1) (:z t2))
+   :w (- (:w t1) (:w t2))})
+
+(s/fdef neg
+  :args (s/cat :tuple ::tuple)
+  :ret ::tuple)
+(defn neg
+  [t]
+  {:x (- (:x t))
+   :y (- (:y t))
+   :z (- (:z t))
+   :w (- (:w t))})
+
+(s/fdef mul
+  :args (s/cat :tuple ::tuple :scalar double?)
+  :ret ::tuple)
+(defn mul
+  [t s]
+  {:x (* (:x t) s)
+   :y (* (:y t) s)
+   :z (* (:z t) s)
+   :w (* (:w t) s)})
+
+(s/fdef div
+  :args (s/cat :tuple ::tuple :scalar double?)
+  :ret ::tuple)
+(defn div
+  [t s]
+  {:x (/ (:x t) s)
+   :y (/ (:y t) s)
+   :z (/ (:z t) s)
+   :w (/ (:w t) s)})
+
+(s/fdef magnitude
+  :args (s/cat :vector ::vector)
+  :ret double?)
+(defn magnitude
+  [t s]
+  {:x (/ (:x t) s)
+   :y (/ (:y t) s)
+   :z (/ (:z t) s)
+   :w (/ (:w t) s)})
