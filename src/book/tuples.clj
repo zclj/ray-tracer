@@ -13,8 +13,8 @@
 (s/def ::tuple-cat (s/cat :x float? :y float? :z float? :w float?))
 (s/def ::tuple (s/keys :req-un [::x ::y ::z ::w]))
 
-;; (s/def ::vector (s/and (s/keys :req-un [::x ::y ::z ::w])
-;;                        ()))
+(s/def ::vector (s/and (s/keys :req-un [::x ::y ::z ::w])
+                       #(= (get % :w) 0.0)))
 
 (s/fdef point?
   :args (s/cat :tuple ::tuple)
@@ -97,7 +97,7 @@
   :args (s/cat :tuple ::tuple :scalar double?)
   :ret ::tuple)
 (defn div
-  [t s]
+  [t ^double s]
   {:x (/ (:x t) s)
    :y (/ (:y t) s)
    :z (/ (:z t) s)
@@ -107,8 +107,23 @@
   :args (s/cat :vector ::vector)
   :ret double?)
 (defn magnitude
-  [t s]
-  {:x (/ (:x t) s)
-   :y (/ (:y t) s)
-   :z (/ (:z t) s)
-   :w (/ (:w t) s)})
+  [v]
+  (Math/sqrt (reduce + (map #(Math/pow (get v %) 2) [:x :y :z :w]))))
+
+(s/fdef normalize
+  :args (s/cat :vector ::vector)
+  :ret ::vector)
+(defn normalize
+  [v]
+  {:x (/ (:x v) (magnitude v))
+   :y (/ (:y v) (magnitude v))
+   :z (/ (:z v) (magnitude v))
+   :w (/ (:w v) (magnitude v))})
+
+(s/fdef dot
+  :args (s/cat :vector-1 ::vector :vector-2 ::vector)
+  :ret double?)
+(defn dot
+  [a b]
+  (reduce
+   + [(* (:x a) (:x b)) (* (:y a) (:y b)) (* (:z a) (:z b)) (* (:w a) (:w b))]))

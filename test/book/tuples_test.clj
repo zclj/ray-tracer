@@ -103,19 +103,34 @@
           (sut/div a 2)))))
 
 ;; Scenario: Computing the magnitude of vector(1, 0, 0)
-(deftest should-compute-magnitude-of-vectors
-  (let [v (sut/make-vector 1 0 0)]
-   (is (= 1
-          (sut/magnitude v)))))
-
 ;; Scenario: Computing the magnitude of vector(0, 1, 0)
 ;; Scenario: Computing the magnitude of vector(0, 0, 1)
 ;; Scenario: Computing the magnitude of vector(1, 2, 3)
 ;; Scenario: Computing the magnitude of vector(-1, -2, -3)
+(deftest should-compute-magnitude-of-vectors
+  (let [v (sut/make-vector 1 0 0)]
+    (is (= 1.0 (sut/magnitude v)))
+    (is (= 1.0 (sut/magnitude (sut/make-vector 0 1 0))))
+    (is (= 1.0 (sut/magnitude (sut/make-vector 0 0 1))))
+    (is (= (Math/sqrt 14) (sut/magnitude (sut/make-vector 1 2 3))))
+    (is (= (Math/sqrt 14) (sut/magnitude (sut/make-vector -1 -2 -3))))))
+
 ;; Scenario: Normalizing vector(4, 0, 0) gives (1, 0, 0)
 ;; Scenario: Normalizing vector(1, 2, 3)
+(deftest should-normalize-vectors
+  (is (= (sut/make-vector 1 0 0) (sut/normalize (sut/make-vector 4 0 0))))
+  (is (= (sut/make-vector
+          (/ 1 (Math/sqrt 14)) (/ 2 (Math/sqrt 14)) (/ 3 (Math/sqrt 14)))
+         (sut/normalize (sut/make-vector 1 2 3)))))
+
 ;; Scenario: The magnitude of a normalized vector
+(deftest should-give-the-magnitude-of-a-normalized-vector
+  (is (= 1.0 (sut/magnitude (sut/normalize (sut/make-vector 1 2 3))))))
+
 ;; Scenario: The dot product of two tuples
+(deftest should-calculate-dot-product-of-two-vectors
+  (is (= 20.0 (sut/dot (sut/make-vector 1 2 3) (sut/make-vector 2 3 4)))))
+
 ;; Scenario: The cross product of two vectors
 
 
