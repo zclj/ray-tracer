@@ -132,7 +132,11 @@
   (is (= 20.0 (sut/dot (sut/make-vector 1 2 3) (sut/make-vector 2 3 4)))))
 
 ;; Scenario: The cross product of two vectors
-
+(deftest should-calculate-cross-product-of-two-vectors
+  (is (= (sut/make-vector -1 2 -1)
+         (sut/cross (sut/make-vector 1 2 3) (sut/make-vector 2 3 4))))
+  (is (= (sut/make-vector 1 -2 1)
+         (sut/cross (sut/make-vector 2 3 4) (sut/make-vector 1 2 3)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Property tests

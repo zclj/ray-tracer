@@ -122,8 +122,10 @@
 
 (s/fdef dot
   :args (s/cat :vector-1 ::vector :vector-2 ::vector)
-  :ret double?)
-(defn dot
+  :ret ::vector)
+(defn cross
   [a b]
-  (reduce
-   + [(* (:x a) (:x b)) (* (:y a) (:y b)) (* (:z a) (:z b)) (* (:w a) (:w b))]))
+  (make-vector
+   (- (* (:y a) (:z b)) (* (:z a) (:y b)))
+   (- (* (:z a) (:x b)) (* (:x a) (:z b)))
+   (- (* (:x a) (:y b)) (* (:y a) (:x b)))))
