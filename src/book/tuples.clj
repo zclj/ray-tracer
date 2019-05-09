@@ -50,6 +50,9 @@
   [^double x ^double y ^double z]
   (make-tuple x y z 0.0))
 
+(defn make-color
+  [^double red ^double green ^double blue])
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Operations
 

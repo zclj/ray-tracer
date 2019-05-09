@@ -139,6 +139,14 @@
          (sut/cross (sut/make-vector 2 3 4) (sut/make-vector 1 2 3)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Colors
+
+;; Scenario: Colors are (red, green, blue) tuples
+(deftest should-be-able-to-create-a-color
+  (is (= {:x 4.0 :y -4.0 :z 3.0 :w 0.0}
+         (sut/make-color 4 -4 3))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Property tests
 
 (defn test-fn
