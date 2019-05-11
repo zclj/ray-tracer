@@ -143,8 +143,14 @@
 
 ;; Scenario: Colors are (red, green, blue) tuples
 (deftest should-be-able-to-create-a-color
-  (is (= {:x 4.0 :y -4.0 :z 3.0 :w 0.0}
+  (is (= {:r 4.0 :g -4.0 :b 3.0 :w 0.0}
          (sut/make-color 4 -4 3))))
+
+;;Scenario: Adding colors
+(deftest should-be-able-to-add-colors
+  (is (= (sut/make-color 1.6 0.7 1.0)
+         (sut/add (sut/make-color 0.9 0.6 0.75)
+                  (sut/make-color 0.7 0.1 0.25)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Property tests

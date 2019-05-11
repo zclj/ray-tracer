@@ -16,6 +16,8 @@
 (s/def ::vector (s/and (s/keys :req-un [::x ::y ::z ::w])
                        #(= (get % :w) 0.0)))
 
+(s/def ::color (s/keys :req-un [::r ::g ::b ::w]))
+
 (s/fdef point?
   :args (s/cat :tuple ::tuple)
   :ret boolean?
@@ -51,20 +53,44 @@
   (make-tuple x y z 0.0))
 
 (defn make-color
-  [^double red ^double green ^double blue])
+  [^double red ^double green ^double blue]
+  {:r red :g green :b blue :w 0.0})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Operations
 
+(defn add-t
+  [[a1 a2 a3 a4] [b1 b2 b3 b4]]
+  [(+ a1 b1) (+ a2 b2) (+ a2 b2) (+ a2 b2)])
+
+
+(defn add-m
+  [t1 t2 [k1 k2 k3 k4]]
+  {k1 (+ (k1 t1) (k1 t2))
+   k2 (+ (k2 t1) (k2 t2))
+   k3 (+ (k3 t1) (k3 t2))
+   k4 (+ (k4 t1) (k4 t2))})
+
+;; (s/fdef add
+;;   :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
+;;   :ret ::tuple)
+;; (defn add
+;;   [t1 t2]
+;;   {:x (+ (:x t1) (:x t2))
+;;    :y (+ (:y t1) (:y t2))
+;;    :z (+ (:z t1) (:z t2))
+;;    :w (+ (:w t1) (:w t2))})
+
 (s/fdef add
-  :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
-  :ret ::tuple)
+  :args (s/or :tuple (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
+              :color (s/cat :color-1 ::color :color-2 ::color))
+  :ret (s/or :tuple ::tuple
+             :color ::color))
 (defn add
   [t1 t2]
-  {:x (+ (:x t1) (:x t2))
-   :y (+ (:y t1) (:y t2))
-   :z (+ (:z t1) (:z t2))
-   :w (+ (:w t1) (:w t2))})
+  (if (s/valid? ::tuple t1)
+    (add-m t1 t2 [:x :y :z :w])
+    (add-m t1 t2 [:r :g :b :w])))
 
 (s/fdef sub
   :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
@@ -124,6 +150,14 @@
    :w (/ (:w v) (magnitude v))})
 
 (s/fdef dot
+  :args (s/cat :vector-1 ::vector :vector-2 ::vector)
+  :ret double?)
+(defn dot
+  [a b]
+  (reduce
+   + [(* (:x a) (:x b)) (* (:y a) (:y b)) (* (:z a) (:z b)) (* (:w a) (:w b))]))
+
+(s/fdef cross
   :args (s/cat :vector-1 ::vector :vector-2 ::vector)
   :ret ::vector)
 (defn cross
