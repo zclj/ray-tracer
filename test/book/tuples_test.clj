@@ -168,6 +168,32 @@
 (deftest test-vector?
   (is (test-fn `sut/vector?)))
 
+(deftest test-add-m?
+  (is (test-fn `sut/add-m)))
+
+(comment
+  (st/check `sut/add-m {:gen {::sut/add-m-args
+                              #(gen/return [{:a 1 :b 2 :c 3 :d 4}
+                                            {:a 1 :b 2 :c 3 :d 4}
+                                            [:a :b :c :d]])}})
+
+  (gen/sample (gen/set (gen/keyword) {:num-elements 4}))
+
+  (gen/sample (gen/tuple (gen/double) (gen/double)
+                         (gen/double) (gen/double)))
+  
+  (gen/sample (s/gen ::sut/add-m-args
+                     {::sut/add-m-args
+                      #(gen/return [{:a 1 :b 2 :c 3 :d 4}
+                                    {:a 1 :b 2 :c 3 :d 4}
+                                    [:a :b :c :d]])}))
+
+  (gen/sample (gen/return [{:a 1 :b 2 :c 3 :d 4}
+                           {:a 1 :b 2 :c 3 :d 4}
+                           [:a :b :c :d]]))
+
+  (or/instrument))
+
 (or/unstrument)
 
 (comment

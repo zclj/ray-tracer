@@ -2,6 +2,12 @@
   (:refer-clojure :exclude [vector?])
   (:require [clojure.spec.alpha :as s]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Spec util
+
+(defn contain-keys? [m ks]
+  (every? #(contains? m %) ks))
+
 (s/def ::x float?)
 (s/def ::y float?)
 (s/def ::z float?)
@@ -58,19 +64,27 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Operations
+(s/def ::add-m-args
+  (s/and
+   (s/cat :m1 map? :m2 map?
+          :ks (s/coll-of keyword? :count 4 :distinct true))
+   #(and (contain-keys? (:m1 %) (:ks %))
+         (contain-keys? (:m2 %) (:ks %)))))
 
-(defn add-t
-  [[a1 a2 a3 a4] [b1 b2 b3 b4]]
-  [(+ a1 b1) (+ a2 b2) (+ a2 b2) (+ a2 b2)])
-
-
+(s/fdef add-m
+  :args ::add-m-args
+  :ret map?
+  :fn #(contain-keys? (:ret %) (:ks (:args %))))
 (defn add-m
-  [t1 t2 [k1 k2 k3 k4]]
-  {k1 (+ (k1 t1) (k1 t2))
-   k2 (+ (k2 t1) (k2 t2))
-   k3 (+ (k3 t1) (k3 t2))
-   k4 (+ (k4 t1) (k4 t2))})
+  [m1 m2 [k1 k2 k3 k4]]
+  {k1 (+ (k1 m1) (k1 m2))
+   k2 (+ (k2 m1) (k2 m2))
+   k3 (+ (k3 m1) (k3 m2))
+   k4 (+ (k4 m1) (k4 m2))})
 
+(comment
+  (add-m {:a 1 :b 2 :c 3 :d 4} {:a 2 :b 2 :c 3 :d 4} [:a :b :c :d])
+  (contains? {:a 1} :b))
 ;; (s/fdef add
 ;;   :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
 ;;   :ret ::tuple)
@@ -85,7 +99,11 @@
   :args (s/or :tuple (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
               :color (s/cat :color-1 ::color :color-2 ::color))
   :ret (s/or :tuple ::tuple
-             :color ::color))
+             :color ::color)
+  :fn (s/or :tuple #(and (s/valid? ::tuple (:tuple-1 (second (:args %))))
+                         (s/valid? ::tuple (:ret %)))
+            :color #(and (s/valid? ::color (:color-1 (second (:args %))))
+                         (s/valid? ::color (:ret %)))))
 (defn add
   [t1 t2]
   (if (s/valid? ::tuple t1)
