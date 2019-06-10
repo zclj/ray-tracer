@@ -146,11 +146,34 @@
   (is (= {:r 4.0 :g -4.0 :b 3.0 :w 0.0}
          (sut/make-color 4 -4 3))))
 
-;;Scenario: Adding colors
+;; Scenario: Adding colors
 (deftest should-be-able-to-add-colors
   (is (= (sut/make-color 1.6 0.7 1.0)
          (sut/add (sut/make-color 0.9 0.6 0.75)
                   (sut/make-color 0.7 0.1 0.25)))))
+
+;; Scenario: Subtracting colors
+(deftest should-be-able-to-subtract-colors
+  (is (= true
+         (sut/eq (sut/make-color 0.2 0.5 0.5)
+                 (sut/sub (sut/make-color 0.9 0.6 0.75)
+                          (sut/make-color 0.7 0.1 0.25))
+                 0.00001))))
+
+;; Scenario: Multiplying a color by a scalar
+(deftest should-be-able-to-multiply-color-with-scalar
+  (is (= (sut/make-color 0.4 0.6 0.8)
+         (sut/mul (sut/make-color 0.2 0.3 0.4)
+                  2))))
+
+;; Scenario: Multiplying colors
+(deftest should-be-able-to-multiply-colors
+  (is (= true
+         (sut/eq
+          (sut/make-color 0.9 0.2 0.04)
+          (sut/mul-t (sut/make-color 1 0.2 0.4)
+                     (sut/make-color 0.9 1 0.1))
+          0.00001))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Property tests
@@ -168,8 +191,9 @@
 (deftest test-vector?
   (is (test-fn `sut/vector?)))
 
-(deftest test-add-m?
-  (is (test-fn `sut/add-m)))
+;; TODO - need a generator, some experiments below
+;; (deftest test-add-m?
+;;   (is (test-fn `sut/add-m)))
 
 (comment
   (st/check `sut/add-m {:gen {::sut/add-m-args

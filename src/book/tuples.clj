@@ -64,23 +64,47 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Operations
-(s/def ::add-m-args
+(s/def ::op-m-args
   (s/and
-   (s/cat :m1 map? :m2 map?
+   (s/cat :op fn?
+          :m1 map? :m2 map?
           :ks (s/coll-of keyword? :count 4 :distinct true))
    #(and (contain-keys? (:m1 %) (:ks %))
          (contain-keys? (:m2 %) (:ks %)))))
 
-(s/fdef add-m
-  :args ::add-m-args
+(s/fdef op-m
+  :args ::op-m-args
   :ret map?
   :fn #(contain-keys? (:ret %) (:ks (:args %))))
-(defn add-m
-  [m1 m2 [k1 k2 k3 k4]]
-  {k1 (+ (k1 m1) (k1 m2))
-   k2 (+ (k2 m1) (k2 m2))
-   k3 (+ (k3 m1) (k3 m2))
-   k4 (+ (k4 m1) (k4 m2))})
+(defn op-m
+  [op m1 m2 ks]
+  (reduce
+    (fn [acc k]
+      (assoc acc k (op (get m1 k) (get m2 k))))
+    {}
+    ks))
+
+;; (s/fdef add-m
+;;   :args ::op-m-args
+;;   :ret map?
+;;   :fn #(contain-keys? (:ret %) (:ks (:args %))))
+;; (defn add-m
+;;   [m1 m2 [k1 k2 k3 k4]]
+;;   {k1 (+ (k1 m1) (k1 m2))
+;;    k2 (+ (k2 m1) (k2 m2))
+;;    k3 (+ (k3 m1) (k3 m2))
+;;    k4 (+ (k4 m1) (k4 m2))})
+
+;; (s/fdef sub-m
+;;   :args ::op-m-args
+;;   :ret map?
+;;   :fn #(contain-keys? (:ret %) (:ks (:args %))))
+;; (defn sub-m
+;;   [m1 m2 [k1 k2 k3 k4]]
+;;   {k1 (- (k1 m1) (k1 m2))
+;;    k2 (- (k2 m1) (k2 m2))
+;;    k3 (- (k3 m1) (k3 m2))
+;;    k4 (- (k4 m1) (k4 m2))})
 
 (comment
   (add-m {:a 1 :b 2 :c 3 :d 4} {:a 2 :b 2 :c 3 :d 4} [:a :b :c :d])
@@ -107,18 +131,29 @@
 (defn add
   [t1 t2]
   (if (s/valid? ::tuple t1)
-    (add-m t1 t2 [:x :y :z :w])
-    (add-m t1 t2 [:r :g :b :w])))
+    (op-m + t1 t2 [:x :y :z :w])
+    (op-m + t1 t2 [:r :g :b :w])))
 
 (s/fdef sub
-  :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
-  :ret ::tuple)
+  :args (s/or :tuple (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
+              :color (s/cat :color-1 ::color :color-2 ::color))
+  :ret (s/or :tuple ::tuple
+             :color ::color)
+  :fn (s/or :tuple #(and (s/valid? ::tuple (:tuple-1 (second (:args %))))
+                         (s/valid? ::tuple (:ret %)))
+            :color #(and (s/valid? ::color (:color-1 (second (:args %))))
+                         (s/valid? ::color (:ret %)))))
 (defn sub
   [t1 t2]
-  {:x (- (:x t1) (:x t2))
-   :y (- (:y t1) (:y t2))
-   :z (- (:z t1) (:z t2))
-   :w (- (:w t1) (:w t2))})
+  (if (s/valid? ::tuple t1)
+    (op-m - t1 t2 [:x :y :z :w])
+    (op-m - t1 t2 [:r :g :b :w])))
+
+;; Epsilon based eq
+(defn eq
+  [t1 t2 eps]
+  (let [diff (sub t1 t2)]
+    (every? #(<= (Math/abs %) eps) (vals diff))) )
 
 (s/fdef neg
   :args (s/cat :tuple ::tuple)
@@ -130,15 +165,29 @@
    :z (- (:z t))
    :w (- (:w t))})
 
+(defn op-m-unary
+  [op a]
+  (zipmap (keys a) (map op (vals a))))
+
 (s/fdef mul
   :args (s/cat :tuple ::tuple :scalar double?)
   :ret ::tuple)
+;; (defn mul
+;;   [t s]
+;;   {:x (* (:x t) s)
+;;    :y (* (:y t) s)
+;;    :z (* (:z t) s)
+;;    :w (* (:w t) s)})
+
 (defn mul
   [t s]
-  {:x (* (:x t) s)
-   :y (* (:y t) s)
-   :z (* (:z t) s)
-   :w (* (:w t) s)})
+  (op-m-unary #(* s %) t))
+
+(defn mul-t
+  [t1 t2]
+  (if (s/valid? ::tuple t1)
+    (op-m * t1 t2 [:x :y :z :w])
+    (op-m * t1 t2 [:r :g :b :w])))
 
 (s/fdef div
   :args (s/cat :tuple ::tuple :scalar double?)
