@@ -16,12 +16,23 @@
 (s/def ::pixel-row (s/coll-of ::pixel :kind vector?))
 (s/def ::canvas (s/and (s/coll-of ::pixel-row)
                        #(if (> (count %) 0)
-                          same-size-rows?
+                          (same-size-rows? %)
                           false)))
 
 (comment
   (apply = (reduce (fn [acc v]
-             (conj acc (count v))) [] [[[1 2 3]] [[1 2 3]]])))
+                     (conj acc (count v))) [] [[[1 2 3]] [[1 2 3]]]))
+
+  (same-size-rows? [[[1 2 3]] [[1 2 3] [1 2 3]]]))
+
+(s/fdef make-pixel
+  :args (s/cat :r ::pixel-color :g ::pixel-color :b ::pixel-color)
+  :ret ::pixel)
+(defn make-pixel
+  [r g b]
+  ;;[r g b]
+  [0]
+  )
 
 (defn make-canvas
   [width height]
