@@ -181,7 +181,7 @@
   [fn-name]
   (let [check-result (st/abbrev-result (first (st/check fn-name)))]
     (if (:failure check-result)
-      (expound/explain-results (st/check `sut/vector?))
+      (expound/explain-results (st/check fn-name))
       true)))
 
 (deftest test-point?
