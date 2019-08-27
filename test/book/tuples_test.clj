@@ -7,8 +7,6 @@
              [expound.alpha :as expound]
              [book.tuples :as sut]))
 
-;; Book Cp. 1 - Tuples.features
-
 (or/instrument)
 
 (set! s/*explain-out* expound/printer)
@@ -175,6 +173,7 @@
                      (sut/make-color 0.9 1 0.1))
           0.00001))))
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Property tests
 
@@ -191,11 +190,10 @@
 (deftest test-vector?
   (is (test-fn `sut/vector?)))
 
-;; TODO - need a generator, some experiments below
-;; (deftest test-add-m?
-;;   (is (test-fn `sut/add-m)))
 
 (comment
+  (st/check `sut/op-m {:gen {:op #(gen/return +)}})
+  
   (st/check `sut/add-m {:gen {::sut/add-m-args
                               #(gen/return [{:a 1 :b 2 :c 3 :d 4}
                                             {:a 1 :b 2 :c 3 :d 4}

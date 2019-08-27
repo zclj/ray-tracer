@@ -3,6 +3,13 @@
   (:require [clojure.spec.alpha :as s]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Notes
+
+;; Polymorphism is implemented as if/else since there
+;; currently are only two cases of tuples. If that change,
+;; move to other methods.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Spec util
 
 (defn contain-keys? [m ks]
@@ -83,41 +90,6 @@
       (assoc acc k (op (get m1 k) (get m2 k))))
     {}
     ks))
-
-;; (s/fdef add-m
-;;   :args ::op-m-args
-;;   :ret map?
-;;   :fn #(contain-keys? (:ret %) (:ks (:args %))))
-;; (defn add-m
-;;   [m1 m2 [k1 k2 k3 k4]]
-;;   {k1 (+ (k1 m1) (k1 m2))
-;;    k2 (+ (k2 m1) (k2 m2))
-;;    k3 (+ (k3 m1) (k3 m2))
-;;    k4 (+ (k4 m1) (k4 m2))})
-
-;; (s/fdef sub-m
-;;   :args ::op-m-args
-;;   :ret map?
-;;   :fn #(contain-keys? (:ret %) (:ks (:args %))))
-;; (defn sub-m
-;;   [m1 m2 [k1 k2 k3 k4]]
-;;   {k1 (- (k1 m1) (k1 m2))
-;;    k2 (- (k2 m1) (k2 m2))
-;;    k3 (- (k3 m1) (k3 m2))
-;;    k4 (- (k4 m1) (k4 m2))})
-
-(comment
-  (add-m {:a 1 :b 2 :c 3 :d 4} {:a 2 :b 2 :c 3 :d 4} [:a :b :c :d])
-  (contains? {:a 1} :b))
-;; (s/fdef add
-;;   :args (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
-;;   :ret ::tuple)
-;; (defn add
-;;   [t1 t2]
-;;   {:x (+ (:x t1) (:x t2))
-;;    :y (+ (:y t1) (:y t2))
-;;    :z (+ (:z t1) (:z t2))
-;;    :w (+ (:w t1) (:w t2))})
 
 (s/fdef add
   :args (s/or :tuple (s/cat :tuple-1 ::tuple :tuple-2 ::tuple)
