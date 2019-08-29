@@ -37,7 +37,8 @@
 ;; A new canvas should be initialized with black pixels
 (deftest should-create-canvas
   (let [canvas (sut/make-canvas 10 20)]
-   (is (= 10 (sut/width canvas))))
+    (is (= 10 (sut/width canvas)))
+    (is (= 20 (sut/height canvas))))
   )
 
 ;;(sut/make-pixel 1 255 3)
@@ -67,6 +68,9 @@
 
 (deftest check-make-pixel
   (is (test-fn `sut/make-pixel)))
+
+(deftest check-make-canvas
+  (is (test-fn `sut/make-canvas)))
 
 (or/unstrument)
 ;; Pixels color values 0-255
