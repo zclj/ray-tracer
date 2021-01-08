@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7f3809a0ee1877f2e2a23ff90d3f5fe8282a7cd1b3a267f60bf3935f942438c1
+-- hash: c389a1afb8d62f073a90cfa33bd69c60d546c3ab677297d1c7b933792df40a1c
 
 name:           ray-tracer
 version:        0.1.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Tuples
   other-modules:
       Paths_ray_tracer
   hs-source-dirs:
@@ -52,6 +53,7 @@ test-suite ray-tracer-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Tuples
       Paths_ray_tracer
   hs-source-dirs:
       test
@@ -59,4 +61,6 @@ test-suite ray-tracer-test
   build-depends:
       base >=4.7 && <5
     , ray-tracer
+    , tasty
+    , tasty-hspec
   default-language: Haskell2010

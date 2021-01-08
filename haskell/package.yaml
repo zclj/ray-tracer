@@ -46,3 +46,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - ray-tracer
+    - tasty
+    - tasty-hspec
