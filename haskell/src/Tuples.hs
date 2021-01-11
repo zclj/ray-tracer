@@ -13,5 +13,10 @@ isPoint (Tuple _ _ _ w)
   | w == 1    = True
   | otherwise = False
 
+isVector :: Tuple -> Bool
+isVector (Tuple _ _ _ w)
+  | w == 0    = True
+  | otherwise = False
+
 
 {- https://www.youtube.com/watch?v=6COvD8oynmI 35 -}

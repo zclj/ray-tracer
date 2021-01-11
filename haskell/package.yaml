@@ -48,3 +48,4 @@ tests:
     - ray-tracer
     - tasty
     - tasty-hspec
+    - tasty-hunit
