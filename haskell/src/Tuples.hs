@@ -9,13 +9,9 @@ data Tuple = Tuple { x :: Double
 point x y z = Tuple x y z 1.0
 
 isPoint :: Tuple -> Bool
-isPoint (Tuple _ _ _ w)
-  | w == 1    = True
-  | otherwise = False
+isPoint (Tuple _ _ _ w) = w == 1
 
 vector x y z = Tuple x y z 0.0
 
 isVector :: Tuple -> Bool
-isVector (Tuple _ _ _ w)
-  | w == 0    = True
-  | otherwise = False
+isVector (Tuple _ _ _ w) = w == 0
