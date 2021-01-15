@@ -15,11 +15,13 @@ import Tuples as SUT
 
 tupleTests :: TestTree
 tupleTests = testGroup "Tuple Tests" [
-  testGroup "HSpec tests" [ unsafePerformIO (testSpec "TupleSpec" tupleSpec) ]]
+  testGroup "HSpec tests"
+  [ unsafePerformIO (testSpec "Tuple" tupleBasics),
+    unsafePerformIO (testSpec "Tuple" tupleArithmetic)]]
 
-tupleSpec :: Spec
-tupleSpec =
-  describe "Tuple" $ do
+tupleBasics :: Spec
+tupleBasics =
+  describe "Basics" $ do
     {- Scenario: A tuple with w=1.0 is a point
          Given a ← tuple(4.3, -4.2, 3.1, 1.0)
          Then a.x = 4.3
@@ -89,3 +91,15 @@ tupleSpec =
     describe "vector creates tuples with w=0" $ do
       it "vector equals tuple" $ do
         SUT.vector 4 (-4) 3 `shouldBe` SUT.Tuple 4 (-4) 3 0
+
+tupleArithmetic :: Spec
+tupleArithmetic =
+  describe "Arithmetic" $ do
+    {- Scenario: Adding two tuples
+         Given a1 ← tuple(3, -2, 5, 1)
+           And a2 ← tuple(-2, 3, 1, 0)
+         Then a1 + a2 = tuple(1, 1, 6, 1) -}
+    describe "Add" $ do
+      it "adds two tuples" $ do
+        pendingWith "Implementation"
+
