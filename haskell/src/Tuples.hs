@@ -17,3 +17,7 @@ vector x y z = Tuple x y z 0.0
 
 isVector :: Tuple -> Bool
 isVector (Tuple _ _ _ w) = w == 0
+
+add :: Tuple -> Tuple -> Tuple
+add (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
+  = Tuple (x1 + x2) (y1 + y2) (z1 + z2) (w1 + w2)

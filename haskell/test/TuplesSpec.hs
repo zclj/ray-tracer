@@ -101,5 +101,8 @@ tupleArithmetic =
          Then a1 + a2 = tuple(1, 1, 6, 1) -}
     describe "Add" $ do
       it "adds two tuples" $ do
-        pendingWith "Implementation"
+        a1 `add` a2 `shouldBe` SUT.Tuple 1 1 6 1
+          where a1 = (SUT.Tuple 3 (-2) 5 1)
+                a2 = (SUT.Tuple (-2) 3 1 0)
+        --pendingWith "Implementation"
 
