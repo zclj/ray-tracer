@@ -101,8 +101,45 @@ tupleArithmetic =
          Then a1 + a2 = tuple(1, 1, 6, 1) -}
     describe "Add" $ do
       it "adds two tuples" $ do
+        let a1 = (SUT.Tuple 3 (-2) 5 1)
+            a2 = (SUT.Tuple (-2) 3 1 0)
         a1 `add` a2 `shouldBe` SUT.Tuple 1 1 6 1
-          where a1 = (SUT.Tuple 3 (-2) 5 1)
-                a2 = (SUT.Tuple (-2) 3 1 0)
-        --pendingWith "Implementation"
+          
+    {- Scenario: Subtracting two points
+         Given p1 ← point(3, 2, 1)
+           And p2 ← point(5, 6, 7)
+         Then p1 - p2 = vector(-2, -4, -6) -}
+    describe "Sub" $ do
+      it "subtracts two points" $ do
+        let p1 = (SUT.point 3 2 1)
+            p2 = (SUT.point 5 6 7)
+        p1 `sub` p2 `shouldBe` SUT.vector (-2) (-4) (-6)
 
+      {- Scenario: Subtracting a vector from a point
+           Given p ← point(3, 2, 1)
+             And v ← vector(5, 6, 7)
+           Then p - v = point(-2, -4, -6) -}
+      it "subtracts a vector from a point" $ do
+        let p = (SUT.point 3 2 1)
+            v = (SUT.vector 5 6 7)
+        p `sub` v `shouldBe` SUT.point (-2) (-4) (-6)
+
+      {- Scenario: Subtracting two vectors
+           Given v1 ← vector(3, 2, 1)
+             And v2 ← vector(5, 6, 7)
+           Then v1 - v2 = vector(-2, -4, -6) -}
+      it "subtracts two vectors" $ do
+        let v1 = (SUT.vector 3 2 1)
+            v2 = (SUT.vector 5 6 7)
+        v1 `sub` v2 `shouldBe` SUT.vector (-2) (-4) (-6)
+
+      {- Scenario: Subtracting a vector from the zero vector
+           Given zero ← vector(0, 0, 0)
+             And v ← vector(1, -2, 3)
+           Then zero - v = vector(-1, 2, -3) -}
+      it "subtracts a vector from the zero vector" $ do
+        let zero = (SUT.vector 0 0 0)
+            v    = (SUT.vector 1 (-2) 3)
+        zero `sub` v `shouldBe` SUT.vector (-1) 2 (-3)
+        
+  --pendingWith "Implementation"
