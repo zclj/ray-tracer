@@ -141,5 +141,12 @@ tupleArithmetic =
         let zero = (SUT.vector 0 0 0)
             v    = (SUT.vector 1 (-2) 3)
         zero `sub` v `shouldBe` SUT.vector (-1) 2 (-3)
-        
+
+    describe "Neg" $ do
+      {- Scenario: Negating a tuple
+           Given a ← tuple(1, -2, 3, -4)
+           Then -a = tuple(-1, 2, -3, 4) -}
+      it "negates a tuple" $ do
+        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        neg a `shouldBe` SUT.Tuple (-1) 2 (-3) 4
   --pendingWith "Implementation"
