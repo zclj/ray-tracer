@@ -28,3 +28,6 @@ sub (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
 
 neg :: Tuple -> Tuple
 neg (Tuple x y z w) = (Tuple (-x) (-y) (-z) (-w))
+
+mul :: Tuple -> Double -> Tuple
+mul (Tuple x y z w) s = Tuple (x * s) (y * s) (z * s) (w * s)

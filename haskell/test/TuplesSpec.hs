@@ -149,4 +149,20 @@ tupleArithmetic =
       it "negates a tuple" $ do
         let a = (SUT.Tuple 1 (-2) 3 (-4))
         neg a `shouldBe` SUT.Tuple (-1) 2 (-3) 4
+        
+    describe "Mul" $ do
+      {- Scenario: Multiplying a tuple by a scalar
+           Given a ← tuple(1, -2, 3, -4)
+           Then a * 3.5 = tuple(3.5, -7, 10.5, -14) -}
+      it "multiplies a tuple by a scalar" $ do
+        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        mul a 3.5 `shouldBe` SUT.Tuple 3.5 (-7) 10.5 (-14)
+
+      {- Scenario: Multiplying a tuple by a fraction
+           Given a ← tuple(1, -2, 3, -4)
+           Then a * 0.5 = tuple(0.5, -1, 1.5, -2) -}
+      it "multiplies a tuple by a fraction" $ do
+        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        mul a 0.5 `shouldBe` SUT.Tuple 0.5 (-1) 1.5 (-2)
+        
   --pendingWith "Implementation"
