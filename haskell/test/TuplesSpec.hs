@@ -164,5 +164,13 @@ tupleArithmetic =
       it "multiplies a tuple by a fraction" $ do
         let a = (SUT.Tuple 1 (-2) 3 (-4))
         mul a 0.5 `shouldBe` SUT.Tuple 0.5 (-1) 1.5 (-2)
+
+    describe "Div" $ do
+      {- Scenario: Dividing a tuple by a scalar
+           Given a ← tuple(1, -2, 3, -4)
+           Then a / 2 = tuple(0.5, -1, 1.5, -2) -}
+      it "divides a tuple by a scalar" $ do
+        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        SUT.div a 2 `shouldBe` SUT.Tuple 0.5 (-1) 1.5 (-2)
         
   --pendingWith "Implementation"

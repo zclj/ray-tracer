@@ -31,3 +31,6 @@ neg (Tuple x y z w) = (Tuple (-x) (-y) (-z) (-w))
 
 mul :: Tuple -> Double -> Tuple
 mul (Tuple x y z w) s = Tuple (x * s) (y * s) (z * s) (w * s)
+
+div :: Tuple -> Double -> Tuple
+div (Tuple x y z w) s = Tuple (x / s) (y / s) (z / s) (w / s)
