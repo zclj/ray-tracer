@@ -34,3 +34,6 @@ mul (Tuple x y z w) s = Tuple (x * s) (y * s) (z * s) (w * s)
 
 div :: Tuple -> Double -> Tuple
 div (Tuple x y z w) s = Tuple (x / s) (y / s) (z / s) (w / s)
+
+mag :: Tuple -> Double
+mag (Tuple x y z w) = sqrt $ x^2 + y^2 + z^2 + w^2

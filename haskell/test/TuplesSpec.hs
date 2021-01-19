@@ -172,5 +172,36 @@ tupleArithmetic =
       it "divides a tuple by a scalar" $ do
         let a = (SUT.Tuple 1 (-2) 3 (-4))
         SUT.div a 2 `shouldBe` SUT.Tuple 0.5 (-1) 1.5 (-2)
+
+    describe "Mag" $ do
+      {- Scenario: Computing the magnitude of vector(1, 0, 0)
+           Given v ← vector(1, 0, 0)
+           Then magnitude(v) = 1 -}
+      it "computes the magnitude of vector(1, 0, 0)" $ do
+        mag (SUT.vector 1 0 0) `shouldBe` 1
+
+      {- Scenario: Computing the magnitude of vector(0, 1, 0)
+           Given v ← vector(0, 1, 0)
+           Then magnitude(v) = 1 -}
+      it "computes the magnitude of vector(0, 1, 0)" $ do
+        mag (SUT.vector 0 1 0) `shouldBe` 1
+        
+      {- Scenario: Computing the magnitude of vector(0, 0, 1)
+           Given v ← vector(0, 0, 1)
+           Then magnitude(v) = 1 -}
+      it "computes the magnitude of vector(0, 0, 1)" $ do
+        mag (SUT.vector 0 0 1) `shouldBe` 1
+
+      {- Scenario: Computing the magnitude of vector(1, 2, 3)
+           Given v ← vector(1, 2, 3)
+           Then magnitude(v) = √14 -}
+      it "computes the magnitude of vector(1, 2, 3)" $ do
+        mag (SUT.vector 1 2 3) `shouldBe` sqrt 14
+
+      {- Scenario: Computing the magnitude of vector(-1, -2, -3)
+           Given v ← vector(-1, -2, -3)
+           Then magnitude(v) = √14 -}
+      it "computes the magnitude of vector(-1, -2, -3)" $ do
+        mag (SUT.vector (-1) (-2) (-3)) `shouldBe` sqrt 14
         
   --pendingWith "Implementation"
