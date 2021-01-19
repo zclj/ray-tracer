@@ -228,5 +228,15 @@ tupleArithmetic =
            Then magnitude(norm) = 1 -}
       it "calculate the magnitude of a normalized vector" $ do
         mag (norm (SUT.vector 1 2 3)) `shouldBe` 1
+
+    describe "dot" $ do
+      {- Scenario: The dot product of two tuples
+           Given a ← vector(1, 2, 3)
+             And b ← vector(2, 3, 4)
+           Then dot(a, b) = 20 -}
+      it "calculates the dot product of two tuples" $ do
+        let a = SUT.vector 1 2 3
+            b = SUT.vector 2 3 4
+        dot a b `shouldBe` 20
         
   --pendingWith "Implementation"

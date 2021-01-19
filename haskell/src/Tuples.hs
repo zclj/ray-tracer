@@ -41,3 +41,7 @@ mag (Tuple x y z w) = sqrt $ x^2 + y^2 + z^2 + w^2
 norm :: Tuple -> Tuple
 norm t@(Tuple x y z w) = let m = (mag t)
                          in Tuple (x / m) (y / m) (z / m) (w / m)
+
+dot :: Tuple -> Tuple -> Double
+dot (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
+  = x1 * x2 + y1 * y2 + z1 * z2 + w1 * w2 
