@@ -203,5 +203,30 @@ tupleArithmetic =
            Then magnitude(v) = √14 -}
       it "computes the magnitude of vector(-1, -2, -3)" $ do
         mag (SUT.vector (-1) (-2) (-3)) `shouldBe` sqrt 14
+
+    describe "Norm" $ do
+      {- Scenario: Normalizing vector(4, 0, 0) gives (1, 0, 0)
+           Given v ← vector(4, 0, 0)
+           Then normalize(v) = vector(1, 0, 0) -}
+      it "normalize vector(4, 0, 0) gives (1, 0, 0)" $ do
+        norm (SUT.vector 4 0 0) `shouldBe` vector 1 0 0
+
+      {- Scenario: Normalizing vector(1, 2, 3)
+           Given v ← vector(1, 2, 3)
+                                            # vector(1/√14,   2/√14,   3/√14)
+           Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178) -}
+      it "normalize vector(1, 2, 3)" $ do
+        let d = sqrt 14
+            x = (1 / d)
+            y = (2 / d)
+            z = (3 / d)
+        norm (SUT.vector 1 2 3) `shouldBe` vector x y z
+
+      {- Scenario: The magnitude of a normalized vector
+           Given v ← vector(1, 2, 3)
+             When norm ← normalize(v)
+           Then magnitude(norm) = 1 -}
+      it "calculate the magnitude of a normalized vector" $ do
+        mag (norm (SUT.vector 1 2 3)) `shouldBe` 1
         
   --pendingWith "Implementation"
