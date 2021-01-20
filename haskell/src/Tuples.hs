@@ -45,3 +45,7 @@ norm t@(Tuple x y z w) = let m = (mag t)
 dot :: Tuple -> Tuple -> Double
 dot (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
   = x1 * x2 + y1 * y2 + z1 * z2 + w1 * w2 
+
+cross :: Tuple -> Tuple -> Tuple
+cross (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
+  = vector (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2) 

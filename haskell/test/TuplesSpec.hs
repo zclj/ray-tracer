@@ -238,5 +238,19 @@ tupleArithmetic =
         let a = SUT.vector 1 2 3
             b = SUT.vector 2 3 4
         dot a b `shouldBe` 20
-        
+
+    describe "cross" $ do
+      let a = SUT.vector 1 2 3
+          b = SUT.vector 2 3 4
+      {- Scenario: The cross product of two vectors
+           Given a ← vector(1, 2, 3)
+             And b ← vector(2, 3, 4)
+           Then cross(a, b) = vector(-1, 2, -1)
+             And cross(b, a) = vector(1, -2, 1) -}
+      it "calculated the cross product of two vectors" $ do
+        cross a b `shouldBe` SUT.vector (-1) 2 (-1)
+      it "and order matters" $ do
+        cross b a `shouldBe` SUT.vector 1 (-2) 1
+
+      
   --pendingWith "Implementation"
