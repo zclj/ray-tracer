@@ -4,7 +4,16 @@ data Tuple = Tuple { x :: Double
                    , y :: Double
                    , z :: Double
                    , w :: Double}
-             deriving (Show, Eq)
+             deriving (Show)
+
+-- Implement Eq based on Epsilon comparison of floats
+-- this avoids two floats that are "equal" being evaluated as not equal
+-- due too how floats are represented
+instance Eq Tuple where
+  (Tuple x1 y1 z1 w1) == (Tuple x2 y2 z2 w2)
+    = let epsilon = 0.0001
+          ltep    = (\x y -> abs (x - y) < epsilon)
+      in (ltep x1 x2) && (ltep y1 y2) && (ltep z1 z2) && (ltep w1 w2)  
 
 point :: Double -> Double -> Double -> Tuple
 point x y z = Tuple x y z 1.0
