@@ -49,3 +49,32 @@ dot (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
 cross :: Tuple -> Tuple -> Tuple
 cross (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
   = vector (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2) 
+
+{- Colors are Tuples -}
+newtype Red = Red Double
+  deriving (Show, Eq)
+
+newtype Green = Green Double
+  deriving (Show, Eq)
+
+newtype Blue = Blue Double
+  deriving (Show, Eq)
+
+-- data Color = Color { red :: Red
+--                    , green :: Green
+--                    , blue :: Blue }
+--              deriving (Show, Eq)
+
+color :: Red -> Green -> Blue -> Tuple
+color (Red r) (Green g) (Blue b) = Tuple r g b 0.0
+
+red :: Tuple -> Red
+red (Tuple r _ _ _) = Red r
+
+green :: Tuple -> Green
+green (Tuple _ g _ _) = Green g
+
+blue :: Tuple -> Blue
+blue (Tuple _ _ b _) = Blue b
+
+

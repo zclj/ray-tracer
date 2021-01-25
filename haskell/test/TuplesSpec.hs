@@ -17,7 +17,8 @@ tupleTests :: TestTree
 tupleTests = testGroup "Tuple Tests" [
   testGroup "HSpec tests"
   [ unsafePerformIO (testSpec "Tuple" tupleBasics),
-    unsafePerformIO (testSpec "Tuple" tupleArithmetic)]]
+    unsafePerformIO (testSpec "Tuple" tupleArithmetic),
+    unsafePerformIO (testSpec "Tuple" colorsAreTuples)]]
 
 tupleBasics :: Spec
 tupleBasics =
@@ -91,7 +92,7 @@ tupleBasics =
     describe "vector creates tuples with w=0" $ do
       it "vector equals tuple" $ do
         SUT.vector 4 (-4) 3 `shouldBe` SUT.Tuple 4 (-4) 3 0
-
+        
 tupleArithmetic :: Spec
 tupleArithmetic =
   describe "Arithmetic" $ do
@@ -252,5 +253,39 @@ tupleArithmetic =
       it "and order matters" $ do
         cross b a `shouldBe` SUT.vector 1 (-2) 1
 
-      
+colorsAreTuples :: Spec
+colorsAreTuples =
+  describe "Colors" $ do
+  {- Scenario: Colors are (red, green, blue) tuples
+       Given c ← color(-0.5, 0.4, 1.7)
+       Then c.red = -0.5
+         And c.green = 0.4
+         And c.blue = 1.7 -}
+    describe "Components" $ do
+      it "are red, green, and blue tuples" $ do
+        let c = SUT.color (SUT.Red (-0.5)) (SUT.Green 0.4) (SUT.Blue 1.7)
+        (red c) `shouldBe` (SUT.Red (-0.5))
+        (green c) `shouldBe` (SUT.Green 0.4)
+        (blue c) `shouldBe` (SUT.Blue 1.7)
+
+    {- Scenario: Adding colors
+         Given c1 ← color(0.9, 0.6, 0.75)
+           And c2 ← color(0.7, 0.1, 0.25)
+         Then c1 + c2 = color(1.6, 0.7, 1.0) -}
+    describe "Add" $ do
+      it "adds two colors" $ do
+        let c1 = SUT.color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
+            c2 = SUT.color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
+        (c1 `add` c2) `shouldBe` color (Red 1.6) (Green 0.7) (Blue 1.0)
+
+    {- Scenario: Subtracting colors
+         Given c1 ← color(0.9, 0.6, 0.75)
+           And c2 ← color(0.7, 0.1, 0.25)
+         Then c1 - c2 = color(0.2, 0.5, 0.5) -}
+    describe "Sub" $ do
+      it "subtracts two colors" $ do
+        let c1 = SUT.color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
+            c2 = SUT.color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
+        (c1 `sub` c2) `shouldBe` color (Red 0.2) (Green 0.5) (Blue 0.5)
+        
   --pendingWith "Implementation"
