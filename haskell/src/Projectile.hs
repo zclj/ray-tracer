@@ -26,6 +26,11 @@ data Environment = Environment { gravity :: Tuple
                                , wind    :: Tuple }
                    deriving(Show)
 
+newtype Gravity = Gravity Double
+                deriving (Show)
+
+newtype Wind = Wind Double
+
 tick :: Environment -> Projectile -> Projectile
 tick env proj = let pos = (position proj) `add` (velocity proj)
                     vel = (velocity proj) `add` (gravity env) `add` (wind env)
@@ -36,20 +41,12 @@ launch' env p@(Projectile (Tuple _ y _ _) _) xs
   | y < 0     = xs
   | otherwise = p : launch' env (tick env p) xs
 
-launch :: Double -> Double -> [Projectile]
-launch g w = let env  = Environment (vector 0 g 0) (vector w 0 0) 
-                 proj = Projectile (point 0 1 0) (norm (vector 1 1 0))
-             in launch' env proj []
-                
--- REPL conveniance
-testenv = Environment (vector 0 (-0.1) 0) (vector (-0.01) 0 0)
-testorg = Projectile (point 0 1 0) (norm (vector 1 1 0))
-
-result = tick testenv testorg
-
-launchresult = launch (-0.5) (-0.01)
---
-
-             
-
-
+launch :: Gravity -> Wind -> [Projectile]
+launch (Gravity g) (Wind w) = let env  = Environment (vector 0 g 0) (vector w 0 0) 
+                                  proj = Projectile (point 0 1 0) (norm (vector 1 1 0))
+                              in launch' env proj []
+                                                  
+launchresult = let g = (Gravity (-0.5))
+                   w = (Wind (-0.01))
+               in launch g w
+                  
