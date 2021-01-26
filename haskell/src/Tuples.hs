@@ -86,4 +86,9 @@ green (Tuple _ g _ _) = Green g
 blue :: Tuple -> Blue
 blue (Tuple _ _ b _) = Blue b
 
-
+mulC :: Tuple -> Tuple -> Tuple
+mulC (Tuple r1 g1 b1 _) (Tuple r2 g2 b2 _) =
+  let r = (Red (r1 * r2))
+      g = (Green (g1 * g2))
+      b = (Blue (b1 * b2))
+  in color r g b

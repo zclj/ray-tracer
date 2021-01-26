@@ -287,5 +287,24 @@ colorsAreTuples =
         let c1 = SUT.color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
             c2 = SUT.color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
         (c1 `sub` c2) `shouldBe` color (Red 0.2) (Green 0.5) (Blue 0.5)
+
+    describe "Mul" $ do
+      {- Scenario: Multiplying a color by a scalar
+           Given c ← color(0.2, 0.3, 0.4)
+           Then c * 2 = color(0.4, 0.6, 0.8) -}
+      it "multiplies a color by a scalar" $ do
+        let c = color (Red 0.2) (Green 0.3) (Blue 0.4)
+        (mul c 2) `shouldBe` color (Red 0.4) (Green 0.6) (Blue 0.8)
+
+    describe "MulC" $ do
+      {- Scenario: Multiplying colors
+           Given c1 ← color(1, 0.2, 0.4)
+             And c2 ← color(0.9, 1, 0.1)
+           Then c1 * c2 = color(0.9, 0.2, 0.04) -}
+      it "multiplies a color by a color" $ do
+        let c1 = color (Red 1) (Green 0.2) (Blue 0.4)
+            c2 = color (Red 0.9) (Green 1) (Blue 0.1)
+        (mulC c1 c2) `shouldBe` color (Red 0.9) (Green 0.2) (Blue 0.04)
+          
         
   --pendingWith "Implementation"
