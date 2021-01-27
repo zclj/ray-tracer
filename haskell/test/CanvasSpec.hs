@@ -8,7 +8,7 @@ import Canvas as SUT
 
 canvasTests :: TestTree
 canvasTests = testGroup "Canvas Tests" [
-  testGroup "HSpec tests"
+  testGroup "Specs for"
   [ unsafePerformIO (testSpec "Canvas" canvasBasics)]]
 
 canvasBasics :: Spec

@@ -15,7 +15,7 @@ import Tuples as SUT
 
 tupleTests :: TestTree
 tupleTests = testGroup "Tuple Tests" [
-  testGroup "HSpec tests"
+  testGroup "Specs for"
   [ unsafePerformIO (testSpec "Tuple" tupleBasics),
     unsafePerformIO (testSpec "Tuple" tupleArithmetic),
     unsafePerformIO (testSpec "Tuple" colorsAreTuples)]]
