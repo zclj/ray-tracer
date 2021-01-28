@@ -21,12 +21,16 @@ canvasBasics =
             And every pixel of c is color(0, 0, 0) -}
     describe "Creating" $ do
       --it "creates a canvas with all black pixels" $ do
-      let c = Canvas (Width 10) (Height 20)
+      let c = makeCanvas (Width 10) (Height 20)
       it "returns width" $ do
         (width c) `shouldBe` (Width 10)
 
       it "returns height" $ do
         (height c) `shouldBe` (Height 20)
+
+      it "has every pixel of color (0, 0, 0)" $ do
+        -- change to something like all (\r -> r == [0]) [[0]]
+        (head c) `shouldBe` [[0]]
 
 
 --pendingWith "Implementation"
