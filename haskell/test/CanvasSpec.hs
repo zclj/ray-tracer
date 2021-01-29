@@ -29,8 +29,7 @@ canvasBasics =
         (height c) `shouldBe` (Height 20)
 
       it "has every pixel of color (0, 0, 0)" $ do
-        -- change to something like all (\r -> r == [0]) [[0]]
-        (head c) `shouldBe` [[0]]
+        (concat c) `shouldSatisfy` all (\pixel -> pixel == [0])
 
 
 --pendingWith "Implementation"
