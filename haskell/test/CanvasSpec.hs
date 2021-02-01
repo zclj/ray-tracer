@@ -5,6 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 import Canvas as SUT
+import Tuples
 
 canvasTests :: TestTree
 canvasTests = testGroup "Canvas Tests" [
@@ -29,7 +30,8 @@ canvasBasics =
         (height c) `shouldBe` (Height 20)
 
       it "has every pixel of color (0, 0, 0)" $ do
-        (concat c) `shouldSatisfy` all (\pixel -> pixel == [0])
+        (concat c) `shouldSatisfy`
+          all (\pixel -> pixel == (color (Red 0) (Green 0) (Blue 0)))
 
 
 --pendingWith "Implementation"
