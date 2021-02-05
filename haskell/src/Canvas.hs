@@ -18,16 +18,17 @@ newtype Height = Height Int
 -- data Canvas = Canvas Width Height
 --               deriving(Show, Eq)
 
-type Canvas = [[Tuple]]
+type Row = [Color]
+type Canvas = [Row]
 
-row :: Int -> [Tuple]
-row x = [color (Red 0) (Green 0) (Blue 0) | _ <- [1..x]]
+row :: Width -> Row
+row (Width x) = [Color (Red 0) (Green 0) (Blue 0) | _ <- [1..x]]
 
-canvas :: Int -> Int -> [[Tuple]]
-canvas x y = (foldr (\_ canvas -> row x : canvas) [] [1..y])
+canvas :: Width -> Height -> Canvas
+canvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
 
 makeCanvas :: Width -> Height -> Canvas
-makeCanvas (Width w) (Height h) = canvas w h
+makeCanvas w h = canvas w h
 
 width :: Canvas -> Width
 width (row:rows) = (Width (length row))

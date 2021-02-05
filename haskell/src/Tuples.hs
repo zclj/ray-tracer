@@ -60,35 +60,77 @@ cross (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
   = vector (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2) 
 
 {- Colors are Tuples -}
+(~=) :: Double -> Double -> Bool
+(~=) x y = abs (x - y) < 0.0001
+
 newtype Red = Red Double
-  deriving (Show, Eq)
+  deriving (Show)
+
+instance Eq Red where
+  (Red r1) == (Red r2) =  r1 ~= r2
 
 newtype Green = Green Double
-  deriving (Show, Eq)
+  deriving (Show)
+
+instance Eq Green where
+  (Green g1) == (Green g2) =  g1 ~= g2
 
 newtype Blue = Blue Double
-  deriving (Show, Eq)
+  deriving (Show)
 
--- data Color = Color { red :: Red
---                    , green :: Green
---                    , blue :: Blue }
---              deriving (Show, Eq)
+instance Eq Blue where
+  (Blue b1) == (Blue b2) =  b1 ~= b2
 
-color :: Red -> Green -> Blue -> Tuple
-color (Red r) (Green g) (Blue b) = Tuple r g b 0.0
+data Color = Color { red :: Red
+                   , green :: Green
+                   , blue :: Blue }
+             deriving (Show, Eq)
 
-red :: Tuple -> Red
-red (Tuple r _ _ _) = Red r
+-- instance Eq Color where
+--   (Color r1 g1 z1) == (Color r2 y2 z2)
+--     = let epsilon = 0.0001
+--           ltep    = (\x y -> abs (x - y) < epsilon)
+--       in (ltep r1 r2) && (ltep g1 y2) && (ltep z1 z2) 
 
-green :: Tuple -> Green
-green (Tuple _ g _ _) = Green g
+-- color :: Red -> Green -> Blue -> Tuple
+-- color (Red r) (Green g) (Blue b) = Tuple r g b 0.0
 
-blue :: Tuple -> Blue
-blue (Tuple _ _ b _) = Blue b
+-- red :: Tuple -> Red
+-- red (Tuple r _ _ _) = Red r
 
-mulC :: Tuple -> Tuple -> Tuple
-mulC (Tuple r1 g1 b1 _) (Tuple r2 g2 b2 _) =
+-- green :: Tuple -> Green
+-- green (Tuple _ g _ _) = Green g
+
+-- blue :: Tuple -> Blue
+-- blue (Tuple _ _ b _) = Blue b
+
+-- mulC :: Tuple -> Tuple -> Tuple
+-- mulC (Tuple r1 g1 b1 _) (Tuple r2 g2 b2 _) =
+--   let r = (Red (r1 * r2))
+--       g = (Green (g1 * g2))
+--       b = (Blue (b1 * b2))
+--   in color r g b
+
+addC :: Color -> Color -> Color
+addC (Color (Red r1) (Green g1) (Blue b1)) (Color (Red r2) (Green g2) (Blue b2)) =
+  let (Tuple r g b _) = Tuple r1 g1 b1 0 `add` Tuple r2 g2 b2 0
+  in Color (Red r) (Green g) (Blue b)
+  
+subC :: Color -> Color -> Color
+subC (Color (Red r1) (Green g1) (Blue b1)) (Color (Red r2) (Green g2) (Blue b2)) =
+  let (Tuple r g b _) = Tuple r1 g1 b1 0 `sub` Tuple r2 g2 b2 0
+  in Color (Red r) (Green g) (Blue b)
+
+mulCS :: Color -> Double -> Color
+mulCS (Color (Red r1) (Green g1) (Blue b1)) x =
+  let (Tuple r g b _) = Tuple r1 g1 b1 0 `mul` x
+  in Color (Red r) (Green g) (Blue b)
+  
+mulC :: Color -> Color -> Color
+mulC (Color (Red r1) (Green g1) (Blue b1)) (Color (Red r2) (Green g2) (Blue b2)) =
   let r = (Red (r1 * r2))
       g = (Green (g1 * g2))
       b = (Blue (b1 * b2))
-  in color r g b
+  in Color r g b
+
+

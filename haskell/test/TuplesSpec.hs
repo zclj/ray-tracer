@@ -263,7 +263,7 @@ colorsAreTuples =
          And c.blue = 1.7 -}
     describe "Components" $ do
       it "are red, green, and blue tuples" $ do
-        let c = SUT.color (SUT.Red (-0.5)) (SUT.Green 0.4) (SUT.Blue 1.7)
+        let c = Color (SUT.Red (-0.5)) (SUT.Green 0.4) (SUT.Blue 1.7)
         (red c) `shouldBe` (SUT.Red (-0.5))
         (green c) `shouldBe` (SUT.Green 0.4)
         (blue c) `shouldBe` (SUT.Blue 1.7)
@@ -274,9 +274,9 @@ colorsAreTuples =
          Then c1 + c2 = color(1.6, 0.7, 1.0) -}
     describe "Add" $ do
       it "adds two colors" $ do
-        let c1 = SUT.color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
-            c2 = SUT.color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
-        (c1 `add` c2) `shouldBe` color (Red 1.6) (Green 0.7) (Blue 1.0)
+        let c1 = Color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
+            c2 = Color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
+        (c1 `addC` c2) `shouldBe` Color (Red 1.6) (Green 0.7) (Blue 1.0)
 
     {- Scenario: Subtracting colors
          Given c1 ← color(0.9, 0.6, 0.75)
@@ -284,17 +284,17 @@ colorsAreTuples =
          Then c1 - c2 = color(0.2, 0.5, 0.5) -}
     describe "Sub" $ do
       it "subtracts two colors" $ do
-        let c1 = SUT.color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
-            c2 = SUT.color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
-        (c1 `sub` c2) `shouldBe` color (Red 0.2) (Green 0.5) (Blue 0.5)
+        let c1 = Color (SUT.Red 0.9) (SUT.Green 0.6) (SUT.Blue 0.75)
+            c2 = Color (SUT.Red 0.7) (SUT.Green 0.1) (SUT.Blue 0.25)
+        (c1 `subC` c2) `shouldBe` Color (Red 0.2) (Green 0.5) (Blue 0.5)
 
     describe "Mul" $ do
       {- Scenario: Multiplying a color by a scalar
            Given c ← color(0.2, 0.3, 0.4)
            Then c * 2 = color(0.4, 0.6, 0.8) -}
       it "multiplies a color by a scalar" $ do
-        let c = color (Red 0.2) (Green 0.3) (Blue 0.4)
-        (mul c 2) `shouldBe` color (Red 0.4) (Green 0.6) (Blue 0.8)
+        let c = Color (Red 0.2) (Green 0.3) (Blue 0.4)
+        (mulCS c 2) `shouldBe` Color (Red 0.4) (Green 0.6) (Blue 0.8)
 
     describe "MulC" $ do
       {- Scenario: Multiplying colors
@@ -302,9 +302,9 @@ colorsAreTuples =
              And c2 ← color(0.9, 1, 0.1)
            Then c1 * c2 = color(0.9, 0.2, 0.04) -}
       it "multiplies a color by a color" $ do
-        let c1 = color (Red 1) (Green 0.2) (Blue 0.4)
-            c2 = color (Red 0.9) (Green 1) (Blue 0.1)
-        (mulC c1 c2) `shouldBe` color (Red 0.9) (Green 0.2) (Blue 0.04)
+        let c1 = Color (Red 1) (Green 0.2) (Blue 0.4)
+            c2 = Color (Red 0.9) (Green 1) (Blue 0.1)
+        (mulC c1 c2) `shouldBe` Color (Red 0.9) (Green 0.2) (Blue 0.04)
           
         
   --pendingWith "Implementation"

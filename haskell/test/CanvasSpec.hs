@@ -31,7 +31,7 @@ canvasBasics =
 
       it "has every pixel of color (0, 0, 0)" $ do
         (concat c) `shouldSatisfy`
-          all (\pixel -> pixel == (color (Red 0) (Green 0) (Blue 0)))
+          all (\pixel -> pixel == (Color (Red 0) (Green 0) (Blue 0)))
 
 
 --pendingWith "Implementation"
