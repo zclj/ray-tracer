@@ -10,7 +10,8 @@ import Tuples
 canvasTests :: TestTree
 canvasTests = testGroup "Canvas Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Canvas" canvasBasics)]]
+  [ unsafePerformIO (testSpec "Canvas" canvasBasics)
+  , unsafePerformIO (testSpec "Canvas" canvasWriting)]]
 
 canvasBasics :: Spec
 canvasBasics =
@@ -22,7 +23,7 @@ canvasBasics =
             And every pixel of c is color(0, 0, 0) -}
     describe "Creating" $ do
       --it "creates a canvas with all black pixels" $ do
-      let c = makeCanvas (Width 10) (Height 20)
+      let c = canvas (Width 10) (Height 20)
       it "returns width" $ do
         (width c) `shouldBe` (Width 10)
 
@@ -33,5 +34,17 @@ canvasBasics =
         (concat c) `shouldSatisfy`
           all (\pixel -> pixel == (Color (Red 0) (Green 0) (Blue 0)))
 
+canvasWriting :: Spec
+canvasWriting = 
+  describe "Writing pixels" $ do
+    {- Scenario: Writing pixels to a canvas
+         Given c ← canvas(10, 20)
+           And red ← color(1, 0, 0)
+         When write_pixel(c, 2, 3, red)
+         Then pixel_at(c, 2, 3) = red -}
+    let c   = canvas (Width 10) (Height 20)
+        red = Color (Red 1) (Green 0) (Blue 0)
+    it "writes a color to the canvas" $ do
+      pendingWith "Implementation"
 
 --pendingWith "Implementation"

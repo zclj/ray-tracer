@@ -2,7 +2,7 @@ module Canvas
   ( Canvas
   , Width (..)
   , Height (..)
-  , makeCanvas
+  , canvas
   , width
   , height
   ) where
@@ -26,9 +26,6 @@ row (Width x) = [Color (Red 0) (Green 0) (Blue 0) | _ <- [1..x]]
 
 canvas :: Width -> Height -> Canvas
 canvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
-
-makeCanvas :: Width -> Height -> Canvas
-makeCanvas w h = canvas w h
 
 width :: Canvas -> Width
 width (row:rows) = (Width (length row))
