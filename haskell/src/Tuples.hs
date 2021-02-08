@@ -21,6 +21,26 @@ point x y z = Tuple x y z 1.0
 isPoint :: Tuple -> Bool
 isPoint (Tuple _ _ _ w) = w == 1
 
+-- Point
+data Point = Point Double Double Double
+           deriving (Eq, Show)
+
+-- Vector
+data Vector = Vector Double Double Double
+            deriving (Eq, Show)
+
+-- Add Point -> Vector -> Vector and Vector -> Vector -> Vector is what makes sense
+
+addV :: Vector -> Vector -> Vector
+addV (Vector x1 y1 z1) (Vector x2 y2 z2) = Vector (x1 + x2) (y1 + y2) (z1 + z2)
+
+addP :: Point -> Vector -> Vector
+addP (Point x1 y1 z1) (Vector x2 y2 z2) = Vector (x1 + x2) (y1 + y2) (z1 + z2)
+
+-- Sub makes sense for P - V, V - V
+
+--
+
 vector :: Double -> Double -> Double -> Tuple
 vector x y z = Tuple x y z 0.0
 
