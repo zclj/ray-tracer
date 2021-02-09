@@ -23,7 +23,7 @@ canvasBasics =
             And every pixel of c is color(0, 0, 0) -}
     describe "Creating" $ do
       --it "creates a canvas with all black pixels" $ do
-      let c = canvas (Width 10) (Height 20)
+      let c = mkCanvas (Width 10) (Height 20)
       it "returns width" $ do
         (width c) `shouldBe` (Width 10)
 
@@ -42,9 +42,10 @@ canvasWriting =
            And red ← color(1, 0, 0)
          When write_pixel(c, 2, 3, red)
          Then pixel_at(c, 2, 3) = red -}
-    let c   = canvas (Width 10) (Height 20)
-        red = Color (Red 1) (Green 0) (Blue 0)
+    let c    = mkCanvas (Width 10) (Height 20)
+        red  = Color (Red 1) (Green 0) (Blue 0)
+        newC = write c (Width 2) (Height 3) red
     it "writes a color to the canvas" $ do
-      pendingWith "Implementation"
+       pixelAt newC (Width 2) (Height 3) `shouldBe` red
 
 --pendingWith "Implementation"

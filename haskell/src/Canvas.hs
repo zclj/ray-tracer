@@ -2,9 +2,11 @@ module Canvas
   ( Canvas
   , Width (..)
   , Height (..)
-  , canvas
+  , mkCanvas
   , width
   , height
+  , write
+  , pixelAt
   ) where
 
 import Tuples
@@ -24,11 +26,17 @@ type Canvas = [Row]
 row :: Width -> Row
 row (Width x) = [Color (Red 0) (Green 0) (Blue 0) | _ <- [1..x]]
 
-canvas :: Width -> Height -> Canvas
-canvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
+mkCanvas :: Width -> Height -> Canvas
+mkCanvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
 
 width :: Canvas -> Width
 width (row:rows) = (Width (length row))
 
 height :: Canvas -> Height
 height c = (Height (length c))
+
+write :: Canvas -> Width -> Height -> Color -> Canvas
+write c w h color = c
+
+pixelAt :: Canvas -> Width -> Height -> Color
+pixelAt c w h = Color (Red 0) (Green 0) (Blue 0)
