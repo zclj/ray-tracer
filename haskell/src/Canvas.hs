@@ -7,8 +7,10 @@ module Canvas
   , height
   , write
   , pixelAt
-  , testing
-  , testList
+  , testCanvas
+  , testColor
+  , newTestCanvas
+  , testPixel,
   ) where
 
 import Tuples
@@ -39,21 +41,31 @@ height c = (Height (length c))
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c (Width w) (Height h) pixel =
-  let (preRows, postRows)     = splitAt h c
-      (prePixels, postPixels) = splitAt w (head postRows)
-      newRow                  = prePixels ++ [pixel] ++ (tail postPixels) 
-  in preRows ++ [newRow] ++ (tail postRows)
+  let (preRows, (postRow:postRows)) = splitAt h c
+      (prePixels, (_:postPixels))   = splitAt w postRow
+      newRow                        = prePixels ++ [pixel] ++ postPixels 
+  in preRows ++ [newRow] ++ postRows
 
 -- REPL
 
-testList :: [[Int]]
-testList = [[1,2,3], [4,5,6], [7,8,9]]
+testCanvas = mkCanvas (Width 2) (Height 3)
+testColor  = Color (Red 1) (Green 0) (Blue 0)
+newTestCanvas = write testCanvas (Width 10) (Height 10) testColor
 
-testing :: Int -> Int -> Int -> [[Int]] -> [[Int]]
-testing x y thing xs = let (ys, zs) = splitAt x xs
-                           (as, bs) = splitAt y (head zs)
-                           newRow   = as ++ [thing] ++ (tail bs) 
-                       in ys ++ [newRow] ++ (tail zs)
+testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
+-- testList :: [[Int]]
+-- testList = [[1,2,3], [4,5,6], [7,8,9]]
+
+-- testing :: Int -> Int -> Int -> [[Int]] -> [[Int]]
+-- testing x y thing xs = let (ys, zs) = splitAt x xs
+--                            (as, bs) = splitAt y (head zs)
+--                            newRow   = as ++ [thing] ++ (tail bs) 
+--                        in ys ++ [newRow] ++ (tail zs)
 
 pixelAt :: Canvas -> Width -> Height -> Color
-pixelAt c w h = Color (Red 0) (Green 0) (Blue 0)
+pixelAt c (Width w) (Height h) =
+  let (_, (row:_))   = splitAt h c
+      (_, (pixel:_)) = splitAt w row
+  in pixel
+
+      --Color (Red 0) (Green 0) (Blue 0)
