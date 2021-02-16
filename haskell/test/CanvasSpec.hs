@@ -4,6 +4,7 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Test.Tasty
 import Test.Tasty.Hspec as HS
+import Test.Tasty.QuickCheck as QC
 import Canvas as SUT
 import Tuples
 
@@ -11,7 +12,15 @@ canvasTests :: TestTree
 canvasTests = testGroup "Canvas Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Canvas" canvasBasics)
-  , unsafePerformIO (testSpec "Canvas" canvasWriting)]]
+  , unsafePerformIO (testSpec "Canvas" canvasWriting)
+  , properties]]
+
+properties :: TestTree
+properties = testGroup "Canvas Properties" [qcProps]
+
+qcProps = testGroup "(checked by QuickCheck)"
+  [ QC.testProperty "width of a canvas is the same as the creation width" $    
+      \w h -> width (mkCanvas (Width w) (Height h)) == (Width w)]
 
 canvasBasics :: Spec
 canvasBasics =
@@ -42,7 +51,7 @@ canvasWriting =
            And red ← color(1, 0, 0)
          When write_pixel(c, 2, 3, red)
          Then pixel_at(c, 2, 3) = red -}
-    let c    = mkCanvas (Width 10) (Height 20)
+    let c    = mkCanvas (Width 2) (Height 3) --mkCanvas (Width 10) (Height 20)
         red  = Color (Red 1) (Green 0) (Blue 0)
         newC = write c (Width 2) (Height 3) red
     it "writes a color to the canvas" $ do
