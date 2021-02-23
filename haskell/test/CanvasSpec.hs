@@ -19,7 +19,7 @@ properties :: TestTree
 properties = testGroup "Canvas Properties" [qcProps]
 
 qcProps = testGroup "(checked by QuickCheck)"
-  [ QC.testProperty "width of a canvas is the same as the creation width" $    
+  [ QC.testProperty "width of a canvas is the same as the creation width" $
       \w h -> width (mkCanvas (Width w) (Height h)) == (Width w)]
 
 canvasBasics :: Spec
