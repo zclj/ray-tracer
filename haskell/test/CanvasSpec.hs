@@ -13,7 +13,8 @@ canvasTests = testGroup "Canvas Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Canvas" canvasBasics)
   , unsafePerformIO (testSpec "Canvas" canvasWriting)
-  , properties]]
+  --, properties
+  ]]
 
 properties :: TestTree
 properties = testGroup "Canvas Properties" [qcProps]
@@ -51,7 +52,7 @@ canvasWriting =
            And red ← color(1, 0, 0)
          When write_pixel(c, 2, 3, red)
          Then pixel_at(c, 2, 3) = red -}
-    let c    = mkCanvas (Width 2) (Height 3) --mkCanvas (Width 10) (Height 20)
+    let c    = mkCanvas (Width 10) (Height 20)
         red  = Color (Red 1) (Green 0) (Blue 0)
         newC = write c (Width 2) (Height 3) red
     it "writes a color to the canvas" $ do

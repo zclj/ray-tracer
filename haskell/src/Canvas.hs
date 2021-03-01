@@ -7,10 +7,6 @@ module Canvas
   , height
   , write
   , pixelAt
-  , testCanvas
-  , testColor
-  , newTestCanvas
-  , testPixel,
   ) where
 
 import Tuples
@@ -59,35 +55,23 @@ write c (Width w) (Height h) pixel =
                                         (_:tailPixels)  -> prePixels ++ [pixel] ++ tailPixels
   in preRows ++ [newRow] ++ postRows
 
--- REPL
-
-
-testCanvas = mkCanvas (Width 2) (Height 3)
-testColor  = Color (Red 1) (Green 0) (Blue 0)
-newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
-
-testPixel = pixelAt newTestCanvas (Width 2) (Height 3)
--- testList :: [[Int]]
--- testList = [[1,2,3], [4,5,6], [7,8,9]]
-
--- testing :: Int -> Int -> Int -> [[Int]] -> [[Int]]
--- testing x y thing xs = let (ys, zs) = splitAt x xs
---                            (as, bs) = splitAt y (head zs)
---                            newRow   = as ++ [thing] ++ (tail bs) 
---                        in ys ++ [newRow] ++ (tail zs)
-
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
-  let (_, (row:_))   = splitAt h c
-      (_, (pixel:_)) = splitAt w row
+  let (preRows, postRows)     = splitAt h c
+      (prePixels, postPixels) = case postRows of
+                                  [] -> splitAt w []
+                                  otherwise -> splitAt w (head postRows)
+      pixel                   = case postPixels of
+                                  [] -> last prePixels
+                                  otherwise -> head postPixels
   in pixel
   
-pixelAt2 :: Canvas -> Width -> Height -> Color
-pixelAt2 c (Width w) (Height h) =
-  let (_, postRows)   = splitAt h c
-      (_, postPixels) = case postRows of
-                          [] -> ([], [])
-                          otherwise -> splitAt w (head postRows)
-  in head postPixels
+-- REPL
 
-      --Color (Red 0) (Green 0) (Blue 0)
+-- testCanvas = mkCanvas (Width 2) (Height 3)
+-- testColor  = Color (Red 1) (Green 0) (Blue 0)
+-- newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
+
+-- testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
+  
+--Color (Red 0) (Green 0) (Blue 0)
