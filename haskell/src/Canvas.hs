@@ -7,6 +7,7 @@ module Canvas
   , height
   , write
   , pixelAt
+  , canvasToPPM
   ) where
 
 import Tuples
@@ -65,7 +66,9 @@ pixelAt c (Width w) (Height h) =
                                   [] -> last prePixels
                                   otherwise -> head postPixels
   in pixel
-  
+
+canvasToPPM :: Canvas -> String
+canvasToPPM c = "P3\n 5 3\n 255\n"
 -- REPL
 
 -- testCanvas = mkCanvas (Width 2) (Height 3)

@@ -13,6 +13,7 @@ canvasTests = testGroup "Canvas Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Canvas" canvasBasics)
   , unsafePerformIO (testSpec "Canvas" canvasWriting)
+  , unsafePerformIO (testSpec "Canvas" canvasPPM)
   --, properties
   ]]
 
@@ -57,5 +58,23 @@ canvasWriting =
         newC = write c (Width 2) (Height 3) red
     it "writes a color to the canvas" $ do
        pixelAt newC (Width 2) (Height 3) `shouldBe` red
+
+canvasPPM :: Spec
+canvasPPM =
+  describe "Constructing PPM" $ do
+  {- Scenario: Constructing the PPM header
+       Given c ← canvas(5, 3)
+       When ppm ← canvas_to_ppm(c)
+       Then lines 1-3 of ppm are
+         """
+         P3
+         5 3
+         255
+         """ -}
+    describe "header" $ do
+      let c   = mkCanvas (Width 5) (Height 3)
+          ppm = canvasToPPM c
+      it "creates header" $ do
+        ppm `shouldBe` "P3\n 5 3\n 255\n"
 
 --pendingWith "Implementation"
