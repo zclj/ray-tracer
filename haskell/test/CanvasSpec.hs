@@ -75,8 +75,7 @@ canvasPPM =
       let c   = mkCanvas (Width 5) (Height 3)
           ppm = canvasToPPM c
       it "creates header" $ do
-        pendingWith "Implementation"
-        --unlines (take 3 ppm) `shouldBe` "P3\n5 3\n255\n"
+        unlines (take 3 ppm) `shouldBe` "P3\n5 3\n255\n"
   {- Scenario: Constructing the PPM pixel data
        Given c ← canvas(5, 3)
          And c1 ← color(1.5, 0, 0)
@@ -100,10 +99,11 @@ canvasPPM =
           cv2 = write cv1 (Width 0) (Height 0) c1
           cv3 = write cv2 (Width 2) (Height 1) c2
           cv4 = write cv3 (Width 4) (Height 2) c3
-          ppm = (canvasToPPM cv4) --unlines (drop 3 (canvasToPPM cv4))
+          ppm = unlines (take 3 (drop 3 (canvasToPPM cv4)))
       it "creates pixel data" $ do
-        ppm `shouldBe` []
-          -- "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n\
-          -- \0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n\
-          -- \0 0 0 0 0 0 0 0 0 0 0 0 0 0 255"
+        ppm `shouldBe`
+          "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n\
+          \0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n\
+          \0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n"
+          
 --pendingWith "Implementation"
