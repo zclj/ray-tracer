@@ -8,6 +8,9 @@ module Canvas
   , write
   , pixelAt
   , canvasToPPM
+  , pixelToPPM
+  , rowToPPM
+  , testCanvasPPM
   ) where
 
 import Tuples
@@ -67,13 +70,26 @@ pixelAt c (Width w) (Height h) =
                                   otherwise -> head postPixels
   in pixel
 
-canvasToPPM :: Canvas -> String
-canvasToPPM c = "P3\n 5 3\n 255\n"
+-- (max (min 255 (ceiling (255 * (-1.5)))) 0)
+
+pixelToPPM :: Color -> [String]
+pixelToPPM (Color (Red r) (Green g) (Blue b)) =
+  (map (\x -> show (max (min 255 (ceiling (255 * x))) 0)) [r, g, b])
+
+rowToPPM :: Row -> [String]
+rowToPPM row = foldr (\c acc -> acc ++ (pixelToPPM c)) [] (reverse row)
+
+canvasToPPM :: Canvas -> [[String]]
+canvasToPPM c = let (Width w)  = width c
+                    (Height h) = height c
+                    header     = ["P3", show w ++ " " ++ show h, "255"]
+                in (foldr (\r acc -> acc ++ [(rowToPPM r)]) [] (reverse c))
 -- REPL
 
--- testCanvas = mkCanvas (Width 2) (Height 3)
--- testColor  = Color (Red 1) (Green 0) (Blue 0)
--- newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
+testCanvas = mkCanvas (Width 2) (Height 3)
+testCanvasPPM = canvasToPPM newTestCanvas
+testColor  = Color (Red 1) (Green 0) (Blue 0)
+newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
 
 -- testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
   
