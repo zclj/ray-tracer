@@ -59,6 +59,12 @@ canvasWriting =
     it "writes a color to the canvas" $ do
        pixelAt newC (Width 2) (Height 3) `shouldBe` red
 
+    it "do not alter the width of the canvas" $ do
+      width newC `shouldBe` (Width 10)
+
+    it "do not alter the height of the canvas" $ do
+      height newC `shouldBe` (Height 20)
+
 canvasPPM :: Spec
 canvasPPM =
   describe "Constructing PPM" $ do
@@ -105,5 +111,24 @@ canvasPPM =
           "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n\
           \0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n\
           \0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n"
-          
+  {- Scenario: Splitting long lines in PPM files
+       Given c ← canvas(10, 2)
+       When every pixel of c is set to color(1, 0.8, 0.6)
+         And ppm ← canvas_to_ppm(c)
+       Then lines 4-7 of ppm are
+         """
+         255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+         153 255 204 153 255 204 153 255 204 153 255 204 153
+         255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+         153 255 204 153 255 204 153 255 204 153 255 204 153
+         """ -}
+    describe "splitting" $ do
+      let c = mkCanvas (Width 10) (Height 2)
+          ppm = unlines (take 4 (drop 3 (canvasToPPM c)))
+      it "long lines" $ do
+        ppm `shouldBe`
+          "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n\
+           \153 255 204 153 255 204 153 255 204 153 255 204 153\n\
+           \255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n\
+           \153 255 204 153 255 204 153 255 204 153 255 204 153\n"
 --pendingWith "Implementation"

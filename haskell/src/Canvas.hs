@@ -8,6 +8,9 @@ module Canvas
   , write
   , pixelAt
   , canvasToPPM
+  , testCanvasPPM
+  , testCanvas
+  , newTestCanvas
   ) where
 
 import Tuples
@@ -37,30 +40,33 @@ width (row:_) = (Width (length row))
 height :: Canvas -> Height
 height c = (Height (length c))
 
-write2 :: Canvas -> Width -> Height -> Color -> Canvas
-write2 c (Width w) (Height h) pixel =
-  let (preRows, (postRow:postRows)) = splitAt h c
-      (prePixels, (_:postPixels))   = splitAt w postRow
-      newRow                        = prePixels ++ [pixel] ++ postPixels 
-  in preRows ++ [newRow] ++ postRows
+-- write2 :: Canvas -> Width -> Height -> Color -> Canvas
+-- write2 c (Width w) (Height h) pixel =
+--   let (preRows, (postRow:postRows)) = splitAt h c
+--       (prePixels, (_:postPixels))   = splitAt w postRow
+--       newRow                        = prePixels ++ [pixel] ++ postPixels 
+--   in preRows ++ [newRow] ++ postRows
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c (Width w) (Height h) pixel =
-  let (preRows, postRows)           = splitAt h c
+  let (preRows, postRows)           = splitAt (h - 1) c
       (prePixels, postPixels)       = case postRows of
-                                        [] -> splitAt w []
-                                        otherwise -> splitAt w (head postRows)
+                                        [] -> splitAt (w - 1) []
+                                        otherwise -> splitAt (w - 1) (head postRows)
       newRow                        = case postPixels of
                                         [] -> prePixels ++ [pixel]
                                         (_:tailPixels)  -> prePixels ++ [pixel] ++ tailPixels
-  in preRows ++ [newRow] ++ postRows
+      trailingRows                  = case postRows of
+                                        [] -> []
+                                        otherwise -> (tail postRows)
+  in preRows ++ [newRow] ++ trailingRows
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
-  let (preRows, postRows)     = splitAt h c
+  let (preRows, postRows)     = splitAt (h - 1) c
       (prePixels, postPixels) = case postRows of
                                   [] -> splitAt w []
-                                  otherwise -> splitAt w (head postRows)
+                                  otherwise -> splitAt (w - 1) (head postRows)
       pixel                   = case postPixels of
                                   [] -> last prePixels
                                   otherwise -> head postPixels
@@ -80,10 +86,10 @@ canvasToPPM c = let (Width w)  = width c
                 in (foldr (\r acc -> acc ++ (map unwords [(rowToPPM r)])) header (reverse c))
 -- REPL
 
--- testCanvas = mkCanvas (Width 2) (Height 3)
--- testCanvasPPM = canvasToPPM newTestCanvas
--- testColor  = Color (Red 1) (Green 0) (Blue 0)
--- newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
+testCanvas = mkCanvas (Width 2) (Height 3)
+testCanvasPPM = canvasToPPM newTestCanvas
+testColor  = Color (Red 1) (Green 0) (Blue 0)
+newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
 
 -- testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
   
