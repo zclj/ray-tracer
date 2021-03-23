@@ -48,22 +48,39 @@ canvasBasics =
 canvasWriting :: Spec
 canvasWriting = 
   describe "Writing pixels" $ do
+    describe "Writing on Canvas" $ do
     {- Scenario: Writing pixels to a canvas
          Given c ← canvas(10, 20)
            And red ← color(1, 0, 0)
          When write_pixel(c, 2, 3, red)
          Then pixel_at(c, 2, 3) = red -}
-    let c    = mkCanvas (Width 10) (Height 20)
-        red  = Color (Red 1) (Green 0) (Blue 0)
-        newC = write c (Width 2) (Height 3) red
-    it "writes a color to the canvas" $ do
-       pixelAt newC (Width 2) (Height 3) `shouldBe` red
+      let c    = mkCanvas (Width 10) (Height 20)
+          red  = Color (Red 1) (Green 0) (Blue 0)
+          newC = write c (Width 2) (Height 3) red
+          len  = foldr (+) 0 (map length newC)
+      it "writes a color to the canvas" $ do
+         pixelAt newC (Width 2) (Height 3) `shouldBe` red
 
-    it "do not alter the width of the canvas" $ do
-      width newC `shouldBe` (Width 10)
+      it "do not alter the width of the canvas" $ do
+        width newC `shouldBe` (Width 10)
 
-    it "do not alter the height of the canvas" $ do
-      height newC `shouldBe` (Height 20)
+      it "do not alter the height of the canvas" $ do
+        height newC `shouldBe` (Height 20)
+
+      it "do not alter the pixel count" $ do
+        len `shouldBe` 10 * 20
+
+    describe "Write off canvas" $ do
+      let c    = mkCanvas (Width 2) (Height 2)
+          red  = Color (Red 1) (Green 0) (Blue 0)
+          newC = write c (Width 1) (Height 2) red
+          len  = foldr (+) 0 (map length newC)
+      it "do not alter the pixel count" $ do
+        len `shouldBe` 2 * 2
+
+      it "do not alter the canvas" $ do
+        newC `shouldBe` c
+      
 
 canvasPPM :: Spec
 canvasPPM =
