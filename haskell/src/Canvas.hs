@@ -106,8 +106,14 @@ c2  = Color (Red 0) (Green 0.5) (Blue 0)
 c3  = Color (Red (-0.5)) (Green 0) (Blue 1)
 cv2 = write cv1 (Width 0) (Height 0) c1
 cv3 = write cv2 (Width 2) (Height 1) c2
-newTestCanvas = write cv3 (Width 4) (Height 2) c3
+--newTestCanvas = write cv3 (Width 4) (Height 2) c3
 ppm = unlines (take 3 (drop 3 (canvasToPPM newTestCanvas)))
+
+newTestCanvas = let (Height h) = height cv1
+                    w = width cv1
+                    rowW = (\(Width w) -> [Color (Red 1) (Green 1) (Blue 1) | _ <- [1..w]])
+                    x = foldr (\_ canvas -> rowW w : canvas) [] [1..h]
+                in x
 -- testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
   
 --Color (Red 0) (Green 0) (Blue 0)

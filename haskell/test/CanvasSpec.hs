@@ -140,8 +140,9 @@ canvasPPM =
          153 255 204 153 255 204 153 255 204 153 255 204 153
          """ -}
     describe "splitting" $ do
-      let c = mkCanvas (Width 10) (Height 2)
-          ppm = unlines (take 4 (drop 3 (canvasToPPM c)))
+      let writeRow      = (\w -> [Color (Red 1) (Green 0.8) (Blue 0.6) | _ <- [1..10]])
+          coloredCanvas = foldr (\_ canvas -> writeRow w : canvas) [] [1..2]
+          ppm           = unlines (take 4 (drop 3 (canvasToPPM coloredCanvas)))
       it "long lines" $ do
         ppm `shouldBe`
           "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n\
