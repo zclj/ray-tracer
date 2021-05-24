@@ -11,6 +11,8 @@ module Canvas
   , testCanvasPPM
   , testCanvas
   , newTestCanvas
+  , rowToPPMT
+  , sizeRow
   ) where
 
 import Tuples
@@ -115,5 +117,14 @@ newTestCanvas = let (Height h) = height cv1
                     x = foldr (\_ canvas -> rowW w : canvas) [] [1..h]
                 in x
 -- testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
-  
+
+sizeRow :: [String] -> [String] -> [String]
+sizeRow row pixelPPM = let s = (length $ unwords row) + (length pixelPPM)
+                       in  if s > 3
+                             then row ++ ["\n"] ++ pixelPPM
+                           else row ++ pixelPPM
+                           
+
+rowToPPMT :: Row -> [String]
+rowToPPMT row = foldr (\c acc -> acc ++ (pixelToPPM c)) [] (reverse row)
 --Color (Red 0) (Green 0) (Blue 0)
