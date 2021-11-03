@@ -8,11 +8,6 @@ module Canvas
   , write
   , pixelAt
   , canvasToPPM
-  , testCanvasPPM
-  , testCanvas
-  , newTestCanvas
-  , rowToPPMT
-  , sizeRow
   ) where
 
 import Tuples
@@ -22,9 +17,6 @@ newtype Width  = Width Int
 
 newtype Height = Height Int
   deriving (Show, Eq, Ord)
-
--- data Canvas = Canvas Width Height
---               deriving(Show, Eq)
 
 type Row = [Color]
 type Canvas = [Row]
@@ -87,44 +79,35 @@ pixelToPPM :: Color -> [String]
 pixelToPPM (Color (Red r) (Green g) (Blue b)) =
   (map (\x -> show (max (min 255 (ceiling (255 * x))) 0)) [r, g, b])
 
-rowToPPM :: Row -> [String]
-rowToPPM row = foldr (\c acc -> acc ++ (pixelToPPM c)) [] (reverse row)
+splitLine' :: [String] -> String -> Int -> String
+splitLine' [] acc size        = (init acc)
+splitLine' s@(x:xs) acc size  = let newSize = size + (length x)
+                                in if newSize > 70
+                                   then splitLine' s  ((init acc) ++ "\n") 0
+                                   else splitLine' xs (acc ++ x ++ " ") (newSize + 1)
 
+splitLine :: [String] -> String
+splitLine s = splitLine' s "" 0
+
+rowToPPM :: Row -> String
+rowToPPM [] = []  
+rowToPPM r  = let pxs = foldr (\c acc -> (pixelToPPM c) ++ acc) [] r
+              in  splitLine pxs
+                
 canvasToPPM :: Canvas -> [String]
 canvasToPPM c = let (Width w)  = width c
                     (Height h) = height c
                     header     = ["P3", show w ++ " " ++ show h, "255"]
-                in (foldr (\r acc -> acc ++ (map unwords [(rowToPPM r)])) header (reverse c))
+                    rows       = (foldr (\r acc -> (rowToPPM r) : acc) [] c)
+                in header ++ rows
+
 -- REPL
 
-testCanvas = mkCanvas (Width 2) (Height 3)
-testCanvasPPM = canvasToPPM newTestCanvas
-testColor  = Color (Red 1) (Green 0) (Blue 0)
--- newTestCanvas = write testCanvas (Width 2) (Height 3) testColor
-
-cv1 = mkCanvas (Width 5) (Height 3)
-c1  = Color (Red 1.5) (Green 0) (Blue 0)
-c2  = Color (Red 0) (Green 0.5) (Blue 0)
-c3  = Color (Red (-0.5)) (Green 0) (Blue 1)
-cv2 = write cv1 (Width 0) (Height 0) c1
-cv3 = write cv2 (Width 2) (Height 1) c2
---newTestCanvas = write cv3 (Width 4) (Height 2) c3
-ppm = unlines (take 3 (drop 3 (canvasToPPM newTestCanvas)))
-
+{-
 newTestCanvas = let (Height h) = height cv1
                     w = width cv1
-                    rowW = (\(Width w) -> [Color (Red 1) (Green 1) (Blue 1) | _ <- [1..w]])
+                    rowW = (\(Width w) -> [Color (Red 1) (Green 1) (Blue 0.1) | _ <- [1..w]])
                     x = foldr (\_ canvas -> rowW w : canvas) [] [1..h]
                 in x
--- testPixel = pixelAt newTestCanvas (Width 1) (Height 1)
 
-sizeRow :: [String] -> [String] -> [String]
-sizeRow row pixelPPM = let s = (length $ unwords row) + (length pixelPPM)
-                       in  if s > 3
-                             then row ++ ["\n"] ++ pixelPPM
-                           else row ++ pixelPPM
-                           
-
-rowToPPMT :: Row -> [String]
-rowToPPMT row = foldr (\c acc -> acc ++ (pixelToPPM c)) [] (reverse row)
---Color (Red 0) (Green 0) (Blue 0)
+-}
