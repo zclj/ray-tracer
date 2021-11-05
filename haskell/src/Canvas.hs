@@ -8,6 +8,7 @@ module Canvas
   , write
   , pixelAt
   , canvasToPPM
+  , canvasToPPMString
   ) where
 
 import Tuples
@@ -100,6 +101,9 @@ canvasToPPM c = let (Width w)  = width c
                     header     = ["P3", show w ++ " " ++ show h, "255"]
                     rows       = (foldr (\r acc -> (rowToPPM r) : acc) [] c)
                 in header ++ rows
+
+canvasToPPMString :: Canvas -> String
+canvasToPPMString c = unlines $ canvasToPPM c
 
 -- REPL
 

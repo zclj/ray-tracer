@@ -149,4 +149,13 @@ canvasPPM =
            \153 255 204 153 255 204 153 255 204 153 255 204 153\n\
            \255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n\
            \153 255 204 153 255 204 153 255 204 153 255 204 153\n"
+  {- Scenario: PPM files are terminated by a newline character
+       Given c ← canvas(5, 3)
+       When ppm ← canvas_to_ppm(c)
+       Then ppm ends with a newline character -}
+    describe "termination" $ do
+      let canvas = mkCanvas (Width 5) (Height 3)
+          ppm    = (last (canvasToPPMString canvas))
+      it "ends with newline character" $ do
+        ppm `shouldBe` '\n'
 --pendingWith "Implementation"
