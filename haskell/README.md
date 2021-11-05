@@ -11,3 +11,7 @@ use `stack repl` to start REPL
 To continuously run the tests, use:
 
 `stack test --file-watch`
+
+## Profiling
+
+`stack exec --profile -- ray-tracer-exe +RTS -p`

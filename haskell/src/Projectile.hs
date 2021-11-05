@@ -43,10 +43,10 @@ launch' env p@(Projectile (Tuple _ y _ _) _) xs
 
 launch :: Gravity -> Wind -> [Projectile]
 launch (Gravity g) (Wind w) = let env  = Environment (vector 0 g 0) (vector w 0 0) 
-                                  proj = Projectile (point 0 1 0) (norm (vector 1 1 0))
+                                  proj = Projectile (point 0 1 0) ((norm (vector 1 1.8 0)) `mul` 11.25)
                               in launch' env proj []
                                                   
-launchresult = let g = (Gravity (-0.5))
+launchresult = let g = (Gravity (-0.1))
                    w = (Wind (-0.01))
                in launch g w
                   

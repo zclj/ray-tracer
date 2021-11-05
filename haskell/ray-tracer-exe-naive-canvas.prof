@@ -1,0 +1,153 @@
+	Fri Nov  5 15:43 2021 Time and Allocation Profiling Report  (Final)
+
+	   ray-tracer-exe +RTS -N -p -RTS
+
+	total time  =       22.88 secs   (78012 ticks @ 1000 us, 12 processors)
+	total alloc = 238,289,189,520 bytes  (excludes profiling overheads)
+
+COST CENTRE MODULE SRC                           %time %alloc
+
+splitLine'  Canvas src/Canvas.hs:(84,1)-(88,85)   99.2   99.8
+
+
+                                                                                                           individual      inherited
+COST CENTRE                      MODULE                SRC                              no.     entries  %time %alloc   %time %alloc
+
+MAIN                             MAIN                  <built-in>                       223          0    0.0    0.0   100.0  100.0
+ CAF                             GHC.Conc.Signal       <entire-module>                  320          0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Encoding       <entire-module>                  302          0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Encoding.Iconv <entire-module>                  300          0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.FD             <entire-module>                  293          0    0.0    0.0     0.0    0.0
+ CAF                             GHC.IO.Handle.FD      <entire-module>                  291          0    0.0    0.0     0.0    0.0
+ CAF                             GHC.Event.Poll        <entire-module>                  241          0    0.0    0.0     0.0    0.0
+ CAF                             GHC.Event.Thread      <entire-module>                  240          0    0.0    0.0     0.0    0.0
+ CAF:canvasToPPM2                Canvas                <no location info>               401          0    0.0    0.0     0.0    0.0
+ CAF:canvasToPPM5                Canvas                <no location info>               400          0    0.0    0.0     0.0    0.0
+ CAF:color_reZe                  Lib                   src/Lib.hs:25:9-13               385          0    0.0    0.0     0.0    0.0
+  projectileCanvas               Lib                   src/Lib.hs:(24,1)-(35,31)        551          0    0.0    0.0     0.0    0.0
+   projectileCanvas.color        Lib                   src/Lib.hs:25:9-58               552          1    0.0    0.0     0.0    0.0
+ CAF:emptycanvas_reZd            Lib                   src/Lib.hs:26:9-19               384          0    0.0    0.0     0.0    0.0
+  projectileCanvas               Lib                   src/Lib.hs:(24,1)-(35,31)        504          0    0.0    0.0     0.0    0.0
+   projectileCanvas.emptycanvas  Lib                   src/Lib.hs:26:9-55               505          1    0.0    0.0     0.0    0.0
+    mkCanvas                     Canvas                src/Canvas.hs:29:1-69            506          1    0.0    0.0     0.0    0.0
+     mkCanvas.\                  Canvas                src/Canvas.hs:29:45-58           507        550    0.0    0.0     0.0    0.0
+      row                        Canvas                src/Canvas.hs:26:1-64            524        550    0.0    0.0     0.0    0.0
+ CAF:launch10                    Projectile            <no location info>               374          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 463          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      464          0    0.0    0.0     0.0    0.0
+    point                        Tuples                src/Tuples.hs:19:1-29            465          1    0.0    0.0     0.0    0.0
+ CAF:launch2                     Projectile            <no location info>               373          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 471          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      472          0    0.0    0.0     0.0    0.0
+    mul                          Tuples                src/Tuples.hs:42:1-61            475          1    0.0    0.0     0.0    0.0
+    norm                         Tuples                src/Tuples.hs:(51,1)-(52,65)     474          1    0.0    0.0     0.0    0.0
+    vector                       Tuples                src/Tuples.hs:25:1-30            473          1    0.0    0.0     0.0    0.0
+ CAF:launch6                     Projectile            <no location info>               370          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 477          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      478          0    0.0    0.0     0.0    0.0
+    mul                          Tuples                src/Tuples.hs:42:1-61            479          0    0.0    0.0     0.0    0.0
+ CAF:launch7                     Projectile            <no location info>               367          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 480          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      481          0    0.0    0.0     0.0    0.0
+    norm                         Tuples                src/Tuples.hs:(51,1)-(52,65)     482          0    0.0    0.0     0.0    0.0
+ CAF:launch8                     Projectile            <no location info>               369          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 509          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      510          0    0.0    0.0     0.0    0.0
+    mul                          Tuples                src/Tuples.hs:42:1-61            511          0    0.0    0.0     0.0    0.0
+ CAF:launch9                     Projectile            <no location info>               366          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 512          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      513          0    0.0    0.0     0.0    0.0
+    norm                         Tuples                src/Tuples.hs:(51,1)-(52,65)     514          0    0.0    0.0     0.0    0.0
+ CAF:launch_m                    Projectile            <no location info>               365          0    0.0    0.0     0.0    0.0
+  launch                         Projectile            src/Projectile.hs:(45,1)-(47,52) 483          0    0.0    0.0     0.0    0.0
+   launch.proj                   Projectile            src/Projectile.hs:46:35-103      484          0    0.0    0.0     0.0    0.0
+    norm                         Tuples                src/Tuples.hs:(51,1)-(52,65)     485          0    0.0    0.0     0.0    0.0
+     norm.m                      Tuples                src/Tuples.hs:51:30-40           486          1    0.0    0.0     0.0    0.0
+      mag                        Tuples                src/Tuples.hs:48:1-50            487          1    0.0    0.0     0.0    0.0
+ CAF:launchresult                Projectile            src/Projectile.hs:49:1-12        379          0    0.0    0.0     0.0    0.0
+  launchresult                   Projectile            src/Projectile.hs:(49,1)-(51,28) 460          1    0.0    0.0     0.0    0.0
+   launch                        Projectile            src/Projectile.hs:(45,1)-(47,52) 461          1    0.0    0.0     0.0    0.0
+    launch'                      Projectile            src/Projectile.hs:(40,1)-(42,47) 466        199    0.0    0.0     0.0    0.0
+     tick                        Projectile            src/Projectile.hs:(35,1)-(37,37) 467        198    0.0    0.0     0.0    0.0
+      tick.pos                   Projectile            src/Projectile.hs:35:21-63       468        198    0.0    0.0     0.0    0.0
+       add                       Tuples                src/Tuples.hs:(31,1)-(32,49)     476        198    0.0    0.0     0.0    0.0
+       position                  Projectile            src/Projectile.hs:21:32-39       469        198    0.0    0.0     0.0    0.0
+       velocity                  Projectile            src/Projectile.hs:22:32-39       470        198    0.0    0.0     0.0    0.0
+      tick.vel                   Projectile            src/Projectile.hs:36:21-78       488        197    0.0    0.0     0.0    0.0
+       add                       Tuples                src/Tuples.hs:(31,1)-(32,49)     496        394    0.0    0.0     0.0    0.0
+       gravity                   Projectile            src/Projectile.hs:25:34-40       490        197    0.0    0.0     0.0    0.0
+       velocity                  Projectile            src/Projectile.hs:22:32-39       489        197    0.0    0.0     0.0    0.0
+       wind                      Projectile            src/Projectile.hs:26:34-37       497        197    0.0    0.0     0.0    0.0
+    launch.env                   Projectile            src/Projectile.hs:45:35-82       491          1    0.0    0.0     0.0    0.0
+    launch.proj                  Projectile            src/Projectile.hs:46:35-103      462          1    0.0    0.0     0.0    0.0
+ CAF:launchresult2               Projectile            <no location info>               378          0    0.0    0.0     0.0    0.0
+  launchresult                   Projectile            src/Projectile.hs:(49,1)-(51,28) 498          0    0.0    0.0     0.0    0.0
+   launch                        Projectile            src/Projectile.hs:(45,1)-(47,52) 499          0    0.0    0.0     0.0    0.0
+    launch.env                   Projectile            src/Projectile.hs:45:35-82       500          0    0.0    0.0     0.0    0.0
+     vector                      Tuples                src/Tuples.hs:25:1-30            501          1    0.0    0.0     0.0    0.0
+ CAF:launchresult4               Projectile            <no location info>               375          0    0.0    0.0     0.0    0.0
+  launchresult                   Projectile            src/Projectile.hs:(49,1)-(51,28) 515          0    0.0    0.0     0.0    0.0
+   launchresult.w                Projectile            src/Projectile.hs:50:20-37       516          1    0.0    0.0     0.0    0.0
+ CAF:launchresult6               Projectile            <no location info>               377          0    0.0    0.0     0.0    0.0
+  launchresult                   Projectile            src/Projectile.hs:(49,1)-(51,28) 492          0    0.0    0.0     0.0    0.0
+   launch                        Projectile            src/Projectile.hs:(45,1)-(47,52) 493          0    0.0    0.0     0.0    0.0
+    launch.env                   Projectile            src/Projectile.hs:45:35-82       494          0    0.0    0.0     0.0    0.0
+     vector                      Tuples                src/Tuples.hs:25:1-30            495          1    0.0    0.0     0.0    0.0
+ CAF:launchresult8               Projectile            <no location info>               376          0    0.0    0.0     0.0    0.0
+  launchresult                   Projectile            src/Projectile.hs:(49,1)-(51,28) 502          0    0.0    0.0     0.0    0.0
+   launchresult.g                Projectile            src/Projectile.hs:49:20-39       503          1    0.0    0.0     0.0    0.0
+ CAF:lvl1_rcMe                   Canvas                <no location info>               398          0    0.0    0.0     0.0    0.0
+ CAF:lvl2_rcMf                   Canvas                <no location info>               399          0    0.0    0.0     0.0    0.0
+ CAF:main1                       Main                  <no location info>               444          0    0.0    0.0     0.0    0.0
+  main                           Main                  app/Main.hs:6:1-14               446          1    0.0    0.0     0.0    0.0
+ CAF:projectileCanvas            Lib                   src/Lib.hs:24:1-16               387          0    0.0    0.0    99.7  100.0
+  projectileCanvas               Lib                   src/Lib.hs:(24,1)-(35,31)        451          1    0.0    0.0    99.7  100.0
+   canvasToPPMString             Canvas                src/Canvas.hs:106:1-45           452          1    0.3    0.1    99.7  100.0
+    canvasToPPM                  Canvas                src/Canvas.hs:(99,1)-(103,33)    453          1    0.0    0.0    99.5   99.9
+     canvasToPPM.(...)           Canvas                src/Canvas.hs:100:21-41          533          1    0.0    0.0     0.0    0.0
+      height                     Canvas                src/Canvas.hs:36:1-30            534          1    0.0    0.0     0.0    0.0
+     canvasToPPM.(...)           Canvas                src/Canvas.hs:99:21-40           456          1    0.0    0.0     0.0    0.0
+      width                      Canvas                src/Canvas.hs:(32,1)-(33,36)     457          1    0.0    0.0     0.0    0.0
+     canvasToPPM.h               Canvas                src/Canvas.hs:100:21-41          532          1    0.0    0.0     0.0    0.0
+     canvasToPPM.header          Canvas                src/Canvas.hs:101:21-71          454          1    0.0    0.0     0.0    0.0
+     canvasToPPM.rows            Canvas                src/Canvas.hs:102:21-76          537          1    0.0    0.0    99.5   99.9
+      canvasToPPM.rows.\         Canvas                src/Canvas.hs:102:52-69          538        550    0.0    0.0    99.5   99.9
+       rowToPPM                  Canvas                src/Canvas.hs:(94,1)-(96,31)     539        550    0.0    0.0    99.5   99.9
+        rowToPPM.pxs             Canvas                src/Canvas.hs:95:19-68           540        550    0.0    0.0     0.3    0.1
+         rowToPPM.pxs.\          Canvas                src/Canvas.hs:95:42-62           541     495000    0.0    0.0     0.2    0.1
+          pixelToPPM             Canvas                src/Canvas.hs:(80,1)-(81,68)     542     495000    0.1    0.0     0.2    0.1
+           pixelToPPM.\          Canvas                src/Canvas.hs:81:15-56           546    1485000    0.1    0.0     0.1    0.0
+        splitLine                Canvas                src/Canvas.hs:91:1-31            543        550    0.0    0.0    99.2   99.8
+         splitLine'              Canvas                src/Canvas.hs:(84,1)-(88,85)     544    1527900   99.2   99.8    99.2   99.8
+          splitLine'.newSize     Canvas                src/Canvas.hs:85:37-63           545    1527350    0.0    0.0     0.0    0.0
+     canvasToPPM.w               Canvas                src/Canvas.hs:99:21-40           455          1    0.0    0.0     0.0    0.0
+ CAF:projectileCanvas_c1         Lib                   <no location info>               386          0    0.0    0.0     0.0    0.0
+  projectileCanvas               Lib                   src/Lib.hs:(24,1)-(35,31)        458          0    0.0    0.0     0.0    0.0
+   projectileCanvas.canvas       Lib                   src/Lib.hs:(27,9)-(34,34)        459          1    0.0    0.0     0.0    0.0
+    projectileCanvas.canvas.\    Lib                   src/Lib.hs:(28,27)-(32,31)       508        198    0.0    0.0     0.0    0.0
+     write                       Canvas                src/Canvas.hs:(53,1)-(66,42)     517        198    0.0    0.0     0.0    0.0
+      offCanvas                  Canvas                src/Canvas.hs:(47,1)-(50,46)     518        198    0.0    0.0     0.0    0.0
+       offCanvas.zeroBasedHeight Canvas                src/Canvas.hs:49:7-43            525        198    0.0    0.0     0.0    0.0
+        heightNum                Canvas                src/Canvas.hs:(43,1)-(44,19)     526        198    0.0    0.0     0.0    0.0
+         heightNum.(...)         Canvas                src/Canvas.hs:43:19-38           528        198    0.0    0.0     0.0    0.0
+          width                  Canvas                src/Canvas.hs:(32,1)-(33,36)     529        198    0.0    0.0     0.0    0.0
+         heightNum.w             Canvas                src/Canvas.hs:43:19-38           527        198    0.0    0.0     0.0    0.0
+       offCanvas.zeroBasedWidth  Canvas                src/Canvas.hs:48:7-41            519        198    0.0    0.0     0.0    0.0
+        widthNum                 Canvas                src/Canvas.hs:(39,1)-(40,18)     520        198    0.0    0.0     0.0    0.0
+         widthNum.(...)          Canvas                src/Canvas.hs:39:18-37           522        198    0.0    0.0     0.0    0.0
+          width                  Canvas                src/Canvas.hs:(32,1)-(33,36)     523        198    0.0    0.0     0.0    0.0
+         widthNum.w              Canvas                src/Canvas.hs:39:18-37           521        198    0.0    0.0     0.0    0.0
+      write.(...)                Canvas                src/Canvas.hs:(57,9)-(59,80)     549        198    0.0    0.0     0.0    0.0
+      write.(...)                Canvas                src/Canvas.hs:56:9-51            530        198    0.0    0.0     0.0    0.0
+      write.newRow               Canvas                src/Canvas.hs:(60,9)-(62,95)     547        198    0.0    0.0     0.0    0.0
+      write.postPixels           Canvas                src/Canvas.hs:(57,9)-(59,80)     548        198    0.0    0.0     0.0    0.0
+      write.postRows             Canvas                src/Canvas.hs:56:9-51            536        198    0.0    0.0     0.0    0.0
+      write.prePixels            Canvas                src/Canvas.hs:(57,9)-(59,80)     550        198    0.0    0.0     0.0    0.0
+      write.preRows              Canvas                src/Canvas.hs:56:9-51            531        198    0.0    0.0     0.0    0.0
+      write.trailingRows         Canvas                src/Canvas.hs:(63,9)-(65,70)     535        198    0.0    0.0     0.0    0.0
+ CAF:runDemo1                    Lib                   <no location info>               389          0    0.0    0.0     0.0    0.0
+  runDemo                        Lib                   src/Lib.hs:12:1-38               447          1    0.0    0.0     0.0    0.0
+   writeCanvas                   Lib                   src/Lib.hs:38:1-40               448          1    0.0    0.0     0.0    0.0
+ CAF:runDemo3                    Lib                   <no location info>               388          0    0.0    0.0     0.0    0.0
+ runDemo                         Lib                   src/Lib.hs:12:1-38               449          0    0.0    0.0     0.3    0.0
+  writeCanvas                    Lib                   src/Lib.hs:38:1-40               450          0    0.3    0.0     0.3    0.0
