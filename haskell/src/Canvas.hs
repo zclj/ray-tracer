@@ -105,8 +105,36 @@ canvasToPPM c = let (Width w)  = width c
 canvasToPPMString :: Canvas -> String
 canvasToPPMString c = unlines $ canvasToPPM c
 
--- REPL
 
+
+-- REPL
+testCanvas = mkCanvas (Width 5) (Height 3)
+
+testRow = head testCanvas
+
+testColor = head testRow
+
+scalePixel (Color (Red r) (Green g) (Blue b))
+  = map (\x ->(max (min 255 (ceiling (255 * x))) 0)) [r, g, b]
+
+
+pixelSize [r, g, b] = 3
+
+data PPMSample = PPMSample { sample :: Int
+                           , size   :: Int }
+               deriving (Show)
+
+mkPPMSample :: Double -> PPMSample
+mkPPMSample x = let sample = (max (min 255 (ceiling (255 * x))) 0)
+                    size   = 1
+                in PPMSample sample size
+
+mkPPMPixel :: Color -> [PPMSample]
+mkPPMPixel (Color (Red r) (Green g) (Blue b))
+  = map mkPPMSample [r, g, b]
+
+rowToPPM2 :: Row -> [[PPMSample]]
+rowToPPM2 r = map mkPPMPixel r
 {-
 newTestCanvas = let (Height h) = height cv1
                     w = width cv1
