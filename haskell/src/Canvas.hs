@@ -120,13 +120,25 @@ scalePixel (Color (Red r) (Green g) (Blue b))
 
 pixelSize [r, g, b] = 3
 
-data PPMSample = PPMSample { sample :: Int
+data Sample = Sample Int
+  deriving (Show)
+
+mkSample :: Double -> Sample
+mkSample x = Sample (max (min 255 (ceiling (255 * x))) 0)
+
+sampleSize :: Sample -> Int
+sampleSize (Sample x)
+  | x < 10    = 1
+  | x < 100   = 2
+  | otherwise = 3
+
+data PPMSample = PPMSample { sample :: Sample
                            , size   :: Int }
                deriving (Show)
 
 mkPPMSample :: Double -> PPMSample
-mkPPMSample x = let sample = (max (min 255 (ceiling (255 * x))) 0)
-                    size   = 1
+mkPPMSample x = let sample = mkSample x
+                    size   = sampleSize sample
                 in PPMSample sample size
 
 mkPPMPixel :: Color -> [PPMSample]
@@ -135,6 +147,11 @@ mkPPMPixel (Color (Red r) (Green g) (Blue b))
 
 rowToPPM2 :: Row -> [[PPMSample]]
 rowToPPM2 r = map mkPPMPixel r
+
+
+-- canvasToPPM :: Canvas -> [String]
+-- canvasToPPMString :: Canvas -> String
+
 {-
 newTestCanvas = let (Height h) = height cv1
                     w = width cv1
