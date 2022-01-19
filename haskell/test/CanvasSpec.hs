@@ -96,7 +96,7 @@ canvasPPM =
          """ -}
     describe "header" $ do
       let c   = mkCanvas (Width 5) (Height 3)
-          ppm = canvasToPPM c
+          ppm = canvasToPPMStrings c
       it "creates header" $ do
         unlines (take 3 ppm) `shouldBe` "P3\n5 3\n255\n"
   {- Scenario: Constructing the PPM pixel data
@@ -122,7 +122,7 @@ canvasPPM =
           cv2 = write cv1 (Width 0) (Height 0) c1
           cv3 = write cv2 (Width 2) (Height 1) c2
           cv4 = write cv3 (Width 4) (Height 2) c3
-          ppm = unlines (take 3 (drop 3 (canvasToPPM cv4)))
+          ppm = unlines (take 3 (drop 3 (canvasToPPMStrings cv4)))
       it "creates pixel data" $ do
         ppm `shouldBe`
           "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n\
@@ -142,7 +142,7 @@ canvasPPM =
     describe "splitting" $ do
       let writeRow      = (\w -> [Color (Red 1) (Green 0.8) (Blue 0.6) | _ <- [1..10]])
           coloredCanvas = foldr (\_ canvas -> writeRow w : canvas) [] [1..2]
-          ppm           = unlines (take 4 (drop 3 (canvasToPPM coloredCanvas)))
+          ppm           = unlines (take 4 (drop 3 (canvasToPPMStrings coloredCanvas)))
       it "long lines" $ do
         ppm `shouldBe`
           "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n\
