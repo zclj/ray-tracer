@@ -7,7 +7,6 @@ module Canvas
   , height
   , write
   , pixelAt
-  , canvasToPPM
   , canvasToPPMString
   , canvasToPPMStrings
   ) where
@@ -77,50 +76,6 @@ pixelAt c (Width w) (Height h) =
                                   otherwise -> head postPixels
   in pixel
 
-pixelToPPM :: Color -> [String]
-pixelToPPM (Color (Red r) (Green g) (Blue b)) =
-  (map (\x -> show (max (min 255 (ceiling (255 * x))) 0)) [r, g, b])
-
-splitLine' :: [String] -> String -> Int -> String
-splitLine' [] acc size        = (init acc)
-splitLine' s@(x:xs) acc size  = let newSize = size + (length x)
-                                in if newSize > 70
-                                   then splitLine' s  ((init acc) ++ "\n") 0
-                                   else splitLine' xs (acc ++ x ++ " ") (newSize + 1)
-
-splitLine :: [String] -> String
-splitLine s = splitLine' s "" 0
-
-rowToPPM :: Row -> String
-rowToPPM [] = []  
-rowToPPM r  = let pxs = foldr (\c acc -> (pixelToPPM c) ++ acc) [] r
-              in  splitLine pxs
-                
-canvasToPPM :: Canvas -> [String]
-canvasToPPM c = let (Width w)  = width c
-                    (Height h) = height c
-                    header     = ["P3", show w ++ " " ++ show h, "255"]
-                    rows       = (foldr (\r acc -> (rowToPPM r) : acc) [] c)
-                in header ++ rows
-
-canvasToPPMString :: Canvas -> String
-canvasToPPMString c = unlines $ canvasToPPM c
-
-
-
--- REPL
-testCanvas = mkCanvas (Width 5) (Height 3)
-
-testRow = head testCanvas
-
-testColor = head testRow
-
-scalePixel (Color (Red r) (Green g) (Blue b))
-  = map (\x ->(max (min 255 (ceiling (255 * x))) 0)) [r, g, b]
-
-
-pixelSize [r, g, b] = 3
-
 data Sample = Sample Int
   deriving (Show)
 
@@ -144,85 +99,23 @@ mkPPMSample x = let sample = mkSample x
 
 data PPMPixel = PPMPixel { r :: PPMSample
                          , g :: PPMSample
-                         , b :: PPMSample
-                         , totalSize :: Int }
+                         , b :: PPMSample}
               deriving(Show)
 
 mkPPMPixel :: Color -> PPMPixel
 mkPPMPixel (Color (Red r) (Green g) (Blue b))
-  = PPMPixel rs gs bs s
+  = PPMPixel rs gs bs
   where rs = mkPPMSample r
         gs = mkPPMSample g
         bs = mkPPMSample b
-        s  = (size rs) + (size gs) + (size bs)
 
 type PPMRow = [PPMPixel]
-type PPMCanvas = [PPMRow]
+type PPMSamplesRow = [PPMSample]
+type PPMCanvas = [PPMSamplesRow]
 
--- splitLine' :: [String] -> String -> Int -> String
--- splitLine' [] acc size        = (init acc)
--- splitLine' s@(x:xs) acc size  = let newSize = size + (length x)
---                                 in if newSize > 70
---                                    then splitLine' s  ((init acc) ++ "\n") 0
---                                    else splitLine' xs (acc ++ x ++ " ") (newSize + 1)
-
--- splitLine :: [String] -> String
--- splitLine s = splitLine' s "" 0
-
--- rowSize :: [[PPMSample]] -> Int
--- rowSize xs = foldr (\s acc -> acc + (size s)) 0 xs
-
-rowToPPM2 :: Row -> PPMRow
-rowToPPM2 r = let ppmSamples = map mkPPMPixel r
-              in ppmSamples
-
-splitPPMRow' :: PPMRow -> PPMCanvas -> Int -> PPMCanvas
-splitPPMRow' [] acc sz = acc
-splitPPMRow' r@(p:ps) acc sz  = let newSize = sz + (totalSize p)
-                                in if newSize > 10
-                                   then splitPPMRow' r acc 0
-                                   else splitPPMRow' ps (acc ++ [[p]]) newSize
-
-{-
-  A PPMPixel row contains PPMPixels with a 'totalSize' for each pixel
--}
-
-firstTestRow = head $ rowToPPM2 testRow
-
-testRowPPM = (rowToPPM2 testRow)
-
-tsFirstRow = totalSize firstTestRow
-
--- A PPMRow has a max size. A PPMCanvas must only contain PPMRows of max size.
--- When max size is reached, a new PPMRow must be inserted
-
-splitIt :: PPMRow -> Bool
-splitIt r = let ts = foldr (+) 0 (map totalSize r)
-            in ts > 6
-
-shouldSplit = splitIt testRowPPM               
-              
-preSplitRow = foldr (\r preSplit ->
-                       if splitIt (r : preSplit)
-                       then preSplit
-                       else r : preSplit)
-              [] (rowToPPM2 testRow)
-
-
-
---theList = foldr(\x acc -> x : acc) [] [1,2,3]
-----------------------------------------  
-splitPPMRow :: Row -> PPMCanvas
-splitPPMRow r = let ppmRow = rowToPPM2 r
-                in  splitPPMRow' ppmRow [] 0
-
--- The problem should be similar to taking the list [10,2,3,4,5,6,7] -> [[10,2],[3,4,5,],[6,7]] given a 'size' of 2. BUT the 'size' is calculated
-
-orgList = [1,2,3,4,5,6,7,8,9]
-
--- make all elements the same size for now
-
-elementSize x = 1
+rowToPPM :: Row -> PPMRow
+rowToPPM r = let ppmSamples = map mkPPMPixel r
+             in ppmSamples
 
 addToLast :: a -> [[a]] -> [[a]]
 addToLast x xs = pre ++ [post ++ [x]]
@@ -242,14 +135,20 @@ splitWhen :: ([a] -> Bool) -> [a] -> [[a]]
 splitWhen p xs = splitWhenR p xs [[]]
 
 splitRow :: (Num b, Ord b) => [a] -> b -> (a -> b) -> [[a]]
-splitRow r n f = splitWhen (whenSumOf (> n) f) r
+splitRow r n f =
+  splitWhen (\l -> (whenSumOf (> (n - (fromIntegral (length l)))) f l)) r
 
-splitPPMRow2 ppmRow rowLength = splitRow ppmRow rowLength totalSize
-  
-ppmStuff = splitPPMRow2 testRowPPM 8
+splitPPMRow :: PPMRow -> Int -> PPMCanvas
+splitPPMRow ppmRow rowLength = splitRow (ppmRowToPPMSampleRow ppmRow) rowLength size
 
-canvasToPPM2 :: Canvas -> PPMCanvas
-canvasToPPM2 c = map rowToPPM2 c
+ppmPixelToSampleList :: PPMPixel -> [PPMSample]
+ppmPixelToSampleList (PPMPixel r g b) = [r, g, b]
+
+ppmRowToPPMSampleRow :: PPMRow -> PPMSamplesRow
+ppmRowToPPMSampleRow r = concat $ map ppmPixelToSampleList r
+
+canvasToPPM :: Canvas -> PPMCanvas
+canvasToPPM c = concat $ map (\r -> splitPPMRow (rowToPPM r) 70) c
 
 makePPMHeader :: Width -> Height -> [String]
 makePPMHeader (Width w) (Height h) = ["P3", show w ++ " " ++ show h, "255"]
@@ -257,12 +156,10 @@ makePPMHeader (Width w) (Height h) = ["P3", show w ++ " " ++ show h, "255"]
 ppmSampleToString :: Sample -> String
 ppmSampleToString (Sample x) = show x
   
-ppmPixelToString :: PPMPixel -> String
-ppmPixelToString x = unwords [(ppmSampleToString (sample (r x))),
-                              (ppmSampleToString (sample (g x))),
-                              (ppmSampleToString (sample (b x)))]
+ppmPixelToString :: PPMSample -> String
+ppmPixelToString (PPMSample sample _) = ppmSampleToString sample
 
-ppmRowToString :: PPMRow -> String
+ppmRowToString :: PPMSamplesRow -> String
 ppmRowToString x = (unwords $ map ppmPixelToString x)
 
 ppmCanvasToStrings :: PPMCanvas -> [String]
@@ -271,21 +168,7 @@ ppmCanvasToStrings c = map ppmRowToString c
 canvasToPPMStrings :: Canvas -> [String]
 canvasToPPMStrings c = header ++ ppmStringRows
   where header        = makePPMHeader (width c) (height c)
-        ppmStringRows = ppmCanvasToStrings (canvasToPPM2 c)
+        ppmStringRows = ppmCanvasToStrings (canvasToPPM c)
 
--- canvasToPPM :: Canvas -> [String]
-  -- = let (Width w)  = width c
-  --                   (Height h) = height c
-  --                   header     = ["P3", show w ++ " " ++ show h, "255"]
-  --                   rows       = (foldr (\r acc -> (rowToPPM r) : acc) [] c)
-  --               in header ++ rows
--- canvasToPPMString :: Canvas -> String
-
-{-
-newTestCanvas = let (Height h) = height cv1
-                    w = width cv1
-                    rowW = (\(Width w) -> [Color (Red 1) (Green 1) (Blue 0.1) | _ <- [1..w]])
-                    x = foldr (\_ canvas -> rowW w : canvas) [] [1..h]
-                in x
-
--}
+canvasToPPMString :: Canvas -> String
+canvasToPPMString c = unlines $ canvasToPPMStrings c
