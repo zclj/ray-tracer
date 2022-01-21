@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: a165f012e4cddfbb6e519c63d08ade44ae8f8a188cabb17343ee8782594a5d57
+-- hash: de8c33be19e123788d712009fa3434d177f2c3d42ae8227333f5e3ecbb99b6f4
 
 name:           ray-tracer
 version:        0.1.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
       Canvas
       Lib
+      PPMCanvas
       Projectile
       Tuples
   other-modules:
