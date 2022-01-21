@@ -1,5 +1,9 @@
 # ray-tracer
 
+## Executing
+
+Create the pre-configured demo canvas with `stack run`. `canvas.ppm` will be created with the resulting canvas.
+
 ## Dev
 
 use `ghcid` for continuously getting compile feedback
@@ -14,4 +18,4 @@ To continuously run the tests, use:
 
 ## Profiling
 
-`stack exec --profile -- ray-tracer-exe +RTS -p`
+First, build with profiling `stack build --profile`. Then run with profiling `stack exec --profile -- ray-tracer-exe +RTS -p`.
