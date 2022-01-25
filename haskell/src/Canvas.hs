@@ -39,8 +39,8 @@ widthNum c = let (Width w)  = width c
              in  w
 
 heightNum :: Canvas -> Int
-heightNum c = let (Width w)  = width c
-              in  w
+heightNum c = let (Height h)  = height c
+              in  h
 
 offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas c (Width w) (Height h) =
