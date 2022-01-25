@@ -14,8 +14,8 @@ data PPMSample = PPMSample { sample :: Sample
                            , size   :: Int }
                deriving (Show)
 
-mkSample :: Double -> Sample
-mkSample x = Sample (max (min 255 (ceiling (255 * x))) 0)
+makeSample :: Double -> Sample
+makeSample x = Sample (max (min 255 (ceiling (255 * x))) 0)
 
 sampleSize :: Sample -> Int
 sampleSize (Sample x)
@@ -23,9 +23,9 @@ sampleSize (Sample x)
   | x < 100   = 2
   | otherwise = 3
   
-mkPPMSample :: Double -> PPMSample
-mkPPMSample x = let sample = mkSample x
-                    size   = sampleSize sample
+makePPMSample :: Double -> PPMSample
+makePPMSample x = let sample = makeSample x
+                      size   = sampleSize sample
                 in PPMSample sample size
 
 data PPMPixel = PPMPixel { r :: PPMSample
@@ -33,19 +33,19 @@ data PPMPixel = PPMPixel { r :: PPMSample
                          , b :: PPMSample}
               deriving(Show)
 
-mkPPMPixel :: Color -> PPMPixel
-mkPPMPixel (Color (Red r) (Green g) (Blue b))
+makePPMPixel :: Color -> PPMPixel
+makePPMPixel (Color (Red r) (Green g) (Blue b))
   = PPMPixel rs gs bs
-  where rs = mkPPMSample r
-        gs = mkPPMSample g
-        bs = mkPPMSample b
+  where rs = makePPMSample r
+        gs = makePPMSample g
+        bs = makePPMSample b
         
 type PPMRow = [PPMPixel]
 type PPMSamplesRow = [PPMSample]
 type PPMCanvas = [PPMSamplesRow]
 
 rowToPPM :: Row -> PPMRow
-rowToPPM r = let ppmSamples = map mkPPMPixel r
+rowToPPM r = let ppmSamples = map makePPMPixel r
              in ppmSamples
                 
 splitPPMRow :: PPMRow -> Int -> PPMCanvas

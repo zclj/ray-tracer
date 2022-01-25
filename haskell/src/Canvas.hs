@@ -3,7 +3,7 @@ module Canvas
   , Width (..)
   , Height (..)
   , Row
-  , mkCanvas
+  , makeCanvas
   , width
   , height
   , write
@@ -24,8 +24,8 @@ type Canvas = [Row]
 row :: Width -> Row
 row (Width x) = [Color (Red 0) (Green 0) (Blue 0) | _ <- [1..x]]
 
-mkCanvas :: Width -> Height -> Canvas
-mkCanvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
+makeCanvas :: Width -> Height -> Canvas
+makeCanvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
 
 width :: Canvas -> Width
 width [] = (Width 0)
