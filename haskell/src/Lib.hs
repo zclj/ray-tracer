@@ -6,6 +6,7 @@ module Lib
     ) where
 
 import Canvas
+import PPMCanvas as PPM
 import Tuples
 import Projectile
 
@@ -13,12 +14,10 @@ runDemo = writeCanvas projectileCanvas
 
 demoCanvas =  let writeRow = (\w -> [Color (Red 1) (Green 0.8) (Blue 0.6) | _ <- [1..100]])
                   coloredCanvas = foldr (\_ canvas -> writeRow w : canvas) [] [1..20]
-                  ppm           = canvasToPPMString coloredCanvas--unlines (canvasToPPM coloredCanvas)
+                  ppm           = PPM.canvasToPPMString coloredCanvas
               in ppm
 
 -- subtract projectiles y from canvas height
-
-
 
 projectileCanvas :: String
 projectileCanvas
@@ -32,7 +31,7 @@ projectileCanvas
                           color)
                       emptycanvas
                       launchresult
-    in canvasToPPMString canvas
+    in PPM.canvasToPPMString canvas
 
 writeCanvas :: String -> IO ()
 writeCanvas c = writeFile "canvas.ppm" c

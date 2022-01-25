@@ -6,6 +6,7 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 import Test.Tasty.QuickCheck as QC
 import Canvas as SUT
+import PPMCanvas
 import Tuples
 
 canvasTests :: TestTree
