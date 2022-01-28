@@ -43,7 +43,7 @@ canvasBasics =
         (height c) `shouldBe` (Height 20)
 
       it "has every pixel of color (0, 0, 0)" $ do
-        (concat (rows c)) `shouldSatisfy`
+        (concat (map colors (rows c))) `shouldSatisfy`
           all (\pixel -> pixel == (Color (Red 0) (Green 0) (Blue 0)))
 
 canvasWriting :: Spec
@@ -58,7 +58,7 @@ canvasWriting =
       let c    = makeCanvas (Width 10) (Height 20)
           red  = Color (Red 1) (Green 0) (Blue 0)
           newC = write c (Width 2) (Height 3) red
-          len  = foldr (+) 0 (map length (rows newC))
+          len  = foldr (+) 0 (map (length . colors) (rows newC))
       it "writes a color to the canvas" $ do
          pixelAt newC (Width 2) (Height 3) `shouldBe` red
 
@@ -75,7 +75,7 @@ canvasWriting =
       let c    = makeCanvas (Width 2) (Height 2)
           red  = Color (Red 1) (Green 0) (Blue 0)
           newC = write c (Width 1) (Height 2) red
-          len  = foldr (+) 0 (map length (rows newC))
+          len  = foldr (+) 0 (map (length . colors) (rows newC))
       it "do not alter the pixel count" $ do
         len `shouldBe` 2 * 2
 

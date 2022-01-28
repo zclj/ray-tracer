@@ -45,7 +45,7 @@ type PPMSamplesRow = [PPMSample]
 type PPMCanvas = [PPMSamplesRow]
 
 rowToPPM :: Row -> PPMRow
-rowToPPM r = let ppmSamples = map makePPMPixel r
+rowToPPM r = let ppmSamples = map makePPMPixel (colors r)
              in ppmSamples
                 
 splitPPMRow :: PPMRow -> Int -> PPMCanvas

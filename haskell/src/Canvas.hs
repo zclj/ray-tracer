@@ -2,7 +2,7 @@ module Canvas
   ( Canvas
   , Width (..)
   , Height (..)
-  , Row
+  , Row (..)
   , rows
   , makeCanvas
   , makeCanvasWithColor
@@ -20,7 +20,8 @@ newtype Width  = Width Int
 newtype Height = Height Int
   deriving (Show, Eq, Ord)
 
-type Row = [Color]
+data Row = Row { colors :: [Color]
+               } deriving (Show, Eq)
 
 data Canvas = Canvas { rows :: [Row]
                      , width :: Width
@@ -28,7 +29,7 @@ data Canvas = Canvas { rows :: [Row]
                      } deriving (Show, Eq)
 
 makeRowWithColor :: Width -> Color -> Row
-makeRowWithColor (Width x) c = [c | _ <- [1..x]]
+makeRowWithColor (Width x) c = Row { colors = [c | _ <- [1..x]] }
 
 makeCanvasWithColor :: Width -> Height -> Color -> Canvas
 makeCanvasWithColor w h@(Height hx) c =
@@ -63,21 +64,21 @@ write c cw@(Width w) ch@(Height h) pixel
     let (preRows, postRows)           = splitAt h (rows c)
         (prePixels, postPixels)       = case postRows of
                                           [] -> splitAt w []
-                                          otherwise -> splitAt w (head postRows)
+                                          otherwise -> splitAt w (colors (head postRows))
         newRow                        = case postPixels of
                                           [] -> prePixels ++ [pixel]
                                           (_:tailPixels)  -> prePixels ++ [pixel] ++ tailPixels
         trailingRows                  = case postRows of
                                           [] -> []
                                           otherwise -> (tail postRows)
-    in (Canvas (preRows ++ [newRow] ++ trailingRows) (width c) (height c))
+    in (Canvas (preRows ++ [(Row {colors = newRow})] ++ trailingRows) (width c) (height c))
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
   let (preRows, postRows)     = splitAt h (rows c)
       (prePixels, postPixels) = case postRows of
                                   [] -> splitAt w []
-                                  otherwise -> splitAt w (head postRows)
+                                  otherwise -> splitAt w (colors (head postRows))
       pixel                   = case postPixels of
                                   [] -> last prePixels
                                   otherwise -> head postPixels
