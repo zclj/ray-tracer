@@ -43,7 +43,7 @@ canvasBasics =
         (height c) `shouldBe` (Height 20)
 
       it "has every pixel of color (0, 0, 0)" $ do
-        (concat c) `shouldSatisfy`
+        (concat (rows c)) `shouldSatisfy`
           all (\pixel -> pixel == (Color (Red 0) (Green 0) (Blue 0)))
 
 canvasWriting :: Spec
@@ -58,7 +58,7 @@ canvasWriting =
       let c    = makeCanvas (Width 10) (Height 20)
           red  = Color (Red 1) (Green 0) (Blue 0)
           newC = write c (Width 2) (Height 3) red
-          len  = foldr (+) 0 (map length newC)
+          len  = foldr (+) 0 (map length (rows newC))
       it "writes a color to the canvas" $ do
          pixelAt newC (Width 2) (Height 3) `shouldBe` red
 
@@ -75,7 +75,7 @@ canvasWriting =
       let c    = makeCanvas (Width 2) (Height 2)
           red  = Color (Red 1) (Green 0) (Blue 0)
           newC = write c (Width 1) (Height 2) red
-          len  = foldr (+) 0 (map length newC)
+          len  = foldr (+) 0 (map length (rows newC))
       it "do not alter the pixel count" $ do
         len `shouldBe` 2 * 2
 
@@ -141,8 +141,8 @@ canvasPPM =
          153 255 204 153 255 204 153 255 204 153 255 204 153
          """ -}
     describe "splitting" $ do
-      let writeRow      = (\w -> [Color (Red 1) (Green 0.8) (Blue 0.6) | _ <- [1..10]])
-          coloredCanvas = foldr (\_ canvas -> writeRow w : canvas) [] [1..2]
+      let coloredCanvas = makeCanvasWithColor
+                          (Width 10) (Height 2) (Color (Red 1) (Green 0.8) (Blue 0.6))
           ppm           = unlines (take 4 (drop 3 (canvasToPPMStrings coloredCanvas)))
       it "long lines" $ do
         ppm `shouldBe`

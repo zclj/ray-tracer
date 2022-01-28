@@ -3,7 +3,9 @@ module Canvas
   , Width (..)
   , Height (..)
   , Row
+  , rows
   , makeCanvas
+  , makeCanvasWithColor
   , width
   , height
   , write
@@ -19,20 +21,26 @@ newtype Height = Height Int
   deriving (Show, Eq, Ord)
 
 type Row = [Color]
-type Canvas = [Row]
+
+data Canvas = Canvas { rows :: [Row]
+                     , width :: Width
+                     , height :: Height
+                     } deriving (Show, Eq)
+
+makeRowWithColor :: Width -> Color -> Row
+makeRowWithColor (Width x) c = [c | _ <- [1..x]]
+
+makeCanvasWithColor :: Width -> Height -> Color -> Canvas
+makeCanvasWithColor w h@(Height hx) c =
+  Canvas { rows   = (foldr (\_ canvas -> makeRowWithColor w c : canvas) [] [1..hx])
+         , width  = w
+         , height = h }
 
 row :: Width -> Row
-row (Width x) = [Color (Red 0) (Green 0) (Blue 0) | _ <- [1..x]]
+row w = makeRowWithColor w (Color (Red 0) (Green 0) (Blue 0))
 
 makeCanvas :: Width -> Height -> Canvas
-makeCanvas w (Height h) = foldr (\_ canvas -> row w : canvas) [] [1..h]
-
-width :: Canvas -> Width
-width [] = (Width 0)
-width (row:_) = (Width (length row))
-
-height :: Canvas -> Height
-height c = (Height (length c))
+makeCanvas w h@(Height hx) = makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
 
 widthNum :: Canvas -> Int
 widthNum c = let (Width w)  = width c
@@ -52,7 +60,7 @@ write :: Canvas -> Width -> Height -> Color -> Canvas
 write c cw@(Width w) ch@(Height h) pixel
   | offCanvas c cw ch                 = c
   | otherwise =
-    let (preRows, postRows)           = splitAt h c
+    let (preRows, postRows)           = splitAt h (rows c)
         (prePixels, postPixels)       = case postRows of
                                           [] -> splitAt w []
                                           otherwise -> splitAt w (head postRows)
@@ -62,11 +70,11 @@ write c cw@(Width w) ch@(Height h) pixel
         trailingRows                  = case postRows of
                                           [] -> []
                                           otherwise -> (tail postRows)
-    in preRows ++ [newRow] ++ trailingRows
+    in (Canvas (preRows ++ [newRow] ++ trailingRows) (width c) (height c))
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
-  let (preRows, postRows)     = splitAt h c
+  let (preRows, postRows)     = splitAt h (rows c)
       (prePixels, postPixels) = case postRows of
                                   [] -> splitAt w []
                                   otherwise -> splitAt w (head postRows)
@@ -74,3 +82,4 @@ pixelAt c (Width w) (Height h) =
                                   [] -> last prePixels
                                   otherwise -> head postPixels
   in pixel
+
