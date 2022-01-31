@@ -33,7 +33,8 @@ makeRowWithColor (Width x) c = Row { colors = [c | _ <- [1..x]] }
 
 makeCanvasWithColor :: Width -> Height -> Color -> Canvas
 makeCanvasWithColor w h@(Height hx) c =
-  Canvas { rows   = (foldr (\_ canvas -> makeRowWithColor w c : canvas) [] [1..hx])
+  Canvas { rows   = (foldr (\_ canvas ->
+                              makeRowWithColor w c : canvas) [] [1..hx])
          , width  = w
          , height = h }
 
@@ -41,7 +42,8 @@ row :: Width -> Row
 row w = makeRowWithColor w (Color (Red 0) (Green 0) (Blue 0))
 
 makeCanvas :: Width -> Height -> Canvas
-makeCanvas w h@(Height hx) = makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
+makeCanvas w h@(Height hx) =
+  makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
 
 widthNum :: Canvas -> Int
 widthNum c = let (Width w)  = width c
@@ -64,14 +66,19 @@ write c cw@(Width w) ch@(Height h) pixel
     let (preRows, postRows)           = splitAt h (rows c)
         (prePixels, postPixels)       = case postRows of
                                           [] -> splitAt w []
-                                          otherwise -> splitAt w (colors (head postRows))
+                                          otherwise ->
+                                            splitAt w (colors (head postRows))
         newRow                        = case postPixels of
                                           [] -> prePixels ++ [pixel]
-                                          (_:tailPixels)  -> prePixels ++ [pixel] ++ tailPixels
+                                          (_:tailPixels)  ->
+                                            prePixels ++ [pixel] ++ tailPixels
         trailingRows                  = case postRows of
                                           [] -> []
                                           otherwise -> (tail postRows)
-    in (Canvas (preRows ++ [(Row {colors = newRow})] ++ trailingRows) (width c) (height c))
+    in (Canvas
+        (preRows ++ [(Row {colors = newRow})] ++ trailingRows)
+         (width c)
+         (height c))
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
