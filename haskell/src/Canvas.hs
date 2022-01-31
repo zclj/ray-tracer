@@ -33,8 +33,8 @@ makeRowWithColor (Width x) c = Row { colors = [c | _ <- [1..x]] }
 
 makeCanvasWithColor :: Width -> Height -> Color -> Canvas
 makeCanvasWithColor w h@(Height hx) c =
-  Canvas { rows   = (foldr (\_ canvas ->
-                              makeRowWithColor w c : canvas) [] [1..hx])
+  Canvas { rows   = foldr (\_ canvas ->
+                             makeRowWithColor w c : canvas) [] [1..hx]
          , width  = w
          , height = h }
 
@@ -55,8 +55,8 @@ heightNum c = let (Height h)  = height c
 
 offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas c (Width w) (Height h) =
-  let zeroBasedWidth = ((widthNum c) - 1)
-      zeroBasedHeight = ((heightNum c) - 1)
+  let zeroBasedWidth = widthNum c - 1
+      zeroBasedHeight = heightNum c - 1
   in w > zeroBasedWidth || h > zeroBasedHeight
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
