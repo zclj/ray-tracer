@@ -49,7 +49,8 @@ rowToPPM r = let ppmSamples = map makePPMPixel (colors r)
              in ppmSamples
                 
 splitPPMRow :: PPMRow -> Int -> PPMCanvas
-splitPPMRow ppmRow rowLength = splitList (ppmRowToPPMSampleRow ppmRow) rowLength size
+splitPPMRow ppmRow rowLength =
+  splitList (ppmRowToPPMSampleRow ppmRow) rowLength size
 
 ppmPixelToSampleList :: PPMPixel -> [PPMSample]
 ppmPixelToSampleList (PPMPixel r g b) = [r, g, b]
