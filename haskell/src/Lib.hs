@@ -1,6 +1,5 @@
 module Lib
     ( runDemo
-    --, demoCanvas
     , writeCanvas
     , projectileCanvas
     ) where
