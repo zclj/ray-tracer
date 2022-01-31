@@ -74,11 +74,12 @@ write c cw@(Width w) ch@(Height h) pixel
                                             prePixels ++ [pixel] ++ tailPixels
         trailingRows                  = case postRows of
                                           [] -> []
-                                          _  -> (tail postRows)
-    in (Canvas
+                                          _  -> tail postRows
+    in
+      Canvas
         (preRows ++ [(Row {colors = newRow})] ++ trailingRows)
-         (width c)
-         (height c))
+        (width c)
+        (height c)
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
