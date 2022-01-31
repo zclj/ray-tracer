@@ -33,8 +33,7 @@ makeRowWithColor (Width x) c = Row { colors = [c | _ <- [1..x]] }
 
 makeCanvasWithColor :: Width -> Height -> Color -> Canvas
 makeCanvasWithColor w h@(Height hx) c =
-  Canvas { rows   = foldr (\_ canvas ->
-                             makeRowWithColor w c : canvas) [] [1..hx]
+  Canvas { rows   = map (\ _c -> makeRowWithColor w c) [1..hx]
          , width  = w
          , height = h }
 
