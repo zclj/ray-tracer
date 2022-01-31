@@ -86,9 +86,9 @@ pixelAt c (Width w) (Height h) =
   let (preRows, postRows)     = splitAt h (rows c)
       (prePixels, postPixels) = case postRows of
                                   [] -> splitAt w []
-                                  otherwise -> splitAt w (colors (head postRows))
+                                  _  -> splitAt w (colors (head postRows))
       pixel                   = case postPixels of
                                   [] -> last prePixels
-                                  otherwise -> head postPixels
+                                  _  -> head postPixels
   in pixel
 
