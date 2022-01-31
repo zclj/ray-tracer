@@ -1,4 +1,4 @@
-.PHONY test
+.PHONY: test lint
 
 test:
 	stack test --file-watch
