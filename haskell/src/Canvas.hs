@@ -66,7 +66,7 @@ write c cw@(Width w) ch@(Height h) pixel
     let (preRows, postRows)           = splitAt h (rows c)
         (prePixels, postPixels)       = case postRows of
                                           [] -> splitAt w []
-                                          otherwise ->
+                                          _  ->
                                             splitAt w (colors (head postRows))
         newRow                        = case postPixels of
                                           [] -> prePixels ++ [pixel]
@@ -74,7 +74,7 @@ write c cw@(Width w) ch@(Height h) pixel
                                             prePixels ++ [pixel] ++ tailPixels
         trailingRows                  = case postRows of
                                           [] -> []
-                                          otherwise -> (tail postRows)
+                                          _  -> (tail postRows)
     in (Canvas
         (preRows ++ [(Row {colors = newRow})] ++ trailingRows)
          (width c)
