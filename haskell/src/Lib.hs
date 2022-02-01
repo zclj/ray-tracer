@@ -26,4 +26,4 @@ projectileCanvas
     in PPM.canvasToPPMString canvas
 
 writeCanvas :: String -> IO ()
-writeCanvas c = writeFile "canvas.ppm" c
+writeCanvas = writeFile "canvas.ppm"
