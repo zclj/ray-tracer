@@ -71,7 +71,7 @@ ppmRowToString :: PPMSamplesRow -> String
 ppmRowToString x = unwords $ map ppmPixelToString x
 
 ppmCanvasToStrings :: PPMCanvas -> [String]
-ppmCanvasToStrings c = map ppmRowToString c
+ppmCanvasToStrings = map ppmRowToString
 
 makePPMHeader :: Width -> Height -> [String]
 makePPMHeader (Width w) (Height h) = ["P3", show w ++ " " ++ show h, "255"]
