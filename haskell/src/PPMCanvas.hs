@@ -68,7 +68,7 @@ ppmPixelToString :: PPMSample -> String
 ppmPixelToString (PPMSample sample _) = ppmSampleToString sample
 
 ppmRowToString :: PPMSamplesRow -> String
-ppmRowToString x = (unwords $ map ppmPixelToString x)
+ppmRowToString x = unwords $ map ppmPixelToString x
 
 ppmCanvasToStrings :: PPMCanvas -> [String]
 ppmCanvasToStrings c = map ppmRowToString c
