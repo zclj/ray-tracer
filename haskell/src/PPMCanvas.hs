@@ -56,7 +56,7 @@ ppmPixelToSampleList :: PPMPixel -> [PPMSample]
 ppmPixelToSampleList (PPMPixel r g b) = [r, g, b]
 
 ppmRowToPPMSampleRow :: PPMRow -> PPMSamplesRow
-ppmRowToPPMSampleRow r = concatMap ppmPixelToSampleList r
+ppmRowToPPMSampleRow = concatMap ppmPixelToSampleList
 
 canvasToPPM :: Canvas -> PPMCanvas
 canvasToPPM c = concatMap (\r -> splitPPMRow (rowToPPM r) 70) (rows c)
