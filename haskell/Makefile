@@ -5,3 +5,6 @@ test:
 
 lint:
 	hlint . --report
+
+lint-default:
+	hlint . --default > .hlint.yaml
