@@ -23,7 +23,7 @@ properties = testGroup "Canvas Properties" [qcProps]
 
 qcProps = testGroup "(checked by QuickCheck)"
   [ QC.testProperty "width of a canvas is the same as the creation width" $
-      \w h -> width (makeCanvas (Width w) (Height h)) == (Width w)]
+      \w h -> width (makeCanvas (Width w) (Height h)) == Width w]
 
 canvasBasics :: Spec
 canvasBasics =
@@ -44,7 +44,7 @@ canvasBasics =
 
       it "has every pixel of color (0, 0, 0)" $ do
         concatMap colors (rows c) `shouldSatisfy`
-          all (\pixel -> pixel == (Color (Red 0) (Green 0) (Blue 0)))
+          all (\pixel -> pixel == Color (Red 0) (Green 0) (Blue 0))
 
 canvasWriting :: Spec
 canvasWriting = 
@@ -63,10 +63,10 @@ canvasWriting =
          pixelAt newC (Width 2) (Height 3) `shouldBe` red
 
       it "do not alter the width of the canvas" $ do
-        width newC `shouldBe` (Width 10)
+        width newC `shouldBe` Width 10
 
       it "do not alter the height of the canvas" $ do
-        height newC `shouldBe` (Height 20)
+        height newC `shouldBe` Height 20
 
       it "do not alter the pixel count" $ do
         len `shouldBe` 10 * 20
@@ -156,7 +156,7 @@ canvasPPM =
        Then ppm ends with a newline character -}
     describe "termination" $ do
       let canvas = makeCanvas (Width 5) (Height 3)
-          ppm    = (last (canvasToPPMString canvas))
+          ppm    = last (canvasToPPMString canvas)
       it "ends with newline character" $ do
         ppm `shouldBe` '\n'
 --pendingWith "Implementation"
