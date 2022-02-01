@@ -37,13 +37,13 @@ canvasBasics =
       --it "creates a canvas with all black pixels" $ do
       let c = makeCanvas (Width 10) (Height 20)
       it "returns width" $ do
-        (width c) `shouldBe` (Width 10)
+        width c `shouldBe` Width 10
 
       it "returns height" $ do
-        (height c) `shouldBe` (Height 20)
+        height c `shouldBe` Height 20
 
       it "has every pixel of color (0, 0, 0)" $ do
-        (concat (map colors (rows c))) `shouldSatisfy`
+        concatMap colors (rows c) `shouldSatisfy`
           all (\pixel -> pixel == (Color (Red 0) (Green 0) (Blue 0)))
 
 canvasWriting :: Spec
