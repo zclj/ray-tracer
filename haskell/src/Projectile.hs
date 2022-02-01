@@ -32,8 +32,8 @@ newtype Gravity = Gravity Double
 newtype Wind = Wind Double
 
 tick :: Environment -> Projectile -> Projectile
-tick env proj = let pos = (position proj) `add` (velocity proj)
-                    vel = (velocity proj) `add` (gravity env) `add` (wind env)
+tick env proj = let pos = position proj `add` velocity proj
+                    vel = velocity proj `add` gravity env `add` wind env
                 in Projectile pos vel
 
 launch' :: Environment -> Projectile -> [Projectile] -> [Projectile]
@@ -44,10 +44,10 @@ launch' env p@(Projectile (Tuple _ y _ _) _) xs
 launch :: Gravity -> Wind -> [Projectile]
 launch (Gravity g) (Wind w) =
   let env  = Environment (vector 0 g 0) (vector w 0 0) 
-      proj = Projectile (point 0 1 0) ((norm (vector 1 1.8 0)) `mul` 11.25)
+      proj = Projectile (point 0 1 0) (norm (vector 1 1.8 0) `mul` 11.25)
   in launch' env proj []
                                                   
-launchresult = let g = (Gravity (-0.1))
-                   w = (Wind (-0.01))
+launchresult = let g = Gravity (-0.1)
+                   w = Wind (-0.01)
                in launch g w
                   
