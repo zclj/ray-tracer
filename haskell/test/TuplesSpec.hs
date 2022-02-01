@@ -32,7 +32,7 @@ tupleBasics =
            And a is a point
            And a is not a vector -}
     describe "A tuple with w=1.0 is a point" $ do
-      let a = (SUT.Tuple 4.3 (-4.2) 3.1 1.0)
+      let a = SUT.Tuple 4.3 (-4.2) 3.1 1.0
       it "returns x" $ do
         x a `shouldBe` 4.3
 
@@ -60,7 +60,7 @@ tupleBasics =
            And a is not a point
            And a is a vector -}
     describe "A tuple with w=0 is a vector" $ do
-      let a = (SUT.Tuple 4.3 (-4.2) 3.1 0.0)
+      let a = SUT.Tuple 4.3 (-4.2) 3.1 0.0
       it "returns x" $ do
         x a `shouldBe` 4.3
 
@@ -102,8 +102,8 @@ tupleArithmetic =
          Then a1 + a2 = tuple(1, 1, 6, 1) -}
     describe "Add" $ do
       it "adds two tuples" $ do
-        let a1 = (SUT.Tuple 3 (-2) 5 1)
-            a2 = (SUT.Tuple (-2) 3 1 0)
+        let a1 = SUT.Tuple 3 (-2) 5 1
+            a2 = SUT.Tuple (-2) 3 1 0
         a1 `add` a2 `shouldBe` SUT.Tuple 1 1 6 1
           
     {- Scenario: Subtracting two points
@@ -112,8 +112,8 @@ tupleArithmetic =
          Then p1 - p2 = vector(-2, -4, -6) -}
     describe "Sub" $ do
       it "subtracts two points" $ do
-        let p1 = (SUT.point 3 2 1)
-            p2 = (SUT.point 5 6 7)
+        let p1 = SUT.point 3 2 1
+            p2 = SUT.point 5 6 7
         p1 `sub` p2 `shouldBe` SUT.vector (-2) (-4) (-6)
 
       {- Scenario: Subtracting a vector from a point
@@ -121,8 +121,8 @@ tupleArithmetic =
              And v ← vector(5, 6, 7)
            Then p - v = point(-2, -4, -6) -}
       it "subtracts a vector from a point" $ do
-        let p = (SUT.point 3 2 1)
-            v = (SUT.vector 5 6 7)
+        let p = SUT.point 3 2 1
+            v = SUT.vector 5 6 7
         p `sub` v `shouldBe` SUT.point (-2) (-4) (-6)
 
       {- Scenario: Subtracting two vectors
@@ -130,8 +130,8 @@ tupleArithmetic =
              And v2 ← vector(5, 6, 7)
            Then v1 - v2 = vector(-2, -4, -6) -}
       it "subtracts two vectors" $ do
-        let v1 = (SUT.vector 3 2 1)
-            v2 = (SUT.vector 5 6 7)
+        let v1 = SUT.vector 3 2 1
+            v2 = SUT.vector 5 6 7
         v1 `sub` v2 `shouldBe` SUT.vector (-2) (-4) (-6)
 
       {- Scenario: Subtracting a vector from the zero vector
@@ -139,8 +139,8 @@ tupleArithmetic =
              And v ← vector(1, -2, 3)
            Then zero - v = vector(-1, 2, -3) -}
       it "subtracts a vector from the zero vector" $ do
-        let zero = (SUT.vector 0 0 0)
-            v    = (SUT.vector 1 (-2) 3)
+        let zero = SUT.vector 0 0 0
+            v    = SUT.vector 1 (-2) 3
         zero `sub` v `shouldBe` SUT.vector (-1) 2 (-3)
 
     describe "Neg" $ do
@@ -148,7 +148,7 @@ tupleArithmetic =
            Given a ← tuple(1, -2, 3, -4)
            Then -a = tuple(-1, 2, -3, 4) -}
       it "negates a tuple" $ do
-        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        let a = SUT.Tuple 1 (-2) 3 (-4)
         neg a `shouldBe` SUT.Tuple (-1) 2 (-3) 4
         
     describe "Mul" $ do
@@ -156,14 +156,14 @@ tupleArithmetic =
            Given a ← tuple(1, -2, 3, -4)
            Then a * 3.5 = tuple(3.5, -7, 10.5, -14) -}
       it "multiplies a tuple by a scalar" $ do
-        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        let a = SUT.Tuple 1 (-2) 3 (-4)
         mul a 3.5 `shouldBe` SUT.Tuple 3.5 (-7) 10.5 (-14)
 
       {- Scenario: Multiplying a tuple by a fraction
            Given a ← tuple(1, -2, 3, -4)
            Then a * 0.5 = tuple(0.5, -1, 1.5, -2) -}
       it "multiplies a tuple by a fraction" $ do
-        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        let a = SUT.Tuple 1 (-2) 3 (-4)
         mul a 0.5 `shouldBe` SUT.Tuple 0.5 (-1) 1.5 (-2)
 
     describe "Div" $ do
@@ -171,7 +171,7 @@ tupleArithmetic =
            Given a ← tuple(1, -2, 3, -4)
            Then a / 2 = tuple(0.5, -1, 1.5, -2) -}
       it "divides a tuple by a scalar" $ do
-        let a = (SUT.Tuple 1 (-2) 3 (-4))
+        let a = SUT.Tuple 1 (-2) 3 (-4)
         SUT.div a 2 `shouldBe` SUT.Tuple 0.5 (-1) 1.5 (-2)
 
     describe "Mag" $ do
@@ -218,9 +218,9 @@ tupleArithmetic =
            Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178) -}
       it "normalize vector(1, 2, 3)" $ do
         let d = sqrt 14
-            x = (1 / d)
-            y = (2 / d)
-            z = (3 / d)
+            x = 1 / d
+            y = 2 / d
+            z = 3 / d
         norm (SUT.vector 1 2 3) `shouldBe` vector x y z
 
       {- Scenario: The magnitude of a normalized vector
@@ -264,9 +264,9 @@ colorsAreTuples =
     describe "Components" $ do
       it "are red, green, and blue tuples" $ do
         let c = Color (SUT.Red (-0.5)) (SUT.Green 0.4) (SUT.Blue 1.7)
-        (red c) `shouldBe` (SUT.Red (-0.5))
-        (green c) `shouldBe` (SUT.Green 0.4)
-        (blue c) `shouldBe` (SUT.Blue 1.7)
+        red c `shouldBe` SUT.Red (-0.5)
+        green c `shouldBe` SUT.Green 0.4
+        blue c `shouldBe` SUT.Blue 1.7
 
     {- Scenario: Adding colors
          Given c1 ← color(0.9, 0.6, 0.75)
@@ -294,7 +294,7 @@ colorsAreTuples =
            Then c * 2 = color(0.4, 0.6, 0.8) -}
       it "multiplies a color by a scalar" $ do
         let c = Color (Red 0.2) (Green 0.3) (Blue 0.4)
-        (mulCS c 2) `shouldBe` Color (Red 0.4) (Green 0.6) (Blue 0.8)
+        mulCS c 2 `shouldBe` Color (Red 0.4) (Green 0.6) (Blue 0.8)
 
     describe "MulC" $ do
       {- Scenario: Multiplying colors
@@ -304,7 +304,7 @@ colorsAreTuples =
       it "multiplies a color by a color" $ do
         let c1 = Color (Red 1) (Green 0.2) (Blue 0.4)
             c2 = Color (Red 0.9) (Green 1) (Blue 0.1)
-        (mulC c1 c2) `shouldBe` Color (Red 0.9) (Green 0.2) (Blue 0.04)
+        mulC c1 c2 `shouldBe` Color (Red 0.9) (Green 0.2) (Blue 0.04)
           
         
   --pendingWith "Implementation"
