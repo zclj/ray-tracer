@@ -65,22 +65,24 @@ splitRow r (Width w) = splitAt w (colors r)
 splitCanvas :: Canvas -> Height -> ([Row], [Row])
 splitCanvas c (Height h) = splitAt h (rows c)
 
+replaceColor :: [Color] -> Color -> [Color] -> [Color]
+replaceColor pre p []       = pre ++ [p]
+replaceColor pre p (_:post) = pre ++ [p] ++ post
+
+replaceRow :: [Row] -> Row -> [Row] -> [Row]
+replaceRow pre r [] = pre ++ [r]
+replaceRow pre r (_:post) = pre ++ [r] ++ post
+
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c cw@(Width w) ch@(Height h) newPixel
   | offCanvas c cw ch                 = c
   | otherwise =
     let (preRows, postRows)           = splitCanvas c ch
         (prePixels, postPixels)       = splitRow (head postRows) cw
-        newRow                        = case postPixels of
-                                          [] -> prePixels ++ [newPixel]
-                                          (_:tailPixels)  ->
-                                            prePixels ++ [newPixel] ++ tailPixels
-        trailingRows                  = case postRows of
-                                          [] -> []
-                                          _  -> tail postRows
+        newRow                        = replaceColor prePixels newPixel postPixels
     in
       Canvas
-        (preRows ++ [(Row {colors = newRow})] ++ trailingRows)
+        (replaceRow preRows (Row newRow) postRows)
         (width c)
         (height c)
 
