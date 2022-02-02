@@ -58,19 +58,23 @@ offCanvas c (Width w) (Height h) =
       zeroBasedHeight = heightNum c - 1
   in w > zeroBasedWidth || h > zeroBasedHeight
 
+splitRow :: Row -> Width -> ([Color], [Color])
+splitRow (Row []) w = ([], [])
+splitRow r (Width w) = splitAt w (colors r)
+
+splitCanvas :: Canvas -> Height -> ([Row], [Row])
+splitCanvas c (Height h) = splitAt h (rows c)
+
 write :: Canvas -> Width -> Height -> Color -> Canvas
-write c cw@(Width w) ch@(Height h) pixel
+write c cw@(Width w) ch@(Height h) newPixel
   | offCanvas c cw ch                 = c
   | otherwise =
-    let (preRows, postRows)           = splitAt h (rows c)
-        (prePixels, postPixels)       = case postRows of
-                                          [] -> splitAt w []
-                                          _  ->
-                                            splitAt w (colors (head postRows))
+    let (preRows, postRows)           = splitCanvas c ch
+        (prePixels, postPixels)       = splitRow (head postRows) cw
         newRow                        = case postPixels of
-                                          [] -> prePixels ++ [pixel]
+                                          [] -> prePixels ++ [newPixel]
                                           (_:tailPixels)  ->
-                                            prePixels ++ [pixel] ++ tailPixels
+                                            prePixels ++ [newPixel] ++ tailPixels
         trailingRows                  = case postRows of
                                           [] -> []
                                           _  -> tail postRows
