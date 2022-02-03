@@ -69,18 +69,22 @@ replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
 replaceIn pre x (_:post) = pre ++ [x] ++ post
 
-replaceAt :: [a] -> a -> Int -> [a]
-replaceAt xs x i = replaceIn pre x post
+replaceAt :: [a] -> Int -> a -> [a]
+replaceAt xs i x = replaceIn pre x post
   where (pre, post) = splitAt i xs
+
+replaceAtBy :: [a] -> Int -> ([a] -> a) -> [a]
+replaceAtBy xs i f = replaceAt xs i (f y)
+  where (_, y) = splitAt i xs
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c cw@(Width w) ch@(Height h) newPixel
-  | offCanvas c cw ch                 = c
-  | otherwise =
-    let (_, postRows) = splitCanvas c ch
-        newColors     = replaceAt (colors (head postRows)) newPixel w
-        newRows       = replaceAt (rows c) (Row newColors) h
-    in Canvas newRows (width c) (height c)
+  | offCanvas c cw ch = c
+  | otherwise         =
+    let newCanvas =
+          replaceAtBy (rows c) h (\xs ->
+                                    (Row (replaceAt (colors (head xs)) w newPixel)))  
+    in Canvas newCanvas (width c) (height c)
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
