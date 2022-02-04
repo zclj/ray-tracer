@@ -74,8 +74,8 @@ replaceInRow :: Width -> Color -> Row -> Row
 replaceInRow (Width i) c r = (Row (replaceAt (colors r) i c))
 
 replaceColorInCanvas :: Canvas -> Width -> Height -> Color -> Canvas
-replaceColorInCanvas c w (Height x) col =
-  (Canvas (replaceAtBy (rows c) x (replaceInRow w col)) (width c) (height c))
+replaceColorInCanvas c w (Height x) col = (Canvas newRows (width c) (height c))
+  where newRows = (replaceAtBy (rows c) x (replaceInRow w col))
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c w h newColor
