@@ -70,15 +70,14 @@ replaceAtBy :: [a] -> Int -> (a -> a) -> [a]
 replaceAtBy xs i f = replaceAt xs i (f (head y))
   where (_, y) = splitAt i xs
 
-replaceInRow :: Row -> Int -> Color -> Row
-replaceInRow r i c = (Row (replaceAt (colors r) i c))
+replaceInRow :: Int -> Color -> Row -> Row
+replaceInRow i c r = (Row (replaceAt (colors r) i c))
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c cw@(Width w) ch@(Height h) newPixel
   | offCanvas c cw ch = c
   | otherwise         =
-    let newCanvas =
-          replaceAtBy (rows c) h (\x -> replaceInRow x w newPixel)
+    let newCanvas = replaceAtBy (rows c) h (replaceInRow w newPixel)
     in Canvas newCanvas (width c) (height c)
 
 pixelAt :: Canvas -> Width -> Height -> Color
