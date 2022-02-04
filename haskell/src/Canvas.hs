@@ -58,13 +58,6 @@ offCanvas c (Width w) (Height h) =
       zeroBasedHeight = heightNum c - 1
   in w > zeroBasedWidth || h > zeroBasedHeight
 
-splitRow :: Row -> Width -> ([Color], [Color])
-splitRow (Row []) w = ([], [])
-splitRow r (Width w) = splitAt w (colors r)
-
-splitCanvas :: Canvas -> Height -> ([Row], [Row])
-splitCanvas c (Height h) = splitAt h (rows c)
-
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
 replaceIn pre x (_:post) = pre ++ [x] ++ post
