@@ -44,11 +44,12 @@ makeCanvas :: Width -> Height -> Canvas
 makeCanvas w h@(Height hx) =
   makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
 
+zeroBased :: Num a => a -> a
+zeroBased x = x - 1
+
 offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas (Canvas { width = Width cw, height = Height ch }) (Width w) (Height h) =
-  let zeroBasedWidth = cw - 1
-      zeroBasedHeight = ch - 1
-  in w > zeroBasedWidth || h > zeroBasedHeight
+  w > zeroBased cw || h > zeroBased ch
 
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
