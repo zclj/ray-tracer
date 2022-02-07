@@ -28,17 +28,17 @@ data Canvas = Canvas { rows :: [Row]
                      , height :: Height
                      } deriving (Show, Eq)
 
-makeRowWithColor :: Width -> Color -> Row
-makeRowWithColor (Width x) c = Row { colors = [c | _ <- [1..x]] }
+makeRowWithColor :: Color -> Width -> Row
+makeRowWithColor c (Width x) = Row { colors = [c | _ <- [1..x]] }
 
 makeCanvasWithColor :: Width -> Height -> Color -> Canvas
 makeCanvasWithColor w h@(Height hx) c =
-  Canvas { rows   = map (\ _c -> makeRowWithColor w c) [1..hx]
+  Canvas { rows   = map (\ _c -> makeRowWithColor c w) [1..hx]
          , width  = w
          , height = h }
 
 row :: Width -> Row
-row w = makeRowWithColor w (Color (Red 0) (Green 0) (Blue 0))
+row = makeRowWithColor (Color (Red 0) (Green 0) (Blue 0))
 
 makeCanvas :: Width -> Height -> Canvas
 makeCanvas w h@(Height hx) =
