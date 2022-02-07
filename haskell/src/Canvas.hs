@@ -72,7 +72,7 @@ write c w h newColor
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c (Width w) (Height h) =
-  let (preRows, postRows)     = splitAt h (rows c)
+  let (_, postRows)           = splitAt h (rows c)
       (prePixels, postPixels) = case postRows of
                                   [] -> splitAt w []
                                   _  -> splitAt w (colors (head postRows))
