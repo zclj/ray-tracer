@@ -31,15 +31,15 @@ data Canvas = Canvas { rows :: [Row]
 makeRow :: Color -> Width -> Row
 makeRow c (Width x) = Row { colors = [c | _ <- [1..x]] }
 
-makeCanvasWithColor :: Width -> Height -> Color -> Canvas
-makeCanvasWithColor w h@(Height hx) c =
+makeCanvasWithColor :: Color -> Width -> Height -> Canvas
+makeCanvasWithColor c w h@(Height hx) =
   Canvas { rows   = map (\ _c -> makeRow c w) [1..hx]
          , width  = w
          , height = h }
 
 makeCanvas :: Width -> Height -> Canvas
 makeCanvas w h@(Height hx) =
-  makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
+  makeCanvasWithColor (Color (Red 0) (Green 0) (Blue 0)) w h
 
 zeroBased :: Num a => a -> a
 zeroBased x = x - 1

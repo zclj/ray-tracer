@@ -142,7 +142,7 @@ canvasPPM =
          """ -}
     describe "splitting" $ do
       let coloredCanvas = makeCanvasWithColor
-                          (Width 10) (Height 2) (Color (Red 1) (Green 0.8) (Blue 0.6))
+                          (Color (Red 1) (Green 0.8) (Blue 0.6)) (Width 10) (Height 2)
           ppm           = unlines (take 4 (drop 3 (canvasToPPMStrings coloredCanvas)))
       it "long lines" $ do
         ppm `shouldBe`
