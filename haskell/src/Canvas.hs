@@ -59,7 +59,7 @@ replaceAtBy xs i f = replaceAt xs i (f (head y))
   where (_, y) = splitAt i xs
 
 replaceInRow :: Width -> Color -> Row -> Row
-replaceInRow (Width i) c r = (Row (replaceAt (colors r) i c))
+replaceInRow (Width i) c (Row { colors = rc }) = Row $ replaceAt rc i c
 
 replaceColorInCanvas :: Canvas -> Width -> Height -> Color -> Canvas
 replaceColorInCanvas c w (Height x) col = (Canvas newRows (width c) (height c))
