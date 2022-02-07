@@ -42,7 +42,7 @@ makeCanvas w h@(Height hx) =
   makeCanvasWithColor (Color (Red 0) (Green 0) (Blue 0)) w h
 
 offCanvas :: Canvas -> Width -> Height -> Bool
-offCanvas (Canvas { width = Width cw, height = Height ch }) (Width w) (Height h) =
+offCanvas Canvas { width = Width cw, height = Height ch } (Width w) (Height h) =
   let zeroBased x = x - 1
   in w > zeroBased cw || h > zeroBased ch
 
@@ -59,11 +59,11 @@ replaceAtBy xs i f = replaceAt xs i (f (head y))
   where (_, y) = splitAt i xs
 
 replaceInRow :: Width -> Color -> Row -> Row
-replaceInRow (Width i) c (Row { colors = rc }) = Row $ replaceAt rc i c
+replaceInRow (Width i) c Row { colors = rc } = Row $ replaceAt rc i c
 
 replaceColorInCanvas :: Canvas -> Width -> Height -> Color -> Canvas
-replaceColorInCanvas c w (Height x) col = (Canvas newRows (width c) (height c))
-  where newRows = (replaceAtBy (rows c) x (replaceInRow w col))
+replaceColorInCanvas c w (Height x) col = Canvas newRows (width c) (height c)
+  where newRows = replaceAtBy (rows c) x (replaceInRow w col)
 
 write :: Canvas -> Width -> Height -> Color -> Canvas
 write c w h newColor
