@@ -51,9 +51,9 @@ canvasHeightToInt :: Canvas -> Int
 canvasHeightToInt (Canvas { height = Height h }) = h
 
 offCanvas :: Canvas -> Width -> Height -> Bool
-offCanvas c (Width w) (Height h) =
-  let zeroBasedWidth = canvasWidthToInt c - 1
-      zeroBasedHeight = canvasHeightToInt c - 1
+offCanvas (Canvas { width = Width cw, height = Height ch }) (Width w) (Height h) =
+  let zeroBasedWidth = cw - 1
+      zeroBasedHeight = ch - 1
   in w > zeroBasedWidth || h > zeroBasedHeight
 
 replaceIn :: [a] -> a -> [a] -> [a]
