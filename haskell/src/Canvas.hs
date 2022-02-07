@@ -45,12 +45,10 @@ makeCanvas w h@(Height hx) =
   makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
 
 widthNum :: Canvas -> Int
-widthNum c = let (Width w)  = width c
-             in  w
+widthNum (Canvas { width = Width w }) = w
 
 heightNum :: Canvas -> Int
-heightNum c = let (Height h)  = height c
-              in  h
+heightNum (Canvas { height = Height h }) = h
 
 offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas c (Width w) (Height h) =
