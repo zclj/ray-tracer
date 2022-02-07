@@ -44,12 +44,6 @@ makeCanvas :: Width -> Height -> Canvas
 makeCanvas w h@(Height hx) =
   makeCanvasWithColor w h (Color (Red 0) (Green 0) (Blue 0))
 
-canvasWidthToInt :: Canvas -> Int
-canvasWidthToInt (Canvas { width = Width w }) = w
-
-canvasHeightToInt :: Canvas -> Int
-canvasHeightToInt (Canvas { height = Height h }) = h
-
 offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas (Canvas { width = Width cw, height = Height ch }) (Width w) (Height h) =
   let zeroBasedWidth = cw - 1
