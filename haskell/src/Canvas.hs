@@ -73,14 +73,16 @@ write c w h newColor
 splitRow :: Int -> Row -> ([Color], [Color])
 splitRow i r = splitAt i (colors r)
 
+findPixel :: [Color] -> [Color] -> Color
+findPixel r [] = last r
+findPixel _ r  = head r
+
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c cw@(Width w) ch@(Height h)
   | offCanvas c cw ch = error "Pixel outside Canvas"
   | otherwise = let (_, postRows)           = splitAt h (rows c)
                     (prePixels, postPixels) = splitRow w (head postRows)
-                    pixel                   = case postPixels of
-                                                [] -> last prePixels
-                                                _  -> head postPixels
+                    pixel                   = findPixel prePixels postPixels
   in pixel
 
 px = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 3) (Height 3)
