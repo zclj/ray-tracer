@@ -70,13 +70,14 @@ write c w h newColor
   | offCanvas c w h = c
   | otherwise       = replaceColorInCanvas c w h newColor
 
+splitRow :: Int -> Row -> ([Color], [Color])
+splitRow i r = splitAt i (colors r)
+
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c cw@(Width w) ch@(Height h)
   | offCanvas c cw ch = error "Pixel outside Canvas"
   | otherwise = let (_, postRows)           = splitAt h (rows c)
-                    (prePixels, postPixels) = case postRows of
-                                                [] -> splitAt w []
-                                                _  -> splitAt w (colors (head postRows))
+                    (prePixels, postPixels) = splitRow w (head postRows)
                     pixel                   = case postPixels of
                                                 [] -> last prePixels
                                                 _  -> head postPixels
