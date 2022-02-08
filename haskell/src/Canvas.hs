@@ -71,13 +71,15 @@ write c w h newColor
   | otherwise       = replaceColorInCanvas c w h newColor
 
 pixelAt :: Canvas -> Width -> Height -> Color
-pixelAt c (Width w) (Height h) =
-  let (_, postRows)           = splitAt h (rows c)
-      (prePixels, postPixels) = case postRows of
-                                  [] -> splitAt w []
-                                  _  -> splitAt w (colors (head postRows))
-      pixel                   = case postPixels of
-                                  [] -> last prePixels
-                                  _  -> head postPixels
+pixelAt c cw@(Width w) ch@(Height h)
+  | offCanvas c cw ch = error "Pixel outside Canvas"
+  | otherwise = let (_, postRows)           = splitAt h (rows c)
+                    (prePixels, postPixels) = case postRows of
+                                                [] -> splitAt w []
+                                                _  -> splitAt w (colors (head postRows))
+                    pixel                   = case postPixels of
+                                                [] -> last prePixels
+                                                _  -> head postPixels
   in pixel
 
+px = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 3) (Height 3)
