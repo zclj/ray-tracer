@@ -70,8 +70,8 @@ write c w h newColor
   | offCanvas c w h = c
   | otherwise       = replaceColorInCanvas c w h newColor
 
-splitRow :: Int -> Row -> ([Color], [Color])
-splitRow i r = splitAt i (colors r)
+splitRow :: Width -> Row -> ([Color], [Color])
+splitRow (Width w) r = splitAt w (colors r)
 
 findPixel :: [Color] -> [Color] -> Color
 findPixel r [] = last r
@@ -81,8 +81,8 @@ canvasPostRowsFrom :: Height -> Canvas -> [Row]
 canvasPostRowsFrom (Height h) c = snd $ splitAt h (rows c)
 
 pixelAt :: Canvas -> Width -> Height -> Color
-pixelAt c cw@(Width w) h
-  | offCanvas c cw h = error "Pixel outside Canvas"
+pixelAt c w h
+  | offCanvas c w h = error "Pixel outside Canvas"
   | otherwise = let rowsFrom                = canvasPostRowsFrom h c
                     (prePixels, postPixels) = splitRow w (head rowsFrom)
                     pixel                   = findPixel prePixels postPixels
