@@ -95,6 +95,9 @@ canvasWriting =
 
       it "writes at the bottom right corner" $ do
         pixelAt c'' (Width 1) (Height 1) `shouldBe` red
+
+      it "writes at the last pixel" $ do
+        (last (colors (last (rows c'')))) `shouldBe` red
       
 
 canvasPPM :: Spec
