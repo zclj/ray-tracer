@@ -86,9 +86,12 @@ canvasWriting =
       let c    = makeCanvas (Width 2) (Height 2)
           red  = Color (Red 1) (Green 0) (Blue 0)
           c'   = write c (Width 0) (Height 0) red
-          c''  = write c (Width 1) (Height 1) red
+          c''  = write c' (Width 1) (Height 1) red
       it "writes at the top left corner" $ do
-        pixelAt c' (Width 0) (Height 0) `shouldBe` red
+        pixelAt c'' (Width 0) (Height 0) `shouldBe` red
+
+      it "writes at the first pixel" $ do
+        (head (colors (head (rows c'')))) `shouldBe` red
 
       it "writes at the bottom right corner" $ do
         pixelAt c'' (Width 1) (Height 1) `shouldBe` red
