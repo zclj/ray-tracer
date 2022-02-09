@@ -77,15 +77,18 @@ findPixel :: [Color] -> [Color] -> Color
 findPixel r [] = last r
 findPixel _ r  = head r
 
-canvasRowsFrom :: Int -> Canvas -> [Row]
-canvasRowsFrom i c = snd $ splitAt i (rows c)
+canvasPostRowsFrom :: Int -> Canvas -> [Row]
+canvasPostRowsFrom i c = snd $ splitAt i (rows c)
 
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c cw@(Width w) ch@(Height h)
   | offCanvas c cw ch = error "Pixel outside Canvas"
-  | otherwise = let rowsFrom                = canvasRowsFrom h c
+  | otherwise = let rowsFrom                = canvasPostRowsFrom h c
                     (prePixels, postPixels) = splitRow w (head rowsFrom)
                     pixel                   = findPixel prePixels postPixels
   in pixel
 
 px = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 3) (Height 3)
+py = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 2) (Height 3)
+
+wc = width (makeCanvas (Width 4) (Height 4))
