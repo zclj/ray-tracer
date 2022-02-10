@@ -13,6 +13,7 @@ module Canvas
   ) where
 
 import Tuples
+import Utils
 
 newtype Width  = Width Int
   deriving (Show, Eq, Ord)
@@ -45,18 +46,6 @@ offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas Canvas { width = Width cw, height = Height ch } (Width w) (Height h) =
   let zeroBased x = x - 1
   in w > zeroBased cw || h > zeroBased ch
-
-replaceIn :: [a] -> a -> [a] -> [a]
-replaceIn pre x []       = pre ++ [x]
-replaceIn pre x (_:post) = pre ++ [x] ++ post
-
-replaceAt :: [a] -> Int -> a -> [a]
-replaceAt xs i x = replaceIn pre x post
-  where (pre, post) = splitAt i xs
-
-replaceAtBy :: [a] -> Int -> (a -> a) -> [a]
-replaceAtBy xs i f = replaceAt xs i (f (head y))
-  where (_, y) = splitAt i xs
 
 replaceInRow :: Width -> Color -> Row -> Row
 replaceInRow (Width i) c Row { colors = rc } = Row $ replaceAt rc i c
