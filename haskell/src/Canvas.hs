@@ -73,10 +73,6 @@ write c w h newColor
 splitRow :: Width -> Row -> ([Color], [Color])
 splitRow (Width w) r = splitAt w (colors r)
 
-findPixel :: [Color] -> Color
---findPixel r [] = last r
-findPixel r  = head r
-
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c w h
   | offCanvas c w h = error "Pixel outside Canvas"
