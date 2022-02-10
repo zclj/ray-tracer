@@ -80,10 +80,10 @@ findPixel r  = head r
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c w h
   | offCanvas c w h = error "Pixel outside Canvas"
-  | otherwise = let canvasFollowingRowsFrom (Height h) c = snd $ splitAt h (rows c)
-                    rowsFrom                = canvasFollowingRowsFrom h c
-                    (_, postPixels) = splitRow w (head rowsFrom)
-                    pixel                   = findPixel postPixels
+  | otherwise = let canvasFollowingRowsFrom (Height h) c
+                              = snd $ splitAt h (rows c)
+                    pixelsRow = head $ canvasFollowingRowsFrom h c
+                    pixel     = head $ snd $ splitRow w pixelsRow
   in pixel
 
 
