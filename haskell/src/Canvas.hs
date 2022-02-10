@@ -82,14 +82,3 @@ pixelAt c w h
                     pixel     = head $ snd $ splitRow w pixelsRow
   in pixel
 
-
-
-px = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 3) (Height 3)
-py = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 2) (Height 3)
-pz = pixelAt (makeCanvas (Width 4) (Height 4)) (Width 3) (Height 3)
-
-c = write (makeCanvas (Width 4) (Height 4)) (Width 3) (Height 3) (Color (Red 1) (Green 0) (Blue 0))
-
---wc = canvasPostRowsFrom (Height 3) c
---sp = splitRow (Width 3) (head wc)
---pix = findPixel (snd sp)
