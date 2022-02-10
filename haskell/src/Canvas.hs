@@ -76,9 +76,8 @@ splitRow (Width w) r = splitAt w (colors r)
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c w h
   | offCanvas c w h = error "Pixel outside Canvas"
-  | otherwise = let canvasFollowingRowsFrom (Height h) c
-                              = snd $ splitAt h (rows c)
-                    pixelsRow = head $ canvasFollowingRowsFrom h c
+  | otherwise = let pixelsCanvasPart (Height h) = snd $ splitAt h (rows c)
+                    pixelsRow = head $ pixelsCanvasPart h
                     pixel     = head $ snd $ splitRow w pixelsRow
   in pixel
 
