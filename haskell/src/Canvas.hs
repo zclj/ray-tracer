@@ -62,7 +62,7 @@ write c w h newColor
 pixelAt :: Canvas -> Width -> Height -> Color
 pixelAt c w h
   | offCanvas c w h = error "Pixel outside Canvas"
-  | otherwise = let pixelsCanvasPart (Height h) = snd $ splitAt h (rows c)
+  | otherwise = let pixelsCanvasPart (Height h) = drop h (rows c)
                     splitRow (Width w) r        = splitAt w (colors r)
                     pixelsRow = head $ pixelsCanvasPart h
                     pixel     = head $ snd $ splitRow w pixelsRow
