@@ -48,7 +48,7 @@ offCanvas Canvas { width = Width cw, height = Height ch } (Width w) (Height h) =
   in w > zeroBased cw || h > zeroBased ch
 
 replaceInRow :: Width -> Color -> Row -> Row
-replaceInRow (Width i) c Row { colors = rc } = Row $ replaceAt rc i c
+replaceInRow (Width i) c Row { colors = rc } = Row $ replaceAt i rc c
 
 replaceColorInCanvas :: Canvas -> Width -> Height -> Color -> Canvas
 replaceColorInCanvas c w (Height x) col = Canvas newRows (width c) (height c)
