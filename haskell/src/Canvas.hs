@@ -60,8 +60,7 @@ write c w h newColor
   | otherwise       = replaceColorInCanvas c w h newColor
 
 pixelAt :: Canvas -> Width -> Height -> Color
-pixelAt c w h
-  | offCanvas c w h = error "Pixel outside Canvas"
-  | otherwise = let splitRow (Width w) (Height h) = colors (rows c !! h) !! w
-                in splitRow w h
+pixelAt c cw@(Width w) ch@(Height h)
+  | offCanvas c cw ch = error "Pixel outside Canvas"
+  | otherwise = colors (rows c !! h) !! w
 
