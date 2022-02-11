@@ -37,5 +37,4 @@ replaceAt xs i x = replaceIn pre x post
   where (pre, post) = splitAt i xs
 
 replaceAtBy :: [a] -> Int -> (a -> a) -> [a]
-replaceAtBy xs i f = replaceAt xs i (f (head y))
-  where (_, y) = splitAt i xs  
+replaceAtBy xs i f = replaceAt xs i (f (xs !! max 0 i))
