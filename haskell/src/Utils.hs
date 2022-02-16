@@ -8,20 +8,26 @@ module Utils
   ) where
 
 addToLast :: a -> [[a]] -> [[a]]
-addToLast x xs = concat [init xs, [concat [last xs, [x]]]]
+addToLast x [] = [[x]]
+addToLast x (y:ys) = let a = x:y
+                     in a:ys
 
 whenSumOf :: (Num b, Ord b) => (b -> Bool) -> (a -> b) -> [a] -> Bool
 whenSumOf p f l = p $ sum (map f l)
 
 splitWhenR :: ([a] -> Bool) -> [a] -> [[a]] -> [[a]]
 splitWhenR p [] acc        = acc
-splitWhenR p r@(x:xs) acc  = if p (last (addToLast x acc))
-                             then splitWhenR p r (acc ++ [[]])
+splitWhenR p r@(x:xs) acc  = if p (head (addToLast x acc))
+                             then splitWhenR p r  ([]:acc)
                              else splitWhenR p xs (addToLast x acc)
 
 splitWhen :: ([a] -> Bool) -> [a] -> [[a]]
-splitWhen p xs = splitWhenR p xs [[]]                                  
+splitWhen p xs = reverse $ map reverse (splitWhenR p xs [[]])
 
+{-|
+  'splitList' split a list at the points where the 'size' of the items in the list
+  reaches 'n'. The 'size' of the list is determined by f.
+-}
 splitList :: (Num b, Ord b) => [a] -> b -> (a -> b) -> [[a]]
 splitList r n f =
   splitWhen (\l -> whenSumOf (> (n - fromIntegral (length l))) f l) r
