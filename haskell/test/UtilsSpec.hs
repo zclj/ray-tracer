@@ -15,5 +15,6 @@ splitLines :: Spec
 splitLines =
   describe "Split Lines" $ do
     describe "when condition is true" $ do
+      let xs = [1, 2, 3, 4]
       it "split the list" $ do
-        1 `shouldBe` 1
+        (SUT.splitList xs 5 (\x -> 1)) `shouldBe` [[1,2],[3,4]]
