@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 132709269d9d76424156b5d606c14666dcdcad9dc4f73b84bc0b9cd9420ffab1
+-- hash: 64bd0c94950e5ce23bde828634a0e70aa28ec701529e871b5193ce80cc24fec8
 
 name:           ray-tracer
 version:        0.1.0.0
@@ -59,6 +59,7 @@ test-suite ray-tracer-test
   other-modules:
       CanvasSpec
       TuplesSpec
+      UtilsSpec
       Paths_ray_tracer
   hs-source-dirs:
       test
