@@ -32,6 +32,29 @@ splitList :: (Num b, Ord b) => [a] -> b -> (a -> b) -> [[a]]
 splitList r n f =
   splitWhen (\l -> whenSumOf (> (n - fromIntegral (length l))) f l) r
 
+----------------------------------------
+-- recursive split
+
+rows = [[1,2,3,4],[5,6,7,8,9]]
+
+sized :: [a] -> [(Int, a)]
+sized r = map (\x -> (2,x)) r
+
+sizedRows :: [[a]] -> [[(Int, a)]]
+sizedRows r = map sized r
+
+-- we should be able to recurse over spans
+-- - calculate the sizes of the row segment parts
+-- - span with the wanted size
+-- - if there are snd span, process that as new segment
+
+eat :: Int -> [Integer] -> [[Integer]]
+eat n [] = []
+eat n xs = let withSizes = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a))
+                           (head (sizedRows [xs]))
+               spans     = span (\(x,_) -> x < n) withSizes
+           in (map snd (fst spans)):(eat n (map snd (snd spans)))
+
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
 replaceIn pre x (_:post) = pre ++ [x] ++ post
