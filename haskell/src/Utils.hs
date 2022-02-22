@@ -48,12 +48,31 @@ sizedRows r = map sized r
 -- - span with the wanted size
 -- - if there are snd span, process that as new segment
 
+withSumSizes :: [b] -> [(Int, b)]
+withSumSizes xs = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a)) (sized xs)
+
+wss = withSumSizes (head rows)
+-- [(2,1),(4,2),(6,3),(8,4)]
+
+spanLessThan :: Ord a => a -> [(a, b)] -> ([(a, b)], [(a, b)])
+spanLessThan n xs = span (\(x,_) -> x < n) xs
+
+slt = spanLessThan 5 wss
+-- ([(2,1),(4,2)],[(6,3),(8,4)])
+slt1 = spanLessThan 1 wss
+-- ([],[(2,1),(4,2),(6,3),(8,4)])
+
 eat :: Int -> [Integer] -> [[Integer]]
 eat n [] = []
-eat n xs = let withSizes = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a))
-                           (head (sizedRows [xs]))
-               spans     = span (\(x,_) -> x < n) withSizes
-           in (map snd (fst spans)):(eat n (map snd (snd spans)))
+eat n xs = let withSizes    = withSumSizes xs
+               (done, todo) = spanLessThan n withSizes
+               doneWOSize   = map snd done
+               todoWOSize   = map snd todo
+           in if doneWOSize == []
+              then doneWOSize:[todoWOSize]
+              else doneWOSize:(eat n todoWOSize)
+
+x = eat 5 (head rows)
 
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
