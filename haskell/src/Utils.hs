@@ -40,8 +40,8 @@ rows = [[1,2,3,4],[5,6,7,8,9]]
 sized :: [a] -> [(Int, a)]
 sized r = map (\x -> (2,x)) r
 
-sizedRows :: [[a]] -> [[(Int, a)]]
-sizedRows r = map sized r
+--sizedRows :: [[a]] -> [[(Int, a)]]
+--sizedRows r = map sized r
 
 -- we should be able to recurse over spans
 -- - calculate the sizes of the row segment parts
@@ -62,17 +62,21 @@ slt = spanLessThan 5 wss
 slt1 = spanLessThan 1 wss
 -- ([],[(2,1),(4,2),(6,3),(8,4)])
 
-eat :: Int -> [Integer] -> [[Integer]]
-eat n [] = []
-eat n xs = let withSizes    = withSumSizes xs
-               (done, todo) = spanLessThan n withSizes
-               doneWOSize   = map snd done
-               todoWOSize   = map snd todo
-           in if doneWOSize == []
-              then doneWOSize:[todoWOSize]
-              else doneWOSize:(eat n todoWOSize)
+-- It becomes messy when the acc size is in a tuple with the elements
+--  - see what happens if we keep the acc size outside the list of elements
+--splitLine2 :: ([Integer] -> [(Int, Integer)]) -> Int -> [Integer] -> [[Integer]]
 
-x = eat 5 (head rows)
+splitList2 :: (Ord b, Eq a) => ([a] -> [(b, a)]) -> b -> [a] -> [[a]]
+splitList2 f n [] = []
+splitList2 f n xs = let (done, todo) = spanLessThan n $ f xs
+                        doneWOSize   = map snd done
+                        todoWOSize   = map snd todo
+                    in if doneWOSize == []
+                       then []:[todoWOSize]
+                       else doneWOSize:(splitList2 f n todoWOSize)
+
+x = splitList2 sized 5 (head rows)
+y = splitList2 sized 1 (head rows)
 
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
