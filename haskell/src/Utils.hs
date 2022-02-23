@@ -3,6 +3,7 @@ module Utils
   , whenSumOf
   , splitWhen
   , splitList
+  , splitList2
   , replaceAt
   , replaceAtBy
   ) where
@@ -66,17 +67,18 @@ slt1 = spanLessThan 1 wss
 --  - see what happens if we keep the acc size outside the list of elements
 --splitLine2 :: ([Integer] -> [(Int, Integer)]) -> Int -> [Integer] -> [[Integer]]
 
-splitList2 :: (Ord b, Eq a) => ([a] -> [(b, a)]) -> b -> [a] -> [[a]]
-splitList2 f n [] = []
-splitList2 f n xs = let (done, todo) = spanLessThan n $ f xs
+-- splitList :: (Num b, Ord b) => [a] -> b -> (a -> b) -> [[a]]
+splitList2 :: (Ord a, Eq b) => [b] -> a -> ([b] -> [(a, b)]) -> [[b]]
+splitList2 [] n f = []
+splitList2 xs n f = let (done, todo) = spanLessThan n $ f xs
                         doneWOSize   = map snd done
                         todoWOSize   = map snd todo
                     in if doneWOSize == []
                        then []:[todoWOSize]
-                       else doneWOSize:(splitList2 f n todoWOSize)
+                       else doneWOSize:(splitList2 todoWOSize n f)
 
-x = splitList2 sized 5 (head rows)
-y = splitList2 sized 1 (head rows)
+x = splitList2 (head rows) 5 sized
+y = splitList2 (head rows) 1 sized
 
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
