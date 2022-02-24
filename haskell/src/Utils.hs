@@ -49,7 +49,7 @@ sized r = map (\x -> (2,x)) r
 -- - span with the wanted size
 -- - if there are snd span, process that as new segment
 
-withSumSizes :: ([b] -> [(Int, b)]) -> [b] -> [(Int, b)]
+withSumSizes :: Num a => ([b] -> [(a, b)]) -> [b] -> [(a, b)]
 withSumSizes f xs = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a)) (f xs)
 
 wss = withSumSizes sized (head rows)
@@ -67,18 +67,17 @@ slt1 = spanLessThan 1 wss
 --  - see what happens if we keep the acc size outside the list of elements
 --splitLine2 :: ([Integer] -> [(Int, Integer)]) -> Int -> [Integer] -> [[Integer]]
 
--- splitList :: (Num b, Ord b) => [a] -> b -> (a -> b) -> [[a]]
-splitList2 :: (Ord a, Eq b) => [b] -> a -> ([b] -> [(a, b)]) -> [[b]]
+splitList2 :: (Ord a, Num a, Eq b) => [b] -> a -> ([b] -> [(a, b)]) -> [[b]]
 splitList2 [] n f = []
-splitList2 xs n f = let (done, todo) = spanLessThan n $ f xs
+splitList2 xs n f = let (done, todo) = spanLessThan n $ withSumSizes f xs
                         doneWOSize   = map snd done
                         todoWOSize   = map snd todo
                     in if doneWOSize == []
                        then []:[todoWOSize]
                        else doneWOSize:(splitList2 todoWOSize n f)
 
-x = splitList2 (head rows) 5 (withSumSizes sized)
-y = splitList2 (head rows) 1 (withSumSizes sized)
+x = splitList2 (head rows) 5 sized
+y = splitList2 (head rows) 1 sized
 
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
