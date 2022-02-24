@@ -41,11 +41,6 @@ rows = [[1,2,3,4],[5,6,7,8,9]]
 sized :: [a] -> [(Int, a)]
 sized r = map (\x -> (2,x)) r
 
--- we should be able to recurse over spans
--- - calculate the sizes of the row segment parts
--- - span with the wanted size
--- - if there are snd span, process that as new segment
-
 withSumSizes :: Num a => ([b] -> [(a, b)]) -> [b] -> [(a, b)]
 withSumSizes f xs = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a)) (f xs)
 
