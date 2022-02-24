@@ -49,10 +49,10 @@ sized r = map (\x -> (2,x)) r
 -- - span with the wanted size
 -- - if there are snd span, process that as new segment
 
-withSumSizes :: [b] -> [(Int, b)]
-withSumSizes xs = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a)) (sized xs)
+withSumSizes :: ([b] -> [(Int, b)]) -> [b] -> [(Int, b)]
+withSumSizes f xs = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a)) (f xs)
 
-wss = withSumSizes (head rows)
+wss = withSumSizes sized (head rows)
 -- [(2,1),(4,2),(6,3),(8,4)]
 
 spanLessThan :: Ord a => a -> [(a, b)] -> ([(a, b)], [(a, b)])
@@ -77,8 +77,8 @@ splitList2 xs n f = let (done, todo) = spanLessThan n $ f xs
                        then []:[todoWOSize]
                        else doneWOSize:(splitList2 todoWOSize n f)
 
-x = splitList2 (head rows) 5 sized
-y = splitList2 (head rows) 1 sized
+x = splitList2 (head rows) 5 (withSumSizes sized)
+y = splitList2 (head rows) 1 (withSumSizes sized)
 
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
