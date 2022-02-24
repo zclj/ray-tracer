@@ -60,10 +60,11 @@ slt = spanLessThan 5 wss
 slt1 = spanLessThan 1 wss
 -- ([],[(2,1),(4,2),(6,3),(8,4)])
 
--- It becomes messy when the acc size is in a tuple with the elements
---  - see what happens if we keep the acc size outside the list of elements
---splitLine2 :: ([Integer] -> [(Int, Integer)]) -> Int -> [Integer] -> [[Integer]]
 
+-- The 'client' size f, in the case of ppm, need both the aggregated 'space' taken
+--  in total by the included samples, but also the aggregated length of the line segment.
+--  The total ppm size is calculated with space+length, length beeing the required length
+--   of white-space in the final output.
 splitList2 :: (Ord a, Num a, Eq b) => [b] -> a -> ([b] -> [(a, b)]) -> [[b]]
 splitList2 [] n f = []
 splitList2 xs n f = let (done, todo) = spanLessThan n $ withSumSizes f xs
