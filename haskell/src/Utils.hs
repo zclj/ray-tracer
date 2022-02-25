@@ -62,16 +62,17 @@ testSegment3 = LineSegment 1 2 "thing2"
 --segments1 = [testSegment, testSegment2] => This will not compile
 segments2 = [testSegment, testSegment3]
 
-sized2 :: [a] -> [(Int, Int, a)]
-sized2 r = map (\x -> (1,2,x)) r
+sized2 :: [a] -> [LineSegment a]
+sized2 r = map (\x -> (LineSegment 1 2 x)) r
 
-withSegments :: Num a => ([b] -> [(a, a, b)]) -> [b] -> [(a, a, b)]
-withSegments f xs = scanl1 (\(sb,b,x) (sa,a,y) -> (sb + sa, b+a, y)) (f xs)
+-- withSegments :: Num a => ([b] -> [(a, a, b)]) -> [b] -> [(a, a, b)]
+-- withSegments f xs = scanl1 (\(sb,b,x) (sa,a,y) -> (sb + sa, b+a, y)) (f xs)
 
-
+withSegments :: ([b] -> [LineSegment b]) -> [b] -> [LineSegment b]
+withSegments f xs = scanl1 (\(LineSegment sb b _) (LineSegment sa a y) ->
+                              (LineSegment (sb + sa) (b + a) y)) (f xs)
 
 wseg = withSegments sized2 (head rows)
-
 
 spanLessThan :: Ord a => a -> [(a, b)] -> ([(a, b)], [(a, b)])
 spanLessThan n xs = span (\(x,_) -> x < n) xs
@@ -80,7 +81,6 @@ slt = spanLessThan 5 wss
 -- ([(2,1),(4,2)],[(6,3),(8,4)])
 slt1 = spanLessThan 1 wss
 -- ([],[(2,1),(4,2),(6,3),(8,4)])
-
 
 
 -- The 'client' size f, in the case of ppm, need both the aggregated 'space' taken
