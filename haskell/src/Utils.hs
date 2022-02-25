@@ -47,6 +47,32 @@ withSumSizes f xs = scanl1 (\(sb,b) (sa,a) -> (sb + sa, a)) (f xs)
 wss = withSumSizes sized (head rows)
 -- [(2,1),(4,2),(6,3),(8,4)]
 
+-- aggregate 'length' (the number of items in the list),
+--  'size' (the space the item takes)
+--  and the item itself
+data LineSegment a = LineSegment { segmentLength :: Int
+                                 , segmentSpace  :: Int
+                                 , segmentValue  :: a }
+                     deriving (Show)
+
+testSegment = LineSegment 1 2 "thing"
+testSegment2 = LineSegment 1 2 4
+testSegment3 = LineSegment 1 2 "thing2"
+
+--segments1 = [testSegment, testSegment2] => This will not compile
+segments2 = [testSegment, testSegment3]
+
+sized2 :: [a] -> [(Int, Int, a)]
+sized2 r = map (\x -> (1,2,x)) r
+
+withSegments :: Num a => ([b] -> [(a, a, b)]) -> [b] -> [(a, a, b)]
+withSegments f xs = scanl1 (\(sb,b,x) (sa,a,y) -> (sb + sa, b+a, y)) (f xs)
+
+
+
+wseg = withSegments sized2 (head rows)
+
+
 spanLessThan :: Ord a => a -> [(a, b)] -> ([(a, b)], [(a, b)])
 spanLessThan n xs = span (\(x,_) -> x < n) xs
 
@@ -54,6 +80,7 @@ slt = spanLessThan 5 wss
 -- ([(2,1),(4,2)],[(6,3),(8,4)])
 slt1 = spanLessThan 1 wss
 -- ([],[(2,1),(4,2),(6,3),(8,4)])
+
 
 
 -- The 'client' size f, in the case of ppm, need both the aggregated 'space' taken
