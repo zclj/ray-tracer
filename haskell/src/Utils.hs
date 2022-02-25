@@ -107,6 +107,17 @@ splitList2 xs n f = let (done, todo) = spanLessThan n $ withSumSizes f xs
 x = splitList2 (head rows) 5 sized
 y = splitList2 (head rows) 1 sized
 
+splitList3 :: (Eq b) => [b] -> Int -> ([b] -> [LineSegment b]) -> [[b]]
+splitList3 [] n f = []
+splitList3 xs n f = let (done, todo) = spanLessThan2 n $ withSegments f xs
+                        doneWOSize   = map segmentValue done
+                        todoWOSize   = map segmentValue todo
+                    in if doneWOSize == []
+                       then []:[todoWOSize]
+                       else doneWOSize:(splitList3 todoWOSize n f)
+
+z = splitList3 (head rows) 5 sized2
+
 replaceIn :: [a] -> a -> [a] -> [a]
 replaceIn pre x []       = pre ++ [x]
 replaceIn pre x (_:post) = pre ++ [x] ++ post
