@@ -73,6 +73,7 @@ withSegments f xs = scanl1 (\(LineSegment sb b _) (LineSegment sa a y) ->
                               (LineSegment (sb + sa) (b + a) y)) (f xs)
 
 wseg = withSegments sized2 (head rows)
+-- [LineSegment {segmentLength = 1, segmentSpace = 2, segmentValue = 1},LineSegment {segmentLength = 2, segmentSpace = 4, segmentValue = 2},LineSegment {segmentLength = 3, segmentSpace = 6, segmentValue = 3},LineSegment {segmentLength = 4, segmentSpace = 8, segmentValue = 4}]
 
 spanLessThan :: Ord a => a -> [(a, b)] -> ([(a, b)], [(a, b)])
 spanLessThan n xs = span (\(x,_) -> x < n) xs
@@ -82,6 +83,13 @@ slt = spanLessThan 5 wss
 slt1 = spanLessThan 1 wss
 -- ([],[(2,1),(4,2),(6,3),(8,4)])
 
+spanLessThan2 :: Int -> [LineSegment b] -> ([LineSegment b], [LineSegment b])
+spanLessThan2 n xs = span (\(LineSegment length space _) -> (length+space) < n) xs
+
+slt3 = spanLessThan2 5 wseg
+-- ([LineSegment {segmentLength = 1, segmentSpace = 2, segmentValue = 1}],[LineSegment {segmentLength = 2, segmentSpace = 4, segmentValue = 2},LineSegment {segmentLength = 3, segmentSpace = 6, segmentValue = 3},LineSegment {segmentLength = 4, segmentSpace = 8, segmentValue = 4}])
+slt4 = spanLessThan2 1 wseg
+-- ([],[LineSegment {segmentLength = 1, segmentSpace = 2, segmentValue = 1},LineSegment {segmentLength = 2, segmentSpace = 4, segmentValue = 2},LineSegment {segmentLength = 3, segmentSpace = 6, segmentValue = 3},LineSegment {segmentLength = 4, segmentSpace = 8, segmentValue = 4}])
 
 -- The 'client' size f, in the case of ppm, need both the aggregated 'space' taken
 --  in total by the included samples, but also the aggregated length of the line segment.
