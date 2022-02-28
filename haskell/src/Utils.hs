@@ -4,8 +4,10 @@ module Utils
   , splitWhen
   , splitList
   , splitList2
+  , splitList3
   , replaceAt
   , replaceAtBy
+  , LineSegment (..)
   ) where
 
 addToLast :: a -> [[a]] -> [[a]]
