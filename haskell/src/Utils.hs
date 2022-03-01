@@ -1,6 +1,5 @@
 module Utils
-  ( addToLast
-  , whenSumOf
+  ( whenSumOf
   , splitWhen
   , splitList
   --, splitList2
@@ -10,19 +9,14 @@ module Utils
   --, LineSegment (..)
   ) where
 
-addToLast :: a -> [[a]] -> [[a]]
-addToLast x [] = [[x]]
-addToLast x (y:ys) = let a = x:y
-                     in a:ys
-
 whenSumOf :: (Num b, Ord b) => (b -> Bool) -> (a -> b) -> [a] -> Bool
 whenSumOf p f l = p $ sum (map f l)
 
 splitWhenR :: ([a] -> Bool) -> [a] -> [[a]] -> [[a]]
 splitWhenR p [] acc        = acc
-splitWhenR p r@(x:xs) acc  = if p (head (addToLast x acc))
-                             then splitWhenR p r  ([]:acc)
-                             else splitWhenR p xs (addToLast x acc)
+splitWhenR p r@(x:xs) acc@(y:ys)  = if p (head ((x:y):ys))
+                                    then splitWhenR p r  ([]:acc)
+                                    else splitWhenR p xs ((x:y):ys)
 
 splitWhen :: ([a] -> Bool) -> [a] -> [[a]]
 splitWhen p xs = reverse $ map reverse (splitWhenR p xs [[]])
