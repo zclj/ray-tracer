@@ -8,11 +8,11 @@ import Tuples
 import Utils
 
 data Sample = Sample Int
-  deriving (Show)
+  deriving (Show, Eq)
 
 data PPMSample = PPMSample { sample :: Sample
                            , size   :: Int }
-               deriving (Show)
+               deriving (Show, Eq)
 
 makeSample :: Double -> Sample
 makeSample x = Sample (max (min 255 (ceiling (255 * x))) 0)
