@@ -17,6 +17,6 @@ splitLines =
     describe "when condition is true" $ do
       let xs = [1, 2, 3, 4]
       it "split the list, including multiple values" $ do
-        (SUT.splitList3 xs 5 (map (\x -> LineSegment 1 1 x))) `shouldBe` [[1,2],[3,4]]
+        (SUT.splitList xs 5 (\x -> 1)) `shouldBe` [[1,2],[3,4]]
       it "split the list with short length, single values" $ do
-        (SUT.splitList3 xs 3 (map (\x -> LineSegment 1 1 x))) `shouldBe` [[1],[2],[3],[4]]
+        (SUT.splitList xs 3 (\x -> 1)) `shouldBe` [[1],[2],[3],[4]]
