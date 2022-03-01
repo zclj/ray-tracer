@@ -12,22 +12,23 @@ module Utils
 whenSumOf :: (Num b, Ord b) => (b -> Bool) -> (a -> b) -> [a] -> Bool
 whenSumOf p f l = p $ sum (map f l)
 
-splitWhenR :: ([a] -> Bool) -> [a] -> [[a]] -> [[a]]
-splitWhenR p [] acc        = acc
-splitWhenR p r@(x:xs) acc@(y:ys)  = if p (head ((x:y):ys))
-                                    then splitWhenR p r  ([]:acc)
-                                    else splitWhenR p xs ((x:y):ys)
+splitWhenR :: (Int -> [a] -> Bool) -> Int -> [a] -> [[a]] -> [[a]]
+splitWhenR p l [] acc               = acc
+splitWhenR p l r@(x:xs) acc@(y:ys)  = let nextList = ((x:y):ys)
+                                      in if p l (head nextList)
+                                         then splitWhenR p 1 r  ([]:acc)
+                                         else splitWhenR p (l+1) xs nextList
 
-splitWhen :: ([a] -> Bool) -> [a] -> [[a]]
-splitWhen p xs = reverse $ map reverse (splitWhenR p xs [[]])
+splitWhen :: (Int -> [a] -> Bool) -> [a] -> [[a]]
+splitWhen p xs = reverse $ map reverse (splitWhenR p 1 xs [[]])
 
 {-|
   'splitList' split a list at the points where the 'size' of the items in the list
   reaches 'n'. The 'size' of the list is determined by f.
 -}
-splitList :: (Num b, Ord b) => [a] -> b -> (a -> b) -> [[a]]
+splitList :: [a] -> Int -> (a -> Int) -> [[a]]
 splitList r n f =
-  splitWhen (\l -> whenSumOf (> (n - fromIntegral (length l))) f l) r
+  splitWhen (\x l -> whenSumOf (> (n - x)) f l) r
 
 ----------------------------------------
 -- recursive split
