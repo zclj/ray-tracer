@@ -1,6 +1,5 @@
 module Utils
-  ( whenSumOf
-  , splitWhen
+  ( splitWhen
   , splitList
   --, splitList2
   --, splitList3
@@ -8,9 +7,6 @@ module Utils
   , replaceAtBy
   --, LineSegment (..)
   ) where
-
-whenSumOf :: (Num b, Ord b) => (b -> Bool) -> (a -> b) -> [a] -> Bool
-whenSumOf p f l = p $ sum (map f l)
 
 splitWhenR :: (Int -> [a] -> Bool) -> Int -> [a] -> [[a]] -> [[a]]
 splitWhenR p l [] acc               = acc
@@ -27,8 +23,8 @@ splitWhen p xs = reverse $ map reverse (splitWhenR p 1 xs [[]])
   reaches 'n'. The 'size' of the list is determined by f.
 -}
 splitList :: [a] -> Int -> (a -> Int) -> [[a]]
-splitList r n f =
-  splitWhen (\x l -> whenSumOf (> (n - x)) f l) r
+splitList r n f = 
+  splitWhen (\padding xs -> (> (n - padding)) $ sum (map f xs)) r
 
 ----------------------------------------
 -- recursive split
