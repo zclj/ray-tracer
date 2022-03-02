@@ -1,7 +1,5 @@
 module Utils
-  ( whenSumOf
-  , splitWhen
-  , splitList
+  ( splitList
   , replaceAt
   , replaceAtBy
   ) where
