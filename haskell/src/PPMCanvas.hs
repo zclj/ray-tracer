@@ -6,6 +6,7 @@ module PPMCanvas
 import Canvas
 import Tuples
 import Utils
+import qualified Data.Text as T
 
 data Sample = Sample Int
   deriving (Show, Eq)
