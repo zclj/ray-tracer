@@ -61,6 +61,7 @@ test-suite ray-tracer-test
       CanvasSpec
       TuplesSpec
       UtilsSpec
+      PPMCanvasSpec
       Paths_ray_tracer
   hs-source-dirs:
       test

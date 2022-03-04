@@ -1,6 +1,7 @@
 module PPMCanvas
   ( canvasToPPMString
   , canvasToPPMStrings
+  , makePPMHeader
   ) where
 
 import Canvas

@@ -5,6 +5,8 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 import PPMCanvas as SUT
+import Tuples
+import Canvas
 
 ppmCanvasTests :: TestTree
 ppmCanvasTests = testGroup "PPMCanvas Tests" [
@@ -14,5 +16,6 @@ ppmCanvasTests = testGroup "PPMCanvas Tests" [
 toPPM :: Spec
 toPPM =
   describe "Make Header" $ do
-    it "creates header with height and width" $
-      pendingWith "Todo"
+    let header = SUT.makePPMHeader (Width 100) (Height 100)
+    it "creates header with height and width" $ do
+      header `shouldBe` ["P3","100 100","255"]
