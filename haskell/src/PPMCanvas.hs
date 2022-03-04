@@ -77,6 +77,15 @@ ppmCanvasToStrings = map ppmRowToString
 makePPMHeader :: Width -> Height -> [String]
 makePPMHeader (Width w) (Height h) = ["P3", show w ++ " " ++ show h, "255"]
 
+makePPMHeader2 :: Width -> Height -> T.Text
+makePPMHeader2 (Width w) (Height h) = (T.pack "P3\n") <> (T.pack (show w))
+  <> T.singleton ' ' <> (T.pack (show h)) <> T.singleton '\n' <> (T.pack "255\n")
+
+th = makePPMHeader2 (Width 100) (Height 100)
+
+h = makePPMHeader (Width 100) (Height 100)
+-- ["P3","100 100","255"]
+
 canvasToPPMStrings :: Canvas -> [String]
 canvasToPPMStrings c = header ++ ppmStringRows
   where header        = makePPMHeader (width c) (height c)
