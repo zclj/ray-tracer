@@ -72,6 +72,9 @@ ppmSampleToText (Sample x) = T.pack $ show x
 ppmPixelToString :: PPMSample -> String
 ppmPixelToString (PPMSample sample _) = ppmSampleToString sample
 
+ppmPixelToText :: PPMSample -> T.Text
+ppmPixelToText (PPMSample sample _) = ppmSampleToText sample
+
 ppmRowToString :: PPMSamplesRow -> String
 ppmRowToString x = unwords $ map ppmPixelToString x
 
