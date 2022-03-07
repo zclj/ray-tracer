@@ -65,7 +65,10 @@ canvasToPPM c = concatMap (\r -> splitPPMRow (rowToPPM r) 70) (rows c)
 
 ppmSampleToString :: Sample -> String
 ppmSampleToString (Sample x) = show x
-  
+
+ppmSampleToText :: Sample -> T.Text
+ppmSampleToText (Sample x) = T.pack $ show x
+
 ppmPixelToString :: PPMSample -> String
 ppmPixelToString (PPMSample sample _) = ppmSampleToString sample
 
