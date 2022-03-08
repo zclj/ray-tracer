@@ -88,6 +88,9 @@ ppmRowToText x = T.intercalate (T.pack " ") $ map ppmPixelToText x
 ppmCanvasToStrings :: PPMCanvas -> [String]
 ppmCanvasToStrings = map ppmRowToString
 
+ppmCanvasToTexts :: PPMCanvas -> [T.Text]
+ppmCanvasToTexts = map (\x -> (ppmRowToText x) <> (T.pack "\n"))
+
 makePPMHeader :: Width -> Height -> [String]
 makePPMHeader (Width w) (Height h) = ["P3", show w ++ " " ++ show h, "255"]
 
