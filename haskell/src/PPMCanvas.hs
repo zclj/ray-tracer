@@ -1,7 +1,9 @@
 module PPMCanvas
   ( canvasToPPMString
+  , canvasToPPMString2
   , canvasToPPMStrings
   , makePPMHeader
+  , makePPMHeader2
   ) where
 
 import Canvas
@@ -110,3 +112,8 @@ canvasToPPMStrings c = header ++ ppmStringRows
 
 canvasToPPMString :: Canvas -> String
 canvasToPPMString c = unlines $ canvasToPPMStrings c
+
+canvasToPPMString2 :: Canvas -> String
+canvasToPPMString2 c = let header = makePPMHeader2 (width c) (height c)
+                           canvas = ppmCanvasToTexts (canvasToPPM c)
+                       in T.unpack $ header <> T.concat canvas
