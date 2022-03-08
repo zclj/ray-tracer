@@ -15,7 +15,12 @@ ppmCanvasTests = testGroup "PPMCanvas Tests" [
 
 toPPM :: Spec
 toPPM =
-  describe "Make Header" $ do
-    let header = SUT.makePPMHeader (Width 100) (Height 100)
-    it "creates header with height and width" $ do
-      header `shouldBe` ["P3","100 100","255"]
+  describe "String To PPM" $ do
+
+    describe "New is same as old" $ do
+      let coloredCanvas = makeCanvasWithColor
+                          (Color (Red 1) (Green 0.8) (Blue 0.6)) (Width 10) (Height 2)
+          ppm = SUT.canvasToPPMString coloredCanvas
+          ppm2 = SUT.canvasToPPMString2 coloredCanvas
+      it "creates header with height and width" $ do
+        ppm2 `shouldBe` ppm
