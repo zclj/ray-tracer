@@ -172,7 +172,7 @@ canvasPPM =
        Then ppm ends with a newline character -}
     describe "termination" $ do
       let canvas = makeCanvas (Width 5) (Height 3)
-          ppm    = last (canvasToPPMString2 canvas)
+          ppm    = last (canvasToPPMString canvas)
       it "ends with newline character" $ do
         ppm `shouldBe` '\n'
 --pendingWith "Implementation"

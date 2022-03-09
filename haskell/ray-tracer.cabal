@@ -37,7 +37,6 @@ library
       src
   build-depends:
       base >=4.7 && <5
-    , text
   default-language: Haskell2010
 
 executable ray-tracer-exe
@@ -50,7 +49,6 @@ executable ray-tracer-exe
   build-depends:
       base >=4.7 && <5
     , ray-tracer
-    , text
   default-language: Haskell2010
 
 test-suite ray-tracer-test
@@ -58,7 +56,6 @@ test-suite ray-tracer-test
   main-is: Spec.hs
   other-modules:
       CanvasSpec
-      PPMCanvasSpec
       TuplesSpec
       UtilsSpec
       Paths_ray_tracer
@@ -72,5 +69,4 @@ test-suite ray-tracer-test
     , tasty-hspec
     , tasty-hunit
     , tasty-quickcheck
-    , text
   default-language: Haskell2010

@@ -1,13 +1,11 @@
 module PPMCanvas
   ( canvasToPPMString
-  , canvasToPPMString2
   , canvasToPPMStrings
   ) where
 
 import Canvas
 import Tuples
 import Utils
-import qualified Data.Text as T
 
 data Sample = Sample Int
   deriving (Show, Eq)
@@ -66,38 +64,17 @@ canvasToPPM c = concatMap (\r -> splitPPMRow (rowToPPM r) 70) (rows c)
 ppmSampleToString :: Sample -> String
 ppmSampleToString (Sample x) = show x
 
-ppmSampleToText :: Sample -> T.Text
-ppmSampleToText (Sample x) = T.pack $ show x
-
 ppmPixelToString :: PPMSample -> String
 ppmPixelToString (PPMSample sample _) = ppmSampleToString sample
-
-ppmPixelToText :: PPMSample -> T.Text
-ppmPixelToText (PPMSample sample _) = ppmSampleToText sample
 
 ppmRowToString :: PPMSamplesRow -> String
 ppmRowToString x = unwords $ map ppmPixelToString x
 
-ppmRowToText :: PPMSamplesRow -> T.Text
-ppmRowToText x = T.intercalate (T.pack " ") $ map ppmPixelToText x
-
 ppmCanvasToStrings :: PPMCanvas -> [String]
 ppmCanvasToStrings = map ppmRowToString
 
-ppmCanvasToTexts :: PPMCanvas -> [T.Text]
-ppmCanvasToTexts = map (\x -> (ppmRowToText x) <> (T.pack "\n"))
-
 makePPMHeader :: Width -> Height -> [String]
 makePPMHeader (Width w) (Height h) = ["P3", show w ++ " " ++ show h, "255"]
-
-makePPMHeader2 :: Width -> Height -> T.Text
-makePPMHeader2 (Width w) (Height h) = (T.pack "P3\n") <> (T.pack (show w))
-  <> T.singleton ' ' <> (T.pack (show h)) <> T.singleton '\n' <> (T.pack "255\n")
-
-th = makePPMHeader2 (Width 100) (Height 100)
-
-h = makePPMHeader (Width 100) (Height 100)
--- ["P3","100 100","255"]
 
 canvasToPPMStrings :: Canvas -> [String]
 canvasToPPMStrings c = header ++ ppmStringRows
@@ -107,7 +84,3 @@ canvasToPPMStrings c = header ++ ppmStringRows
 canvasToPPMString :: Canvas -> String
 canvasToPPMString c = unlines $ canvasToPPMStrings c
 
-canvasToPPMString2 :: Canvas -> String
-canvasToPPMString2 c = let header = makePPMHeader2 (width c) (height c)
-                           canvas = ppmCanvasToTexts (canvasToPPM c)
-                       in T.unpack $ header <> T.concat canvas
