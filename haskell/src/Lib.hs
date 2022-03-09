@@ -23,7 +23,7 @@ projectileCanvas
                           color)
                       emptycanvas
                       launchresult
-    in PPM.canvasToPPMString canvas
+    in PPM.canvasToPPMString2 canvas
 
 writeCanvas :: String -> IO ()
 writeCanvas = writeFile "canvas.ppm"
