@@ -81,10 +81,6 @@ ppmRowToString x = unwords $ map ppmPixelToString x
 ppmRowToText :: PPMSamplesRow -> T.Text
 ppmRowToText x = T.intercalate (T.pack " ") $ map ppmPixelToText x
 
--- s = map ppmPixelToText [(makePPMSample 1), (makePPMSample 0.5)]
--- s1 = T.concat $ map (\x -> x <> (T.pack " ")) s
--- prt = ppmRowToText [(makePPMSample 1), (makePPMSample 0.5)]
-
 ppmCanvasToStrings :: PPMCanvas -> [String]
 ppmCanvasToStrings = map ppmRowToString
 
