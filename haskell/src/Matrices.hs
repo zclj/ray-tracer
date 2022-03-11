@@ -2,6 +2,8 @@ module Matrices
   ( Matrix
   , makeMatrix
   , getAt
+  , RowIndex (..)
+  , ColumnIndex (..)
   ) where
 
 data Matrix a = Matrix [[a]]
