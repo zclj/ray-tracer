@@ -27,4 +27,4 @@ newtype ColumnIndex = ColumnIndex Int
   deriving (Show, Eq, Ord)
 
 getAt :: Matrix a -> RowIndex -> ColumnIndex -> a
-getAt m r a = undefined
+getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c

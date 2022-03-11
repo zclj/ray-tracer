@@ -32,4 +32,4 @@ matricesBasics =
       let m = makeMatrix [[1, 2, 3, 4], [5.5, 6.5, 7.5, 8.5],
                           [9, 10, 11, 12], [13.5, 14.5, 15.5, 16.5]]
       it "4x4 matrix" $ do
-        0 `shouldBe` 1
+        SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` 1
