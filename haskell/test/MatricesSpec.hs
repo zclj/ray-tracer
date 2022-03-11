@@ -29,6 +29,7 @@ matricesBasics =
             And M[3,0] = 13.5
             And M[3,2] = 15.5 -}
     describe "Creating" $ do
-      -- let c = makeMetrices (Width 10) (Height 20)
-      it "4x4 natrix" $ do
+      let m = makeMatrix [[1, 2, 3, 4], [5.5, 6.5, 7.5, 8.5],
+                          [9, 10, 11, 12], [13.5, 14.5, 15.5, 16.5]]
+      it "4x4 matrix" $ do
         0 `shouldBe` 1
