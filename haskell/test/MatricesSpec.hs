@@ -33,3 +33,21 @@ matricesBasics =
                           [9, 10, 11, 12], [13.5, 14.5, 15.5, 16.5]]
       it "inspect [0,0] = 1" $ do
         SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` 1
+
+      it "inspect [0,3] = 4" $ do
+        SUT.getAt m (RowIndex 0) (ColumnIndex 3) `shouldBe` 4
+
+      it "inspect [1,0] = 5.5" $ do
+        SUT.getAt m (RowIndex 1) (ColumnIndex 0) `shouldBe` 5.5
+
+      it "inspect [1,2] = 7.5" $ do
+        SUT.getAt m (RowIndex 1) (ColumnIndex 2) `shouldBe` 7.5
+
+      it "inspect [2,2] = 11" $ do
+        SUT.getAt m (RowIndex 2) (ColumnIndex 2) `shouldBe` 11
+
+      it "inspect [3,0] = 13.5" $ do
+        SUT.getAt m (RowIndex 3) (ColumnIndex 0) `shouldBe` 13.5
+
+      it "inspect [3,2] = 15.5" $ do
+        SUT.getAt m (RowIndex 3) (ColumnIndex 2) `shouldBe` 15.5
