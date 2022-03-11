@@ -1,4 +1,8 @@
-module Matrices where
+module Matrices
+  ( Matrix
+  , makeMatrix
+  , getAt
+  ) where
 
 data Matrix a = Matrix [[a]]
   deriving (Show, Eq)
