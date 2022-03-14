@@ -51,3 +51,25 @@ matricesBasics =
 
       it "inspect [3,2] = 15.5" $ do
         SUT.getAt m (RowIndex 3) (ColumnIndex 2) `shouldBe` 15.5
+
+    {-  Scenario: A 2x2 matrix ought to be representable
+          Given the following 2x2 matrix M:
+            | -3 |  5 |
+            |  1 | -2 |
+          Then M[0,0] = -3
+            And M[0,1] = 5
+            And M[1,0] = 1
+            And M[1,1] = -2 -}
+    describe "Constructing and inspecting a 2x2 matrix" $ do
+      let m = makeMatrix [[(-3), 5], [1, (-2)]]
+      it "inspect [0,0] = -3" $ do
+        SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` (-3)
+
+      it "inspect [0,1] = 5" $ do
+        SUT.getAt m (RowIndex 0) (ColumnIndex 1) `shouldBe` 5
+
+      it "inspect [1,0] = 1" $ do
+        SUT.getAt m (RowIndex 1) (ColumnIndex 0) `shouldBe` 1
+
+      it "inspect [1,1] = -2" $ do
+        SUT.getAt m (RowIndex 1) (ColumnIndex 1) `shouldBe` (-2)
