@@ -73,3 +73,23 @@ matricesBasics =
 
       it "inspect [1,1] = -2" $ do
         SUT.getAt m (RowIndex 1) (ColumnIndex 1) `shouldBe` (-2)
+
+    {- Scenario: A 3x3 matrix ought to be representable
+         Given the following 3x3 matrix M:
+           | -3 |  5 |  0 |
+           |  1 | -2 | -7 |
+           |  0 |  1 |  1 |
+         Then M[0,0] = -3
+           And M[1,1] = -2
+           And M[2,2] = 1 -}
+    describe "Constructing and inspecting a 3x3 matrix" $ do
+      let m = makeMatrix [[(-3), 5, 0], [1, (-2), (-7)], [0, 1, 1]]
+      it "inspect [0,0] = -3" $ do
+        SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` (-3)
+
+      it "inspect [1,1] = -2" $ do
+        SUT.getAt m (RowIndex 1) (ColumnIndex 1) `shouldBe` (-2)
+
+      it "inspect [2,2] = 1" $ do
+        SUT.getAt m (RowIndex 2) (ColumnIndex 2) `shouldBe` 1
+       
