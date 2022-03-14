@@ -132,3 +132,11 @@ matricesBasics =
                           [8, 7, 6, 5], [4, 3, 2, 1]]
       it "A != B" $ do
         a /= b
+
+    describe "Matrix equality uses epsilon comparison" $ do
+      let a = makeMatrix [[1.000001, 2, 3, 4], [5, 6, 7, 8],
+                          [9, 8, 7, 6], [5, 4, 3, 2]]
+          b = makeMatrix [[1, 2, 3, 4], [5, 6, 7, 8],
+                          [9, 8, 7, 6], [5, 4, 3, 2]]
+      it "A == B" $ do
+        a `shouldBe` b
