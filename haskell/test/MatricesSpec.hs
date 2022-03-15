@@ -61,7 +61,7 @@ matricesBasics =
             And M[1,0] = 1
             And M[1,1] = -2 -}
     describe "Constructing and inspecting a 2x2 matrix" $ do
-      let m = makeMatrix [[(-3), 5], [1, (-2)]]
+      let m = makeMatrix [[- 3, 5], [1, -2]]
       it "inspect [0,0] = -3" $ do
         SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` (-3)
 
@@ -83,7 +83,7 @@ matricesBasics =
            And M[1,1] = -2
            And M[2,2] = 1 -}
     describe "Constructing and inspecting a 3x3 matrix" $ do
-      let m = makeMatrix [[(-3), 5, 0], [1, (-2), (-7)], [0, 1, 1]]
+      let m = makeMatrix [[- 3, 5, 0], [1, - 2, - 7], [0, 1, 1]]
       it "inspect [0,0] = -3" $ do
         SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` (-3)
 
