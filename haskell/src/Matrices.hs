@@ -7,7 +7,19 @@ module Matrices
   ) where
 
 data Matrix a = Matrix [[a]]
-  deriving (Show, Eq)
+  deriving (Show)
+
+-- Implement Eq based on Epsilon comparison of floats
+-- this avoids two floats that are "equal" being evaluated as not equal
+-- due too how floats are represented
+instance (Eq a, Num a, Ord a, Fractional a) => Eq (Matrix a) where
+  (Matrix x) == (Matrix y)
+    = let a = concat x
+          b = concat y
+          z = zip a b
+          ltep    = (\(x,y) -> abs (x - y) < epsilon)
+          epsilon = 0.0001
+      in and $ map ltep z
 
 makeMatrix :: [[a]] -> Matrix a
 makeMatrix [ [a11, a12, a13, a14]
