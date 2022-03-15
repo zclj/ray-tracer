@@ -4,6 +4,7 @@ module Matrices
   , getAt
   , RowIndex (..)
   , ColumnIndex (..)
+  , mul
   ) where
 
 data Matrix a = Matrix [[a]]
@@ -47,3 +48,6 @@ newtype ColumnIndex = ColumnIndex Int
 
 getAt :: Matrix a -> RowIndex -> ColumnIndex -> a
 getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
+
+mul :: Matrix a -> Matrix a -> Matrix a
+mul (Matrix a) (Matrix b) = undefined
