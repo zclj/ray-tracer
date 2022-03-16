@@ -168,4 +168,5 @@ matricesArithmetic =
                           [4, 3, 6, 5], [1, 2, 7, 8]]
           c = SUT.mul a b
       it "A * B = C" $ do
-        c `shouldBe` a
+        c `shouldBe` (makeMatrix [[20, 22, 50, 48], [44, 54, 114, 108],
+                                  [40, 58, 110, 102], [16, 26, 46, 42]])
