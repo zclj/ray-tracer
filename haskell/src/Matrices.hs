@@ -50,12 +50,13 @@ getAt :: Matrix a -> RowIndex -> ColumnIndex -> a
 getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
 
 mul :: Num a => Matrix a -> Matrix a -> Matrix a
-mul (Matrix a) (Matrix b) = Matrix [ [((getAt (Matrix a) (RowIndex i) (ColumnIndex 0)) *
-                                       (getAt (Matrix b) (RowIndex 0) (ColumnIndex j))) +
-                                      ((getAt (Matrix a) (RowIndex i) (ColumnIndex 1)) *
-                                       (getAt (Matrix b) (RowIndex 1) (ColumnIndex j))) +
-                                      ((getAt (Matrix a) (RowIndex i) (ColumnIndex 2)) *
-                                       (getAt (Matrix b) (RowIndex 2) (ColumnIndex j))) +
-                                      ((getAt (Matrix a) (RowIndex i) (ColumnIndex 3)) *
-                                       (getAt (Matrix b) (RowIndex 3) (ColumnIndex j)))
-                                     | j <- [0..3]] | i <- [0..3]]
+mul (Matrix a) (Matrix b) =
+  Matrix [ [((getAt (Matrix a) (RowIndex i) (ColumnIndex 0)) *
+             (getAt (Matrix b) (RowIndex 0) (ColumnIndex j))) +
+            ((getAt (Matrix a) (RowIndex i) (ColumnIndex 1)) *
+             (getAt (Matrix b) (RowIndex 1) (ColumnIndex j))) +
+            ((getAt (Matrix a) (RowIndex i) (ColumnIndex 2)) *
+             (getAt (Matrix b) (RowIndex 2) (ColumnIndex j))) +
+            ((getAt (Matrix a) (RowIndex i) (ColumnIndex 3)) *
+             (getAt (Matrix b) (RowIndex 3) (ColumnIndex j)))
+           | j <- [0..3]] | i <- [0..3]]
