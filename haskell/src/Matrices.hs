@@ -52,8 +52,6 @@ getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
 mul :: Num a => Matrix a -> Matrix a -> Matrix a
 mul a b =
   let get = (\m r c -> (getAt m (RowIndex r) (ColumnIndex c)))
-  in Matrix [ [((get a i 0) * (get b 0 j)) +
-               ((get a i 1) * (get b 1 j)) +
-               ((get a i 2) * (get b 2 j)) +
-               ((get a i 3) * (get b 3 j))
+  in Matrix [ [sum $ (foldr (\k acc -> ((get a i k)*(get b k j)):acc) [] [0..3])
               | j <- [0..3]] | i <- [0..3]]
+
