@@ -53,6 +53,6 @@ mul :: Num a => Matrix a -> Matrix a -> Matrix a
 mul a b =
   let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
       rxc = (\m1 m2 r c k -> get m1 r k * get m2 k c)
-  in Matrix [ [sum (map (\k -> rxc a b i j k) [0..3])
+  in Matrix [ [sum (map (rxc a b i j) [0..3])
               | j <- [0..3]] | i <- [0..3]]
 
