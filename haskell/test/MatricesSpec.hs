@@ -5,6 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 
+import Tuples
 import Matrices as SUT
 
 matricesTests :: TestTree
@@ -170,3 +171,18 @@ matricesArithmetic =
       it "A * B = C" $ do
         c `shouldBe` (makeMatrix [[20, 22, 50, 48], [44, 54, 114, 108],
                                   [40, 58, 110, 102], [16, 26, 46, 42]])
+    {- Scenario: A matrix multiplied by a tuple
+         Given the following matrix A:
+           | 1 | 2 | 3 | 4 |
+           | 2 | 4 | 4 | 2 |
+           | 8 | 6 | 4 | 1 |
+           | 0 | 0 | 0 | 1 |
+         And b ← tuple(1, 2, 3, 1)
+         Then A * b = tuple(18, 24, 33, 1) -}
+    describe "Multiplying a matrix by a tuple" $ do
+      let a = makeMatrix [[1, 2, 3, 4], [2, 4, 4, 2],
+                          [8, 6, 4, 1], [0, 0, 0, 1]]
+          b = Tuple 1 2 3 1
+          c = SUT.mulT a b
+      it "A * b = C" $ do
+        c `shouldBe` Tuple 18 24 33 1

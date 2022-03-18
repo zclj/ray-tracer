@@ -5,6 +5,7 @@ module Matrices
   , RowIndex (..)
   , ColumnIndex (..)
   , mul
+  , mulT
   ) where
 
 data Matrix a = Matrix [[a]]
@@ -55,3 +56,4 @@ mul a b =
       rxc = (\m1 m2 r c k -> get m1 r k * get m2 k c)
   in Matrix [[sum (map (rxc a b i j) [0..3]) | j <- [0..3]] | i <- [0..3]]
 
+mulT a b = undefined
