@@ -8,6 +8,8 @@ module Matrices
   , mulT
   ) where
 
+import qualified Tuples as T
+
 data Matrix a = Matrix [[a]]
   deriving (Show)
 
@@ -56,4 +58,14 @@ mul a b =
       rxc = (\m1 m2 r c k -> get m1 r k * get m2 k c)
   in Matrix [[sum (map (rxc a b i j) [0..3]) | j <- [0..3]] | i <- [0..3]]
 
-mulT a b = undefined
+mulT :: Matrix Double -> T.Tuple -> T.Tuple
+mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
+                          tupleFromList (x:y:z:w:_) = T.Tuple x y z w
+                      in tupleFromList [(get a 0 0) * (T.x b) +
+                                        (get a 0 1) * (T.y b) +
+                                        (get a 0 2) * (T.z b) +
+                                        (get a 0 3) * (T.w b),
+                                        1, 1, 1]
+
+foo :: Matrix Double -> [Double]
+foo (Matrix m) = head m
