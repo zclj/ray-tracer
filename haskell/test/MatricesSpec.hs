@@ -199,3 +199,11 @@ matricesArithmetic =
           b = SUT.mul a SUT.identity
       it "A * Identity = A" $ do
         a `shouldBe` b
+    {- Scenario: Multiplying the identity matrix by a tuple
+         Given a ← tuple(1, 2, 3, 4)
+         Then identity_matrix * a = a -}
+    describe "Multiplying the identity matrix by a tuple" $ do
+      let a = Tuple 1 2 3 4
+          b = SUT.mulT SUT.identity a
+      it "Identity * a = a" $ do
+        a `shouldBe` b
