@@ -12,7 +12,8 @@ matricesTests :: TestTree
 matricesTests = testGroup "Matrices Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Matrices" matricesBasics)
-  , unsafePerformIO (testSpec "Matrices" matricesArithmetic)]]
+  , unsafePerformIO (testSpec "Matrices" matricesArithmetic)
+  , unsafePerformIO (testSpec "Matrices" matrixFunctions)]]
 
 matricesBasics :: Spec
 matricesBasics =
@@ -207,3 +208,26 @@ matricesArithmetic =
           b = SUT.mulT SUT.identity a
       it "Identity * a = a" $ do
         a `shouldBe` b
+
+matrixFunctions :: Spec
+matrixFunctions =
+  describe "Matrix Functions" $ do
+    {- Scenario: Transposing a matrix
+         Given the following matrix A:
+           | 0 | 9 | 3 | 0 |
+           | 9 | 8 | 0 | 8 |
+           | 1 | 8 | 5 | 3 |
+           | 0 | 0 | 5 | 8 |
+         Then transpose(A) is the following matrix:
+           | 0 | 9 | 1 | 0 |
+           | 9 | 8 | 8 | 0 |
+           | 3 | 0 | 5 | 5 |
+           | 0 | 8 | 3 | 8 | -}
+    describe "Transpose a matrix" $ do
+      let a = makeMatrix [[0, 9, 3, 0], [9, 8, 0, 8],
+                          [1, 8, 5, 3], [0, 0, 5, 8]]
+          t = SUT.transpose a
+          b = makeMatrix [[0, 9, 1, 0], [9, 8, 8, 0],
+                          [3, 0, 5, 5], [0, 8, 3, 8]]
+      it "Transpose A" $ do
+        t `shouldBe` b
