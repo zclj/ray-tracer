@@ -6,6 +6,7 @@ module Matrices
   , ColumnIndex (..)
   , mul
   , mulT
+  , identity
   ) where
 
 import qualified Tuples as T
@@ -42,6 +43,10 @@ makeMatrix [ [a11, a12]
   = Matrix [ [a11, a12]
            , [a21, a22]]
 makeMatrix _ = error "Unsupported Matrix size"
+
+identity :: Matrix Double
+identity = Matrix [[1, 0, 0, 0], [0, 1, 0, 0],
+                   [0, 0, 1, 0], [0, 0, 0, 1]]
 
 newtype RowIndex = RowIndex Int
   deriving (Show, Eq, Ord)
