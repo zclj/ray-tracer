@@ -231,3 +231,10 @@ matrixFunctions =
                           [3, 0, 5, 5], [0, 8, 3, 8]]
       it "Transpose A" $ do
         t `shouldBe` b
+    {- Scenario: Transposing the identity matrix
+         Given A ← transpose(identity_matrix)
+         Then A = identity_matrix -}
+    describe "Transposing the identity matrix" $ do
+      let t = SUT.transpose SUT.identity
+      it "Transpose Identity is Identity" $ do
+        t `shouldBe` SUT.identity
