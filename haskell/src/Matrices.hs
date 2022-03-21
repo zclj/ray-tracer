@@ -7,6 +7,7 @@ module Matrices
   , mul
   , mulT
   , identity
+  , transpose
   ) where
 
 import qualified Tuples as T
@@ -68,4 +69,6 @@ mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
                           tupleFromList [x, y, z, w] = T.Tuple x y z w
                       in tupleFromList [tupleFromList (m !! i) `T.dot` b
                                        | i <- [0..3]]
+
+transpose a = undefined
 
