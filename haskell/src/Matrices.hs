@@ -60,7 +60,7 @@ mul a b =
 
 mulT :: Matrix Double -> T.Tuple -> T.Tuple
 mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
-                          tupleFromList (x:y:z:w:_) = T.Tuple x y z w
+                          tupleFromList [x, y, z, w] = T.Tuple x y z w
                       in tupleFromList [(get a 0 0) * (T.x b) +
                                         (get a 0 1) * (T.y b) +
                                         (get a 0 2) * (T.z b) +
