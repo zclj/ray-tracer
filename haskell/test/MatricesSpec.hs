@@ -196,6 +196,6 @@ matricesArithmetic =
     describe "Multiplying a matrix by the identity matrix" $ do
       let a = makeMatrix [[0, 1, 2, 4] , [1, 2, 4, 8],
                           [2, 4, 8, 16], [4, 8, 16, 32]]
-          b = SUT.mulT a SUT.identity
+          b = SUT.mul a SUT.identity
       it "A * Identity = A" $ do
         a `shouldBe` b
