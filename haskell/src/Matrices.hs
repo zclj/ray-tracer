@@ -70,5 +70,6 @@ mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
                       in tupleFromList [tupleFromList (m !! i) `T.dot` b
                                        | i <- [0..3]]
 
+transpose :: Matrix Double -> Matrix Double
 transpose a = undefined
 
