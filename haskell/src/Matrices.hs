@@ -71,5 +71,5 @@ mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
                                        | i <- [0..3]]
 
 transpose :: Matrix Double -> Matrix Double
-transpose a = undefined
+transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
 
