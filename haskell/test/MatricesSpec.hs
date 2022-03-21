@@ -186,3 +186,16 @@ matricesArithmetic =
           c = SUT.mulT a b
       it "A * b = C" $ do
         c `shouldBe` Tuple 18 24 33 1
+    {- Scenario: Multiplying a matrix by the identity matrix
+         Given the following matrix A:
+           | 0 | 1 |  2 |  4 |
+           | 1 | 2 |  4 |  8 |
+           | 2 | 4 |  8 | 16 |
+           | 4 | 8 | 16 | 32 |
+         Then A * identity_matrix = A -}
+    describe "Multiplying a matrix by the identity matrix" $ do
+      let a = makeMatrix [[0, 1, 2, 4] , [1, 2, 4, 8],
+                          [2, 4, 8, 16], [4, 8, 16, 32]]
+          b = SUT.mulT a SUT.identity
+      it "A * Identity = A" $ do
+        a `shouldBe` b
