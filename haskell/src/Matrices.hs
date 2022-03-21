@@ -61,6 +61,6 @@ mul a b =
 mulT :: Matrix Double -> T.Tuple -> T.Tuple
 mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
                           tupleFromList [x, y, z, w] = T.Tuple x y z w
-                      in tupleFromList [(tupleFromList (m !! i)) `T.dot` b
+                      in tupleFromList [tupleFromList (m !! i) `T.dot` b
                                        | i <- [0..3]]
 
