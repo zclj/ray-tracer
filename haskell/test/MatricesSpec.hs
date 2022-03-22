@@ -238,3 +238,13 @@ matrixFunctions =
       let t = SUT.transpose SUT.identity
       it "Transpose Identity is Identity" $ do
         t `shouldBe` SUT.identity
+    {- Scenario: Calculating the determinant of a 2x2 matrix
+         Given the following 2x2 matrix A:
+           |  1 | 5 |
+           | -3 | 2 |
+         Then determinant(A) = 17 -}
+    describe "Calculating the determinant of a 2x2 matrix" $ do
+      let a = makeMatrix [[1, 5], [- 3, 2]]
+          d = SUT.determinant a
+      it "Determinant of 2x2"
+        d `shouldBe` 17
