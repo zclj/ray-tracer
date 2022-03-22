@@ -79,4 +79,6 @@ determinant :: Matrix Double -> Double
 determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
 
 submatrix :: Matrix Double -> RowIndex -> ColumnIndex -> Matrix Double
-submatrix a r c = undefined
+submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
+  = let (pre, post) = splitAt r a
+    in Matrix pre
