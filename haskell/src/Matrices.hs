@@ -74,4 +74,5 @@ mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
 transpose :: Matrix Double -> Matrix Double
 transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
 
-determinant = undefined
+determinant :: Matrix Double -> Double
+determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
