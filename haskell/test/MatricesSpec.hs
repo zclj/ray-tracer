@@ -246,5 +246,5 @@ matrixFunctions =
     describe "Calculating the determinant of a 2x2 matrix" $ do
       let a = makeMatrix [[1, 5], [- 3, 2]]
           d = SUT.determinant a
-      it "Determinant of 2x2"
+      it "Determinant of 2x2" $ do
         d `shouldBe` 17
