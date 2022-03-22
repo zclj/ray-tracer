@@ -248,3 +248,18 @@ matrixFunctions =
           d = SUT.determinant a
       it "Determinant of 2x2" $ do
         d `shouldBe` 17
+
+    {- Scenario: A submatrix of a 3x3 matrix is a 2x2 matrix
+       Given the following 3x3 matrix A:
+         |  1 | 5 |  0 |
+         | -3 | 2 |  7 |
+         |  0 | 6 | -3 |
+       Then submatrix(A, 0, 2) is the following 2x2 matrix:
+         | -3 | 2 |
+         |  0 | 6 | -}
+    describe "A submatrix of a 3x3 matrix is a 2x2 matrix" $ do
+      let a = makeMatrix [[1, 5, 0], [- 3, 2, 7], [0, 6, - 3]]
+          s = SUT.submatrix a (RowIndex 0) (ColumnIndex 2)
+          b = makeMatrix [[- 3, 2], [0, 6]]
+      it "is a 2x2" $ do
+        s `shouldBe` b
