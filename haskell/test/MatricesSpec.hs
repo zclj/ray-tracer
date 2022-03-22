@@ -263,3 +263,20 @@ matrixFunctions =
           b = makeMatrix [[- 3, 2], [0, 6]]
       it "is a 2x2" $ do
         s `shouldBe` b
+    {- Scenario: A submatrix of a 4x4 matrix is a 3x3 matrix
+         Given the following 4x4 matrix A:
+           | -6 |  1 |  1 |  6 |
+           | -8 |  5 |  8 |  6 |
+           | -1 |  0 |  8 |  2 |
+           | -7 |  1 | -1 |  1 |
+         Then submatrix(A, 2, 1) is the following 3x3 matrix:
+           | -6 |  1 | 6 |
+           | -8 |  8 | 6 |
+           | -7 | -1 | 1 | -}
+    describe "A submatrix of a 4x4 matrix is a 3x3 matrix" $ do
+      let a = makeMatrix [[- 6, 1, 1, 6], [- 8, 5, 8, 6],
+                          [- 1, 0, 8, 2], [- 7, 1, -1, 1]]
+          s = SUT.submatrix a (RowIndex 2) (ColumnIndex 1)
+          b = makeMatrix [[- 6, 1, 6], [- 8, 8, 6], [- 7, - 1, 1]]
+      it "is a 3x3" $ do
+        s `shouldBe` b
