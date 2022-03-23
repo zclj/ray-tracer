@@ -79,11 +79,11 @@ determinant :: Matrix Double -> Double
 determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
 
 dropAt :: Int -> [a] -> [a]
-dropAt i xs = pre ++ (tail post)
+dropAt i xs = pre ++ tail post
   where (pre, post) = splitAt i xs
 
 submatrix :: Matrix Double -> RowIndex -> ColumnIndex -> Matrix Double
 submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
-  = let subRows = (dropAt r a)
+  = let subRows = dropAt r a
         subCols = map (dropAt c) subRows
     in Matrix subCols
