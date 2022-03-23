@@ -293,7 +293,5 @@ matrixFunctions =
           b = SUT.submatrix a (RowIndex 1) (ColumnIndex 0)
           d = SUT.determinant b
           m = SUT.minor a (RowIndex 1) (ColumnIndex 0)
-      it "the determinant is correct" $ do
-        d `shouldBe` 25
-      it "the minor is correct" $ do
-        m `shouldBe` 25
+      it "the minor is the determinant of the submatrix" $ do
+        m `shouldBe` d
