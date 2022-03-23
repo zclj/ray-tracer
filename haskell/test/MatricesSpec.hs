@@ -280,3 +280,20 @@ matrixFunctions =
           b = makeMatrix [[- 6, 1, 6], [- 8, 8, 6], [- 7, - 1, 1]]
       it "is a 3x3" $ do
         s `shouldBe` b
+    {- Scenario: Calculating a minor of a 3x3 matrix
+         Given the following 3x3 matrix A:
+           |  3 |  5 |  0 |
+           |  2 | -1 | -7 |
+           |  6 | -1 |  5 |
+           And B ← submatrix(A, 1, 0)
+         Then determinant(B) = 25
+           And minor(A, 1, 0) = 25 -}
+    describe "Calculating a minor of a 3x3 matrix" $ do
+      let a = makeMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
+          b = SUT.submatrix a (RowIndex 1) (ColumnIndex 0)
+          d = SUT.determinant b
+          m = SUT.minor a (RowIndex 1) (ColumnIndex 0)
+      it "the determinant is correct" $ do
+        d `shouldBe` 25
+      it "the minor is correct" $ do
+        m `shouldBe` 25
