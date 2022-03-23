@@ -10,6 +10,7 @@ module Matrices
   , transpose
   , determinant
   , submatrix
+  , minor
   ) where
 
 import qualified Tuples as T
@@ -87,3 +88,6 @@ submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
   = let subRows = dropAt r a
         subCols = map (dropAt c) subRows
     in Matrix subCols
+
+minor :: Matrix Double -> RowIndex -> ColumnIndex -> Double
+minor = undefined
