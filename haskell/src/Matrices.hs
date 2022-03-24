@@ -11,6 +11,7 @@ module Matrices
   , determinant
   , submatrix
   , minor
+  , cofactor
   ) where
 
 import qualified Tuples as T
@@ -91,3 +92,6 @@ submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
 
 minor :: Matrix Double -> RowIndex -> ColumnIndex -> Double
 minor a r = determinant . submatrix a r
+
+cofactor :: Matrix Double -> RowIndex -> ColumnIndex -> Double
+cofactor a r c = undefined
