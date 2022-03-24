@@ -341,3 +341,32 @@ matrixFunctions =
         c3 `shouldBe` - 46
       it "the determinant of A is -196" $ do
         d `shouldBe` - 196
+    {- Scenario: Calculating the determinant of a 4x4 matrix
+         Given the following 4x4 matrix A:
+           | -2 | -8 |  3 |  5 |
+           | -3 |  1 |  7 |  3 |
+           |  1 |  2 | -9 |  6 |
+           | -6 |  7 |  7 | -9 |
+         Then cofactor(A, 0, 0) = 690
+           And cofactor(A, 0, 1) = 447
+           And cofactor(A, 0, 2) = 210
+           And cofactor(A, 0, 3) = 51
+           And determinant(A) = -4071 -}
+    describe "Calculating the determinant of a 4x4 matrix" $ do
+      let a  = makeMatrix [[- 2, - 8, 3, 5], [- 3, 1, 7, 3],
+                           [1, 2, - 9, 6], [- 6, 7, 7, -9]]
+          c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
+          c2 = SUT.cofactor a (RowIndex 0) (ColumnIndex 1)
+          c3 = SUT.cofactor a (RowIndex 0) (ColumnIndex 2)
+          c4 = SUT.cofactor a (RowIndex 0) (ColumnIndex 3)
+          d  = SUT.determinant a
+      it "the cofactor at [0,0] is 690" $ do
+        c1 `shouldBe` 690
+      it "the cofactor at [0,1] is 447" $ do
+        c2 `shouldBe` 447
+      it "the cofactor at [0,2] is 210" $ do
+        c3 `shouldBe` 210
+      it "the cofactor at [0,3] is 51" $ do
+        c4 `shouldBe` 51
+      it "the determinant of A is -4071" $ do
+        d `shouldBe` - 4071
