@@ -316,5 +316,5 @@ matrixFunctions =
         c1 `shouldBe` - 12
       it "the minor at [1,0] is 25" $ do
         m2 `shouldBe` 25
-      it "the cofactor at [1,0] is -23" $ do
+      it "the cofactor at [1,0] is -25" $ do
         c2 `shouldBe` - 25
