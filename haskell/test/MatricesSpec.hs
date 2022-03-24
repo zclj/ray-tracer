@@ -295,3 +295,26 @@ matrixFunctions =
           m = SUT.minor a (RowIndex 1) (ColumnIndex 0)
       it "the minor is the determinant of the submatrix" $ do
         m `shouldBe` d
+    {- Scenario: Calculating a cofactor of a 3x3 matrix
+         Given the following 3x3 matrix A:
+           |  3 |  5 |  0 |
+           |  2 | -1 | -7 |
+           |  6 | -1 |  5 |
+         Then minor(A, 0, 0) = -12
+           And cofactor(A, 0, 0) = -12
+           And minor(A, 1, 0) = 25
+           And cofactor(A, 1, 0) = -25 -}
+    describe "Calculating a cofactor of a 3x3 matrix" $ do
+      let a = makeMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
+          m1 = SUT.minor a (RowIndex 0) (ColumnIndex 0)
+          c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
+          m2 = SUT.minor a (RowIndex 1) (ColumnIndex 0)
+          c2 = SUT.cofactor a (RowIndex 1) (ColumnIndex 0)
+      it "the minor at [0,0] is -12" $ do
+        m1 `shouldBe` - 12
+      it "the cofactor at [0,0] is -12" $ do
+        c1 `shouldBe` - 12
+      it "the minor at [1,0] is 25" $ do
+        m2 `shouldBe` 25
+      it "the cofactor at [1,0] is -23" $ do
+        c2 `shouldBe` - 25
