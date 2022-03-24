@@ -79,6 +79,11 @@ transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <
 
 determinant :: Matrix Double -> Double
 determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
+determinant m@(Matrix [[a, b, c], _, _]) =
+  (a * cofactor m (RowIndex 0) (ColumnIndex 0)) +
+  (b * cofactor m (RowIndex 0) (ColumnIndex 1)) +
+  (c * cofactor m (RowIndex 0) (ColumnIndex 2))
+-- determinant + M[0, c] * cofactor(M, 0, c)
 
 dropAt :: Int -> [a] -> [a]
 dropAt i xs = pre ++ tail post
