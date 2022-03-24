@@ -90,4 +90,4 @@ submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
     in Matrix subCols
 
 minor :: Matrix Double -> RowIndex -> ColumnIndex -> Double
-minor a r c = determinant $ submatrix a r c
+minor a r = determinant . submatrix a r
