@@ -318,3 +318,26 @@ matrixFunctions =
         m2 `shouldBe` 25
       it "the cofactor at [1,0] is -25" $ do
         c2 `shouldBe` - 25
+    {- Scenario: Calculating the determinant of a 3x3 matrix
+         Given the following 3x3 matrix A:
+           |  1 |  2 |  6 |
+           | -5 |  8 | -4 |
+           |  2 |  6 |  4 |
+         Then cofactor(A, 0, 0) = 56
+           And cofactor(A, 0, 1) = 12
+           And cofactor(A, 0, 2) = -46
+           And determinant(A) = -196 -}
+    describe "Calculating the determinant of a 3x3 matrix" $ do
+      let a  = makeMatrix [[1, 2, 6], [- 5, 8, - 4], [2, 6, 4]]
+          c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
+          c2 = SUT.cofactor a (RowIndex 0) (ColumnIndex 1)
+          c3 = SUT.cofactor a (RowIndex 0) (ColumnIndex 2)
+          d  = SUT.determinant a
+      it "the cofactor at [0,0] is 56" $ do
+        c1 `shouldBe` 56
+      it "the cofactor at [0,1] is 12" $ do
+        c2 `shouldBe` 12
+      it "the cofactor at [0,2] is -46" $ do
+        c3 `shouldBe` - 46
+      it "the determinant of A is -196" $ do
+        d `shouldBe` - 196
