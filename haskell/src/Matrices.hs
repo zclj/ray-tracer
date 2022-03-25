@@ -104,4 +104,6 @@ cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
   | otherwise     = minor a r c
 
 invertible :: Matrix Double -> Bool
-invertible a = True
+invertible a
+  | (determinant a) == 0 = False
+  | otherwise            = True
