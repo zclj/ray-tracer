@@ -99,7 +99,5 @@ minor a r = determinant . submatrix a r
 
 cofactor :: Matrix Double -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
-  = let m = minor a r c
-    in if odd (ri + ci)
-       then - m
-       else m
+  | odd (ri + ci) = - minor a r c
+  | otherwise     = minor a r c
