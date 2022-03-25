@@ -80,7 +80,9 @@ transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <
 determinant :: Matrix Double -> Double
 determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
 determinant m@(Matrix x) =
-  sum $ map (\j -> (getAt m (RowIndex 0) (ColumnIndex j)) * cofactor m (RowIndex 0) (ColumnIndex j)) [0..((length (head x)) - 1)]
+  let onRowZero = (\f c -> f m (RowIndex 0) (ColumnIndex c))
+      size      = (length (head x)) - 1
+  in sum $ map (\j -> (onRowZero getAt j) * onRowZero cofactor j) [0..size]
 
 dropAt :: Int -> [a] -> [a]
 dropAt i xs = pre ++ tail post
