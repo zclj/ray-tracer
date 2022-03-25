@@ -105,5 +105,5 @@ cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
 
 invertible :: Matrix Double -> Bool
 invertible a
-  | (determinant a) == 0 = False
-  | otherwise            = True
+  | determinant a == 0 = False
+  | otherwise          = True
