@@ -370,3 +370,35 @@ matrixFunctions =
         c4 `shouldBe` 51
       it "the determinant of A is -4071" $ do
         d `shouldBe` - 4071
+    {- Scenario: Testing an invertible matrix for invertibility
+         Given the following 4x4 matrix A:
+           |  6 |  4 |  4 |  4 |
+           |  5 |  5 |  7 |  6 |
+           |  4 | -9 |  3 | -7 |
+           |  9 |  1 |  7 | -6 |
+         Then determinant(A) = -2120
+           And A is invertible -}
+    describe "Testing an invertible matrix for invertibility" $ do
+      let a = makeMatrix [[6, 4, 4, 4], [5, 5, 7, 6],
+                          [4, - 9, 3, - 7], [9, 1, 7, - 6]]
+          d = SUT.determinant a
+      it "the determinant of A is -2120" $ do
+        d `shouldBe` - 2120
+      it "and A is invertible" $ do
+        a `shouldSatisfy` SUT.invertible
+    {- Scenario: Testing a noninvertible matrix for invertibility
+         Given the following 4x4 matrix A:
+           | -4 |  2 | -2 | -3 |
+           |  9 |  6 |  2 |  6 |
+           |  0 | -5 |  1 | -5 |
+           |  0 |  0 |  0 |  0 |
+         Then determinant(A) = 0
+           And A is not invertible -}
+    describe "Testing a noninvertible matrix for invertibility" $ do
+      let a = makeMatrix [[- 4, 2, - 2, - 3], [9, 6, 2, 6],
+                          [0, - 5, 1, - 5], [0, 0, 0, 0]]
+          d = SUT.determinant a
+      it "the determinant of A is 0" $ do
+        d `shouldBe` 0
+      it "and A is NOT invertible" $ do
+        a `shouldSatisfy` (not . SUT.invertible)
