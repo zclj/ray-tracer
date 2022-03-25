@@ -12,6 +12,7 @@ module Matrices
   , submatrix
   , minor
   , cofactor
+  , invertible
   ) where
 
 import qualified Tuples as T
@@ -101,3 +102,6 @@ cofactor :: Matrix Double -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
   | odd (ri + ci) = - minor a r c
   | otherwise     = minor a r c
+
+invertible :: Matrix Double -> Bool
+invertible a = True
