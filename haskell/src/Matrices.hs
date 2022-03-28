@@ -110,4 +110,12 @@ invertible a
   | otherwise          = True
 
 inverse :: Matrix Double -> Matrix Double
-inverse a = undefined
+inverse a
+  | invertible a = let det       = determinant a
+                                   -- note that the transpose is implicit, indexes
+                                   -- are changed, i.e., (i,j) -> (j,i)
+                       cofactors = [[(cofactor a (RowIndex i) (ColumnIndex j)) / det
+                                    | i <- [0..3]] | j <- [0..3]]
+                   in Matrix cofactors
+  | otherwise    = error "Matrix is not invertible"
+
