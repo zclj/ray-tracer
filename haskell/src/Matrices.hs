@@ -13,6 +13,7 @@ module Matrices
   , minor
   , cofactor
   , invertible
+  , inverse
   ) where
 
 import qualified Tuples as T
@@ -107,3 +108,6 @@ invertible :: Matrix Double -> Bool
 invertible a
   | determinant a == 0 = False
   | otherwise          = True
+
+inverse :: Matrix Double -> Matrix Double
+inverse a = undefined
