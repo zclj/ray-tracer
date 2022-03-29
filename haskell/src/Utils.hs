@@ -3,6 +3,7 @@ module Utils
   , splitList
   , replaceAt
   , replaceAtBy
+  , dropAt
   ) where
 
 whenSumOf :: (Num b, Ord b) => (b -> Bool) -> (a -> b) -> [a] -> Bool
@@ -36,3 +37,7 @@ replaceAt i xs x = replaceIn pre x post
 
 replaceAtBy :: Int -> [a] -> (a -> a) -> [a]
 replaceAtBy i xs f = replaceAt i xs (f (xs !! max 0 i))
+
+dropAt :: Int -> [a] -> [a]
+dropAt i xs = pre ++ tail post
+  where (pre, post) = splitAt i xs

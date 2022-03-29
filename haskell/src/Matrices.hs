@@ -17,6 +17,7 @@ module Matrices
   ) where
 
 import qualified Tuples as T
+import Utils
 
 data Matrix a = Matrix [[a]]
   deriving (Show)
@@ -85,10 +86,6 @@ determinant m@(Matrix x) =
   let onRowZero = (\f c -> f m (RowIndex 0) (ColumnIndex c))
       size      = length (head x) - 1
   in sum $ map (\j -> onRowZero getAt j * onRowZero cofactor j) [0..size]
-
-dropAt :: Int -> [a] -> [a]
-dropAt i xs = pre ++ tail post
-  where (pre, post) = splitAt i xs
 
 submatrix :: Matrix Double -> RowIndex -> ColumnIndex -> Matrix Double
 submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
