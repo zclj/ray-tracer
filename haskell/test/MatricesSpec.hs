@@ -482,3 +482,24 @@ matrixFunctions =
                           [0.17778, 0.06667, - 0.26667, 0.33333]]
       it "A is inverted" $ do
         SUT.inverse a `shouldBe` i
+    {- Scenario: Multiplying a product by its inverse
+         Given the following 4x4 matrix A:
+             |  3 | -9 |  7 |  3 |
+             |  3 | -8 |  2 | -9 |
+             | -4 |  4 |  4 |  1 |
+             | -6 |  5 | -1 |  1 |
+           And the following 4x4 matrix B:
+             |  8 |  2 |  2 |  2 |
+             |  3 | -1 |  7 |  0 |
+             |  7 |  0 |  5 |  4 |
+             |  6 | -2 |  0 |  5 |
+           And C ← A * B
+         Then C * inverse(B) = A -}
+    describe "Multiplying a product by its inverse" $ do
+      let a = makeMatrix [[3, - 9, 7, 3], [3, - 8, 2, - 9],
+                          [- 4, 4, 4, 1], [- 6, 5, - 1, 1]]
+          b = makeMatrix [[8, 2, 2, 2], [3, - 1, 7, 0],
+                          [7, 0, 5, 4], [6, - 2, 0, 5]]
+          c = SUT.mul a b
+      it "will give us the same matrix we started with" $ do
+        a `shouldBe` SUT.mul c (SUT.inverse b)
