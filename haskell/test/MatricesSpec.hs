@@ -442,3 +442,23 @@ matrixFunctions =
         SUT.getAt bi (RowIndex 2) (ColumnIndex 3) `shouldBe` 105/532
       it "B is inverted" $ do
         bi `shouldBe` ba
+    {- Scenario: Calculating the inverse of another matrix
+         Given the following 4x4 matrix A:
+           |  8 | -5 |  9 |  2 |
+           |  7 |  5 |  6 |  1 |
+           | -6 |  0 |  9 |  6 |
+           | -3 |  0 | -9 | -4 |
+         Then inverse(A) is the following 4x4 matrix:
+           | -0.15385 | -0.15385 | -0.28205 | -0.53846 |
+           | -0.07692 |  0.12308 |  0.02564 |  0.03077 |
+           |  0.35897 |  0.35897 |  0.43590 |  0.92308 |
+           | -0.69231 | -0.69231 | -0.76923 | -1.92308 | -}
+    describe "Calculating the inverse of another matrix, A" $ do
+      let a = makeMatrix [[8, - 5, 9, - 2], [7, 5, 6, 1],
+                          [- 6, 0, 9, 6], [- 3, 0, - 9, - 4]]
+          i = makeMatrix [[-  0.15385, - 0.15385, - 0.28205, - 0.53846],
+                          [- 0.07692,  0.12308,  0.02564,  0.03077],
+                          [0.35897, 0.35897, 0.43590, 0.92308],
+                          [- 0.69231, - 0.69231, - 0.76923, - 1.92308]]
+      it "A is inverted" $ do
+        SUT.inverse a `shouldBe` i
