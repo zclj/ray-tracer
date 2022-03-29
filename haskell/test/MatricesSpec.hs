@@ -462,3 +462,23 @@ matrixFunctions =
                           [- 0.69231, - 0.69231, - 0.76923, - 1.92308]]
       it "A is inverted" $ do
         SUT.inverse a `shouldBe` i
+    {- Scenario: Calculating the inverse of a third matrix
+         Given the following 4x4 matrix A:
+           |  9 |  3 |  0 |  9 |
+           | -5 | -2 | -6 | -3 |
+           | -4 |  9 |  6 |  4 |
+           | -7 |  6 |  6 |  2 |
+         Then inverse(A) is the following 4x4 matrix:
+           | -0.04074 | -0.07778 |  0.14444 | -0.22222 |
+           | -0.07778 |  0.03333 |  0.36667 | -0.33333 |
+           | -0.02901 | -0.14630 | -0.10926 |  0.12963 |
+           |  0.17778 |  0.06667 | -0.26667 |  0.33333 | -}
+    describe "Calculating the inverse of a third matrix, A" $ do
+      let a = makeMatrix [[9, 3, 0, 9], [- 5, - 2, - 6, - 3],
+                          [- 4, 9, 6, 4], [- 7, 6, 6, 2]]
+          i = makeMatrix [[- 0.04074, - 0.07778, 0.14444, - 0.22222],
+                          [- 0.07778, 0.03333, 0.36667, - 0.33333],
+                          [- 0.02901, - 0.14630, - 0.10926, 0.12963],
+                          [0.17778, 0.06667, - 0.26667, 0.33333]]
+      it "A is inverted" $ do
+        SUT.inverse a `shouldBe` i
