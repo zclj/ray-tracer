@@ -1,9 +1,12 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module MatricesSpec where
 
 import System.IO.Unsafe (unsafePerformIO)
 
 import Test.Tasty
 import Test.Tasty.Hspec as HS
+import Test.Tasty.QuickCheck as QC
 
 import Tuples
 import Matrices as SUT
@@ -13,7 +16,19 @@ matricesTests = testGroup "Matrices Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Matrices" matricesBasics)
   , unsafePerformIO (testSpec "Matrices" matricesArithmetic)
-  , unsafePerformIO (testSpec "Matrices" matrixFunctions)]]
+  , unsafePerformIO (testSpec "Matrices" matrixFunctions)
+  , properties]]
+
+properties :: TestTree
+properties = testGroup "Matrix Properties" [inversedMultiplication]
+
+instance (Arbitrary a, Fractional a) => Arbitrary (Matrix a) where
+  arbitrary =
+    return (SUT.makeMatrix [[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]])
+
+inversedMultiplication = testGroup "Prop"
+  [QC.testProperty "mul inv" $
+    \a -> SUT.inverse a == a]
 
 matricesBasics :: Spec
 matricesBasics =
