@@ -22,9 +22,11 @@ matricesTests = testGroup "Matrices Tests" [
 properties :: TestTree
 properties = testGroup "Matrix Properties" [inversedMultiplication]
 
+-- https://www.cse.chalmers.se/~rjmh/QuickCheck/manual.html
 instance (Arbitrary a, Fractional a) => Arbitrary (Matrix a) where
-  arbitrary =
-    return (SUT.makeMatrix [[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]])
+  arbitrary = do
+    xs <- vectorOf 4 (vectorOf 4 arbitrary)
+    return (SUT.makeMatrix xs)
 
 inversedMultiplication = testGroup "Prop"
   [QC.testProperty "mul inv" $
