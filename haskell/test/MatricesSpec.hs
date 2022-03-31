@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module MatricesSpec where
 
 import System.IO.Unsafe (unsafePerformIO)
