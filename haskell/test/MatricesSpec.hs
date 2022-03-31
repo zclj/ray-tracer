@@ -28,9 +28,11 @@ instance (Arbitrary a, Fractional a) => Arbitrary (Matrix a) where
     xs <- vectorOf 4 (vectorOf 4 arbitrary)
     return (SUT.makeMatrix xs)
 
-inversedMultiplication = testGroup "Prop"
-  [QC.testProperty "mul inv" $
-    \a -> SUT.inverse a == a]
+inversedMultiplication = testGroup "Operations"
+  [QC.testProperty "If A * B = C, then C * the inverse of B = A" $
+    \a b -> SUT.invertible a ==>
+      let c = (SUT.mul a b)
+      in SUT.mul c (SUT.inverse b)  == a]
 
 matricesBasics :: Spec
 matricesBasics =
