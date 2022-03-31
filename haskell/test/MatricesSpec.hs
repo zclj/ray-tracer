@@ -30,7 +30,7 @@ instance (Arbitrary a, Fractional a) => Arbitrary (Matrix a) where
 
 inversedMultiplication = testGroup "Operations"
   [QC.testProperty "If A * B = C, then C * the inverse of B = A" $
-    \a b -> SUT.invertible a ==>
+    \a b -> SUT.invertible b ==>
       let c = (SUT.mul a b)
       in SUT.mul c (SUT.inverse b)  == a]
 
