@@ -4,7 +4,6 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Test.Tasty
 import Test.Tasty.Hspec as HS
-import Test.Tasty.QuickCheck as QC
 
 import Transformations as SUT
 import Tuples
@@ -37,3 +36,12 @@ transformationBasics =
           p = point (-3) 4 5
       it "inv * p = point(-8, 7, 3)" $ do
          SUT.mul i p `shouldBe` point (-8) 7 3
+    {- Scenario: Translation does not affect vectors
+         Given transform ← translation(5, -3, 2)
+           And v ← vector(-3, 4, 5)
+         Then transform * v = v -}
+    describe "Translation does not affect vectors" $ do
+      let t = SUT.translation 5 (-3) 2
+          v = vector (-3) 4 5
+      it "transform * V = V" $ do
+        SUT.mul t v `shouldBe` v
