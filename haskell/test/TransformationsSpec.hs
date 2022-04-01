@@ -6,6 +6,7 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Transformations as SUT
+import Matrices
 import Tuples
 
 transformationTests :: TestTree
@@ -35,7 +36,7 @@ transformationBasics =
           i = SUT.inverse t
           p = point (-3) 4 5
       it "inv * p = point(-8, 7, 3)" $ do
-         SUT.mul i p `shouldBe` point (-8) 7 3
+         mulT i p `shouldBe` point (-8) 7 3
     {- Scenario: Translation does not affect vectors
          Given transform ← translation(5, -3, 2)
            And v ← vector(-3, 4, 5)
@@ -44,4 +45,4 @@ transformationBasics =
       let t = SUT.translation 5 (-3) 2
           v = vector (-3) 4 5
       it "transform * V = V" $ do
-        SUT.mul t v `shouldBe` v
+        mulT t v `shouldBe` v
