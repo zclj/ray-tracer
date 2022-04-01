@@ -30,6 +30,7 @@ library
       Matrices
       PPMCanvas
       Projectile
+      Transformations
       Tuples
       Utils
   other-modules:
@@ -58,6 +59,7 @@ test-suite ray-tracer-test
   other-modules:
       CanvasSpec
       MatricesSpec
+      TransformationsSpec
       TuplesSpec
       UtilsSpec
       Paths_ray_tracer

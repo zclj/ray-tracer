@@ -6,6 +6,7 @@ import TuplesSpec
 import CanvasSpec
 import UtilsSpec
 import MatricesSpec
+import TransformationsSpec
 
 -- integrate HSpec with Tasty
 -- https://github.com/mitchellwrosen/tasty-hspec/issues/12
@@ -15,6 +16,6 @@ main = defaultMain rayTracerTests --tupleTests
 
 rayTracerTests :: TestTree
 rayTracerTests = testGroup "Ray Tracer Specs"
-  [tupleTests, canvasTests, utilsTests, matricesTests]
+  [tupleTests, canvasTests, utilsTests, matricesTests, transformationTests]
 -- main :: IO ()
 -- main = putStrLn "Test suite not yet implemented"
