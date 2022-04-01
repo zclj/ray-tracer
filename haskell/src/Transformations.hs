@@ -5,10 +5,10 @@ module Transformations
   , inverse
   ) where
 
+import Matrices
+
 transform = undefined
 
+translation :: Double -> Double -> Double -> Matrix Double
 translation = undefined
 
-mul = undefined
-
-inverse = undefined
