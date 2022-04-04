@@ -12,11 +12,25 @@ import Tuples
 transformationTests :: TestTree
 transformationTests = testGroup "Transformation Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Transformation" transformationBasics)]]
+  [ unsafePerformIO (testSpec "Transformation" transformationTranslation),
+    unsafePerformIO (testSpec "Transformation" transformationScaling)]]
 
-transformationBasics :: Spec
-transformationBasics =
-  describe "Basics" $ do
+transformationScaling :: Spec
+transformationScaling =
+  describe "Scaling" $ do
+    {- Scenario: A scaling matrix applied to a point
+         Given transform ← scaling(2, 3, 4)
+           And p ← point(-4, 6, 8)
+         Then transform * p = point(-8, 18, 32) -}
+    describe "A scaling matrix applied to a point" $ do
+      let t = SUT.scaling 2 3 4
+          p = point (-4) 6 8
+      it "transform * p = point(-8, 18, 32)" $ do
+        mulT t p `shouldBe` point (-8) 18 32
+
+transformationTranslation :: Spec
+transformationTranslation =
+  describe "Translation" $ do
     {- Scenario: Multiplying by a translation matrix
          Given transform ← translation(5, -3, 2)
            And p ← point(-3, 4, 5)
