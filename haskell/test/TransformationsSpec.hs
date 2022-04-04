@@ -27,7 +27,15 @@ transformationScaling =
           p = point (-4) 6 8
       it "transform * p = point(-8, 18, 32)" $ do
         mulT t p `shouldBe` point (-8) 18 32
-
+    {- Scenario: A scaling matrix applied to a vector
+         Given transform ← scaling(2, 3, 4)
+           And v ← vector(-4, 6, 8)
+         Then transform * v = vector(-8, 18, 32) -}
+    describe "A scaling matrix applied to a vector" $ do
+      let t = SUT.scaling 2 3 4
+          v = vector (-4) 6 8
+      it "transform * v = vector(-8, 18, 32)" $ do
+        mulT t v `shouldBe` vector (-8) 18 32
 transformationTranslation :: Spec
 transformationTranslation =
   describe "Translation" $ do
