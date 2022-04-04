@@ -33,6 +33,17 @@ transformationRotation =
         mulT hq p `shouldBe` point 0 ((sqrt 2)/2) ((sqrt 2)/2)
       it "full_quarter * p = point(0, 0, 1)" $ do
         mulT fq p `shouldBe` point 0 0 1
+    {- Scenario: The inverse of an x-rotation rotates in the opposite direction
+         Given p ← point(0, 1, 0)
+           And half_quarter ← rotation_x(π / 4)
+           And inv ← inverse(half_quarter)
+         Then inv * p = point(0, √2/2, -√2/2) -}
+    describe "The inverse of an x-rotation rotates in the opposite direction" $ do
+      let p  = point 0 1 0
+          hq = SUT.rotationX (pi/4)
+          i  = inverse hq
+      it "inv * p = point(0, √2/2, -√2/2)" $ do
+        mulT i p `shouldBe` point 0 ((sqrt 2)/2) (-((sqrt 2)/2))
 
 transformationScaling :: Spec
 transformationScaling =
