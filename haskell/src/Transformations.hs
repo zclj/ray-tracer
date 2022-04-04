@@ -1,6 +1,7 @@
 module Transformations
   ( translation
   , scaling
+  , rotationX
   ) where
 
 import Matrices
@@ -16,3 +17,5 @@ scaling x y z = makeMatrix [[x, 0, 0, 0],
                             [0, y, 0, 0],
                             [0, 0, z, 0],
                             [0, 0, 0, 1]]
+
+rotationX r = undefined

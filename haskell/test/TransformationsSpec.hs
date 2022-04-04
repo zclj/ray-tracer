@@ -13,7 +13,26 @@ transformationTests :: TestTree
 transformationTests = testGroup "Transformation Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Transformation" transformationTranslation),
-    unsafePerformIO (testSpec "Transformation" transformationScaling)]]
+    unsafePerformIO (testSpec "Transformation" transformationScaling),
+    unsafePerformIO (testSpec "Transformation" transformationRotation)]]
+
+transformationRotation :: Spec
+transformationRotation =
+  describe "Rotation" $ do
+    {- Scenario: Rotating a point around the x axis
+         Given p ← point(0, 1, 0)
+           And half_quarter ← rotation_x(π / 4)
+           And full_quarter ← rotation_x(π / 2)
+         Then half_quarter * p = point(0, √2/2, √2/2)
+           And full_quarter * p = point(0, 0, 1) -}
+    describe "Rotating a point around the x axis" $ do
+      let p  = point 0 1 0
+          hq = SUT.rotationX (pi/4)
+          fq = SUT.rotationX (pi/2)
+      it "half_quarter * p = point(0, √2/2, √2/2)" $ do
+        mulT hq p `shouldBe` point 0 ((sqrt 2)/2) ((sqrt 2)/2)
+      it "full_quarter * p = point(0, 0, 1)" $ do
+        mulT fq p `shouldBe` point 0 0 1
 
 transformationScaling :: Spec
 transformationScaling =
