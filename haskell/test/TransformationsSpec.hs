@@ -47,6 +47,15 @@ transformationScaling =
           v = vector (-4) 6 8
       it "inv * v = vector(-2, 2, 2)" $ do
         mulT i v `shouldBe` vector (-2) 2 2
+    {- Scenario: Reflection is scaling by a negative value
+         Given transform ← scaling(-1, 1, 1)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(-2, 3, 4) -}
+    describe "Reflection is scaling by a negative value" $ do
+      let t = SUT.scaling (-1) 1 1
+          p = point 2 3 4
+      it "transform * p = point(-2, 3, 4)" $ do
+        mulT t p `shouldBe` point (-2) 3 4
 
 transformationTranslation :: Spec
 transformationTranslation =
