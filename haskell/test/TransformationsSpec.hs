@@ -36,6 +36,18 @@ transformationScaling =
           v = vector (-4) 6 8
       it "transform * v = vector(-8, 18, 32)" $ do
         mulT t v `shouldBe` vector (-8) 18 32
+    {- Scenario: Multiplying by the inverse of a scaling matrix
+         Given transform ← scaling(2, 3, 4)
+           And inv ← inverse(transform)
+           And v ← vector(-4, 6, 8)
+         Then inv * v = vector(-2, 2, 2) -}
+    describe "Multiplying by the inverse of a scaling matrix" $ do
+      let t = SUT.scaling 2 3 4
+          i = inverse t
+          v = vector (-4) 6 8
+      it "inv * v = vector(-2, 2, 2)" $ do
+        mulT i v `shouldBe` vector (-2) 2 2
+
 transformationTranslation :: Spec
 transformationTranslation =
   describe "Translation" $ do
