@@ -29,6 +29,51 @@ transformationShearing =
           p = point 2 3 4
       it "transform * p = point(5, 3, 4)" $ do
         mulT t p `shouldBe` point 5 3 4
+    {- Scenario: A shearing transformation moves x in proportion to z
+         Given transform ← shearing(0, 1, 0, 0, 0, 0)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(6, 3, 4) -}
+    describe "A shearing transformation moves x in proportion to z" $ do
+      let t = SUT.shearing 0 1 0 0 0 0
+          p = point 2 3 4
+      it "transform * p = point(6, 3, 4)" $ do
+        mulT t p `shouldBe` point 6 3 4
+    {- Scenario: A shearing transformation moves y in proportion to x
+         Given transform ← shearing(0, 0, 1, 0, 0, 0)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(2, 5, 4) -}
+    describe "A shearing transformation moves y in proportion to x" $ do
+      let t = SUT.shearing 0 0 1 0 0 0
+          p = point 2 3 4
+      it "transform * p = point(2, 5, 4)" $ do
+        mulT t p `shouldBe` point 2 5 4
+    {- Scenario: A shearing transformation moves y in proportion to z
+         Given transform ← shearing(0, 0, 0, 1, 0, 0)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(2, 7, 4) -}
+    describe "A shearing transformation moves y in proportion to z" $ do
+      let t = SUT.shearing 0 0 0 1 0 0
+          p = point 2 3 4
+      it "transform * p = point(2, 7, 4)" $ do
+        mulT t p `shouldBe` point 2 7 4
+    {- Scenario: A shearing transformation moves z in proportion to x
+         Given transform ← shearing(0, 0, 0, 0, 1, 0)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(2, 3, 6) -}
+    describe "A shearing transformation moves z in proportion to x" $ do
+      let t = SUT.shearing 0 0 0 0 1 0
+          p = point 2 3 4
+      it "transform * p = point(2, 3, 6)" $ do
+        mulT t p `shouldBe` point 2 3 6
+    {- Scenario: A shearing transformation moves z in proportion to y
+         Given transform ← shearing(0, 0, 0, 0, 0, 1)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(2, 3, 7) -}
+    describe "A shearing transformation moves z in proportion to y" $ do
+      let t = SUT.shearing 0 0 0 0 0 1
+          p = point 2 3 4
+      it "transform * p = point(2, 3, 7)" $ do
+        mulT t p `shouldBe` point 2 3 7
 
 transformationRotation :: Spec
 transformationRotation =
