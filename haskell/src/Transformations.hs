@@ -4,6 +4,7 @@ module Transformations
   , rotationX
   , rotationY
   , rotationZ
+  , shearing
   ) where
 
 import Matrices
@@ -37,3 +38,5 @@ rotationZ r = makeMatrix [[cos r, - sin r, 0, 0],
                           [sin r,   cos r, 0, 0],
                           [0,           0, 1, 0],
                           [0,           0, 0, 1]]
+
+shearing xy xz yx yz zx zy = undefined

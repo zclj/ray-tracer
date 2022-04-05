@@ -14,7 +14,21 @@ transformationTests = testGroup "Transformation Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Transformation" transformationTranslation),
     unsafePerformIO (testSpec "Transformation" transformationScaling),
-    unsafePerformIO (testSpec "Transformation" transformationRotation)]]
+    unsafePerformIO (testSpec "Transformation" transformationRotation),
+    unsafePerformIO (testSpec "Transformation" transformationShearing)]]
+
+transformationShearing :: Spec
+transformationShearing =
+  describe "Shearing" $ do
+    {- Scenario: A shearing transformation moves x in proportion to y
+         Given transform ← shearing(1, 0, 0, 0, 0, 0)
+           And p ← point(2, 3, 4)
+         Then transform * p = point(5, 3, 4) -}
+    describe "A shearing transformation moves x in proportion to y" $ do
+      let t = SUT.shearing 1 0 0 0 0 0
+          p = point 2 3 4
+      it "transform * p = point(5, 3, 4)" $ do
+        mulT t p `shouldBe` point 5 3 4
 
 transformationRotation :: Spec
 transformationRotation =
