@@ -58,6 +58,20 @@ transformationRotation =
         mulT hq p `shouldBe` point (sqrt 2 / 2) 0 (sqrt 2 / 2)
       it "full_quarter * p = point(1, 0, 0)" $ do
         mulT fq p `shouldBe` point 1 0 0
+    {- Scenario: Rotating a point around the z axis
+         Given p ← point(0, 1, 0)
+           And half_quarter ← rotation_z(π / 4)
+           And full_quarter ← rotation_z(π / 2)
+         Then half_quarter * p = point(-√2/2, √2/2, 0)
+           And full_quarter * p = point(-1, 0, 0) -}
+    describe "Rotating a point around the z axis" $ do
+      let p  = point 0 1 0
+          hq = SUT.rotationZ (pi/4)
+          fq = SUT.rotationZ (pi/2)
+      it "half_quarter * p = point(-√2/2, √2/2, 0)" $ do
+        mulT hq p `shouldBe` point (-(sqrt 2 / 2)) (sqrt 2 / 2) 0
+      it "full_quarter * p = point(-1, 0, 0)" $ do
+        mulT fq p `shouldBe` point (-1) 0 0
 
 transformationScaling :: Spec
 transformationScaling =
