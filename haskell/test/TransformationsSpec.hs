@@ -6,7 +6,7 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Transformations as SUT
-import Matrices
+import Matrices as M
 import Tuples
 
 transformationTests :: TestTree
@@ -49,6 +49,21 @@ transformationApplication =
         p3 `shouldBe` point 5 (-5) 0
       it "then apply translation; p4 = point(15, 0, 7)" $ do
         p4 `shouldBe` point 15 0 7
+    {- Scenario: Chained transformations must be applied in reverse order
+         Given p ← point(1, 0, 1)
+           And A ← rotation_x(π / 2)
+           And B ← scaling(5, 5, 5)
+           And C ← translation(10, 5, 7)
+         When T ← C * B * A
+         Then T * p = point(15, 0, 7) -}
+    describe "Chained transformations must be applied in reverse order" $ do
+      let p = point 1 0 1
+          a = SUT.rotationX (pi/2)
+          b = SUT.scaling 5 5 5
+          c = SUT.translation 10 5 7
+          t = M.mul c (M.mul b a)
+      it "T * p = point(15, 0, 7)" $ do
+        mulT t p `shouldBe` point 15 0 7
 
 transformationShearing :: Spec
 transformationShearing =
