@@ -15,7 +15,40 @@ transformationTests = testGroup "Transformation Tests" [
   [ unsafePerformIO (testSpec "Transformation" transformationTranslation),
     unsafePerformIO (testSpec "Transformation" transformationScaling),
     unsafePerformIO (testSpec "Transformation" transformationRotation),
-    unsafePerformIO (testSpec "Transformation" transformationShearing)]]
+    unsafePerformIO (testSpec "Transformation" transformationShearing),
+    unsafePerformIO (testSpec "Transformation" transformationApplication)]]
+
+transformationApplication :: Spec
+transformationApplication =
+  describe "Application" $ do
+    {- Scenario: Individual transformations are applied in sequence
+         Given p ← point(1, 0, 1)
+           And A ← rotation_x(π / 2)
+           And B ← scaling(5, 5, 5)
+           And C ← translation(10, 5, 7)
+         # apply rotation first
+         When p2 ← A * p
+         Then p2 = point(1, -1, 0)
+         # then apply scaling
+         When p3 ← B * p2
+         Then p3 = point(5, -5, 0)
+         # then apply translation
+         When p4 ← C * p3
+         Then p4 = point(15, 0, 7) -}
+    describe "Individual transformations are applied in sequence" $ do
+      let p  = point 1 0 1
+          a  = SUT.rotationX (pi/2)
+          b  = SUT.scaling 5 5 5
+          c  = SUT.translation 10 5 7
+          p2 = mulT a p
+          p3 = mulT b p2
+          p4 = mulT c p3
+      it "apply rotation first; p2 = point(1, -1, 0)" $ do
+        p2 `shouldBe` point 1 (-1) 0
+      it "then apply scaling; p3 = point(5, -5, 0)" $ do
+        p3 `shouldBe` point 5 (-5) 0
+      it "then apply translation; p4 = point(15, 0, 7)" $ do
+        p4 `shouldBe` point 15 0 7
 
 transformationShearing :: Spec
 transformationShearing =
