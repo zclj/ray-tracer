@@ -39,4 +39,8 @@ rotationZ r = makeMatrix [[cos r, - sin r, 0, 0],
                           [0,           0, 1, 0],
                           [0,           0, 0, 1]]
 
-shearing xy xz yx yz zx zy = undefined
+shearing :: Double -> Double -> Double -> Double -> Double -> Double -> Matrix Double
+shearing xy xz yx yz zx zy = makeMatrix [[1 , xy, xz, 0],
+                                         [yx, 1 , yz, 0],
+                                         [zx, zy, 1 , 0],
+                                         [0 , 0 , 0 , 1]]
