@@ -18,7 +18,8 @@ matricesTests = testGroup "Matrices Tests" [
   , properties]]
 
 properties :: TestTree
-properties = testGroup "Matrix Properties" [inversedMultiplication]
+properties = testGroup "Matrix Properties" [inversedMultiplication,
+                                            monoidLaws]
 
 -- https://www.cse.chalmers.se/~rjmh/QuickCheck/manual.html
 instance Arbitrary Matrix where
@@ -31,6 +32,14 @@ inversedMultiplication = testGroup "Operations"
     \a b -> SUT.invertible b ==>
       let c = SUT.mul a b
       in SUT.mul c (SUT.inverse b)  == a]
+
+monoidLaws = testGroup "Monoid Laws"
+  [QC.testProperty "Associativity - a <> (b <> c) = (a <> b) <> c" $
+    \a b c -> (a::Matrix) <> (b <> c) == (a <> b) <> c,
+   QC.testProperty "Left Identity - mempty <> a = a" $
+    \a -> mempty (a::Matrix) <> a == a,
+   QC.testProperty "Right Identity - a <> mempty = a" $
+    \a -> (a::Matrix) <> mempty a == a]
 
 matricesBasics :: Spec
 matricesBasics =
