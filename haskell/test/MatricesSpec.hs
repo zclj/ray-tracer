@@ -21,7 +21,7 @@ properties :: TestTree
 properties = testGroup "Matrix Properties" [inversedMultiplication]
 
 -- https://www.cse.chalmers.se/~rjmh/QuickCheck/manual.html
-instance (Arbitrary a, Fractional a) => Arbitrary (Matrix a) where
+instance Arbitrary Matrix where
   arbitrary = do
     xs <- vectorOf 4 (vectorOf 4 arbitrary)
     return (SUT.makeMatrix xs)
