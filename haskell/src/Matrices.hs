@@ -31,6 +31,12 @@ instance Eq Matrix where
           epsilon = 0.0001
       in all ltep $ zip (concat x) (concat y)
 
+instance Semigroup Matrix where
+  (<>) x y = x `mul` y
+
+instance Monoid Matrix where
+  mempty = identity
+
 makeMatrix :: [[Double]] -> Matrix
 makeMatrix [ [a11, a12, a13, a14]
            , [a21, a22, a23, a24]
