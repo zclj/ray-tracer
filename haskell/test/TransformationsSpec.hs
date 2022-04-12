@@ -58,10 +58,9 @@ transformationApplication =
          Then T * p = point(15, 0, 7) -}
     describe "Chained transformations must be applied in reverse order" $ do
       let p = point 1 0 1
-          a = SUT.rotationX (pi/2)
-          b = SUT.scaling 5 5 5
-          c = SUT.translation 10 5 7
-          t = M.mul c (M.mul b a)
+          t = SUT.transform [SUT.rotationX (pi/2),
+                             SUT.scaling 5 5 5,
+                             SUT.translation 10 5 7]
       it "T * p = point(15, 0, 7)" $ do
         mulT t p `shouldBe` point 15 0 7
 
