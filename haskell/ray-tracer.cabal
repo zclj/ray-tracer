@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Canvas
+      Clock
       Lib
       Matrices
       PPMCanvas
