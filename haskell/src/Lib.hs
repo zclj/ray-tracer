@@ -11,9 +11,9 @@ import Tuples
 import Projectile
 import Clock
 
-runDemo = writeCanvas projectileCanvas
+runDemo fname = writeCanvas fname projectileCanvas
 
-runDemoClock = writeCanvas clockCanvas
+runDemoClock fname = writeCanvas fname clockCanvas
 
 projectileCanvas :: String
 projectileCanvas
@@ -36,5 +36,5 @@ clockCanvas
         canvas      = write emptyCanvas (Width (floor (x origin))) (Height (floor (y origin))) color
     in PPM.canvasToPPMString canvas
 
-writeCanvas :: String -> IO ()
-writeCanvas = writeFile "canvasClock.ppm"
+writeCanvas :: String -> String -> IO ()
+writeCanvas = writeFile
