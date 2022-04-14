@@ -33,7 +33,11 @@ clockCanvas :: String
 clockCanvas
   = let color       = Color (Red 1) (Green 0.8) (Blue 0.6)
         emptyCanvas = makeCanvas (Width 800) (Height 800)
-        canvas      = write emptyCanvas (Width (floor (x origin))) (Height (floor (y origin))) color
+        canvas      = foldr (\(Tuple x y _ _) canvas ->
+                               write canvas (Width (floor x)) (Height (floor y)) color)
+                      emptyCanvas
+                      clock
+          -- write emptyCanvas (Width (floor (x origin))) (Height (floor (y origin))) color
     in PPM.canvasToPPMString canvas
 
 writeCanvas :: String -> String -> IO ()
