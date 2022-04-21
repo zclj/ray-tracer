@@ -17,4 +17,4 @@ makeRay p v
   | otherwise        = Ray p v
 
 position :: Ray -> Double -> Tuple
-position r t = undefined
+position (Ray origin direction) t = origin `add` (direction `mul` t )
