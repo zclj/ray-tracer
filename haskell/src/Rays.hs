@@ -1,6 +1,7 @@
 module Rays
   ( makeRay
   , Ray(origin, direction)
+  , position
   ) where
 
 import Tuples
@@ -14,3 +15,6 @@ makeRay p v
   | not (isPoint p)  = error "p must be a point"
   | not (isVector v) = error "v must be a vector"
   | otherwise        = Ray p v
+
+position :: Ray -> Double -> Tuple
+position r t = undefined
