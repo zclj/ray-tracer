@@ -32,6 +32,7 @@ library
       PPMCanvas
       Projectile
       Rays
+      Spheres
       Transformations
       Tuples
       Utils
@@ -62,6 +63,7 @@ test-suite ray-tracer-test
       CanvasSpec
       MatricesSpec
       RaysSpec
+      SpheresSpec
       TransformationsSpec
       TuplesSpec
       UtilsSpec
