@@ -51,3 +51,14 @@ sphereIntersections =
         (head xs) `shouldBe` 5.0
       it "intersection two is 5.0" $ do
         (last xs) `shouldBe` 5.0
+    {- Scenario: A ray misses a sphere
+         Given r ← ray(point(0, 2, -5), vector(0, 0, 1))
+           And s ← sphere()
+         When xs ← intersect(s, r)
+         Then xs.count = 0 -}
+    describe "A ray misses a sphere" $ do
+      let r = makeRay (point 0 2 (-5)) (vector 0 0 1)
+          s = SUT.makeUnitSphere 1
+          xs = SUT.intersects s r
+      it "there are no intersections" $ do
+        length xs `shouldBe` 0
