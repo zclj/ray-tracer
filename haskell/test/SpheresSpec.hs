@@ -34,3 +34,20 @@ sphereIntersections =
         (head xs) `shouldBe` 4.0
       it "intersection two is 6.0" $ do
         (last xs) `shouldBe` 6.0
+    {- Scenario: A ray intersects a sphere at a tangent
+         Given r ← ray(point(0, 1, -5), vector(0, 0, 1))
+           And s ← sphere()
+         When xs ← intersect(s, r)
+         Then xs.count = 2
+           And xs[0] = 5.0
+           And xs[1] = 5.0 -}
+    describe "A ray intersects a sphere at a tangent" $ do
+      let r = makeRay (point 0 1 (-5)) (vector 0 0 1)
+          s = SUT.makeUnitSphere 1
+          xs = SUT.intersects s r
+      it "there are two intersections" $ do
+        length xs `shouldBe` 2
+      it "intersection one is 5.0" $ do
+        (head xs) `shouldBe` 5.0
+      it "intersection two is 5.0" $ do
+        (last xs) `shouldBe` 5.0
