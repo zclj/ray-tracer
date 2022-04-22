@@ -79,3 +79,20 @@ sphereIntersections =
         (head xs) `shouldBe` (-1.0)
       it "intersection two is 1.0" $ do
         (last xs) `shouldBe` 1.0
+    {- Scenario: A sphere is behind a ray
+         Given r ← ray(point(0, 0, 5), vector(0, 0, 1))
+           And s ← sphere()
+         When xs ← intersect(s, r)
+         Then xs.count = 2
+           And xs[0] = -6.0
+           And xs[1] = -4.0 -}
+    describe "A sphere is behind a ray" $ do
+      let r = makeRay (point 0 0 5) (vector 0 0 1)
+          s = SUT.makeUnitSphere 1
+          xs = SUT.intersects s r
+      it "there are two intersections" $ do
+        length xs `shouldBe` 2
+      it "intersection one is -6.0" $ do
+        (head xs) `shouldBe` (-6.0)
+      it "intersection two is -4.0" $ do
+        (last xs) `shouldBe` (-4.0)
