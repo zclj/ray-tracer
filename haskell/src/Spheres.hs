@@ -5,6 +5,7 @@ module Spheres
   ) where
 
 import Rays
+import Tuples
 
 data Sphere = Sphere { id     :: Int
                      , radius :: Double }
@@ -13,6 +14,13 @@ data Sphere = Sphere { id     :: Int
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0
 
--- https://en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
 intersects :: Sphere -> Ray -> [Double]
-intersects s r = undefined
+intersects s r = let sphereToRay  = (origin r) `sub` point 0 0 0
+                     a            = (direction r) `dot` (direction r)
+                     b            = 2 * ((direction r) `dot` sphereToRay)
+                     c            = (sphereToRay `dot` sphereToRay) - 1
+                     discriminant = b^2 - (4 * a * c)
+                 in if discriminant < 0
+                    then []
+                    else [ ((-b) - (sqrt discriminant)) / (2 * a)
+                         , ((-b) + (sqrt discriminant)) / (2 * a)]
