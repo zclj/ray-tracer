@@ -9,6 +9,7 @@ import Tuples
 
 data Sphere = Sphere { id     :: Int
                      , radius :: Double }
+              deriving (Show, Eq)
 
 
 makeUnitSphere :: Int -> Sphere
