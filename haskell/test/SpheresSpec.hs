@@ -28,7 +28,7 @@ sphereIntersections =
     describe "A ray intersects a sphere at two points" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = intersects s r
+          xs@(x:y:_) = intersect s r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is 4.0" $ do
@@ -45,7 +45,7 @@ sphereIntersections =
     describe "A ray intersects a sphere at a tangent" $ do
       let r          = makeRay (point 0 1 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = intersects s r
+          xs@(x:y:_) = intersect s r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is 5.0" $ do
@@ -60,7 +60,7 @@ sphereIntersections =
     describe "A ray misses a sphere" $ do
       let r  = makeRay (point 0 2 (-5)) (vector 0 0 1)
           s  = SUT.makeUnitSphere 1
-          xs = intersects s r
+          xs = intersect s r
       it "there are no intersections" $ do
         length xs `shouldBe` 0
     {- Scenario: A ray originates inside a sphere
@@ -73,7 +73,7 @@ sphereIntersections =
     describe "A ray originates inside a sphere" $ do
       let r = makeRay (point 0 0 0) (vector 0 0 1)
           s = SUT.makeUnitSphere 1
-          xs@(x:y:_) = intersects s r
+          xs@(x:y:_) = intersect s r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is -1.0" $ do
@@ -90,7 +90,7 @@ sphereIntersections =
     describe "A sphere is behind a ray" $ do
       let r = makeRay (point 0 0 5) (vector 0 0 1)
           s = SUT.makeUnitSphere 1
-          xs@(x:y:_) = intersects s r
+          xs@(x:y:_) = intersect s r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is -6.0" $ do
