@@ -11,7 +11,8 @@ import Intersections as SUT
 intersectionsTests :: TestTree
 intersectionsTests = testGroup "Intersections Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Intersections" intersections)]]
+  [ unsafePerformIO (testSpec "Intersections" intersections)
+  , unsafePerformIO (testSpec "Intersections" hits)]]
 
 intersections :: Spec
 intersections =
@@ -49,3 +50,22 @@ intersections =
         t (head xs) `shouldBe` 1
       it "the second intersections t is 2" $ do
         t (last xs) `shouldBe` 2
+
+hits :: Spec
+hits =
+  describe "Intersection hits" $ do
+    {- Scenario: The hit, when all intersections have positive t
+         Given s ← sphere()
+           And i1 ← intersection(1, s)
+           And i2 ← intersection(2, s)
+           And xs ← intersections(i2, i1)
+         When i ← hit(xs)
+         Then i = i1 -}
+    describe "The hit, when all intersections have positive t" $ do
+      let s  = makeUnitSphere 1
+          i1 = SUT.Intersection 1 s
+          i2 = SUT.Intersection 2 s
+          xs = [i1, i2]
+          i  = SUT.hit xs
+      it "The hit is the first positive intersection" $ do
+        i `shouldBe` i1
