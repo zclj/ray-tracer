@@ -97,3 +97,20 @@ sphereIntersections =
         t x `shouldBe` (-6.0)
       it "intersection two is -4.0" $ do
         t y `shouldBe` (-4.0)
+    {- Scenario: Intersect sets the object on the intersection
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And s ← sphere()
+         When xs ← intersect(s, r)
+         Then xs.count = 2
+           And xs[0].object = s
+           And xs[1].object = s -}
+    describe "Intersect sets the object on the intersection" $ do
+      let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          s          = SUT.makeUnitSphere 1
+          xs@(x:y:_) = intersect s r
+      it "there are two intersections" $ do
+        length xs `shouldBe` 2
+      it "the object of the first intersection is s" $ do
+        object x `shouldBe` s
+      it "the object of the second intersection is s" $ do
+        object y `shouldBe` s
