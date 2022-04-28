@@ -24,11 +24,11 @@ intersections =
            And i.object = s -}
     describe "An intersection encapsulates t and object" $ do
       let s = makeUnitSphere 1
-          i = (SUT.Intersection 3.5 s)
+          i = SUT.Intersection 3.5 s
       it "t of intersection is 3.5" $ do
-        (t i) `shouldBe` 3.5
+        t i `shouldBe` 3.5
       it "object is the sphere" $ do
-        (object i) `shouldBe` s
+        object i `shouldBe` s
     {- Scenario: Aggregating intersections
          Given s ← sphere()
            And i1 ← intersection(1, s)
@@ -113,7 +113,7 @@ hits =
           i1 = SUT.Intersection 5 s
           i2 = SUT.Intersection 7 s
           i3 = SUT.Intersection (-3) s
-          i4 = SUT.Intersection (2) s
+          i4 = SUT.Intersection 2 s
           xs = [i1, i2, i3, i4]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
