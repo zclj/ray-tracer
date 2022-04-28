@@ -7,7 +7,7 @@ module Intersections
 import Spheres
 import Rays
 import Tuples
-import Data.List (sort)
+import Data.List (sort, find)
 
 data Intersection = Intersection { t      :: Double
                                  , object :: Sphere}
@@ -24,6 +24,7 @@ intersect s r = let sphereToRay  = (origin r) `sub` point 0 0 0
                    else [ Intersection (((-b) - (sqrt discriminant)) / (2 * a)) s
                         , Intersection (((-b) + (sqrt discriminant)) / (2 * a)) s]
 
-hit :: [Intersection] -> Intersection
-hit xs = let sorted = sort xs
-         in head sorted
+-- |The `hit` function returns the first non-negative intersection.
+-- Intersections with a negative value are 'behind', positive 'infront'
+hit :: [Intersection] -> Maybe Intersection
+hit xs = find (\(Intersection t _) -> (t > 0)) $ sort xs

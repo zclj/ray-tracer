@@ -68,7 +68,7 @@ hits =
           xs = [i1, i2]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
-        i `shouldBe` i1
+        i `shouldBe` Just i1
     {- Scenario: The hit, when some intersections have negative t
          Given s ← sphere()
            And i1 ← intersection(-1, s)
@@ -83,7 +83,7 @@ hits =
           xs = [i2, i1]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
-        i `shouldBe` i2
+        i `shouldBe` Just i2
     {- Scenario: The hit, when all intersections have negative t
          Given s ← sphere()
            And i1 ← intersection(-2, s)
@@ -117,4 +117,4 @@ hits =
           xs = [i1, i2, i3, i4]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
-        i `shouldBe` i4
+        i `shouldBe` Just i4
