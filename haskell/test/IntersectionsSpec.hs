@@ -69,3 +69,52 @@ hits =
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
         i `shouldBe` i1
+    {- Scenario: The hit, when some intersections have negative t
+         Given s ← sphere()
+           And i1 ← intersection(-1, s)
+           And i2 ← intersection(1, s)
+           And xs ← intersections(i2, i1)
+         When i ← hit(xs)
+         Then i = i2 -}
+    describe "The hit, when some intersections have negative t" $ do
+      let s  = makeUnitSphere 1
+          i1 = SUT.Intersection (-1) s
+          i2 = SUT.Intersection 1 s
+          xs = [i2, i1]
+          i  = SUT.hit xs
+      it "The hit is the first positive intersection" $ do
+        i `shouldBe` i2
+    {- Scenario: The hit, when all intersections have negative t
+         Given s ← sphere()
+           And i1 ← intersection(-2, s)
+           And i2 ← intersection(-1, s)
+           And xs ← intersections(i2, i1)
+         When i ← hit(xs)
+         Then i is nothing -}
+    describe "The hit, when all intersections have negative t" $ do
+      let s  = makeUnitSphere 1
+          i1 = SUT.Intersection (-2) s
+          i2 = SUT.Intersection (-1) s
+          xs = [i2, i1]
+          i  = SUT.hit xs
+      it "The hit is the first positive intersection" $ do
+        i `shouldBe` Nothing
+    {- Scenario: The hit is always the lowest nonnegative intersection
+         Given s ← sphere()
+           And i1 ← intersection(5, s)
+           And i2 ← intersection(7, s)
+           And i3 ← intersection(-3, s)
+           And i4 ← intersection(2, s)
+           And xs ← intersections(i1, i2, i3, i4)
+         When i ← hit(xs)
+         Then i = i4 -}
+    describe "The hit is always the lowest nonnegative intersection" $ do
+      let s  = makeUnitSphere 1
+          i1 = SUT.Intersection 5 s
+          i2 = SUT.Intersection 7 s
+          i3 = SUT.Intersection (-3) s
+          i4 = SUT.Intersection (2) s
+          xs = [i1, i2, i3, i4]
+          i  = SUT.hit xs
+      it "The hit is the first positive intersection" $ do
+        i `shouldBe` i4
