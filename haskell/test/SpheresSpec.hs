@@ -9,6 +9,7 @@ import Tuples
 import Rays
 import Intersections
 import Matrices
+import Transformations
 import Spheres as SUT
 
 spheresTests :: TestTree
@@ -27,6 +28,17 @@ sphereTransformation =
       let s = SUT.makeUnitSphere 1
       it "is the identity matrix" $ do
         SUT.transform s `shouldBe` identity
+    {- Scenario: Changing a sphere's transformation
+         Given s ← sphere()
+           And t ← translation(2, 3, 4)
+         When set_transform(s, t)
+         Then s.transform = t -}
+    describe "Changing a sphere's transformation" $ do
+      let s  = SUT.makeUnitSphere 1
+          t  = translation 2 3 4
+          s' = s { SUT.transform = t }
+      it "result in a new sphere with the new transformation" $ do
+        SUT.transform s' `shouldBe` t
 
 sphereIntersections :: Spec
 sphereIntersections =

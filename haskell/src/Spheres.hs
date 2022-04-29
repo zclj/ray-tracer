@@ -12,7 +12,6 @@ data Sphere = Sphere { id        :: Int
                      , transform :: Matrix}
               deriving (Show, Eq, Ord)
 
-
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identity
 
