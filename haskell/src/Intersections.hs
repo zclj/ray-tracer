@@ -27,4 +27,4 @@ intersect s r = let sphereToRay  = origin r `sub` point 0 0 0
 -- |The `hit` function returns the first non-negative intersection.
 -- Intersections with a negative value are 'behind', positive 'infront'
 hit :: [Intersection] -> Maybe Intersection
-hit xs = find (\(Intersection t _) -> t > 0) $ sort xs
+hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
