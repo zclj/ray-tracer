@@ -8,12 +8,25 @@ import Test.Tasty.Hspec as HS
 import Tuples
 import Rays
 import Intersections
+import Matrices
 import Spheres as SUT
 
 spheresTests :: TestTree
 spheresTests = testGroup "Spheres Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Spheres" sphereIntersections)]]
+  [ unsafePerformIO (testSpec "Spheres" sphereIntersections)
+  , unsafePerformIO (testSpec "Spheres" sphereTransformation)]]
+
+sphereTransformation :: Spec
+sphereTransformation =
+  describe "Transformations" $ do
+    {- Scenario: A sphere's default transformation
+         Given s ← sphere()
+         Then s.transform = identity_matrix -}
+    describe "A sphere's default transformation" $ do
+      let s = SUT.makeUnitSphere 1
+      it "is the identity matrix" $ do
+        SUT.transform s `shouldBe` identity
 
 sphereIntersections :: Spec
 sphereIntersections =

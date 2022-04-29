@@ -5,12 +5,14 @@ module Spheres
 
 import Rays
 import Tuples
+import Matrices
 
-data Sphere = Sphere { id     :: Int
-                     , radius :: Double }
+data Sphere = Sphere { id        :: Int
+                     , radius    :: Double
+                     , transform :: Matrix}
               deriving (Show, Eq, Ord)
 
 
 makeUnitSphere :: Int -> Sphere
-makeUnitSphere id = Sphere id 1.0
+makeUnitSphere id = Sphere id 1.0 identity
 
