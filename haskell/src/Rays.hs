@@ -2,9 +2,11 @@ module Rays
   ( makeRay
   , Ray(origin, direction)
   , position
+  , transform
   ) where
 
 import Tuples
+import Matrices (Matrix (..))
 
 data Ray = Ray { origin :: Tuple
                , direction :: Tuple }
@@ -18,3 +20,6 @@ makeRay p v
 
 position :: Ray -> Double -> Tuple
 position (Ray origin direction) t = origin `add` (direction `mul` t )
+
+transform :: Ray -> Matrix -> Ray
+transform r m = undefined
