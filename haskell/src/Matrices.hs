@@ -20,7 +20,7 @@ import qualified Tuples as T
 import Utils
 
 data Matrix = Matrix [[Double]]
-  deriving (Show)
+  deriving (Show, Ord)
 
 -- Implement Eq based on Epsilon comparison of floats
 -- this avoids two floats that are "equal" being evaluated as not equal
