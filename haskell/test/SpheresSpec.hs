@@ -139,3 +139,37 @@ sphereIntersections =
         object x `shouldBe` s
       it "the object of the second intersection is s" $ do
         object y `shouldBe` s
+    {- Scenario: Intersecting a scaled sphere with a ray
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And s ← sphere()
+         When set_transform(s, scaling(2, 2, 2))
+           And xs ← intersect(s, r)
+         Then xs.count = 2
+           And xs[0].t = 3
+           And xs[1].t = 7 -}
+    describe "Intersecting a scaled sphere with a ray" $ do
+      let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          s          = SUT.makeUnitSphere 1
+          m          = scaling 2 2 2
+          s'         = s { SUT.transform = m }
+          xs@(x:y:_) = s' `intersect` r
+      it "there are two intersections" $ do
+        length xs `shouldBe` 2
+      it "the object of the first intersection is s" $ do
+        t x `shouldBe` 3
+      it "the object of the second intersection is s" $ do
+        t y `shouldBe` 7
+    {- Scenario: Intersecting a translated sphere with a ray
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And s ← sphere()
+         When set_transform(s, translation(5, 0, 0))
+           And xs ← intersect(s, r)
+         Then xs.count = 0 -}
+    describe "Intersecting a translated sphere with a ray" $ do
+      let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          s          = SUT.makeUnitSphere 1
+          m          = translation 5 0 0
+          s'         = s { SUT.transform = m }
+          xs@(x:y:_) = s' `intersect` r
+      it "there are two intersections" $ do
+        length xs `shouldBe` 0
