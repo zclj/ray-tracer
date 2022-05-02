@@ -33,6 +33,7 @@ library
       PPMCanvas
       Projectile
       Rays
+      Silhouette
       Spheres
       Transformations
       Tuples
