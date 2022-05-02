@@ -4,9 +4,10 @@ module Intersections
   , hit
   ) where
 
-import Spheres
-import Rays
+import Spheres as S
+import Rays as R
 import Tuples
+import Matrices
 import Data.List (sort, find)
 
 data Intersection = Intersection { t      :: Double
@@ -14,9 +15,10 @@ data Intersection = Intersection { t      :: Double
                   deriving (Show, Eq, Ord)
 
 intersect :: Sphere -> Ray -> [Intersection]
-intersect s r = let sphereToRay  = origin r `sub` point 0 0 0
-                    a            = direction r `dot` direction r
-                    b            = 2 * (direction r `dot` sphereToRay)
+intersect s r = let r'           = R.transform r (inverse (S.transform s))
+                    sphereToRay  = origin r' `sub` point 0 0 0
+                    a            = direction r' `dot` direction r'
+                    b            = 2 * (direction r' `dot` sphereToRay)
                     c            = (sphereToRay `dot` sphereToRay) - 1
                     discriminant = b^2 - (4 * a * c)
                 in if discriminant < 0
