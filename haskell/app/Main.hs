@@ -3,4 +3,4 @@ module Main where
 import Lib
 
 main :: IO ()
-main = do runDemo "canvas.ppm" >> runDemoClock "canvasClock.ppm"
+main = do runDemo "canvas.ppm" >> runDemoClock "canvasClock.ppm" >> runDemoSilhouette "canvasSilhouette.ppm"

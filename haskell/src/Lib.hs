@@ -3,6 +3,7 @@ module Lib
     , writeCanvas
     , projectileCanvas
     , runDemoClock
+    , runDemoSilhouette
     ) where
 
 import Canvas
@@ -10,10 +11,13 @@ import PPMCanvas as PPM
 import Tuples
 import Projectile
 import Clock
+import Silhouette
 
 runDemo fname = writeCanvas fname projectileCanvas
 
 runDemoClock fname = writeCanvas fname clockCanvas
+
+runDemoSilhouette fname = writeCanvas fname silhouetteCanvas
 
 projectileCanvas :: String
 projectileCanvas
@@ -39,6 +43,10 @@ clockCanvas
                       clock
           -- write emptyCanvas (Width (floor (x origin))) (Height (floor (y origin))) color
     in PPM.canvasToPPMString canvas
+
+silhouetteCanvas :: String
+silhouetteCanvas = let c = cast
+                   in PPM.canvasToPPMString c
 
 writeCanvas :: String -> String -> IO ()
 writeCanvas = writeFile
