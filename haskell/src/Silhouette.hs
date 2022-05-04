@@ -14,7 +14,7 @@ wallZ = 10
 wallSize :: Double
 wallSize = 7.0
 
-canvasPixels = 100
+canvasPixels = 1000
 pixelSize = wallSize / (fromIntegral canvasPixels)
 
 half = wallSize / 2
@@ -53,7 +53,7 @@ cast = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
                emptyCanvas
                [0..(canvasPixels - 1)]
        in writtenCanvas
-       
+
           -- For each row of pixels in the canvas
           -- compute the world y coordinate (top = +half, bottom = -half)
 
