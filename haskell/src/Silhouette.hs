@@ -19,21 +19,41 @@ pixelSize = wallSize / (fromIntegral canvasPixels)
 
 half = wallSize / 2
 
-processPixel :: Double -> Double -> Sphere -> Maybe Intersection
-processPixel x worldY shape = let worldX   = (-half) + (pixelSize * x)
-                                  position = point worldX worldY wallZ
-                                  ray = makeRay rayOrigin (norm (position `sub` rayOrigin))
-                                  xs = intersect shape ray
-                              in hit xs
+toWorldX :: Int -> Double
+toWorldX x = (-half) + (pixelSize * (fromIntegral x))
+
+toWorldY :: Int -> Double
+toWorldY y = half - (pixelSize * (fromIntegral y))
+
+processPixel :: Int -> Int -> Sphere -> Maybe Intersection
+processPixel x y shape = let worldX   = toWorldX x
+                             worldY   = toWorldY y
+                             position = point worldX worldY wallZ
+                             ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
+                             xs       = intersect shape ray
+                         in hit xs
+
+castOnPixel :: Int -> Int -> Sphere -> Color -> Canvas -> Canvas
+castOnPixel x y s c canvas = let isHit = processPixel x y s
+                             in case isHit of
+                                  Just n -> write canvas (Width x) (Height y) c
+                                  Nothing -> canvas
+
+castRow :: Int -> Sphere -> Color -> Canvas -> Canvas
+castRow y s c startingCanvas = foldr (\x canvas -> castOnPixel x y s c canvas)
+                               startingCanvas
+                               [0..(canvasPixels - 1)]
 
 cast :: Canvas
-cast = let canvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
+cast = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
            color  = Color (Red 1) (Green 0) (Blue 0)
            sphere = makeUnitSphere 1
-           hit = processPixel 0 0 sphere
-       in case hit of
-            Just n -> write canvas (Width 0) (Height 0) color
-            Nothing -> canvas
+           writtenCanvas
+             = foldr (\y canvas -> castRow y sphere color canvas)
+               emptyCanvas
+               [0..(canvasPixels - 1)]
+       in writtenCanvas
+       
           -- For each row of pixels in the canvas
           -- compute the world y coordinate (top = +half, bottom = -half)
 
