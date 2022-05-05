@@ -5,6 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 import Test.Tasty.QuickCheck as QC
+import Control.Exception (evaluate)
 import Canvas as SUT
 import PPMCanvas
 import Tuples
@@ -45,6 +46,23 @@ canvasBasics =
       it "has every pixel of color (0, 0, 0)" $ do
         concatMap colors (rows c) `shouldSatisfy`
           all (\pixel -> pixel == Color (Red 0) (Green 0) (Blue 0))
+    describe "Creating a Canvas from a list of Colors" $ do
+      let pixels = [[Color (Red 1) (Green 0) (Blue 0), Color (Red 1) (Green 0) (Blue 0)]
+                   ,[Color (Red 0) (Green 1) (Blue 0), Color (Red 0) (Green 1) (Blue 0)]
+                   ,[Color (Red 0) (Green 0) (Blue 1), Color (Red 0) (Green 0) (Blue 1)]]
+          canvas = SUT.fromColors pixels
+          unbalanced =
+            [[Color (Red 1) (Green 0) (Blue 0), Color (Red 1) (Green 0) (Blue 0)]
+            ,[Color (Red 0) (Green 1) (Blue 0)]
+            ,[Color (Red 0) (Green 0) (Blue 1), Color (Red 0) (Green 0) (Blue 1)]]
+      it "returns the Canvas" $ do
+         pixelAt canvas (Width 0) (Height 0) `shouldBe` Color (Red 1) (Green 0) (Blue 0)
+      it "the width is correct" $ do
+        width canvas `shouldBe` (Width 2)
+      it "the height is correct" $ do
+        height canvas `shouldBe` (Height 3)
+      it "should throw if rows are not of the same length" $ do
+        evaluate (SUT.fromColors unbalanced) `shouldThrow` anyException
 
 canvasWriting :: Spec
 canvasWriting = 

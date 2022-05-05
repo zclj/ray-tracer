@@ -10,6 +10,7 @@ module Canvas
   , height
   , write
   , pixelAt
+  , fromColors
   ) where
 
 import Tuples
@@ -41,6 +42,16 @@ makeCanvasWithColor c w h@(Height hx) =
 makeCanvas :: Width -> Height -> Canvas
 makeCanvas w h@(Height hx) =
   makeCanvasWithColor (Color (Red 0) (Green 0) (Blue 0)) w h
+
+sameLength :: [[Color]] -> Bool
+sameLength xs = let baseLength = length $ head xs
+                in all (\x -> length x == baseLength) xs
+
+fromColors :: [[Color]] -> Canvas
+fromColors xs
+  | not (sameLength xs) = error "Canvas Rows must be of the same length"
+  | otherwise           = let rows = map Row xs
+                          in Canvas rows (Width (length (head xs))) (Height (length xs))
 
 offCanvas :: Canvas -> Width -> Height -> Bool
 offCanvas Canvas { width = Width cw, height = Height ch } (Width w) (Height h) =
