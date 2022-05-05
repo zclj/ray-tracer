@@ -1,0 +1,519 @@
+	Thu May  5 07:49 2022 Time and Allocation Profiling Report  (Final)
+
+	   ray-tracer-exe +RTS -N -p -RTS
+
+	total time  =       11.27 secs   (38426 ticks @ 1000 us, 12 processors)
+	total alloc = 85,507,156,032 bytes  (excludes profiling overheads)
+
+COST CENTRE             MODULE    SRC                                %time %alloc
+
+dropAt                  Utils     src/Utils.hs:(42,1)-(43,34)         26.9   26.8
+determinant             Matrices  src/Matrices.hs:(90,1)-(94,73)      13.3    4.3
+dropAt.(...)            Utils     src/Utils.hs:43:9-34                13.2   32.7
+submatrix.subCols       Matrices  src/Matrices.hs:99:9-40             12.0   23.7
+determinant.onRowZero.\ Matrices  src/Matrices.hs:92:28-59             3.9    0.0
+getAt                   Matrices  src/Matrices.hs:72:1-61              3.8    0.0
+mulT                    Matrices  src/Matrices.hs:(81,1)-(84,53)       2.5    1.1
+determinant.\           Matrices  src/Matrices.hs:94:23-62             2.4    0.0
+minor                   Matrices  src/Matrices.hs:103:1-39             2.4    0.0
+inverse.cofactors       Matrices  src/Matrices.hs:(120,24)-(121,65)    2.2    3.1
+submatrix               Matrices  src/Matrices.hs:(97,1)-(100,21)      1.9    0.0
+determinant.onRowZero   Matrices  src/Matrices.hs:92:7-60              1.6    0.0
+cofactor                Matrices  src/Matrices.hs:(106,1)-(108,31)     1.5    0.5
+whenSumOf               Utils     src/Utils.hs:10:1-35                 1.5    0.0
+ppmRowToString          PPMCanvas src/PPMCanvas.hs:71:1-51             1.4    1.5
+splitWhenR              Utils     src/Utils.hs:(13,1)-(17,76)          0.9    1.2
+
+
+                                                                                                                            individual      inherited
+COST CENTRE                                 MODULE                SRC                                   no.      entries  %time %alloc   %time %alloc
+
+MAIN                                        MAIN                  <built-in>                             319          0    0.0    0.0   100.0  100.0
+ CAF                                        GHC.Conc.Signal       <entire-module>                        416          0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.Encoding       <entire-module>                        398          0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.Encoding.Iconv <entire-module>                        396          0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.FD             <entire-module>                        389          0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.IO.Handle.FD      <entire-module>                        387          0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.Event.Poll        <entire-module>                        337          0    0.0    0.0     0.0    0.0
+ CAF                                        GHC.Event.Thread      <entire-module>                        336          0    0.0    0.0     0.0    0.0
+ CAF:$fMonoidMatrix_$cmempty                Matrices              src/Matrices.hs:38:3-8                 529          0    0.0    0.0     0.0    0.0
+  mempty                                    Matrices              src/Matrices.hs:38:3-19                820          1    0.0    0.0     0.0    0.0
+ CAF:canvasPixels                           Silhouette            src/Silhouette.hs:17:1-12              465          0    0.0    0.0     0.0    0.0
+  canvasPixels                              Silhouette            src/Silhouette.hs:17:1-19              901          1    0.0    0.0     0.0    0.0
+ CAF:canvasToPPMStrings2                    PPMCanvas             <no location info>                     516          0    0.0    0.0     0.0    0.0
+ CAF:canvasToPPMStrings5                    PPMCanvas             <no location info>                     515          0    0.0    0.0     0.0    0.0
+ CAF:cast                                   Silhouette            src/Silhouette.hs:46:1-4               470          0    0.0    0.0    92.5   93.6
+  cast                                      Silhouette            src/Silhouette.hs:(46,1)-(51,27)       899          1    0.0    0.0    92.5   93.6
+   cast.pixels                              Silhouette            src/Silhouette.hs:(49,12)-(50,73)      900          1    0.0    0.0    92.5   93.6
+    cast.pixels.\                           Silhouette            src/Silhouette.hs:50:27-48             905       1000    0.0    0.0    92.5   93.6
+     castRow                                Silhouette            src/Silhouette.hs:43:1-71              906       1000    0.1    0.1    92.5   93.6
+      castRow.\                             Silhouette            src/Silhouette.hs:43:28-46             922    1000000    0.0    0.0    92.4   93.5
+       castOnPixel                          Silhouette            src/Silhouette.hs:(37,1)-(40,70)       923    1000000    0.2    0.0    92.4   93.5
+        castOnPixel.isHit                   Silhouette            src/Silhouette.hs:37:27-52             924    1000000    0.0    0.0    92.2   93.5
+         processPixel                       Silhouette            src/Silhouette.hs:(29,1)-(34,34)       928    1000000    0.3    0.0    92.2   93.5
+          hit                               Intersections         src/Intersections.hs:32:1-55          1035    1000000    0.3    0.1     0.3    0.1
+           compare                          Intersections         src/Intersections.hs:15:39-41         1064     601105    0.0    0.0     0.0    0.0
+           hit.\                            Intersections         src/Intersections.hs:32:39-44         1065     601105    0.0    0.0     0.0    0.0
+          processPixel.position             Silhouette            src/Silhouette.hs:31:30-65             937    1000000    0.0    0.0     0.0    0.0
+           point                            Tuples                src/Tuples.hs:19:1-29                  938    1000000    0.0    0.0     0.0    0.0
+          processPixel.ray                  Silhouette            src/Silhouette.hs:32:30-91             940    1000000    0.2    0.0     0.4    0.3
+           makeRay                          Rays                  src/Rays.hs:(16,1)-(19,30)             947    1000000    0.1    0.0     0.1    0.0
+            isPoint                         Tuples                src/Tuples.hs:22:1-32                  948    1000000    0.0    0.0     0.0    0.0
+            isVector                        Tuples                src/Tuples.hs:28:1-33                  949    1000000    0.0    0.0     0.0    0.0
+           norm                             Tuples                src/Tuples.hs:(51,1)-(52,65)           944    1000000    0.2    0.3     0.2    0.3
+            norm.m                          Tuples                src/Tuples.hs:51:30-38                 945    1000000    0.0    0.0     0.0    0.0
+             mag                            Tuples                src/Tuples.hs:48:1-50                  946    1000000    0.0    0.0     0.0    0.0
+           sub                              Tuples                src/Tuples.hs:(35,1)-(36,49)           943    1000000    0.0    0.0     0.0    0.0
+          processPixel.worldX               Silhouette            src/Silhouette.hs:29:30-50             929    1000000    0.1    0.0     0.1    0.0
+           toWorldX                         Silhouette            src/Silhouette.hs:23:1-53              930    1000000    0.0    0.0     0.0    0.0
+          processPixel.worldY               Silhouette            src/Silhouette.hs:30:30-50             935    1000000    0.1    0.0     0.1    0.0
+           toWorldY                         Silhouette            src/Silhouette.hs:26:1-50              936    1000000    0.0    0.0     0.0    0.0
+          processPixel.xs                   Silhouette            src/Silhouette.hs:33:30-59             950    1000000    0.1    0.1    90.9   92.9
+           intersect                        Intersections         src/Intersections.hs:(18,1)-(27,80)    951    1000000    0.8    0.1    90.9   92.9
+            intersect.a                     Intersections         src/Intersections.hs:20:21-66         1030    1000000    0.1    0.0     0.1    0.0
+             direction                      Rays                  src/Rays.hs:12:18-26                  1031    2000000    0.0    0.0     0.0    0.0
+             dot                            Tuples                src/Tuples.hs:(55,1)-(56,41)          1032    1000000    0.0    0.0     0.0    0.0
+            intersect.b                     Intersections         src/Intersections.hs:21:21-71         1023    1000000    0.1    0.0     0.1    0.0
+             direction                      Rays                  src/Rays.hs:12:18-26                  1024    1000000    0.0    0.0     0.0    0.0
+             dot                            Tuples                src/Tuples.hs:(55,1)-(56,41)          1029    1000000    0.0    0.0     0.0    0.0
+            intersect.c                     Intersections         src/Intersections.hs:22:21-70         1033    1000000    0.0    0.0     0.0    0.0
+             dot                            Tuples                src/Tuples.hs:(55,1)-(56,41)          1034    1000000    0.0    0.0     0.0    0.0
+            intersect.discriminant          Intersections         src/Intersections.hs:23:21-52         1022    1000000    0.0    0.0     0.0    0.0
+            intersect.r'                    Intersections         src/Intersections.hs:18:21-74          952    1000000    0.2    0.1    89.8   92.6
+             inverse                        Matrices              src/Matrices.hs:(116,1)-(123,51)       954    1000000    0.1    0.0    86.9   91.3
+              inverse.cofactors             Matrices              src/Matrices.hs:(120,24)-(121,65)      979    1000000    2.2    3.1    58.8   63.0
+               cofactor                     Matrices              src/Matrices.hs:(106,1)-(108,31)       980   64000000    1.0    0.3    56.6   59.9
+                minor                       Matrices              src/Matrices.hs:103:1-39               981   64000000    1.5    0.0    55.6   59.6
+                 determinant                Matrices              src/Matrices.hs:(90,1)-(94,73)         989   64000000    8.7    2.7    16.6    2.7
+                  determinant.\             Matrices              src/Matrices.hs:94:23-62               996   48000000    1.5    0.0     7.4    0.0
+                   determinant.onRowZero    Matrices              src/Matrices.hs:92:7-60                997          0    0.9    0.0     6.0    0.0
+                    determinant.onRowZero.\ Matrices              src/Matrices.hs:92:28-59               998   96000000    2.7    0.0     5.1    0.0
+                     getAt                  Matrices              src/Matrices.hs:72:1-61                999   48000000    2.3    0.0     2.3    0.0
+                  determinant.onRowZero     Matrices              src/Matrices.hs:92:7-60                995   16000000    0.0    0.0     0.0    0.0
+                  determinant.size          Matrices              src/Matrices.hs:93:7-37                994   16000000    0.5    0.0     0.5    0.0
+                 submatrix                  Matrices              src/Matrices.hs:(97,1)-(100,21)        982   64000000    1.4    0.0    37.5   56.9
+                  submatrix.subCols         Matrices              src/Matrices.hs:99:9-40                988   64000000    8.2   15.7    30.0   50.7
+                   dropAt                   Utils                 src/Utils.hs:(42,1)-(43,34)            990  144000000   14.1   15.0    21.8   35.0
+                    dropAt.(...)            Utils                 src/Utils.hs:43:9-34                   991  144000000    7.6   19.9     7.6   19.9
+                    dropAt.post             Utils                 src/Utils.hs:43:9-34                   993  144000000    0.0    0.0     0.0    0.0
+                    dropAt.pre              Utils                 src/Utils.hs:43:9-34                   992  144000000    0.0    0.0     0.0    0.0
+                  submatrix.subRows         Matrices              src/Matrices.hs:98:9-28                983   64000000    0.6    0.0     6.1    6.2
+                   dropAt                   Utils                 src/Utils.hs:(42,1)-(43,34)            984   64000000    4.1    3.4     5.6    6.2
+                    dropAt.(...)            Utils                 src/Utils.hs:43:9-34                   985   64000000    1.5    2.8     1.5    2.8
+                    dropAt.post             Utils                 src/Utils.hs:43:9-34                   987   64000000    0.0    0.0     0.0    0.0
+                    dropAt.pre              Utils                 src/Utils.hs:43:9-34                   986   64000000    0.0    0.0     0.0    0.0
+              inverse.det                   Matrices              src/Matrices.hs:117:24-48             1000    1000000    0.0    0.0    14.0   14.1
+               determinant                  Matrices              src/Matrices.hs:(90,1)-(94,73)        1001   17000000    2.3    0.8    13.9   14.1
+                determinant.\               Matrices              src/Matrices.hs:94:23-62              1004   16000000    0.5    0.0    11.5   13.3
+                 determinant.onRowZero      Matrices              src/Matrices.hs:92:7-60               1005          0    0.3    0.0    11.0   13.3
+                  determinant.onRowZero.\   Matrices              src/Matrices.hs:92:28-59              1006   32000000    0.6    0.0    10.6   13.3
+                   cofactor                 Matrices              src/Matrices.hs:(106,1)-(108,31)      1008   16000000    0.3    0.1     9.3   13.3
+                    minor                   Matrices              src/Matrices.hs:103:1-39              1009   16000000    0.4    0.0     9.0   13.2
+                     submatrix              Matrices              src/Matrices.hs:(97,1)-(100,21)       1010   16000000    0.2    0.0     8.6   13.2
+                      submatrix.subCols     Matrices              src/Matrices.hs:99:9-40               1016   16000000    1.8    4.0     7.5   12.7
+                       dropAt               Utils                 src/Utils.hs:(42,1)-(43,34)           1017   36000000    3.6    3.8     5.6    8.7
+                        dropAt.(...)        Utils                 src/Utils.hs:43:9-34                  1018   36000000    2.0    5.0     2.0    5.0
+                        dropAt.post         Utils                 src/Utils.hs:43:9-34                  1020   36000000    0.0    0.0     0.0    0.0
+                        dropAt.pre          Utils                 src/Utils.hs:43:9-34                  1019   36000000    0.0    0.0     0.0    0.0
+                      submatrix.subRows     Matrices              src/Matrices.hs:98:9-28               1011   16000000    0.1    0.0     0.9    0.4
+                       dropAt               Utils                 src/Utils.hs:(42,1)-(43,34)           1012   16000000    0.8    0.4     0.8    0.4
+                        dropAt.(...)        Utils                 src/Utils.hs:43:9-34                  1013   16000000    0.0    0.0     0.0    0.0
+                        dropAt.post         Utils                 src/Utils.hs:43:9-34                  1015   16000000    0.0    0.0     0.0    0.0
+                        dropAt.pre          Utils                 src/Utils.hs:43:9-34                  1014   16000000    0.0    0.0     0.0    0.0
+                   getAt                    Matrices              src/Matrices.hs:72:1-61               1007   16000000    0.8    0.0     0.8    0.0
+                determinant.onRowZero       Matrices              src/Matrices.hs:92:7-60               1003    5000000    0.0    0.0     0.0    0.0
+                determinant.size            Matrices              src/Matrices.hs:93:7-37               1002    5000000    0.1    0.0     0.1    0.0
+              invertible                    Matrices              src/Matrices.hs:(111,1)-(113,29)       955    1000000    0.0    0.0    14.1   14.1
+               determinant                  Matrices              src/Matrices.hs:(90,1)-(94,73)         956   17000000    2.4    0.8    14.1   14.1
+                determinant.\               Matrices              src/Matrices.hs:94:23-62               959   16000000    0.5    0.0    11.5   13.3
+                 determinant.onRowZero      Matrices              src/Matrices.hs:92:7-60                960          0    0.3    0.0    11.1   13.3
+                  determinant.onRowZero.\   Matrices              src/Matrices.hs:92:28-59               961   32000000    0.5    0.0    10.7   13.3
+                   cofactor                 Matrices              src/Matrices.hs:(106,1)-(108,31)       963   16000000    0.3    0.1     9.5   13.3
+                    minor                   Matrices              src/Matrices.hs:103:1-39               964   16000000    0.4    0.0     9.2   13.2
+                     submatrix              Matrices              src/Matrices.hs:(97,1)-(100,21)        965   16000000    0.3    0.0     8.8   13.2
+                      submatrix.subCols     Matrices              src/Matrices.hs:99:9-40                971   16000000    1.9    4.0     7.5   12.7
+                       dropAt               Utils                 src/Utils.hs:(42,1)-(43,34)            972   36000000    3.5    3.8     5.5    8.7
+                        dropAt.(...)        Utils                 src/Utils.hs:43:9-34                   973   36000000    2.0    5.0     2.0    5.0
+                        dropAt.post         Utils                 src/Utils.hs:43:9-34                   975   36000000    0.0    0.0     0.0    0.0
+                        dropAt.pre          Utils                 src/Utils.hs:43:9-34                   974   36000000    0.0    0.0     0.0    0.0
+                      submatrix.subRows     Matrices              src/Matrices.hs:98:9-28                966   16000000    0.2    0.0     1.0    0.4
+                       dropAt               Utils                 src/Utils.hs:(42,1)-(43,34)            967   16000000    0.9    0.4     0.9    0.4
+                        dropAt.(...)        Utils                 src/Utils.hs:43:9-34                   968   16000000    0.0    0.0     0.0    0.0
+                        dropAt.post         Utils                 src/Utils.hs:43:9-34                   970   16000000    0.0    0.0     0.0    0.0
+                        dropAt.pre          Utils                 src/Utils.hs:43:9-34                   969   16000000    0.0    0.0     0.0    0.0
+                   getAt                    Matrices              src/Matrices.hs:72:1-61                962   16000000    0.7    0.0     0.7    0.0
+                determinant.onRowZero       Matrices              src/Matrices.hs:92:7-60                958    5000000    0.0    0.0     0.0    0.0
+                determinant.size            Matrices              src/Matrices.hs:93:7-37                957    5000000    0.2    0.0     0.2    0.0
+             transform                      Rays                  src/Rays.hs:25:1-79                    976    1000000    0.2    0.1     2.7    1.2
+              mulT                          Matrices              src/Matrices.hs:(81,1)-(84,53)         977    2000000    2.5    1.1     2.5    1.1
+               mulT.tupleFromList           Matrices              src/Matrices.hs:82:27-70               978   10000000    0.0    0.0     0.0    0.0
+               dot                          Tuples                src/Tuples.hs:(55,1)-(56,41)          1021    8000000    0.0    0.0     0.0    0.0
+             transform                      Spheres               src/Spheres.hs:12:24-32                953    1000000    0.0    0.0     0.0    0.0
+            intersect.sphereToRay           Intersections         src/Intersections.hs:19:21-62         1025    1000000    0.1    0.1     0.1    0.1
+             origin                         Rays                  src/Rays.hs:11:18-23                  1026    1000000    0.0    0.0     0.0    0.0
+             point                          Tuples                src/Tuples.hs:19:1-29                 1027    1000000    0.0    0.0     0.0    0.0
+             sub                            Tuples                src/Tuples.hs:(35,1)-(36,49)          1028    1000000    0.1    0.0     0.1    0.0
+   fromColors                               Canvas                src/Canvas.hs:(51,1)-(54,88)           902          1    0.0    0.0     0.0    0.0
+    fromColors.rows                         Canvas                src/Canvas.hs:53:31-47                 913          1    0.0    0.0     0.0    0.0
+    sameLength                              Canvas                src/Canvas.hs:(47,1)-(48,56)           903          1    0.0    0.0     0.0    0.0
+     sameLength.\                           Canvas                src/Canvas.hs:48:31-52                 904       1000    0.0    0.0     0.0    0.0
+     sameLength.baseLength                  Canvas                src/Canvas.hs:47:21-49                 907          1    0.0    0.0     0.0    0.0
+ CAF:castRow2                               Silhouette            <no location info>                     467          0    0.0    0.0     0.0    0.0
+  toWorldX                                  Silhouette            src/Silhouette.hs:23:1-53              931          0    0.0    0.0     0.0    0.0
+ CAF:cast_color                             Silhouette            src/Silhouette.hs:47:12-16             469          0    0.0    0.0     0.0    0.0
+  cast                                      Silhouette            src/Silhouette.hs:(46,1)-(51,27)      1066          0    0.0    0.0     0.0    0.0
+   cast.color                               Silhouette            src/Silhouette.hs:47:12-52            1067          1    0.0    0.0     0.0    0.0
+ CAF:cast_sphere                            Silhouette            src/Silhouette.hs:48:12-17             468          0    0.0    0.0     0.0    0.0
+  cast                                      Silhouette            src/Silhouette.hs:(46,1)-(51,27)       925          0    0.0    0.0     0.0    0.0
+   cast.sphere                              Silhouette            src/Silhouette.hs:48:12-36             926          1    0.0    0.0     0.0    0.0
+    makeUnitSphere                          Spheres               src/Spheres.hs:16:1-42                 927          1    0.0    0.0     0.0    0.0
+ CAF:clock                                  Clock                 src/Clock.hs:25:1-5                    573          0    0.0    0.0     0.0    0.0
+  clock                                     Clock                 src/Clock.hs:25:1-13                   785          1    0.0    0.0     0.0    0.0
+ CAF:clockCanvas                            Lib                   src/Lib.hs:37:1-11                     558          0    0.0    0.0     1.9    1.8
+  clockCanvas                               Lib                   src/Lib.hs:(37,1)-(45,35)              777          1    0.0    0.0     1.9    1.8
+   canvasToPPMString                        PPMCanvas             src/PPMCanvas.hs:85:1-52               778          1    0.1    0.3     1.9    1.8
+    canvasToPPMStrings                      PPMCanvas             src/PPMCanvas.hs:(80,1)-(82,58)        779          1    0.0    0.0     1.8    1.6
+     canvasToPPMStrings.header              PPMCanvas             src/PPMCanvas.hs:81:9-58               780          1    0.0    0.0     0.0    0.0
+      height                                Canvas                src/Canvas.hs:30:24-29                 831          1    0.0    0.0     0.0    0.0
+      makePPMHeader                         PPMCanvas             src/PPMCanvas.hs:77:1-75               781          1    0.0    0.0     0.0    0.0
+      width                                 Canvas                src/Canvas.hs:29:24-28                 782          1    0.0    0.0     0.0    0.0
+     canvasToPPMStrings.ppmStringRows       PPMCanvas             src/PPMCanvas.hs:82:9-58               832          1    0.0    0.0     1.8    1.6
+      canvasToPPM                           PPMCanvas             src/PPMCanvas.hs:62:1-70               834          1    0.0    0.0     1.4    1.1
+       canvasToPPM.\                        PPMCanvas             src/PPMCanvas.hs:62:34-60              844        800    0.0    0.0     1.4    1.1
+        rowToPPM                            PPMCanvas             src/PPMCanvas.hs:(48,1)-(49,26)        847        800    0.0    0.0     0.4    0.4
+         rowToPPM.ppmSamples                PPMCanvas             src/PPMCanvas.hs:48:18-57              848        800    0.0    0.1     0.4    0.4
+          makePPMPixel                      PPMCanvas             src/PPMCanvas.hs:(37,1)-(41,28)        853     640000    0.1    0.1     0.4    0.4
+           makePPMPixel.bs                  PPMCanvas             src/PPMCanvas.hs:41:9-28               873     640000    0.0    0.0     0.1    0.1
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)        874     640000    0.0    0.1     0.1    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43              877     640000    0.0    0.0     0.0    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59               878     640000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48              875     640000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)        876     640000    0.0    0.0     0.0    0.0
+           makePPMPixel.gs                  PPMCanvas             src/PPMCanvas.hs:40:9-28               867     640000    0.0    0.0     0.1    0.1
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)        868     640000    0.0    0.1     0.1    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43              871     640000    0.0    0.0     0.0    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59               872     640000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48              869     640000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)        870     640000    0.0    0.0     0.0    0.0
+           makePPMPixel.rs                  PPMCanvas             src/PPMCanvas.hs:39:9-28               861     640000    0.0    0.0     0.1    0.1
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)        862     640000    0.0    0.1     0.1    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43              865     640000    0.0    0.0     0.0    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59               866     640000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48              863     640000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)        864     640000    0.0    0.0     0.0    0.0
+          colors                            Canvas                src/Canvas.hs:25:18-23                 849        800    0.0    0.0     0.0    0.0
+        splitPPMRow                         PPMCanvas             src/PPMCanvas.hs:(52,1)-(53,56)        845        800    0.0    0.0     1.0    0.6
+         splitList                          Utils                 src/Utils.hs:(27,1)-(28,63)            854        800    0.0    0.0     0.9    0.4
+          splitWhen                         Utils                 src/Utils.hs:20:1-63                   855        800    0.0    0.1     0.9    0.4
+           splitWhenR                       Utils                 src/Utils.hs:(13,1)-(17,76)            856    1975200    0.2    0.3     0.9    0.3
+            splitList.\                     Utils                 src/Utils.hs:28:29-60                  857    1974400    0.0    0.0     0.6    0.0
+             whenSumOf                      Utils                 src/Utils.hs:10:1-35                   858    1974400    0.4    0.0     0.6    0.0
+              size                          PPMCanvas             src/PPMCanvas.hs:14:30-33              860   36397950    0.2    0.0     0.2    0.0
+            splitWhenR.nextList             Utils                 src/Utils.hs:14:43-63                  859    1974400    0.0    0.0     0.0    0.0
+         ppmRowToPPMSampleRow               PPMCanvas             src/PPMCanvas.hs:59:1-53               846          0    0.1    0.1     0.1    0.2
+          ppmPixelToSampleList              PPMCanvas             src/PPMCanvas.hs:56:1-49               852     640000    0.0    0.1     0.0    0.1
+       rows                                 Canvas                src/Canvas.hs:28:24-27                 835          1    0.0    0.0     0.0    0.0
+      ppmCanvasToStrings                    PPMCanvas             src/PPMCanvas.hs:74:1-39               833          0    0.0    0.0     0.5    0.5
+       ppmRowToString                       PPMCanvas             src/PPMCanvas.hs:71:1-51               879      55200    0.4    0.4     0.5    0.5
+        ppmPixelToString                    PPMCanvas             src/PPMCanvas.hs:68:1-64               880    1920000    0.0    0.0     0.1    0.1
+         ppmSampleToString                  PPMCanvas             src/PPMCanvas.hs:65:1-37               881    1920000    0.1    0.1     0.1    0.1
+ CAF:clockWidth                             Clock                 src/Clock.hs:13:1-10                   568          0    0.0    0.0     0.0    0.0
+  clockWidth                                Clock                 src/Clock.hs:13:1-24                   817          1    0.0    0.0     0.0    0.0
+ CAF:color1_rs1f                            Lib                   src/Lib.hs:38:9-13                     556          0    0.0    0.0     0.0    0.0
+  clockCanvas                               Lib                   src/Lib.hs:(37,1)-(45,35)              888          0    0.0    0.0     0.0    0.0
+   clockCanvas.color                        Lib                   src/Lib.hs:38:9-58                     889          1    0.0    0.0     0.0    0.0
+ CAF:color_rs1c                             Lib                   src/Lib.hs:24:9-13                     552          0    0.0    0.0     0.0    0.0
+  projectileCanvas                          Lib                   src/Lib.hs:(23,1)-(34,35)              773          0    0.0    0.0     0.0    0.0
+   projectileCanvas.color                   Lib                   src/Lib.hs:24:9-58                     774          1    0.0    0.0     0.0    0.0
+ CAF:emptyCanvas_rs1e                       Lib                   src/Lib.hs:39:9-19                     555          0    0.0    0.0     0.0    0.0
+  clockCanvas                               Lib                   src/Lib.hs:(37,1)-(45,35)              794          0    0.0    0.0     0.0    0.0
+   clockCanvas.emptyCanvas                  Lib                   src/Lib.hs:39:9-57                     795          1    0.0    0.0     0.0    0.0
+    makeCanvas                              Canvas                src/Canvas.hs:(43,1)-(44,60)           796          1    0.0    0.0     0.0    0.0
+     makeCanvasWithColor                    Canvas                src/Canvas.hs:(37,1)-(40,23)           797          1    0.0    0.0     0.0    0.0
+      makeCanvasWithColor.\                 Canvas                src/Canvas.hs:38:34-44                 850        800    0.0    0.0     0.0    0.0
+       makeRow                              Canvas                src/Canvas.hs:34:1-56                  851        800    0.0    0.0     0.0    0.0
+ CAF:emptycanvas_rs18                       Lib                   src/Lib.hs:25:9-19                     551          0    0.0    0.0     0.0    0.0
+  projectileCanvas                          Lib                   src/Lib.hs:(23,1)-(34,35)              695          0    0.0    0.0     0.0    0.0
+   projectileCanvas.emptycanvas             Lib                   src/Lib.hs:25:9-57                     696          1    0.0    0.0     0.0    0.0
+    makeCanvas                              Canvas                src/Canvas.hs:(43,1)-(44,60)           697          1    0.0    0.0     0.0    0.0
+     makeCanvasWithColor                    Canvas                src/Canvas.hs:(37,1)-(40,23)           698          1    0.0    0.0     0.0    0.0
+      makeCanvasWithColor.\                 Canvas                src/Canvas.hs:38:34-44                 735        550    0.0    0.0     0.0    0.0
+       makeRow                              Canvas                src/Canvas.hs:34:1-56                  736        550    0.0    0.0     0.0    0.0
+ CAF:half                                   Silhouette            src/Silhouette.hs:20:1-4               464          0    0.0    0.0     0.0    0.0
+  half                                      Silhouette            src/Silhouette.hs:20:1-19              932          1    0.0    0.0     0.0    0.0
+ CAF:hourTransform4                         Clock                 <no location info>                     571          0    0.0    0.0     0.0    0.0
+  hourTransform                             Clock                 src/Clock.hs:(16,1)-(19,52)            808          0    0.0    0.0     0.0    0.0
+   rotationX                                Transformations       src/Transformations.hs:(27,1)-(30,49)  809          1    0.0    0.0     0.0    0.0
+    makeMatrix                              Matrices              src/Matrices.hs:(41,1)-(59,46)         810          1    0.0    0.0     0.0    0.0
+ CAF:hourTransform6                         Clock                 <no location info>                     570          0    0.0    0.0     0.0    0.0
+  hourTransform                             Clock                 src/Clock.hs:(16,1)-(19,52)            811          0    0.0    0.0     0.0    0.0
+   translation                              Transformations       src/Transformations.hs:(15,1)-(18,45)  812          1    0.0    0.0     0.0    0.0
+    makeMatrix                              Matrices              src/Matrices.hs:(41,1)-(59,46)         813          1    0.0    0.0     0.0    0.0
+ CAF:hourTransform8                         Clock                 <no location info>                     569          0    0.0    0.0     0.0    0.0
+  hourTransform                             Clock                 src/Clock.hs:(16,1)-(19,52)            814          0    0.0    0.0     0.0    0.0
+   scaling                                  Transformations       src/Transformations.hs:(21,1)-(24,41)  815          1    0.0    0.0     0.0    0.0
+    makeMatrix                              Matrices              src/Matrices.hs:(41,1)-(59,46)         816          1    0.0    0.0     0.0    0.0
+ CAF:hours                                  Clock                 src/Clock.hs:22:1-5                    572          0    0.0    0.0     0.0    0.0
+  hours                                     Clock                 src/Clock.hs:22:1-57                   786          1    0.0    0.0     0.0    0.0
+   hours.\                                  Clock                 src/Clock.hs:22:20-48                  787         12    0.0    0.0     0.0    0.0
+    hourTransform                           Clock                 src/Clock.hs:(16,1)-(19,52)            788         12    0.0    0.0     0.0    0.0
+     rotationY                              Transformations       src/Transformations.hs:(33,1)-(36,49)  818         12    0.0    0.0     0.0    0.0
+      makeMatrix                            Matrices              src/Matrices.hs:(41,1)-(59,46)         819         12    0.0    0.0     0.0    0.0
+     transform                              Transformations       src/Transformations.hs:51:1-32         789         12    0.0    0.0     0.0    0.0
+      <>                                    Matrices              src/Matrices.hs:35:3-22                790         48    0.0    0.0     0.0    0.0
+       mul                                  Matrices              src/Matrices.hs:(75,1)-(78,74)         791         48    0.0    0.0     0.0    0.0
+        mul.get                             Matrices              src/Matrices.hs:76:7-60                805          0    0.0    0.0     0.0    0.0
+         mul.get.\                          Matrices              src/Matrices.hs:76:24-59               806       5376    0.0    0.0     0.0    0.0
+          getAt                             Matrices              src/Matrices.hs:72:1-61                807       5376    0.0    0.0     0.0    0.0
+        mul.rxc                             Matrices              src/Matrices.hs:77:7-53                801          0    0.0    0.0     0.0    0.0
+         mul.rxc.\                          Matrices              src/Matrices.hs:77:30-52               802       2688    0.0    0.0     0.0    0.0
+    mulT                                    Matrices              src/Matrices.hs:(81,1)-(84,53)         792         12    0.0    0.0     0.0    0.0
+     mulT.tupleFromList                     Matrices              src/Matrices.hs:82:27-70               793         36    0.0    0.0     0.0    0.0
+     dot                                    Tuples                src/Tuples.hs:(55,1)-(56,41)           824         24    0.0    0.0     0.0    0.0
+ CAF:identity                               Matrices              src/Matrices.hs:62:1-8                 528          0    0.0    0.0     0.0    0.0
+  identity                                  Matrices              src/Matrices.hs:(62,1)-(63,46)         821          1    0.0    0.0     0.0    0.0
+ CAF:launch10                               Projectile            <no location info>                     498          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       654          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              655          0    0.0    0.0     0.0    0.0
+    point                                   Tuples                src/Tuples.hs:19:1-29                  656          1    0.0    0.0     0.0    0.0
+ CAF:launch2                                Projectile            <no location info>                     497          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       662          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              663          0    0.0    0.0     0.0    0.0
+    mul                                     Tuples                src/Tuples.hs:42:1-61                  666          1    0.0    0.0     0.0    0.0
+    norm                                    Tuples                src/Tuples.hs:(51,1)-(52,65)           665          1    0.0    0.0     0.0    0.0
+    vector                                  Tuples                src/Tuples.hs:25:1-30                  664          1    0.0    0.0     0.0    0.0
+ CAF:launch6                                Projectile            <no location info>                     494          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       668          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              669          0    0.0    0.0     0.0    0.0
+    mul                                     Tuples                src/Tuples.hs:42:1-61                  670          0    0.0    0.0     0.0    0.0
+ CAF:launch7                                Projectile            <no location info>                     491          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       671          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              672          0    0.0    0.0     0.0    0.0
+    norm                                    Tuples                src/Tuples.hs:(51,1)-(52,65)           673          0    0.0    0.0     0.0    0.0
+ CAF:launch8                                Projectile            <no location info>                     493          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       700          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              701          0    0.0    0.0     0.0    0.0
+    mul                                     Tuples                src/Tuples.hs:42:1-61                  702          0    0.0    0.0     0.0    0.0
+ CAF:launch9                                Projectile            <no location info>                     490          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       703          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              704          0    0.0    0.0     0.0    0.0
+    norm                                    Tuples                src/Tuples.hs:(51,1)-(52,65)           705          0    0.0    0.0     0.0    0.0
+ CAF:launch_m                               Projectile            <no location info>                     489          0    0.0    0.0     0.0    0.0
+  launch                                    Projectile            src/Projectile.hs:(45,1)-(48,24)       674          0    0.0    0.0     0.0    0.0
+   launch.proj                              Projectile            src/Projectile.hs:47:7-73              675          0    0.0    0.0     0.0    0.0
+    norm                                    Tuples                src/Tuples.hs:(51,1)-(52,65)           676          0    0.0    0.0     0.0    0.0
+     norm.m                                 Tuples                src/Tuples.hs:51:30-38                 677          1    0.0    0.0     0.0    0.0
+      mag                                   Tuples                src/Tuples.hs:48:1-50                  678          1    0.0    0.0     0.0    0.0
+ CAF:launchresult                           Projectile            src/Projectile.hs:50:1-12              503          0    0.0    0.0     0.0    0.0
+  launchresult                              Projectile            src/Projectile.hs:(50,1)-(52,28)       651          1    0.0    0.0     0.0    0.0
+   launch                                   Projectile            src/Projectile.hs:(45,1)-(48,24)       652          1    0.0    0.0     0.0    0.0
+    launch'                                 Projectile            src/Projectile.hs:(40,1)-(42,47)       657        199    0.0    0.0     0.0    0.0
+     tick                                   Projectile            src/Projectile.hs:(35,1)-(37,37)       658        198    0.0    0.0     0.0    0.0
+      tick.pos                              Projectile            src/Projectile.hs:35:21-59             659        198    0.0    0.0     0.0    0.0
+       add                                  Tuples                src/Tuples.hs:(31,1)-(32,49)           667        198    0.0    0.0     0.0    0.0
+       position                             Projectile            src/Projectile.hs:21:32-39             660        198    0.0    0.0     0.0    0.0
+       velocity                             Projectile            src/Projectile.hs:22:32-39             661        198    0.0    0.0     0.0    0.0
+      tick.vel                              Projectile            src/Projectile.hs:36:21-72             679        197    0.0    0.0     0.0    0.0
+       add                                  Tuples                src/Tuples.hs:(31,1)-(32,49)           687        394    0.0    0.0     0.0    0.0
+       gravity                              Projectile            src/Projectile.hs:25:34-40             681        197    0.0    0.0     0.0    0.0
+       velocity                             Projectile            src/Projectile.hs:22:32-39             680        197    0.0    0.0     0.0    0.0
+       wind                                 Projectile            src/Projectile.hs:26:34-37             688        197    0.0    0.0     0.0    0.0
+    launch.env                              Projectile            src/Projectile.hs:46:7-54              682          1    0.0    0.0     0.0    0.0
+    launch.proj                             Projectile            src/Projectile.hs:47:7-73              653          1    0.0    0.0     0.0    0.0
+ CAF:launchresult2                          Projectile            <no location info>                     502          0    0.0    0.0     0.0    0.0
+  launchresult                              Projectile            src/Projectile.hs:(50,1)-(52,28)       689          0    0.0    0.0     0.0    0.0
+   launch                                   Projectile            src/Projectile.hs:(45,1)-(48,24)       690          0    0.0    0.0     0.0    0.0
+    launch.env                              Projectile            src/Projectile.hs:46:7-54              691          0    0.0    0.0     0.0    0.0
+     vector                                 Tuples                src/Tuples.hs:25:1-30                  692          1    0.0    0.0     0.0    0.0
+ CAF:launchresult4                          Projectile            <no location info>                     499          0    0.0    0.0     0.0    0.0
+  launchresult                              Projectile            src/Projectile.hs:(50,1)-(52,28)       706          0    0.0    0.0     0.0    0.0
+   launchresult.w                           Projectile            src/Projectile.hs:51:20-35             707          1    0.0    0.0     0.0    0.0
+ CAF:launchresult6                          Projectile            <no location info>                     501          0    0.0    0.0     0.0    0.0
+  launchresult                              Projectile            src/Projectile.hs:(50,1)-(52,28)       683          0    0.0    0.0     0.0    0.0
+   launch                                   Projectile            src/Projectile.hs:(45,1)-(48,24)       684          0    0.0    0.0     0.0    0.0
+    launch.env                              Projectile            src/Projectile.hs:46:7-54              685          0    0.0    0.0     0.0    0.0
+     vector                                 Tuples                src/Tuples.hs:25:1-30                  686          1    0.0    0.0     0.0    0.0
+ CAF:launchresult8                          Projectile            <no location info>                     500          0    0.0    0.0     0.0    0.0
+  launchresult                              Projectile            src/Projectile.hs:(50,1)-(52,28)       693          0    0.0    0.0     0.0    0.0
+   launchresult.g                           Projectile            src/Projectile.hs:50:20-37             694          1    0.0    0.0     0.0    0.0
+ CAF:main1                                  Main                  <no location info>                     636          0    0.0    0.0     0.0    0.0
+  main                                      Main                  app/Main.hs:6:1-108                    638          1    0.0    0.0     0.0    0.0
+ CAF:main_fname                             Main                  <no location info>                     634          0    0.0    0.0     0.0    0.0
+ CAF:main_fname1                            Main                  <no location info>                     635          0    0.0    0.0     0.0    0.0
+ CAF:main_fname2                            Main                  <no location info>                     633          0    0.0    0.0     0.0    0.0
+ CAF:mul_get                                Matrices              src/Matrices.hs:76:7-9                 526          0    0.0    0.0     0.0    0.0
+  mul                                       Matrices              src/Matrices.hs:(75,1)-(78,74)         803          0    0.0    0.0     0.0    0.0
+   mul.get                                  Matrices              src/Matrices.hs:76:7-60                804          1    0.0    0.0     0.0    0.0
+ CAF:mul_rxc                                Matrices              src/Matrices.hs:77:7-9                 527          0    0.0    0.0     0.0    0.0
+  mul                                       Matrices              src/Matrices.hs:(75,1)-(78,74)         799          0    0.0    0.0     0.0    0.0
+   mul.rxc                                  Matrices              src/Matrices.hs:77:7-53                800          1    0.0    0.0     0.0    0.0
+ CAF:pixelSize                              Silhouette            src/Silhouette.hs:18:1-9               466          0    0.0    0.0     0.0    0.0
+  pixelSize                                 Silhouette            src/Silhouette.hs:18:1-50              934          1    0.0    0.0     0.0    0.0
+ CAF:ppmCanvasToStrings                     PPMCanvas             src/PPMCanvas.hs:74:1-18               514          0    0.0    0.0     0.0    0.0
+  ppmCanvasToStrings                        PPMCanvas             src/PPMCanvas.hs:74:1-39               716          1    0.0    0.0     0.0    0.0
+ CAF:ppmRowToPPMSampleRow_rpkm              PPMCanvas             src/PPMCanvas.hs:59:1-20               504          0    0.0    0.0     0.0    0.0
+  ppmRowToPPMSampleRow                      PPMCanvas             src/PPMCanvas.hs:59:1-53               730          1    0.0    0.0     0.0    0.0
+ CAF:projectileCanvas                       Lib                   src/Lib.hs:23:1-16                     554          0    0.0    0.0     1.3    1.4
+  projectileCanvas                          Lib                   src/Lib.hs:(23,1)-(34,35)              643          1    0.0    0.0     1.3    1.4
+   canvasToPPMString                        PPMCanvas             src/PPMCanvas.hs:85:1-52               644          1    0.1    0.2     1.3    1.4
+    canvasToPPMStrings                      PPMCanvas             src/PPMCanvas.hs:(80,1)-(82,58)        645          1    0.0    0.0     1.2    1.2
+     canvasToPPMStrings.header              PPMCanvas             src/PPMCanvas.hs:81:9-58               646          1    0.0    0.0     0.0    0.0
+      height                                Canvas                src/Canvas.hs:30:24-29                 714          1    0.0    0.0     0.0    0.0
+      makePPMHeader                         PPMCanvas             src/PPMCanvas.hs:77:1-75               647          1    0.0    0.0     0.0    0.0
+      width                                 Canvas                src/Canvas.hs:29:24-28                 648          1    0.0    0.0     0.0    0.0
+     canvasToPPMStrings.ppmStringRows       PPMCanvas             src/PPMCanvas.hs:82:9-58               715          1    0.0    0.0     1.2    1.2
+      canvasToPPM                           PPMCanvas             src/PPMCanvas.hs:62:1-70               718          1    0.0    0.0     0.8    0.8
+       canvasToPPM.\                        PPMCanvas             src/PPMCanvas.hs:62:34-60              728        550    0.0    0.0     0.8    0.8
+        rowToPPM                            PPMCanvas             src/PPMCanvas.hs:(48,1)-(49,26)        732        550    0.0    0.0     0.2    0.3
+         rowToPPM.ppmSamples                PPMCanvas             src/PPMCanvas.hs:48:18-57              733        550    0.0    0.1     0.2    0.3
+          makePPMPixel                      PPMCanvas             src/PPMCanvas.hs:(37,1)-(41,28)        738     495000    0.0    0.1     0.2    0.3
+           makePPMPixel.bs                  PPMCanvas             src/PPMCanvas.hs:41:9-28               758     495000    0.0    0.0     0.0    0.1
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)        759     495000    0.0    0.0     0.0    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43              762     495000    0.0    0.0     0.0    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59               763     495000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48              760     495000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)        761     495000    0.0    0.0     0.0    0.0
+           makePPMPixel.gs                  PPMCanvas             src/PPMCanvas.hs:40:9-28               752     495000    0.0    0.0     0.1    0.1
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)        753     495000    0.0    0.0     0.0    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43              756     495000    0.0    0.0     0.0    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59               757     495000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48              754     495000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)        755     495000    0.0    0.0     0.0    0.0
+           makePPMPixel.rs                  PPMCanvas             src/PPMCanvas.hs:39:9-28               746     495000    0.0    0.0     0.1    0.1
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)        747     495000    0.0    0.0     0.0    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43              750     495000    0.0    0.0     0.0    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59               751     495000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48              748     495000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)        749     495000    0.0    0.0     0.0    0.0
+          colors                            Canvas                src/Canvas.hs:25:18-23                 734        550    0.0    0.0     0.0    0.0
+        splitPPMRow                         PPMCanvas             src/PPMCanvas.hs:(52,1)-(53,56)        729        550    0.0    0.0     0.6    0.5
+         splitList                          Utils                 src/Utils.hs:(27,1)-(28,63)            739        550    0.0    0.0     0.6    0.3
+          splitWhen                         Utils                 src/Utils.hs:20:1-63                   740        550    0.0    0.0     0.6    0.3
+           splitWhenR                       Utils                 src/Utils.hs:(13,1)-(17,76)            741    1527900    0.1    0.3     0.5    0.3
+            splitList.\                     Utils                 src/Utils.hs:28:29-60                  742    1527350    0.0    0.0     0.4    0.0
+             whenSumOf                      Utils                 src/Utils.hs:10:1-35                   743    1527350    0.3    0.0     0.4    0.0
+              size                          PPMCanvas             src/PPMCanvas.hs:14:30-33              745   28196636    0.1    0.0     0.1    0.0
+            splitWhenR.nextList             Utils                 src/Utils.hs:14:43-63                  744    1527350    0.0    0.0     0.0    0.0
+         ppmRowToPPMSampleRow               PPMCanvas             src/PPMCanvas.hs:59:1-53               731          0    0.0    0.1     0.1    0.2
+          ppmPixelToSampleList              PPMCanvas             src/PPMCanvas.hs:56:1-49               737     495000    0.0    0.0     0.0    0.0
+       rows                                 Canvas                src/Canvas.hs:28:24-27                 719          1    0.0    0.0     0.0    0.0
+      ppmCanvasToStrings                    PPMCanvas             src/PPMCanvas.hs:74:1-39               717          0    0.0    0.0     0.4    0.4
+       ppmRowToString                       PPMCanvas             src/PPMCanvas.hs:71:1-51               764      42900    0.3    0.3     0.4    0.4
+        ppmPixelToString                    PPMCanvas             src/PPMCanvas.hs:68:1-64               765    1485000    0.0    0.0     0.1    0.1
+         ppmSampleToString                  PPMCanvas             src/PPMCanvas.hs:65:1-37               766    1485000    0.1    0.1     0.1    0.1
+ CAF:projectileCanvas_c                     Lib                   <no location info>                     553          0    0.0    0.0     0.0    0.0
+  projectileCanvas                          Lib                   src/Lib.hs:(23,1)-(34,35)              649          0    0.0    0.0     0.0    0.0
+   projectileCanvas.canvas                  Lib                   src/Lib.hs:(26,9)-(33,34)              650          1    0.0    0.0     0.0    0.0
+    projectileCanvas.canvas.\               Lib                   src/Lib.hs:(27,27)-(31,31)             699        198    0.0    0.0     0.0    0.0
+     write                                  Canvas                src/Canvas.hs:(69,1)-(71,57)           708        198    0.0    0.0     0.0    0.0
+      offCanvas                             Canvas                src/Canvas.hs:(57,1)-(59,41)           709        198    0.0    0.0     0.0    0.0
+       offCanvas.zeroBased                  Canvas                src/Canvas.hs:58:7-25                  710        396    0.0    0.0     0.0    0.0
+      replaceColorInCanvas                  Canvas                src/Canvas.hs:(65,1)-(66,61)           711        198    0.0    0.0     0.0    0.0
+       height                               Canvas                src/Canvas.hs:30:24-29                 713        198    0.0    0.0     0.0    0.0
+       replaceColorInCanvas.newRows         Canvas                src/Canvas.hs:66:9-61                  720        198    0.0    0.0     0.0    0.0
+        replaceAtBy                         Utils                 src/Utils.hs:39:1-55                   722        198    0.0    0.0     0.0    0.0
+         replaceAt                          Utils                 src/Utils.hs:(35,1)-(36,34)            723        198    0.0    0.0     0.0    0.0
+          replaceAt.(...)                   Utils                 src/Utils.hs:36:9-34                   724        198    0.0    0.0     0.0    0.0
+          replaceAt.post                    Utils                 src/Utils.hs:36:9-34                   725        198    0.0    0.0     0.0    0.0
+          replaceAt.pre                     Utils                 src/Utils.hs:36:9-34                   726        198    0.0    0.0     0.0    0.0
+          replaceIn                         Utils                 src/Utils.hs:(31,1)-(32,45)            727        198    0.0    0.0     0.0    0.0
+         replaceInRow                       Canvas                src/Canvas.hs:62:1-69                  767        198    0.0    0.0     0.0    0.0
+          replaceAt                         Utils                 src/Utils.hs:(35,1)-(36,34)            768        198    0.0    0.0     0.0    0.0
+           replaceAt.(...)                  Utils                 src/Utils.hs:36:9-34                   769        198    0.0    0.0     0.0    0.0
+           replaceAt.post                   Utils                 src/Utils.hs:36:9-34                   770        198    0.0    0.0     0.0    0.0
+           replaceAt.pre                    Utils                 src/Utils.hs:36:9-34                   771        198    0.0    0.0     0.0    0.0
+           replaceIn                        Utils                 src/Utils.hs:(31,1)-(32,45)            772        198    0.0    0.0     0.0    0.0
+        rows                                Canvas                src/Canvas.hs:28:24-27                 721        198    0.0    0.0     0.0    0.0
+       width                                Canvas                src/Canvas.hs:29:24-28                 712        198    0.0    0.0     0.0    0.0
+ CAF:rayOrigin                              Silhouette            src/Silhouette.hs:10:1-9               461          0    0.0    0.0     0.0    0.0
+  rayOrigin                                 Silhouette            src/Silhouette.hs:10:1-26              941          1    0.0    0.0     0.0    0.0
+   point                                    Tuples                src/Tuples.hs:19:1-29                  942          1    0.0    0.0     0.0    0.0
+ CAF:runDemo2                               Lib                   <no location info>                     560          0    0.0    0.0     0.0    0.0
+  writeCanvas                               Lib                   src/Lib.hs:52:1-23                     641          1    0.0    0.0     0.0    0.0
+ CAF:runDemoClock_c                         Lib                   <no location info>                     557          0    0.0    0.0     0.0    0.0
+  clockCanvas                               Lib                   src/Lib.hs:(37,1)-(45,35)              783          0    0.0    0.0     0.0    0.0
+   clockCanvas.canvas                       Lib                   src/Lib.hs:(40,9)-(43,27)              784          1    0.0    0.0     0.0    0.0
+    clockCanvas.canvas.\                    Lib                   src/Lib.hs:41:32-86                    798         12    0.0    0.0     0.0    0.0
+     write                                  Canvas                src/Canvas.hs:(69,1)-(71,57)           825         12    0.0    0.0     0.0    0.0
+      offCanvas                             Canvas                src/Canvas.hs:(57,1)-(59,41)           826         12    0.0    0.0     0.0    0.0
+       offCanvas.zeroBased                  Canvas                src/Canvas.hs:58:7-25                  827         24    0.0    0.0     0.0    0.0
+      replaceColorInCanvas                  Canvas                src/Canvas.hs:(65,1)-(66,61)           828         12    0.0    0.0     0.0    0.0
+       height                               Canvas                src/Canvas.hs:30:24-29                 830         12    0.0    0.0     0.0    0.0
+       replaceColorInCanvas.newRows         Canvas                src/Canvas.hs:66:9-61                  836         12    0.0    0.0     0.0    0.0
+        replaceAtBy                         Utils                 src/Utils.hs:39:1-55                   838         12    0.0    0.0     0.0    0.0
+         replaceAt                          Utils                 src/Utils.hs:(35,1)-(36,34)            839         12    0.0    0.0     0.0    0.0
+          replaceAt.(...)                   Utils                 src/Utils.hs:36:9-34                   840         12    0.0    0.0     0.0    0.0
+          replaceAt.post                    Utils                 src/Utils.hs:36:9-34                   841         12    0.0    0.0     0.0    0.0
+          replaceAt.pre                     Utils                 src/Utils.hs:36:9-34                   842         12    0.0    0.0     0.0    0.0
+          replaceIn                         Utils                 src/Utils.hs:(31,1)-(32,45)            843         12    0.0    0.0     0.0    0.0
+         replaceInRow                       Canvas                src/Canvas.hs:62:1-69                  882         12    0.0    0.0     0.0    0.0
+          replaceAt                         Utils                 src/Utils.hs:(35,1)-(36,34)            883         12    0.0    0.0     0.0    0.0
+           replaceAt.(...)                  Utils                 src/Utils.hs:36:9-34                   884         12    0.0    0.0     0.0    0.0
+           replaceAt.post                   Utils                 src/Utils.hs:36:9-34                   885         12    0.0    0.0     0.0    0.0
+           replaceAt.pre                    Utils                 src/Utils.hs:36:9-34                   886         12    0.0    0.0     0.0    0.0
+           replaceIn                        Utils                 src/Utils.hs:(31,1)-(32,45)            887         12    0.0    0.0     0.0    0.0
+        rows                                Canvas                src/Canvas.hs:28:24-27                 837         12    0.0    0.0     0.0    0.0
+       width                                Canvas                src/Canvas.hs:29:24-28                 829         12    0.0    0.0     0.0    0.0
+ CAF:silhouetteCanvas                       Lib                   src/Lib.hs:48:1-16                     559          0    0.0    0.0     4.0    3.1
+  silhouetteCanvas                          Lib                   src/Lib.hs:(48,1)-(49,45)              892          1    0.0    0.0     4.0    3.1
+   canvasToPPMString                        PPMCanvas             src/PPMCanvas.hs:85:1-52               893          1    0.2    0.5     4.0    3.1
+    canvasToPPMStrings                      PPMCanvas             src/PPMCanvas.hs:(80,1)-(82,58)        894          1    0.0    0.0     3.8    2.6
+     canvasToPPMStrings.header              PPMCanvas             src/PPMCanvas.hs:81:9-58               895          1    0.0    0.0     0.0    0.0
+      height                                Canvas                src/Canvas.hs:30:24-29                 908          1    0.0    0.0     0.0    0.0
+      makePPMHeader                         PPMCanvas             src/PPMCanvas.hs:77:1-75               896          1    0.0    0.0     0.0    0.0
+      width                                 Canvas                src/Canvas.hs:29:24-28                 897          1    0.0    0.0     0.0    0.0
+     canvasToPPMStrings.ppmStringRows       PPMCanvas             src/PPMCanvas.hs:82:9-58               909          1    0.0    0.0     3.8    2.6
+      canvasToPPM                           PPMCanvas             src/PPMCanvas.hs:62:1-70               911          1    0.0    0.0     2.8    1.7
+       canvasToPPM.\                        PPMCanvas             src/PPMCanvas.hs:62:34-60              914       1000    0.0    0.0     2.8    1.7
+        rowToPPM                            PPMCanvas             src/PPMCanvas.hs:(48,1)-(49,26)        917       1000    0.0    0.0     0.8    0.7
+         rowToPPM.ppmSamples                PPMCanvas             src/PPMCanvas.hs:48:18-57              918       1000    0.1    0.1     0.8    0.7
+          makePPMPixel                      PPMCanvas             src/PPMCanvas.hs:(37,1)-(41,28)        921    1000000    0.2    0.1     0.7    0.6
+           makePPMPixel.bs                  PPMCanvas             src/PPMCanvas.hs:41:9-28              1055    1000000    0.0    0.0     0.1    0.2
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)       1056    1000000    0.0    0.1     0.1    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43             1059    1000000    0.0    0.0     0.1    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59              1060    1000000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48             1057    1000000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)       1058    1000000    0.0    0.0     0.0    0.0
+           makePPMPixel.gs                  PPMCanvas             src/PPMCanvas.hs:40:9-28              1049    1000000    0.0    0.0     0.1    0.2
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)       1050    1000000    0.0    0.1     0.1    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43             1053    1000000    0.0    0.0     0.1    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59              1054    1000000    0.0    0.0     0.0    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48             1051    1000000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)       1052    1000000    0.0    0.0     0.0    0.0
+           makePPMPixel.rs                  PPMCanvas             src/PPMCanvas.hs:39:9-28              1043    1000000    0.0    0.0     0.2    0.2
+            makePPMSample                   PPMCanvas             src/PPMCanvas.hs:(27,1)-(29,40)       1044    1000000    0.0    0.1     0.1    0.1
+             makePPMSample.sample           PPMCanvas             src/PPMCanvas.hs:27:23-43             1047    1000000    0.0    0.0     0.1    0.0
+              makeSample                    PPMCanvas             src/PPMCanvas.hs:18:1-59              1048    1000000    0.1    0.0     0.1    0.0
+             makePPMSample.size             PPMCanvas             src/PPMCanvas.hs:28:23-48             1045    1000000    0.0    0.0     0.0    0.0
+              sampleSize                    PPMCanvas             src/PPMCanvas.hs:(21,1)-(24,17)       1046    1000000    0.0    0.0     0.0    0.0
+          colors                            Canvas                src/Canvas.hs:25:18-23                 919       1000    0.0    0.0     0.0    0.0
+        splitPPMRow                         PPMCanvas             src/PPMCanvas.hs:(52,1)-(53,56)        915       1000    0.0    0.0     2.0    1.0
+         splitList                          Utils                 src/Utils.hs:(27,1)-(28,63)           1036       1000    0.0    0.0     1.8    0.6
+          splitWhen                         Utils                 src/Utils.hs:20:1-63                  1037       1000    0.1    0.1     1.8    0.6
+           splitWhenR                       Utils                 src/Utils.hs:(13,1)-(17,76)           1038    3103994    0.5    0.5     1.7    0.5
+            splitList.\                     Utils                 src/Utils.hs:28:29-60                 1039    3102994    0.1    0.0     1.2    0.0
+             whenSumOf                      Utils                 src/Utils.hs:10:1-35                  1040    3102994    0.8    0.0     1.1    0.0
+              size                          PPMCanvas             src/PPMCanvas.hs:14:30-33             1042   48849279    0.4    0.0     0.4    0.0
+            splitWhenR.nextList             Utils                 src/Utils.hs:14:43-63                 1041    3102994    0.0    0.0     0.0    0.0
+         ppmRowToPPMSampleRow               PPMCanvas             src/PPMCanvas.hs:59:1-53               916          0    0.2    0.2     0.2    0.3
+          ppmPixelToSampleList              PPMCanvas             src/PPMCanvas.hs:56:1-49               920    1000000    0.0    0.1     0.0    0.1
+       rows                                 Canvas                src/Canvas.hs:28:24-27                 912          1    0.0    0.0     0.0    0.0
+      ppmCanvasToStrings                    PPMCanvas             src/PPMCanvas.hs:74:1-39               910          0    0.0    0.0     1.0    1.0
+       ppmRowToString                       PPMCanvas             src/PPMCanvas.hs:71:1-51              1061     103994    0.8    0.8     1.0    0.9
+        ppmPixelToString                    PPMCanvas             src/PPMCanvas.hs:68:1-64              1062    3000000    0.1    0.0     0.2    0.2
+         ppmSampleToString                  PPMCanvas             src/PPMCanvas.hs:65:1-37              1063    3000000    0.2    0.2     0.2    0.2
+   silhouetteCanvas.c                       Lib                   src/Lib.hs:48:24-31                    898          1    0.0    0.0     0.0    0.0
+ CAF:twelve                                 Clock                 src/Clock.hs:11:1-6                    567          0    0.0    0.0     0.0    0.0
+  twelve                                    Clock                 src/Clock.hs:11:1-20                   822          1    0.0    0.0     0.0    0.0
+   point                                    Tuples                src/Tuples.hs:19:1-29                  823          1    0.0    0.0     0.0    0.0
+ CAF:wallSize                               Silhouette            src/Silhouette.hs:15:1-8               463          0    0.0    0.0     0.0    0.0
+  wallSize                                  Silhouette            src/Silhouette.hs:15:1-14              933          1    0.0    0.0     0.0    0.0
+ CAF:wallZ                                  Silhouette            src/Silhouette.hs:12:1-5               462          0    0.0    0.0     0.0    0.0
+  wallZ                                     Silhouette            src/Silhouette.hs:12:1-10              939          1    0.0    0.0     0.0    0.0
+ main                                       Main                  app/Main.hs:6:1-108                    639          0    0.0    0.0     0.2    0.0
+  runDemo                                   Lib                   src/Lib.hs:16:1-50                     640          1    0.0    0.0     0.0    0.0
+   writeCanvas                              Lib                   src/Lib.hs:52:1-23                     642          0    0.0    0.0     0.0    0.0
+  runDemoClock                              Lib                   src/Lib.hs:18:1-50                     775          1    0.0    0.0     0.1    0.0
+   writeCanvas                              Lib                   src/Lib.hs:52:1-23                     776          0    0.1    0.0     0.1    0.0
+  runDemoSilhouette                         Lib                   src/Lib.hs:20:1-60                     890          1    0.0    0.0     0.2    0.0
+   writeCanvas                              Lib                   src/Lib.hs:52:1-23                     891          0    0.2    0.0     0.2    0.0

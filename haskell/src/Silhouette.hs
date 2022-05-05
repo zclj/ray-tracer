@@ -33,30 +33,20 @@ processPixel x y shape = let worldX   = toWorldX x
                              xs       = intersect shape ray
                          in hit xs
 
-castOnPixel :: Int -> Int -> Sphere -> Color -> Canvas -> Canvas
-castOnPixel x y s c canvas = let isHit = processPixel x y s
-                             in case isHit of
-                                  Just n -> write canvas (Width x) (Height y) c
-                                  Nothing -> canvas
+castOnPixel :: Int -> Int -> Sphere -> Color -> Color
+castOnPixel x y s c = let isHit = processPixel x y s
+                      in case isHit of
+                           Just n -> c
+                           Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
-castRow :: Int -> Sphere -> Color -> Canvas -> Canvas
-castRow y s c startingCanvas = foldr (\x canvas -> castOnPixel x y s c canvas)
-                               startingCanvas
-                               [0..(canvasPixels - 1)]
+castRow :: Int -> Sphere -> Color -> [Color]
+castRow y s c = map (\x -> castOnPixel x y s c) [0..(canvasPixels - 1)]
 
 cast :: Canvas
 cast = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
            color  = Color (Red 1) (Green 0) (Blue 0)
            sphere = makeUnitSphere 1
-           writtenCanvas
-             = foldr (\y canvas -> castRow y sphere color canvas)
-               emptyCanvas
-               [0..(canvasPixels - 1)]
-       in writtenCanvas
+           pixels
+             = map (\y -> castRow y sphere color) [0..(canvasPixels - 1)]
+       in fromColors pixels
 
-          -- For each row of pixels in the canvas
-          -- compute the world y coordinate (top = +half, bottom = -half)
-
-          -- for each pixel in the row
-            -- compute the world x coordinate (left = -half, right = half)
-            -- describe the point on the wall that the ray will target
