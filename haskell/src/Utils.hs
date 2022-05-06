@@ -39,5 +39,9 @@ replaceAtBy :: Int -> [a] -> (a -> a) -> [a]
 replaceAtBy i xs f = replaceAt i xs (f (xs !! max 0 i))
 
 dropAt :: Int -> [a] -> [a]
-dropAt i xs = pre ++ tail post
-  where (pre, post) = splitAt i xs
+dropAt i xs
+  | i == 0               = tail xs
+  | i == (length xs) - 1 = init xs
+  | otherwise            = pre ++ tail post
+                           where (pre, post) = splitAt i xs
+
