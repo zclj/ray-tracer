@@ -38,10 +38,21 @@ replaceAt i xs x = replaceIn pre x post
 replaceAtBy :: Int -> [a] -> (a -> a) -> [a]
 replaceAtBy i xs f = replaceAt i xs (f (xs !! max 0 i))
 
+-- dropAt :: Int -> [a] -> [a]
+-- dropAt i xs
+--   | i == 0               = tail xs
+--   | i == (length xs) - 1 = init xs
+--   | otherwise            = pre ++ tail post
+--                            where (pre, post) = splitAt i xs
+
 dropAt :: Int -> [a] -> [a]
-dropAt i xs
-  | i == 0               = tail xs
-  | i == (length xs) - 1 = init xs
-  | otherwise            = pre ++ tail post
-                           where (pre, post) = splitAt i xs
+dropAt i (x:y:z:w:_) = case i of
+                         0 -> [y,z,w]
+                         1 -> [x,z,w]
+                         2 -> [x,y,w]
+                         3 -> [x,y,z]
+dropAt i (x:y:z:_) = case i of
+                       0 -> [y,z]
+                       1 -> [x,z]
+                       2 -> [x,y]
 
