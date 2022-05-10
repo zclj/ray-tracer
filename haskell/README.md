@@ -19,3 +19,7 @@ To continuously run the tests, use:
 ## Profiling
 
 First, build with profiling `stack build --profile`. Then run with profiling `stack exec --profile -- ray-tracer-exe +RTS -p`.
+
+## Resources
+
+- [Arrays](https://wiki.haskell.org/Arrays)
