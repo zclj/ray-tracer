@@ -23,3 +23,4 @@ First, build with profiling `stack build --profile`. Then run with profiling `st
 ## Resources
 
 - [Arrays](https://wiki.haskell.org/Arrays)
+- [Vectors](https://wiki.haskell.org/Numeric_Haskell:_A_Vector_Tutorial)
