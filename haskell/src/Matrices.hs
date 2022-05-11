@@ -3,11 +3,14 @@ module Matrices
   , makeMatrix
   , makeMatrix4x4
   , makeMatrix3x3
+  , makeUMatrix
   , getAt
+  , getAtU
   , RowIndex (..)
   , ColumnIndex (..)
   , mul
   , mulT
+  , mulU
   , identity
   , transpose
   , determinant
@@ -20,6 +23,7 @@ module Matrices
 
 import qualified Tuples as T
 import Utils
+import Data.Array.Unboxed
 
 data Matrix = Matrix [[Double]]
   deriving (Show, Ord)
@@ -61,6 +65,54 @@ makeMatrix [ [a11, a12]
 makeMatrix _ = error "Unsupported Matrix size"
 
 ----
+-- matrix with arrays
+
+-- https://www.haskell.org/tutorial/arrays.html
+-- https://hackage.haskell.org/package/base-4.16.1.0/docs/GHC-Arr.html#v:array
+data UMatrix = UMatrix (UArray (Int, Int) Float)
+  deriving(Show)
+
+-- instance Eq UMatrix where
+--   (UMatrix x) == (UMatrix y)
+--     = let ltep    = (\(x,y) -> abs (x - y) < epsilon)
+--           epsilon = 0.0001
+--       in all ltep $ zip (concat x) (concat y)
+
+makeUMatrix :: [[Float]] -> UMatrix
+makeUMatrix [ [a11, a12, a13, a14]
+            , [a21, a22, a23, a24]
+            , [a31, a32, a33, a34]
+            , [a41, a42, a43, a44]]
+  = UMatrix (array ((0,0), (3,3)) [ ((0,0),a11), ((0,1),a12), ((0,2),a13), ((0,3),a14)
+                                  , ((1,0),a21), ((1,1),a22), ((1,2),a23), ((1,3),a24)
+                                  , ((2,0),a31), ((2,1),a32), ((2,2),a33), ((2,3),a34)
+                                  , ((3,0),a41), ((3,1),a42), ((3,2),a43), ((3,3),a44)])
+makeUMatrix [ [a11, a12, a13]
+            , [a21, a22, a23]
+            , [a31, a32, a33]]
+  = UMatrix (array ((0,0), (2,2)) [ ((0,0),a11), ((0,1),a12), ((0,2),a13)
+                                  , ((1,0),a21), ((1,1),a22), ((1,2),a23)
+                                  , ((2,0),a31), ((2,1),a32), ((2,2),a33)])
+makeUMatrix [ [a11, a12]
+            , [a21, a22]]
+  = UMatrix (array ((0,0), (1,1)) [ ((0,0),a11), ((0,1),a12)
+                                  , ((1,0),a21), ((1,1),a22)])
+makeUMatrix _ = error "Unsupported UMatrix size"
+
+m = makeUMatrix [[1, 2], [3,4]]
+
+mBounds (UMatrix m) = bounds m
+
+squares :: UArray Int Int
+squares =  array (1,100) [(i, i*i) | i <- [1..100]]
+
+index7 = squares!7
+
+s :: UArray (Int, Int) Float
+s = array ((0,0), (1,1)) []
+
+
+----
 -- Specialized matrix
 
 data Matrix4x4 = Matrix4x4 [[Double]]
@@ -98,11 +150,24 @@ newtype ColumnIndex = ColumnIndex Int
 getAt :: Matrix -> RowIndex -> ColumnIndex -> Double
 getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
 
+getAtU :: UMatrix -> RowIndex -> ColumnIndex -> Float
+getAtU (UMatrix m) (RowIndex r) (ColumnIndex c) = m!(r,c)
+
 mul :: Matrix -> Matrix -> Matrix
 mul a b =
   let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
       rxc = (\m1 m2 r c k -> get m1 r k * get m2 k c)
   in Matrix [[sum (map (rxc a b i j) [0..3]) | j <- [0..3]] | i <- [0..3]]
+
+mulU :: UMatrix -> UMatrix -> UMatrix
+mulU (UMatrix a) (UMatrix b) =
+  let resultBounds  = bounds a
+      (ri, rj) = resultBounds
+      result = array resultBounds
+                     [((i,j), sum [a!(i,k) * b!(k,j) | k <- [0..3]])
+                                  | i <- [0..3],
+                                    j <- [0..3]]
+  in UMatrix result
 
 mulT :: Matrix -> T.Tuple -> T.Tuple
 mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
