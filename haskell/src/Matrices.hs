@@ -72,11 +72,21 @@ makeMatrix _ = error "Unsupported Matrix size"
 data UMatrix = UMatrix (UArray (Int, Int) Float)
   deriving(Show)
 
--- instance Eq UMatrix where
---   (UMatrix x) == (UMatrix y)
---     = let ltep    = (\(x,y) -> abs (x - y) < epsilon)
---           epsilon = 0.0001
---       in all ltep $ zip (concat x) (concat y)
+eqUMatrix :: UMatrix -> UMatrix -> Bool
+eqUMatrix (UMatrix x) (UMatrix y)
+  = let ((li,lj), (ui,uj)) = bounds x
+        result = [[abs (x!(i,k) - y!(i,k)) < 0.0001 | k <- [lj..uj]]
+                 | i <- [li..ui]]
+    in and $ concat result
+
+instance Eq UMatrix where
+  x == y = eqUMatrix x y
+
+m1 = makeUMatrix [[1, 2], [3,4]]
+m2 = makeUMatrix [[1, 2], [3,4]]
+m3 = makeUMatrix [[2, 2], [4,4]]
+m4 = makeUMatrix [[2, 2.001], [4,4]]
+m5 = makeUMatrix [[2, 2.00001], [4,4]]
 
 makeUMatrix :: [[Float]] -> UMatrix
 makeUMatrix [ [a11, a12, a13, a14]
@@ -98,19 +108,6 @@ makeUMatrix [ [a11, a12]
   = UMatrix (array ((0,0), (1,1)) [ ((0,0),a11), ((0,1),a12)
                                   , ((1,0),a21), ((1,1),a22)])
 makeUMatrix _ = error "Unsupported UMatrix size"
-
-m = makeUMatrix [[1, 2], [3,4]]
-
-mBounds (UMatrix m) = bounds m
-
-squares :: UArray Int Int
-squares =  array (1,100) [(i, i*i) | i <- [1..100]]
-
-index7 = squares!7
-
-s :: UArray (Int, Int) Float
-s = array ((0,0), (1,1)) []
-
 
 ----
 -- Specialized matrix
