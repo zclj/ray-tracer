@@ -69,7 +69,7 @@ makeMatrix _ = error "Unsupported Matrix size"
 
 -- https://www.haskell.org/tutorial/arrays.html
 -- https://hackage.haskell.org/package/base-4.16.1.0/docs/GHC-Arr.html#v:array
-data UMatrix = UMatrix (UArray (Int, Int) Float)
+data UMatrix = UMatrix (UArray (Int, Int) Double)
   deriving(Show)
 
 eqUMatrix :: UMatrix -> UMatrix -> Bool
@@ -88,7 +88,7 @@ m3 = makeUMatrix [[2, 2], [4,4]]
 m4 = makeUMatrix [[2, 2.001], [4,4]]
 m5 = makeUMatrix [[2, 2.00001], [4,4]]
 
-makeUMatrix :: [[Float]] -> UMatrix
+makeUMatrix :: [[Double]] -> UMatrix
 makeUMatrix [ [a11, a12, a13, a14]
             , [a21, a22, a23, a24]
             , [a31, a32, a33, a34]
@@ -147,7 +147,7 @@ newtype ColumnIndex = ColumnIndex Int
 getAt :: Matrix -> RowIndex -> ColumnIndex -> Double
 getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
 
-getAtU :: UMatrix -> RowIndex -> ColumnIndex -> Float
+getAtU :: UMatrix -> RowIndex -> ColumnIndex -> Double
 getAtU (UMatrix m) (RowIndex r) (ColumnIndex c) = m!(r,c)
 
 mul :: Matrix -> Matrix -> Matrix
