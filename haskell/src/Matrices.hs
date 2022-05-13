@@ -10,6 +10,7 @@ module Matrices
   , ColumnIndex (..)
   , mul
   , mulT
+  , mulTU
   , mulU
   , identity
   , transpose
@@ -171,6 +172,17 @@ mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
                           tupleFromList [x, y, z, w] = T.Tuple x y z w
                       in tupleFromList [tupleFromList (m !! i) `T.dot` b
                                        | i <- [0..3]]
+
+matrixRow :: UMatrix -> Int -> [Double]
+matrixRow (UMatrix m) r = let ((_, _), (_, uj)) = bounds m
+                          in [m!(r,i) | i <- [0..uj]]
+
+mulTU :: UMatrix -> T.Tuple -> T.Tuple
+mulTU a@(UMatrix m) b =
+  let (ri, rj)                   = bounds m
+      tupleFromList [x, y, z, w] = T.Tuple x y z w
+      result                     = [ tupleFromList (matrixRow a i) `T.dot` b | i <- [0..3]]
+  in tupleFromList result
 
 transpose :: Matrix -> Matrix
 transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
