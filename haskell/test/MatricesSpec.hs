@@ -294,11 +294,18 @@ matrixFunctions =
     describe "Transpose a matrix" $ do
       let a = makeMatrix [[0, 9, 3, 0], [9, 8, 0, 8],
                           [1, 8, 5, 3], [0, 0, 5, 8]]
+          au = makeUMatrix [[0, 9, 3, 0], [9, 8, 0, 8],
+                            [1, 8, 5, 3], [0, 0, 5, 8]]
           t = SUT.transpose a
+          tu = SUT.transposeU au
           b = makeMatrix [[0, 9, 1, 0], [9, 8, 8, 0],
                           [3, 0, 5, 5], [0, 8, 3, 8]]
+          bu = makeUMatrix [[0, 9, 1, 0], [9, 8, 8, 0],
+                            [3, 0, 5, 5], [0, 8, 3, 8]]
       it "Transpose A" $ do
         t `shouldBe` b
+      it "Transpose A" $ do
+        tu `shouldBe` bu
     {- Scenario: Transposing the identity matrix
          Given A ← transpose(identity_matrix)
          Then A = identity_matrix -}

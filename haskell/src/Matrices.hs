@@ -15,6 +15,7 @@ module Matrices
   , identity
   , identityU
   , transpose
+  , transposeU
   , determinant
   , submatrix
   , minor
@@ -195,6 +196,10 @@ mulTU a@(UMatrix m) b =
 
 transpose :: Matrix -> Matrix
 transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
+
+transposeU :: UMatrix -> UMatrix
+transposeU (UMatrix a) = UMatrix (array ((0,0),(3,3))
+                                  [((i,j), a!(j,i)) | j <- [0..3], i <- [0..3]])
 
 determinant :: Matrix -> Double
 determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
