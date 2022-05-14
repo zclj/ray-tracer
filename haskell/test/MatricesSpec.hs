@@ -260,9 +260,14 @@ matricesArithmetic =
     describe "Multiplying a matrix by the identity matrix" $ do
       let a = makeMatrix [[0, 1, 2, 4] , [1, 2, 4, 8],
                           [2, 4, 8, 16], [4, 8, 16, 32]]
+          au = makeUMatrix [[0, 1, 2, 4] , [1, 2, 4, 8],
+                            [2, 4, 8, 16], [4, 8, 16, 32]]
+          bu = SUT.mulU au SUT.identityU
           b = SUT.mul a SUT.identity
       it "A * Identity = A" $ do
         a `shouldBe` b
+      it "A * Identity = A" $ do
+        au `shouldBe` bu
     {- Scenario: Multiplying the identity matrix by a tuple
          Given a ← tuple(1, 2, 3, 4)
          Then identity_matrix * a = a -}
