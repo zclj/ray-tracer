@@ -17,6 +17,7 @@ module Matrices
   , transpose
   , transposeU
   , determinant
+  , determinantU
   , submatrix
   , minor
   , cofactor
@@ -207,6 +208,12 @@ determinant m@(Matrix x) =
   let onRowZero = (\f c -> f m (RowIndex 0) (ColumnIndex c))
       size      = length (head x) - 1
   in sum $ map (\j -> onRowZero getAt j * onRowZero cofactor j) [0..size]
+
+determinantU :: UMatrix -> Double
+determinantU (UMatrix m) =
+  let ((li,hi), (lj, hj)) = bounds m
+  in case hj of
+    1 -> (m!(0,0) * m!(1,1)) - (m!(1,0) * m!(0,1))
 
 -- submatrix :: Matrix -> RowIndex -> ColumnIndex -> Matrix
 -- submatrix (Matrix a) (RowIndex r) (ColumnIndex c)

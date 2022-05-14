@@ -320,9 +320,13 @@ matrixFunctions =
          Then determinant(A) = 17 -}
     describe "Calculating the determinant of a 2x2 matrix" $ do
       let a = makeMatrix [[1, 5], [- 3, 2]]
+          au = makeUMatrix [[1, 5], [- 3, 2]]
           d = SUT.determinant a
+          du = SUT.determinantU au
       it "Determinant of 2x2" $ do
         d `shouldBe` 17
+      it "Determinant of 2x2" $ do
+        du `shouldBe` 17
 
     {- Scenario: A submatrix of a 3x3 matrix is a 2x2 matrix
        Given the following 3x3 matrix A:
