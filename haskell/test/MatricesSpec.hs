@@ -338,10 +338,15 @@ matrixFunctions =
          |  0 | 6 | -}
     describe "A submatrix of a 3x3 matrix is a 2x2 matrix" $ do
       let a = makeMatrix [[1, 5, 0], [- 3, 2, 7], [0, 6, - 3]]
+          au = makeUMatrix [[1, 5, 0], [- 3, 2, 7], [0, 6, - 3]]
           s = SUT.submatrix a (RowIndex 0) (ColumnIndex 2)
+          su = SUT.submatrixU au (RowIndex 0) (ColumnIndex 2)
           b = makeMatrix [[- 3, 2], [0, 6]]
+          bu = makeUMatrix [[- 3, 2], [0, 6]]
       it "is a 2x2" $ do
         s `shouldBe` b
+      it "is a 2x2" $ do
+        su `shouldBe` bu
     {- Scenario: A submatrix of a 4x4 matrix is a 3x3 matrix
          Given the following 4x4 matrix A:
            | -6 |  1 |  1 |  6 |

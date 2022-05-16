@@ -19,6 +19,7 @@ module Matrices
   , determinant
   , determinantU
   , submatrix
+  , submatrixU
   , minor
   , cofactor
   , invertible
@@ -255,6 +256,50 @@ submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
   = let subRows = dropAt r a
         subCols = subColsX c (Matrix subRows)
     in subCols
+
+dropRow :: UMatrix -> Int -> UMatrix
+dropRow (UMatrix m) i
+  = let xs = case i of
+               0 -> [ ((0,0),m!(1,0)), ((0,1),m!(1,1)), ((0,2),m!(1,2)), ((0,3),m!(1,3))
+                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,1)), ((1,3),m!(2,3))
+                    , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
+               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
+                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,1)), ((1,3),m!(2,3))
+                    , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
+    in UMatrix (array ((0,0), (2,3)) xs)
+
+dropRow3x3 :: UMatrix -> Int -> UMatrix
+dropRow3x3 (UMatrix m) i
+  = let xs = case i of
+               0 -> [ ((0,0),m!(1,0)), ((0,1),m!(1,1)), ((0,2),m!(1,2))
+                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,2))]
+               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2))
+                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,2))]
+               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2))]
+    in UMatrix (array ((0,0), (1,2)) xs)
+
+dropCol2x3 :: UMatrix -> Int -> UMatrix
+dropCol2x3 (UMatrix m) j
+  = let xs = case j of
+               0 -> [ ((0,0),m!(0,1)), ((0,1),m!(0,2))
+                    , ((1,0),m!(1,1)), ((1,1),m!(1,2))]
+               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,2))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,2))]
+               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,1))]
+    in UMatrix (array ((0,0), (1,1)) xs)
+
+d1 = makeUMatrix [[1, 5, 0], [- 3, 2, 7], [0, 6, - 3]]
+
+su = submatrixU d1 (RowIndex 0) (ColumnIndex 2)
+
+submatrixU :: UMatrix -> RowIndex -> ColumnIndex -> UMatrix
+submatrixU a@(UMatrix m) (RowIndex i) (ColumnIndex j) =
+  let ((li,ui), (lj,uj)) = bounds m
+      woRow = dropRow3x3 a i
+      woCol = dropCol2x3 woRow j
+  in woCol
 
 test = submatrix (makeMatrix [[1,1,1],[2,2,2], [3,3,3]]) (RowIndex 0) (ColumnIndex 0)
 test2 = dropAt 0 [[1,1,1],[2,2,2], [3,3,3]]
