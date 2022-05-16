@@ -79,10 +79,11 @@ data UMatrix = UMatrix (UArray (Int, Int) Double)
 
 eqUMatrix :: UMatrix -> UMatrix -> Bool
 eqUMatrix (UMatrix x) (UMatrix y)
-  = let ((li,lj), (ui,uj)) = bounds x
-        result = [[abs (x!(i,k) - y!(i,k)) < 0.0001 | k <- [lj..uj]]
-                 | i <- [li..ui]]
-    in and $ concat result
+  = let ((lix,ljx), (uix,ujx)) = bounds x
+        ((liy,ljy), (uiy,ujy)) = bounds y
+        result                 = [[abs (x!(i,k) - y!(i,k)) < 0.0001 | k <- [ljx..ujx]]
+                                 | i <- [lix..uix]]
+    in (bounds x) == (bounds y) && (and $ concat result)
 
 instance Eq UMatrix where
   x == y = eqUMatrix x y
