@@ -402,18 +402,31 @@ matrixFunctions =
            And cofactor(A, 1, 0) = -25 -}
     describe "Calculating a cofactor of a 3x3 matrix" $ do
       let a = makeMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
+          au = makeUMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
           m1 = SUT.minor a (RowIndex 0) (ColumnIndex 0)
+          m1u = SUT.minorU au (RowIndex 0) (ColumnIndex 0)
           c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
+          c1u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 0)
           m2 = SUT.minor a (RowIndex 1) (ColumnIndex 0)
+          m2u = SUT.minorU au (RowIndex 1) (ColumnIndex 0)
           c2 = SUT.cofactor a (RowIndex 1) (ColumnIndex 0)
+          c2u = SUT.cofactorU au (RowIndex 1) (ColumnIndex 0)
       it "the minor at [0,0] is -12" $ do
         m1 `shouldBe` - 12
+      it "the minor at [0,0] is -12" $ do
+        m1u `shouldBe` - 12
       it "the cofactor at [0,0] is -12" $ do
         c1 `shouldBe` - 12
+      it "the cofactor at [0,0] is -12" $ do
+        c1u `shouldBe` - 12
       it "the minor at [1,0] is 25" $ do
         m2 `shouldBe` 25
+      it "the minor at [1,0] is 25" $ do
+        m2u `shouldBe` 25
       it "the cofactor at [1,0] is -25" $ do
         c2 `shouldBe` - 25
+      it "the cofactor at [1,0] is -25" $ do
+        c2u `shouldBe` - 25
     {- Scenario: Calculating the determinant of a 3x3 matrix
          Given the following 3x3 matrix A:
            |  1 |  2 |  6 |

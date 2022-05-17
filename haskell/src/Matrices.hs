@@ -23,6 +23,7 @@ module Matrices
   , minor
   , minorU
   , cofactor
+  , cofactorU
   , invertible
   , inverse
   ) where
@@ -352,6 +353,11 @@ cofactor :: Matrix -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
   | odd (ri + ci) = - minor a r c
   | otherwise     = minor a r c
+
+cofactorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
+cofactorU a r@(RowIndex ri) c@(ColumnIndex ci)
+  | odd (ri + ci) = - minorU a r c
+  | otherwise     = minorU a r c
 
 invertible :: Matrix -> Bool
 invertible a
