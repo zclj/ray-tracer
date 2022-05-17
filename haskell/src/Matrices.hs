@@ -21,6 +21,7 @@ module Matrices
   , submatrix
   , submatrixU
   , minor
+  , minorU
   , cofactor
   , invertible
   , inverse
@@ -343,6 +344,9 @@ test2 = dropAt 0 [[1,1,1],[2,2,2], [3,3,3]]
 
 minor :: Matrix -> RowIndex -> ColumnIndex -> Double
 minor a r = determinant . submatrix a r
+
+minorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
+minorU a r = determinantU . submatrixU a r
 
 cofactor :: Matrix -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
