@@ -258,8 +258,8 @@ submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
         subCols = subColsX c (Matrix subRows)
     in subCols
 
-dropRow :: UMatrix -> Int -> UMatrix
-dropRow (UMatrix m) i
+dropRow4x4 :: UMatrix -> Int -> UMatrix
+dropRow4x4 (UMatrix m) i
   = let xs = case i of
                0 -> [ ((0,0),m!(1,0)), ((0,1),m!(1,1)), ((0,2),m!(1,2)), ((0,3),m!(1,3))
                     , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,1)), ((1,3),m!(2,3))
@@ -267,6 +267,12 @@ dropRow (UMatrix m) i
                1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
                     , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,1)), ((1,3),m!(2,3))
                     , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
+               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2)), ((1,3),m!(1,3))
+                    , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
+               3 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2)), ((1,3),m!(1,3))
+                    , ((2,0),m!(2,0)), ((2,1),m!(2,1)), ((2,2),m!(2,2)), ((2,3),m!(2,3))]
     in UMatrix (array ((0,0), (2,3)) xs)
 
 dropRow3x3 :: UMatrix -> Int -> UMatrix
@@ -280,6 +286,20 @@ dropRow3x3 (UMatrix m) i
                     , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2))]
     in UMatrix (array ((0,0), (1,2)) xs)
 
+dropCol3x4 :: UMatrix -> Int -> UMatrix
+dropCol3x4 (UMatrix m) j
+  = let xs = case j of
+               0 -> [ ((0,0),m!(0,1)), ((0,1),m!(0,2)), ((0,2),m!(0,3))
+                    , ((1,0),m!(1,1)), ((1,1),m!(1,2)), ((1,2),m!(1,3))
+                    , ((2,0),m!(2,1)), ((2,1),m!(2,2)), ((2,2),m!(2,3))]
+               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,2)), ((0,2),m!(0,3))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,2)), ((1,2),m!(1,3))
+                    , ((2,0),m!(2,0)), ((2,1),m!(2,2)), ((2,2),m!(2,3))]
+               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,3))
+                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,3))
+                    , ((2,0),m!(2,0)), ((2,1),m!(2,1)), ((2,2),m!(2,3))]
+    in UMatrix (array ((0,0), (2,2)) xs)
+
 dropCol2x3 :: UMatrix -> Int -> UMatrix
 dropCol2x3 (UMatrix m) j
   = let xs = case j of
@@ -291,15 +311,31 @@ dropCol2x3 (UMatrix m) j
                     , ((1,0),m!(1,0)), ((1,1),m!(1,1))]
     in UMatrix (array ((0,0), (1,1)) xs)
 
-d1 = makeUMatrix [[1, 5, 0], [- 3, 2, 7], [0, 6, - 3]]
+au = makeUMatrix [[- 6, 1, 1, 6], [- 8, 5, 8, 6],
+                  [- 1, 0, 8, 2], [- 7, 1, -1, 1]]
 
-su = submatrixU d1 (RowIndex 0) (ColumnIndex 2)
+su = submatrixU au (RowIndex 2) (ColumnIndex 1)
+
+bu = makeUMatrix [[- 6, 1, 6], [- 8, 8, 6], [- 7, - 1, 1]]
+
+submatrix4x4 :: UMatrix -> Int -> Int -> UMatrix
+submatrix4x4 a@(UMatrix m) i j = 
+  let woRow = dropRow4x4 a i
+      woCol = dropCol3x4 woRow j
+  in woCol
+  
+submatrix3x3 :: UMatrix -> Int -> Int -> UMatrix
+submatrix3x3 a@(UMatrix m) i j =
+  let woRow = dropRow3x3 a i
+      woCol = dropCol2x3 woRow j
+  in woCol
 
 submatrixU :: UMatrix -> RowIndex -> ColumnIndex -> UMatrix
 submatrixU a@(UMatrix m) (RowIndex i) (ColumnIndex j) =
   let ((li,ui), (lj,uj)) = bounds m
-      woRow = dropRow3x3 a i
-      woCol = dropCol2x3 woRow j
+      woCol = case uj of
+                2 -> submatrix3x3 a i j
+                3 -> submatrix4x4 a i j
   in woCol
 
 test = submatrix (makeMatrix [[1,1,1],[2,2,2], [3,3,3]]) (RowIndex 0) (ColumnIndex 0)
