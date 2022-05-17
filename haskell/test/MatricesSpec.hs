@@ -438,18 +438,31 @@ matrixFunctions =
            And determinant(A) = -196 -}
     describe "Calculating the determinant of a 3x3 matrix" $ do
       let a  = makeMatrix [[1, 2, 6], [- 5, 8, - 4], [2, 6, 4]]
+          au  = makeUMatrix [[1, 2, 6], [- 5, 8, - 4], [2, 6, 4]]
           c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
+          c1u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 0)
           c2 = SUT.cofactor a (RowIndex 0) (ColumnIndex 1)
+          c2u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 1)
           c3 = SUT.cofactor a (RowIndex 0) (ColumnIndex 2)
+          c3u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 2)
           d  = SUT.determinant a
+          du  = SUT.determinantU au
       it "the cofactor at [0,0] is 56" $ do
         c1 `shouldBe` 56
+      it "the cofactor at [0,0] is 56" $ do
+        c1u `shouldBe` 56
       it "the cofactor at [0,1] is 12" $ do
         c2 `shouldBe` 12
+      it "the cofactor at [0,1] is 12" $ do
+        c2u `shouldBe` 12
       it "the cofactor at [0,2] is -46" $ do
         c3 `shouldBe` - 46
+      it "the cofactor at [0,2] is -46" $ do
+        c3u `shouldBe` - 46
       it "the determinant of A is -196" $ do
         d `shouldBe` - 196
+      it "the determinant of A is -196" $ do
+        du `shouldBe` - 196
     {- Scenario: Calculating the determinant of a 4x4 matrix
          Given the following 4x4 matrix A:
            | -2 | -8 |  3 |  5 |

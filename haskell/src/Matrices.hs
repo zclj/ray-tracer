@@ -214,10 +214,11 @@ determinant m@(Matrix x) =
   in sum $ map (\j -> onRowZero getAt j * onRowZero cofactor j) [0..size]
 
 determinantU :: UMatrix -> Double
-determinantU (UMatrix m) =
+determinantU a@(UMatrix m) =
   let ((li,hi), (lj, hj)) = bounds m
   in case hj of
     1 -> (m!(0,0) * m!(1,1)) - (m!(1,0) * m!(0,1))
+    otherwise -> sum $ map (\j -> m!(0,j) * (cofactorU a (RowIndex 0) (ColumnIndex j))) [0..hj]
 
 -- submatrix :: Matrix -> RowIndex -> ColumnIndex -> Matrix
 -- submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
