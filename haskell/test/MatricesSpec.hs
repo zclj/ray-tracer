@@ -477,21 +477,38 @@ matrixFunctions =
     describe "Calculating the determinant of a 4x4 matrix" $ do
       let a  = makeMatrix [[- 2, - 8, 3, 5], [- 3, 1, 7, 3],
                            [1, 2, - 9, 6], [- 6, 7, 7, -9]]
+          au  = makeUMatrix [[- 2, - 8, 3, 5], [- 3, 1, 7, 3],
+                             [1, 2, - 9, 6], [- 6, 7, 7, -9]]
           c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
           c2 = SUT.cofactor a (RowIndex 0) (ColumnIndex 1)
           c3 = SUT.cofactor a (RowIndex 0) (ColumnIndex 2)
           c4 = SUT.cofactor a (RowIndex 0) (ColumnIndex 3)
+          c1u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 0)
+          c2u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 1)
+          c3u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 2)
+          c4u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 3)
           d  = SUT.determinant a
+          du  = SUT.determinantU au
       it "the cofactor at [0,0] is 690" $ do
         c1 `shouldBe` 690
+      it "the cofactor at [0,0] is 690" $ do
+        c1u `shouldBe` 690
       it "the cofactor at [0,1] is 447" $ do
         c2 `shouldBe` 447
+      it "the cofactor at [0,1] is 447" $ do
+        c2u `shouldBe` 447
       it "the cofactor at [0,2] is 210" $ do
         c3 `shouldBe` 210
+      it "the cofactor at [0,2] is 210" $ do
+        c3u `shouldBe` 210
       it "the cofactor at [0,3] is 51" $ do
         c4 `shouldBe` 51
+      it "the cofactor at [0,3] is 51" $ do
+        c4u `shouldBe` 51
       it "the determinant of A is -4071" $ do
         d `shouldBe` - 4071
+      it "the determinant of A is -4071" $ do
+        du `shouldBe` - 4071
     {- Scenario: Testing an invertible matrix for invertibility
          Given the following 4x4 matrix A:
            |  6 |  4 |  4 |  4 |
