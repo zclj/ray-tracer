@@ -520,11 +520,18 @@ matrixFunctions =
     describe "Testing an invertible matrix for invertibility" $ do
       let a = makeMatrix [[6, 4, 4, 4], [5, 5, 7, 6],
                           [4, - 9, 3, - 7], [9, 1, 7, - 6]]
+          au = makeUMatrix [[6, 4, 4, 4], [5, 5, 7, 6],
+                            [4, - 9, 3, - 7], [9, 1, 7, - 6]]
           d = SUT.determinant a
+          du = SUT.determinantU au
       it "the determinant of A is -2120" $ do
         d `shouldBe` - 2120
+      it "the determinant of A is -2120" $ do
+        du `shouldBe` - 2120
       it "and A is invertible" $ do
         a `shouldSatisfy` SUT.invertible
+      it "and A is invertible" $ do
+        au `shouldSatisfy` SUT.invertibleU
     {- Scenario: Testing a noninvertible matrix for invertibility
          Given the following 4x4 matrix A:
            | -4 |  2 | -2 | -3 |
