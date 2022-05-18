@@ -27,6 +27,7 @@ module Matrices
   , invertible
   , invertibleU
   , inverse
+  , inverseU
   ) where
 
 import qualified Tuples as T
@@ -382,5 +383,15 @@ inverse a
                        cofactors = [[cofactor a (RowIndex i) (ColumnIndex j) / det
                                     | i <- [0..3]] | j <- [0..3]]
                    in Matrix cofactors
+  | otherwise    = error "Matrix is not invertible"
+
+inverseU :: UMatrix -> UMatrix
+inverseU a
+  | invertibleU a = let det       = determinantU a
+                                   -- note that the transpose is implicit, indexes
+                                   -- are changed, i.e., (i,j) -> (j,i)
+                        cofactors = [[cofactorU a (RowIndex i) (ColumnIndex j) / det
+                                     | i <- [0..3]] | j <- [0..3]]
+                   in makeUMatrix cofactors
   | otherwise    = error "Matrix is not invertible"
 

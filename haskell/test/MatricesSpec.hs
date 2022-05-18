@@ -543,11 +543,18 @@ matrixFunctions =
     describe "Testing a noninvertible matrix for invertibility" $ do
       let a = makeMatrix [[- 4, 2, - 2, - 3], [9, 6, 2, 6],
                           [0, - 5, 1, - 5], [0, 0, 0, 0]]
+          au = makeUMatrix [[- 4, 2, - 2, - 3], [9, 6, 2, 6],
+                            [0, - 5, 1, - 5], [0, 0, 0, 0]]
           d = SUT.determinant a
+          du = SUT.determinantU au
       it "the determinant of A is 0" $ do
         d `shouldBe` 0
+      it "the determinant of A is 0" $ do
+        du `shouldBe` 0
       it "and A is NOT invertible" $ do
         a `shouldSatisfy` (not . SUT.invertible)
+      it "and A is NOT invertible" $ do
+        au `shouldSatisfy` (not . SUT.invertibleU)
     {- Scenario: Calculating the inverse of a matrix
          Given the following 4x4 matrix A:
            | -5 |  2 |  6 | -8 |
@@ -568,26 +575,48 @@ matrixFunctions =
     describe "Calculating the inverse of a matrix" $ do
       let a = makeMatrix [[- 5, 2, 6, - 8], [1, - 5, 1, 8],
                           [7, 7, - 6, - 7], [1, - 3, 7, 4]]
+          au = makeUMatrix [[- 5, 2, 6, - 8], [1, - 5, 1, 8],
+                            [7, 7, - 6, - 7], [1, - 3, 7, 4]]
           ba = makeMatrix [[0.21805, 0.45113, 0.24060, - 0.04511],
                            [- 0.80827, - 1.45677, - 0.44361, 0.52068],
                            [- 0.07895, - 0.22368, - 0.05263, 0.19737],
                            [- 0.52256, - 0.81391, - 0.30075, 0.30639]]
+          bau = makeUMatrix [[0.21805, 0.45113, 0.24060, - 0.04511],
+                             [- 0.80827, - 1.45677, - 0.44361, 0.52068],
+                             [- 0.07895, - 0.22368, - 0.05263, 0.19737],
+                             [- 0.52256, - 0.81391, - 0.30075, 0.30639]]
           bi = SUT.inverse a
+          biu = SUT.inverseU au
           d  = SUT.determinant a
+          du  = SUT.determinantU au
           c  = SUT.cofactor a (RowIndex 2) (ColumnIndex 3)
+          cu  = SUT.cofactorU au (RowIndex 2) (ColumnIndex 3)
           c2 = SUT.cofactor a (RowIndex 3) (ColumnIndex 2)
+          c2u = SUT.cofactorU au (RowIndex 3) (ColumnIndex 2)
       it "the determinant of A is 532" $ do
         d `shouldBe` 532
+      it "the determinant of A is 532" $ do
+        du `shouldBe` 532
       it "cofactor of A at [2,3] is -160" $ do
         c `shouldBe` - 160
+      it "cofactor of A at [2,3] is -160" $ do
+        cu `shouldBe` - 160
       it "B [3,2] is -160/532" $ do
         SUT.getAt bi (RowIndex 3) (ColumnIndex 2) `shouldBe` (-160)/532
+      it "B [3,2] is -160/532" $ do
+        SUT.getAtU biu (RowIndex 3) (ColumnIndex 2) `shouldBe` (-160)/532
       it "cofactor of A at [3,2] is 105" $ do
         c `shouldBe` - 160
+      it "cofactor of A at [3,2] is 105" $ do
+        cu `shouldBe` - 160
       it "B [2,3] is 105/532" $ do
         SUT.getAt bi (RowIndex 2) (ColumnIndex 3) `shouldBe` 105/532
+      it "B [2,3] is 105/532" $ do
+        SUT.getAtU biu (RowIndex 2) (ColumnIndex 3) `shouldBe` 105/532
       it "B is inverted" $ do
         bi `shouldBe` ba
+      it "B is inverted" $ do
+        biu `shouldBe` bau
     {- Scenario: Calculating the inverse of another matrix
          Given the following 4x4 matrix A:
            |  8 | -5 |  9 |  2 |
