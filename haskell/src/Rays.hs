@@ -6,7 +6,7 @@ module Rays
   ) where
 
 import Tuples
-import Matrices (Matrix (..), mulT)
+import Matrices (Matrix (..), mulT, UMatrix (..), mulTU)
 
 data Ray = Ray { origin :: Tuple
                , direction :: Tuple }
@@ -21,5 +21,5 @@ makeRay p v
 position :: Ray -> Double -> Tuple
 position (Ray origin direction) t = origin `add` (direction `mul` t )
 
-transform :: Ray -> Matrix -> Ray
-transform (Ray origin direction) m = Ray (m `mulT` origin) (m `mulT` direction)
+transform :: Ray -> UMatrix -> Ray
+transform (Ray origin direction) m = Ray (m `mulTU` origin) (m `mulTU` direction)

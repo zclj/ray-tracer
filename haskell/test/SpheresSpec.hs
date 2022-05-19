@@ -27,7 +27,7 @@ sphereTransformation =
     describe "A sphere's default transformation" $ do
       let s = SUT.makeUnitSphere 1
       it "is the identity matrix" $ do
-        SUT.transform s `shouldBe` identity
+        SUT.transform s `shouldBe` identityU
     {- Scenario: Changing a sphere's transformation
          Given s ← sphere()
            And t ← translation(2, 3, 4)

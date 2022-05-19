@@ -1,5 +1,6 @@
 module Matrices
   ( Matrix
+  , UMatrix
   , makeMatrix
   , makeMatrix4x4
   , makeMatrix3x3
@@ -78,8 +79,16 @@ makeMatrix _ = error "Unsupported Matrix size"
 
 -- https://www.haskell.org/tutorial/arrays.html
 -- https://hackage.haskell.org/package/base-4.16.1.0/docs/GHC-Arr.html#v:array
+-- https://stackoverflow.com/questions/5522074/taking-sub-arrays-in-haskell
+-- https://stackoverflow.com/questions/11768656/reasonably-efficient-pure-functional-matrix-product-in-haskell
+
+-- https://github.com/ekmett/linear/blob/2384ebbe12fe68d397f23d8a6ffe8278da7073da/src/Linear/V4.hs#L35
+
+-- https://hackage.haskell.org/package/vector-0.5/docs/Data-Vector-Storable.html
+
+-- https://github.com/haskell-numerics/hmatrix
 data UMatrix = UMatrix (UArray (Int, Int) Double)
-  deriving(Show)
+  deriving(Show, Ord)
 
 eqUMatrix :: UMatrix -> UMatrix -> Bool
 eqUMatrix (UMatrix x) (UMatrix y)
@@ -91,6 +100,12 @@ eqUMatrix (UMatrix x) (UMatrix y)
 
 instance Eq UMatrix where
   x == y = eqUMatrix x y
+
+instance Semigroup UMatrix where
+  (<>) x y = x `mulU` y
+
+instance Monoid UMatrix where
+  mempty = identityU
 
 m1 = makeUMatrix [[1, 2], [3,4]]
 m2 = makeUMatrix [[1, 2], [3,4]]
@@ -326,6 +341,7 @@ su = submatrixU au (RowIndex 2) (ColumnIndex 1)
 
 bu = makeUMatrix [[- 6, 1, 6], [- 8, 8, 6], [- 7, - 1, 1]]
 
+-- https://github.com/haskell-numerics/hmatrix/blob/master/packages/base/src/Internal/Matrix.hs#L383
 submatrix4x4 :: UMatrix -> Int -> Int -> UMatrix
 submatrix4x4 a@(UMatrix m) i j = 
   let woRow = dropRow4x4 a i

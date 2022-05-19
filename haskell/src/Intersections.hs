@@ -15,7 +15,7 @@ data Intersection = Intersection { t      :: Double
                   deriving (Show, Eq, Ord)
 
 intersect :: Sphere -> Ray -> [Intersection]
-intersect s r = let r'           = R.transform r (inverse (S.transform s))
+intersect s r = let r'           = R.transform r (inverseU (S.transform s))
                     sphereToRay  = origin r' `sub` point 0 0 0
                     a            = direction r' `dot` direction r'
                     b            = 2 * (direction r' `dot` sphereToRay)
