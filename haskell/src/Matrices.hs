@@ -34,6 +34,7 @@ module Matrices
 import qualified Tuples as T
 import Utils
 import Data.Array.Unboxed
+import Vector
 
 data Matrix = Matrix [[Double]]
   deriving (Show, Ord)

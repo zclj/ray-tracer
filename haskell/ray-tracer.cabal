@@ -38,6 +38,7 @@ library
       Transformations
       Tuples
       Utils
+      Vector
   other-modules:
       Paths_ray_tracer
   hs-source-dirs:
