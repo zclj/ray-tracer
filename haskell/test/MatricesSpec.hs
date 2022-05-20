@@ -221,14 +221,14 @@ matricesArithmetic =
       it "A * B = C" $ do
         c `shouldBe` makeMatrix [[20, 22, 50, 48], [44, 54, 114, 108],
                                  [40, 58, 110, 102], [16, 26, 46, 42]]
-    describe "Multiplying two Umatrices" $ do
-      let a = makeUMatrix [[1, 2, 3, 4], [5, 6, 7, 8],
+    describe "Multiplying two Vmatrices" $ do
+      let a = makeVMatrix [[1, 2, 3, 4], [5, 6, 7, 8],
                            [9, 8, 7, 6], [5, 4, 3, 2]]
-          b = makeUMatrix [[- 2, 1, 2, 3], [3, 2, 1, - 1],
+          b = makeVMatrix [[- 2, 1, 2, 3], [3, 2, 1, - 1],
                            [4, 3, 6, 5], [1, 2, 7, 8]]
-          c = SUT.mulU a b
+          c = SUT.mulV a b
       it "A * B = C" $ do
-        c `shouldBe` makeUMatrix [[20, 22, 50, 48], [44, 54, 114, 108],
+        c `shouldBe` makeVMatrix [[20, 22, 50, 48], [44, 54, 114, 108],
                                   [40, 58, 110, 102], [16, 26, 46, 42]]
     {- Scenario: A matrix multiplied by a tuple
          Given the following matrix A:

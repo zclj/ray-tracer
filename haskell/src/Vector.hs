@@ -3,15 +3,22 @@ module Vector
   , get
   ) where
 
--- data Vector3D = Vector3D Double Double Double
---   deriving (Show, Eq)
-
--- data Vector4D = Vector4D Double Double Double Double
---   deriving (Show, Eq)
-
 data Vector = Vector3D Double Double Double
             | Vector4D Double Double Double Double
-  deriving (Show, Eq)
+  deriving (Show)
+
+-- Implement Eq based on Epsilon comparison of floats
+-- this avoids two floats that are "equal" being evaluated as not equal
+-- due too how floats are represented
+instance Eq Vector where
+  (Vector4D x1 y1 z1 w1) == (Vector4D x2 y2 z2 w2)
+    = let epsilon = 0.0001
+          ltep    = (\x y -> abs (x - y) < epsilon)
+      in ltep x1 x2 && ltep y1 y2 && ltep z1 z2 && ltep w1 w2
+  (Vector3D x1 y1 z1) == (Vector3D x2 y2 z2)
+    = let epsilon = 0.0001
+          ltep    = (\x y -> abs (x - y) < epsilon)
+      in ltep x1 x2 && ltep y1 y2 && ltep z1 z2
 
 fromList3D :: [Double] -> Vector
 fromList3D (x:y:z:_) = (Vector3D x y z)
