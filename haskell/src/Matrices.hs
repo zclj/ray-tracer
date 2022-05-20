@@ -5,8 +5,10 @@ module Matrices
   , makeMatrix4x4
   , makeMatrix3x3
   , makeUMatrix
+  , makeVMatrix
   , getAt
   , getAtU
+  , getAtV
   , RowIndex (..)
   , ColumnIndex (..)
   , mul
@@ -160,6 +162,40 @@ makeMatrix3x3 [ [a11, a12, a13]
 
 ----
 
+----
+-- Vector based Matrix
+
+-- data VMatrix4x4 = VMatrix4x4 !Vector4D !Vector4D !Vector4D !Vector4D
+
+makeVMatrix4x4 [ [a11, a12, a13, a14]
+               , [a21, a22, a23, a24]
+               , [a31, a32, a33, a34]
+               , [a41, a42, a43, a44]]
+  = VMatrix4x4 (Vector4D a11 a12 a13 a14)
+               (Vector4D a21 a22 a23 a24)
+               (Vector4D a31 a32 a33 a34)
+               (Vector4D a41 a42 a43 a44)
+
+-- data VMatrix3x3 = VMatrix3x3 !Vector3D !Vector3D !Vector3D
+
+makeVMatrix3x3 [ [a11, a12, a13]
+               , [a21, a22, a23]
+               , [a31, a32, a33]]
+  = VMatrix3x3 (Vector3D a11 a12 a13)
+               (Vector3D a21 a22 a23)
+               (Vector3D a31 a32 a33)
+
+data VMatrix =
+    VMatrix4x4 !Vector !Vector !Vector !Vector
+  | VMatrix3x3 !Vector !Vector !Vector
+
+makeVMatrix :: [[Double]] -> VMatrix
+makeVMatrix xs
+  | length xs == 4 = makeVMatrix4x4 xs
+  | length xs == 3 = makeVMatrix3x3 xs
+  | otherwise = error "Unsupported Matrix size"
+----
+
 identity :: Matrix
 identity = Matrix [[1, 0, 0, 0], [0, 1, 0, 0],
                    [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -183,6 +219,19 @@ getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
 
 getAtU :: UMatrix -> RowIndex -> ColumnIndex -> Double
 getAtU (UMatrix m) (RowIndex r) (ColumnIndex c) = m!(r,c)
+
+getAtV :: VMatrix -> RowIndex -> ColumnIndex -> Double
+getAtV (VMatrix4x4 x y z w) (RowIndex r) (ColumnIndex c)
+  = case r of
+      0 -> get x c
+      1 -> get y c
+      2 -> get z c
+      3 -> get w c
+getAtV (VMatrix3x3 x y z) (RowIndex r) (ColumnIndex c)
+  = case r of
+      0 -> get x c
+      1 -> get y c
+      2 -> get z c
 
 mul :: Matrix -> Matrix -> Matrix
 mul a b =

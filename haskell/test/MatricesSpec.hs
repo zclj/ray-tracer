@@ -60,49 +60,49 @@ matricesBasics =
     describe "Constructing and inspecting a 4x4 matrix" $ do
       let m = makeMatrix [[1, 2, 3, 4], [5.5, 6.5, 7.5, 8.5],
                           [9, 10, 11, 12], [13.5, 14.5, 15.5, 16.5]]
-          um = makeUMatrix [[1, 2, 3, 4], [5.5, 6.5, 7.5, 8.5],
+          um = makeVMatrix [[1, 2, 3, 4], [5.5, 6.5, 7.5, 8.5],
                             [9, 10, 11, 12], [13.5, 14.5, 15.5, 16.5]]
       it "inspect [0,0] = 1" $ do
         SUT.getAt m (RowIndex 0) (ColumnIndex 0) `shouldBe` 1
 
       it "inspect [0,0] = 1" $ do
-        SUT.getAtU um (RowIndex 0) (ColumnIndex 0) `shouldBe` 1
+        SUT.getAtV um (RowIndex 0) (ColumnIndex 0) `shouldBe` 1
 
       it "inspect [0,3] = 4" $ do
         SUT.getAt m (RowIndex 0) (ColumnIndex 3) `shouldBe` 4
 
       it "inspect [0,3] = 4" $ do
-        SUT.getAtU um (RowIndex 0) (ColumnIndex 3) `shouldBe` 4
+        SUT.getAtV um (RowIndex 0) (ColumnIndex 3) `shouldBe` 4
 
       it "inspect [1,0] = 5.5" $ do
         SUT.getAt m (RowIndex 1) (ColumnIndex 0) `shouldBe` 5.5
 
       it "inspect [1,0] = 5.5" $ do
-        SUT.getAtU um (RowIndex 1) (ColumnIndex 0) `shouldBe` 5.5
+        SUT.getAtV um (RowIndex 1) (ColumnIndex 0) `shouldBe` 5.5
 
       it "inspect [1,2] = 7.5" $ do
         SUT.getAt m (RowIndex 1) (ColumnIndex 2) `shouldBe` 7.5
 
       it "inspect [1,2] = 7.5" $ do
-        SUT.getAtU um (RowIndex 1) (ColumnIndex 2) `shouldBe` 7.5
+        SUT.getAtV um (RowIndex 1) (ColumnIndex 2) `shouldBe` 7.5
 
       it "inspect [2,2] = 11" $ do
         SUT.getAt m (RowIndex 2) (ColumnIndex 2) `shouldBe` 11
 
       it "inspect [2,2] = 11" $ do
-        SUT.getAtU um (RowIndex 2) (ColumnIndex 2) `shouldBe` 11
+        SUT.getAtV um (RowIndex 2) (ColumnIndex 2) `shouldBe` 11
 
       it "inspect [3,0] = 13.5" $ do
         SUT.getAt m (RowIndex 3) (ColumnIndex 0) `shouldBe` 13.5
 
       it "inspect [3,0] = 13.5" $ do
-        SUT.getAtU um (RowIndex 3) (ColumnIndex 0) `shouldBe` 13.5
+        SUT.getAtV um (RowIndex 3) (ColumnIndex 0) `shouldBe` 13.5
 
       it "inspect [3,2] = 15.5" $ do
         SUT.getAt m (RowIndex 3) (ColumnIndex 2) `shouldBe` 15.5
 
       it "inspect [3,2] = 15.5" $ do
-        SUT.getAtU um (RowIndex 3) (ColumnIndex 2) `shouldBe` 15.5        
+        SUT.getAtV um (RowIndex 3) (ColumnIndex 2) `shouldBe` 15.5        
 
     {-  Scenario: A 2x2 matrix ought to be representable
           Given the following 2x2 matrix M:
