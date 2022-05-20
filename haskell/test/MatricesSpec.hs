@@ -402,15 +402,15 @@ matrixFunctions =
            And cofactor(A, 1, 0) = -25 -}
     describe "Calculating a cofactor of a 3x3 matrix" $ do
       let a = makeMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
-          au = makeUMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
+          au = makeVMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
           m1 = SUT.minor a (RowIndex 0) (ColumnIndex 0)
-          m1u = SUT.minorU au (RowIndex 0) (ColumnIndex 0)
+          m1u = SUT.minorV au (RowIndex 0) (ColumnIndex 0)
           c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
-          c1u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 0)
+          c1u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 0)
           m2 = SUT.minor a (RowIndex 1) (ColumnIndex 0)
-          m2u = SUT.minorU au (RowIndex 1) (ColumnIndex 0)
+          m2u = SUT.minorV au (RowIndex 1) (ColumnIndex 0)
           c2 = SUT.cofactor a (RowIndex 1) (ColumnIndex 0)
-          c2u = SUT.cofactorU au (RowIndex 1) (ColumnIndex 0)
+          c2u = SUT.cofactorV au (RowIndex 1) (ColumnIndex 0)
       it "the minor at [0,0] is -12" $ do
         m1 `shouldBe` - 12
       it "the minor at [0,0] is -12" $ do

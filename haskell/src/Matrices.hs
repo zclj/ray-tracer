@@ -34,6 +34,7 @@ module Matrices
   , minorV
   , cofactor
   , cofactorU
+  , cofactorV
   , invertible
   , invertibleU
   , inverse
@@ -551,6 +552,11 @@ cofactorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
 cofactorU a r@(RowIndex ri) c@(ColumnIndex ci)
   | odd (ri + ci) = - minorU a r c
   | otherwise     = minorU a r c
+
+cofactorV :: VMatrix -> RowIndex -> ColumnIndex -> Double
+cofactorV a r@(RowIndex ri) c@(ColumnIndex ci)
+  | odd (ri + ci) = - minorV a r c
+  | otherwise     = minorV a r c
 
 invertible :: Matrix -> Bool
 invertible a
