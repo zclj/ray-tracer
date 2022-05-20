@@ -31,6 +31,7 @@ module Matrices
   , submatrixV
   , minor
   , minorU
+  , minorV
   , cofactor
   , cofactorU
   , invertible
@@ -373,8 +374,7 @@ determinantU a@(UMatrix m) =
     otherwise -> sum $ map (\j -> m!(0,j) * (cofactorU a (RowIndex 0) (ColumnIndex j))) [0..hj]
 
 determinantV :: VMatrix -> Double
-determinantV a = undefined
-
+determinantV (VMatrix2x2 (Vector2D a b) (Vector2D c d)) =  a * d - c * b
 
 subColsX :: Int -> Matrix -> Matrix
 subColsX i
@@ -538,6 +538,9 @@ minor a r = determinant . submatrix a r
 
 minorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
 minorU a r = determinantU . submatrixU a r
+
+minorV :: VMatrix -> RowIndex -> ColumnIndex -> Double
+minorV a r = determinantV . submatrixV a r
 
 cofactor :: Matrix -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)

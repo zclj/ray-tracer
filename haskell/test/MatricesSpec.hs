@@ -380,13 +380,13 @@ matrixFunctions =
            And minor(A, 1, 0) = 25 -}
     describe "Calculating a minor of a 3x3 matrix" $ do
       let a = makeMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
-          au = makeUMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
+          au = makeVMatrix [[3, 5, 0], [2, - 1, - 7], [6, - 1, 5]]
           b = SUT.submatrix a (RowIndex 1) (ColumnIndex 0)
-          bu = SUT.submatrixU au (RowIndex 1) (ColumnIndex 0)
+          bu = SUT.submatrixV au (RowIndex 1) (ColumnIndex 0)
           d = SUT.determinant b
-          du = SUT.determinantU bu
+          du = SUT.determinantV bu
           m = SUT.minor a (RowIndex 1) (ColumnIndex 0)
-          mu = SUT.minorU au (RowIndex 1) (ColumnIndex 0)
+          mu = SUT.minorV au (RowIndex 1) (ColumnIndex 0)
       it "the minor is the determinant of the submatrix" $ do
         m `shouldBe` d
       it "the minor is the determinant of the submatrix" $ do
