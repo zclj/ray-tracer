@@ -21,6 +21,7 @@ module Matrices
   , identityU
   , transpose
   , transposeU
+  , transposeV
   , determinant
   , determinantU
   , submatrix
@@ -324,6 +325,20 @@ transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <
 transposeU :: UMatrix -> UMatrix
 transposeU (UMatrix a) = UMatrix (array ((0,0),(3,3))
                                   [((i,j), a!(j,i)) | j <- [0..3], i <- [0..3]])
+
+transposeV :: VMatrix -> VMatrix
+transposeV
+  (VMatrix4x4
+    (Vector4D a11 b12 c13 d14)
+    (Vector4D a21 b22 c23 d24)
+    (Vector4D a31 b32 c33 d34)
+    (Vector4D a41 b42 c43 d44))
+  =
+  VMatrix4x4
+  (Vector4D a11 a21 a31 a41)
+  (Vector4D b12 b22 b32 b42)
+  (Vector4D c13 c23 c33 c43)
+  (Vector4D d14 d24 d34 d44)
 
 determinant :: Matrix -> Double
 determinant (Matrix [[a, b], [c, d]]) = a * d - c * b
