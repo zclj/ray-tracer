@@ -258,14 +258,15 @@ mulV (VMatrix3x3
       (Vector3D b11 b12 b13) (Vector3D b21 b22 b23) (Vector3D b31 b32 b33))
   = (VMatrix3x3
      (Vector3D ((a11 * b11) + (a12 * b21) + (a13 * b31))
-               ((a11 * b12) + (a12 * b22) + (a13 * b33))
+               ((a11 * b12) + (a12 * b22) + (a13 * b32))
                ((a11 * b13) + (a12 * b23) + (a13 * b33)))
-     (Vector3D ((a21 * b11) + (a22 * b21) + (a33 * b31))
-               ((a21 * b12) + (a22 * b22) + (a33 * b33))
-               ((a21 * b13) + (a22 * b23) + (a33 * b33)))
+     (Vector3D ((a21 * b11) + (a22 * b21) + (a23 * b31))
+               ((a21 * b12) + (a22 * b22) + (a23 * b32))
+               ((a21 * b13) + (a22 * b23) + (a23 * b33)))
      (Vector3D ((a31 * b11) + (a32 * b21) + (a33 * b31))
-               ((a31 * b12) + (a32 * b22) + (a33 * b33))
+               ((a31 * b12) + (a32 * b22) + (a33 * b32))
                ((a31 * b13) + (a32 * b23) + (a33 * b33))))
+
 mulV (VMatrix4x4
       (Vector4D a11 a12 a13 a14)
       (Vector4D a21 a22 a23 a24)
