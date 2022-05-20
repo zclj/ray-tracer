@@ -241,11 +241,11 @@ matricesArithmetic =
     describe "Multiplying a matrix by a tuple" $ do
       let a = makeMatrix [[1, 2, 3, 4], [2, 4, 4, 2],
                           [8, 6, 4, 1], [0, 0, 0, 1]]
-          au = makeUMatrix [[1, 2, 3, 4], [2, 4, 4, 2],
+          au = makeVMatrix [[1, 2, 3, 4], [2, 4, 4, 2],
                             [8, 6, 4, 1], [0, 0, 0, 1]]
           b = Tuple 1 2 3 1
           c = SUT.mulT a b
-          cu = SUT.mulTU au b
+          cu = SUT.mulTV au b
       it "A * b = C" $ do
         c `shouldBe` Tuple 18 24 33 1
       it "(U) A * b = C" $ do

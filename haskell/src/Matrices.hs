@@ -14,6 +14,7 @@ module Matrices
   , mul
   , mulT
   , mulTU
+  , mulTV
   , mulU
   , Matrices.mulV
   , identity
@@ -311,6 +312,11 @@ mulTU a@(UMatrix m) b =
       tupleFromList [x, y, z, w] = T.Tuple x y z w
       result                     = [ tupleFromList (matrixRow a i) `T.dot` b | i <- [0..3]]
   in tupleFromList result
+
+mulTV :: VMatrix -> T.Tuple -> T.Tuple
+mulTV (VMatrix4x4 a b c d) (T.Tuple x y z w)
+  = let tv = Vector4D x y z w
+    in (T.Tuple (a `dot` tv) (b `dot` tv) (c `dot` tv) (d `dot` tv))
 
 transpose :: Matrix -> Matrix
 transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]

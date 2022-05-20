@@ -1,6 +1,7 @@
 module Vector
   ( Vector (..)
   , get
+  , dot
   ) where
 
 data Vector = Vector3D Double Double Double
@@ -44,3 +45,7 @@ get (Vector3D x y z) i
       0 -> x
       1 -> y
       2 -> z
+
+dot :: Vector -> Vector -> Double
+dot (Vector4D x1 y1 z1 w1) (Vector4D x2 y2 z2 w2)
+  = x1 * x2 + y1 * y2 + z1 * z2 + w1 * w2
