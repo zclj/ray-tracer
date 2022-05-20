@@ -19,13 +19,16 @@ module Matrices
   , Matrices.mulV
   , identity
   , identityU
+  , identityV
   , transpose
   , transposeU
   , transposeV
   , determinant
   , determinantU
+  , determinantV
   , submatrix
   , submatrixU
+  , submatrixV
   , minor
   , minorU
   , cofactor
@@ -188,15 +191,22 @@ makeVMatrix3x3 [ [a11, a12, a13]
                (Vector3D a21 a22 a23)
                (Vector3D a31 a32 a33)
 
+makeVMatrix2x2 [ [a11, a12]
+               , [a21, a22]]
+  = VMatrix2x2 (Vector2D a11 a12)
+               (Vector2D a21 a22)
+
 data VMatrix =
     VMatrix4x4 !Vector !Vector !Vector !Vector
   | VMatrix3x3 !Vector !Vector !Vector
+  | VMatrix2x2 !Vector !Vector
   deriving (Show, Eq)
 
 makeVMatrix :: [[Double]] -> VMatrix
 makeVMatrix xs
   | length xs == 4 = makeVMatrix4x4 xs
   | length xs == 3 = makeVMatrix3x3 xs
+  | length xs == 2 = makeVMatrix2x2 xs
   | otherwise = error "Unsupported Matrix size"
 ----
 
@@ -211,6 +221,14 @@ identityU = UMatrix
     , ((1,0),0), ((1,1),1), ((1,2),0), ((1,3),0)
     , ((2,0),0), ((2,1),0), ((2,2),1), ((2,3),0)
     , ((3,0),0), ((3,1),0), ((3,2),0), ((3,3),1)])
+
+identityV :: VMatrix
+identityV =
+  VMatrix4x4
+  (Vector4D 1 0 0 0)
+  (Vector4D 0 1 0 0)
+  (Vector4D 0 0 1 0)
+  (Vector4D 0 0 0 1)
 
 newtype RowIndex = RowIndex Int
   deriving (Show, Eq, Ord)
@@ -354,11 +372,9 @@ determinantU a@(UMatrix m) =
     1 -> (m!(0,0) * m!(1,1)) - (m!(1,0) * m!(0,1))
     otherwise -> sum $ map (\j -> m!(0,j) * (cofactorU a (RowIndex 0) (ColumnIndex j))) [0..hj]
 
--- submatrix :: Matrix -> RowIndex -> ColumnIndex -> Matrix
--- submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
---   = let subRows = dropAt r a
---         subCols = map (dropAt c) subRows
---     in Matrix subCols
+determinantV :: VMatrix -> Double
+determinantV a = undefined
+
 
 subColsX :: Int -> Matrix -> Matrix
 subColsX i
@@ -478,6 +494,41 @@ submatrixU a@(UMatrix m) (RowIndex i) (ColumnIndex j) =
                 2 -> submatrix3x3 a i j
                 3 -> submatrix4x4 a i j
   in woCol
+
+submatrixV :: VMatrix -> RowIndex -> ColumnIndex -> VMatrix
+submatrixV
+  (VMatrix4x4 a b c d)
+  (RowIndex i) (ColumnIndex j)
+  = case i of
+      0 -> (VMatrix3x3
+            (dropAtV b j)
+            (dropAtV c j)
+            (dropAtV d j))
+      1 -> (VMatrix3x3
+            (dropAtV a j)
+            (dropAtV c j)
+            (dropAtV d j))
+      2 -> (VMatrix3x3
+            (dropAtV a j)
+            (dropAtV b j)
+            (dropAtV d j))
+      3 -> (VMatrix3x3
+            (dropAtV a j)
+            (dropAtV b j)
+            (dropAtV c j))
+submatrixV
+  (VMatrix3x3 a b c)
+  (RowIndex i) (ColumnIndex j)
+  = case i of
+      0 -> (VMatrix2x2
+            (dropAtV b j)
+            (dropAtV c j))
+      1 -> (VMatrix2x2
+            (dropAtV a j)
+            (dropAtV c j))
+      2 -> (VMatrix2x2
+            (dropAtV a j)
+            (dropAtV b j))
 
 test = submatrix (makeMatrix [[1,1,1],[2,2,2], [3,3,3]]) (RowIndex 0) (ColumnIndex 0)
 test2 = dropAt 0 [[1,1,1],[2,2,2], [3,3,3]]

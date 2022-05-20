@@ -2,9 +2,11 @@ module Vector
   ( Vector (..)
   , get
   , dot
+  , dropAtV
   ) where
 
-data Vector = Vector3D Double Double Double
+data Vector = Vector2D Double Double
+            | Vector3D Double Double Double
             | Vector4D Double Double Double Double
   deriving (Show)
 
@@ -20,6 +22,10 @@ instance Eq Vector where
     = let epsilon = 0.0001
           ltep    = (\x y -> abs (x - y) < epsilon)
       in ltep x1 x2 && ltep y1 y2 && ltep z1 z2
+  (Vector2D x1 y1) == (Vector2D x2 y2)
+    = let epsilon = 0.0001
+          ltep    = (\x y -> abs (x - y) < epsilon)
+      in ltep x1 x2 && ltep y1 y2
 
 fromList3D :: [Double] -> Vector
 fromList3D (x:y:z:_) = (Vector3D x y z)
@@ -49,3 +55,16 @@ get (Vector3D x y z) i
 dot :: Vector -> Vector -> Double
 dot (Vector4D x1 y1 z1 w1) (Vector4D x2 y2 z2 w2)
   = x1 * x2 + y1 * y2 + z1 * z2 + w1 * w2
+
+dropAtV :: Vector -> Int -> Vector
+dropAtV (Vector4D x1 y1 z1 w1) i
+  = case i of
+      0 -> Vector3D y1 z1 w1
+      1 -> Vector3D x1 z1 w1
+      2 -> Vector3D x1 y1 w1
+      3 -> Vector3D x1 y1 z1
+dropAtV (Vector3D x1 y1 z1) i
+  = case i of
+      0 -> Vector2D y1 z1
+      1 -> Vector2D x1 z1
+      2 -> Vector2D x1 y1
