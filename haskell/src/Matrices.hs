@@ -376,6 +376,15 @@ determinantU a@(UMatrix m) =
 
 determinantV :: VMatrix -> Double
 determinantV (VMatrix2x2 (Vector2D a b) (Vector2D c d)) =  a * d - c * b
+determinantV m@(VMatrix3x3 (Vector3D a b c) _ _)
+  =  (a * (cofactorV m (RowIndex 0) (ColumnIndex 0)))
+   + (b * (cofactorV m (RowIndex 0) (ColumnIndex 1)))
+   + (c * (cofactorV m (RowIndex 0) (ColumnIndex 2)))
+determinantV m@(VMatrix4x4 (Vector4D a b c d) _ _ _)
+  =  (a * (cofactorV m (RowIndex 0) (ColumnIndex 0)))
+   + (b * (cofactorV m (RowIndex 0) (ColumnIndex 1)))
+   + (c * (cofactorV m (RowIndex 0) (ColumnIndex 2)))
+   + (d * (cofactorV m (RowIndex 0) (ColumnIndex 3)))
 
 subColsX :: Int -> Matrix -> Matrix
 subColsX i
