@@ -204,7 +204,13 @@ data VMatrix =
     VMatrix4x4 !Vector !Vector !Vector !Vector
   | VMatrix3x3 !Vector !Vector !Vector
   | VMatrix2x2 !Vector !Vector
-  deriving (Show, Eq)
+  deriving (Show, Eq, Ord)
+
+instance Semigroup VMatrix where
+  (<>) x y = x `mulV` y
+
+instance Monoid VMatrix where
+  mempty = identityV
 
 makeVMatrix :: [[Double]] -> VMatrix
 makeVMatrix xs
