@@ -40,6 +40,7 @@ module Matrices
   , invertibleV
   , inverse
   , inverseU
+  , inverseV
   ) where
 
 import qualified Tuples as T
@@ -603,3 +604,32 @@ inverseU a
                    in makeUMatrix cofactors
   | otherwise    = error "Matrix is not invertible"
 
+inverseV :: VMatrix -> VMatrix
+inverseV
+  a@(VMatrix4x4
+    (Vector4D a11 b12 c13 d14)
+    (Vector4D a21 b22 c23 d24)
+    (Vector4D a31 b32 c33 d34)
+    (Vector4D a41 b42 c43 d44))
+  | invertibleV a = VMatrix4x4
+                    (Vector4D
+                     ((cofactorV a (RowIndex 0) (ColumnIndex 0)) / determinantV a)
+                     ((cofactorV a (RowIndex 1) (ColumnIndex 0)) / determinantV a)
+                     ((cofactorV a (RowIndex 2) (ColumnIndex 0)) / determinantV a)
+                     ((cofactorV a (RowIndex 3) (ColumnIndex 0)) / determinantV a))
+                    (Vector4D
+                     ((cofactorV a (RowIndex 0) (ColumnIndex 1)) / determinantV a)
+                     ((cofactorV a (RowIndex 1) (ColumnIndex 1)) / determinantV a)
+                     ((cofactorV a (RowIndex 2) (ColumnIndex 1)) / determinantV a)
+                     ((cofactorV a (RowIndex 3) (ColumnIndex 1)) / determinantV a))
+                    (Vector4D
+                     ((cofactorV a (RowIndex 0) (ColumnIndex 2)) / determinantV a)
+                     ((cofactorV a (RowIndex 1) (ColumnIndex 2)) / determinantV a)
+                     ((cofactorV a (RowIndex 2) (ColumnIndex 2)) / determinantV a)
+                     ((cofactorV a (RowIndex 3) (ColumnIndex 2)) / determinantV a))
+                    (Vector4D
+                     ((cofactorV a (RowIndex 0) (ColumnIndex 3)) / determinantV a)
+                     ((cofactorV a (RowIndex 1) (ColumnIndex 3)) / determinantV a)
+                     ((cofactorV a (RowIndex 2) (ColumnIndex 3)) / determinantV a)
+                     ((cofactorV a (RowIndex 3) (ColumnIndex 3)) / determinantV a))
+  | otherwise     = error "Matrix is not invertible"
