@@ -37,6 +37,7 @@ module Matrices
   , cofactorV
   , invertible
   , invertibleU
+  , invertibleV
   , inverse
   , inverseU
   ) where
@@ -575,6 +576,11 @@ invertible a
 invertibleU :: UMatrix -> Bool
 invertibleU a
   | determinantU a == 0 = False
+  | otherwise           = True
+
+invertibleV :: VMatrix -> Bool
+invertibleV a
+  | determinantV a == 0 = False
   | otherwise           = True
 
 inverse :: Matrix -> Matrix

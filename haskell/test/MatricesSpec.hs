@@ -438,15 +438,15 @@ matrixFunctions =
            And determinant(A) = -196 -}
     describe "Calculating the determinant of a 3x3 matrix" $ do
       let a  = makeMatrix [[1, 2, 6], [- 5, 8, - 4], [2, 6, 4]]
-          au  = makeUMatrix [[1, 2, 6], [- 5, 8, - 4], [2, 6, 4]]
+          au  = makeVMatrix [[1, 2, 6], [- 5, 8, - 4], [2, 6, 4]]
           c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
-          c1u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 0)
+          c1u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 0)
           c2 = SUT.cofactor a (RowIndex 0) (ColumnIndex 1)
-          c2u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 1)
+          c2u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 1)
           c3 = SUT.cofactor a (RowIndex 0) (ColumnIndex 2)
-          c3u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 2)
+          c3u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 2)
           d  = SUT.determinant a
-          du  = SUT.determinantU au
+          du  = SUT.determinantV au
       it "the cofactor at [0,0] is 56" $ do
         c1 `shouldBe` 56
       it "the cofactor at [0,0] is 56" $ do
@@ -477,18 +477,18 @@ matrixFunctions =
     describe "Calculating the determinant of a 4x4 matrix" $ do
       let a  = makeMatrix [[- 2, - 8, 3, 5], [- 3, 1, 7, 3],
                            [1, 2, - 9, 6], [- 6, 7, 7, -9]]
-          au  = makeUMatrix [[- 2, - 8, 3, 5], [- 3, 1, 7, 3],
+          au  = makeVMatrix [[- 2, - 8, 3, 5], [- 3, 1, 7, 3],
                              [1, 2, - 9, 6], [- 6, 7, 7, -9]]
           c1 = SUT.cofactor a (RowIndex 0) (ColumnIndex 0)
           c2 = SUT.cofactor a (RowIndex 0) (ColumnIndex 1)
           c3 = SUT.cofactor a (RowIndex 0) (ColumnIndex 2)
           c4 = SUT.cofactor a (RowIndex 0) (ColumnIndex 3)
-          c1u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 0)
-          c2u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 1)
-          c3u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 2)
-          c4u = SUT.cofactorU au (RowIndex 0) (ColumnIndex 3)
+          c1u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 0)
+          c2u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 1)
+          c3u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 2)
+          c4u = SUT.cofactorV au (RowIndex 0) (ColumnIndex 3)
           d  = SUT.determinant a
-          du  = SUT.determinantU au
+          du  = SUT.determinantV au
       it "the cofactor at [0,0] is 690" $ do
         c1 `shouldBe` 690
       it "the cofactor at [0,0] is 690" $ do
@@ -520,10 +520,10 @@ matrixFunctions =
     describe "Testing an invertible matrix for invertibility" $ do
       let a = makeMatrix [[6, 4, 4, 4], [5, 5, 7, 6],
                           [4, - 9, 3, - 7], [9, 1, 7, - 6]]
-          au = makeUMatrix [[6, 4, 4, 4], [5, 5, 7, 6],
+          au = makeVMatrix [[6, 4, 4, 4], [5, 5, 7, 6],
                             [4, - 9, 3, - 7], [9, 1, 7, - 6]]
           d = SUT.determinant a
-          du = SUT.determinantU au
+          du = SUT.determinantV au
       it "the determinant of A is -2120" $ do
         d `shouldBe` - 2120
       it "the determinant of A is -2120" $ do
@@ -531,7 +531,7 @@ matrixFunctions =
       it "and A is invertible" $ do
         a `shouldSatisfy` SUT.invertible
       it "and A is invertible" $ do
-        au `shouldSatisfy` SUT.invertibleU
+        au `shouldSatisfy` SUT.invertibleV
     {- Scenario: Testing a noninvertible matrix for invertibility
          Given the following 4x4 matrix A:
            | -4 |  2 | -2 | -3 |
