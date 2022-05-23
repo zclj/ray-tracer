@@ -8,7 +8,7 @@ module Vector
 data Vector = Vector2D Double Double
             | Vector3D Double Double Double
             | Vector4D Double Double Double Double
-  deriving (Show)
+  deriving (Show, Ord)
 
 -- Implement Eq based on Epsilon comparison of floats
 -- this avoids two floats that are "equal" being evaluated as not equal
