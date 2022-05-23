@@ -9,9 +9,9 @@ import Matrices
 
 data Sphere = Sphere { id        :: Int
                      , radius    :: Double
-                     , transform :: UMatrix}
+                     , transform :: VMatrix}
               deriving (Show, Eq, Ord)
 
 makeUnitSphere :: Int -> Sphere
-makeUnitSphere id = Sphere id 1.0 identityU
+makeUnitSphere id = Sphere id 1.0 identityV
 

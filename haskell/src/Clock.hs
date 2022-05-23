@@ -12,14 +12,14 @@ twelve = point 0 0 1
 
 clockWidth = 800 * (3/8)
 
-hourTransform :: Double -> UMatrix
+hourTransform :: Double -> VMatrix
 hourTransform i = transform [rotationY (i * (pi/6)),
                              scaling clockWidth 0 clockWidth,
                              translation 400 0 400,
                              rotationX ((3/2) * pi)]
 
 hours :: [Tuple]
-hours = map (\i -> mulTU (hourTransform i) twelve) [1..12]
+hours = map (\i -> mulTV (hourTransform i) twelve) [1..12]
 
 clock :: [Tuple]
 clock = hours

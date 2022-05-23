@@ -1,6 +1,7 @@
 module Matrices
   ( Matrix
   , UMatrix
+  , VMatrix
   , makeMatrix
   , makeMatrix4x4
   , makeMatrix3x3
