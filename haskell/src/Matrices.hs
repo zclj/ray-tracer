@@ -559,7 +559,7 @@ minorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
 minorU a r = determinantU . submatrixU a r
 
 minorV :: VMatrix -> RowIndex -> ColumnIndex -> Double
-minorV a r = determinantV . submatrixV a r
+minorV a r c = determinantV (submatrixV a r c)
 
 cofactor :: Matrix -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
