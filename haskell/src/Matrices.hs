@@ -2,8 +2,6 @@ module Matrices
   ( Matrix
   , VMatrix
   , makeMatrix
-  , makeMatrix4x4
-  , makeMatrix3x3
   , makeVMatrix
   , getAt
   , getAtV
@@ -89,36 +87,8 @@ makeMatrix _ = error "Unsupported Matrix size"
 
 -- https://github.com/haskell-numerics/hmatrix
 
-
-----
--- Specialized matrix
-
-data Matrix4x4 = Matrix4x4 [[Double]]
-
-makeMatrix4x4 [ [a11, a12, a13, a14]
-              , [a21, a22, a23, a24]
-              , [a31, a32, a33, a34]
-              , [a41, a42, a43, a44]]
-  = Matrix4x4 [ [a11, a12, a13, a14]
-              , [a21, a22, a23, a24]
-              , [a31, a32, a33, a34]
-              , [a41, a42, a43, a44]]
-
-data Matrix3x3 = Matrix3x3 [[Double]]
-
-makeMatrix3x3 [ [a11, a12, a13]
-              , [a21, a22, a23]
-              , [a31, a32, a33]]
-  = Matrix3x3 [ [a11, a12, a13]
-              , [a21, a22, a23]
-              , [a31, a32, a33]]
-
-----
-
 ----
 -- Vector based Matrix
-
--- data VMatrix4x4 = VMatrix4x4 !Vector4D !Vector4D !Vector4D !Vector4D
 
 makeVMatrix4x4 [ [a11, a12, a13, a14]
                , [a21, a22, a23, a24]
@@ -128,8 +98,6 @@ makeVMatrix4x4 [ [a11, a12, a13, a14]
                (Vector4D a21 a22 a23 a24)
                (Vector4D a31 a32 a33 a34)
                (Vector4D a41 a42 a43 a44)
-
--- data VMatrix3x3 = VMatrix3x3 !Vector3D !Vector3D !Vector3D
 
 makeVMatrix3x3 [ [a11, a12, a13]
                , [a21, a22, a23]
@@ -161,7 +129,6 @@ makeVMatrix xs
   | length xs == 3 = makeVMatrix3x3 xs
   | length xs == 2 = makeVMatrix2x2 xs
   | otherwise = error "Unsupported Matrix size"
-----
 
 identity :: Matrix
 identity = Matrix [[1, 0, 0, 0], [0, 1, 0, 0],
@@ -259,7 +226,8 @@ mulTV (VMatrix4x4 a b c d) (T.Tuple x y z w)
     in (T.Tuple (a `dot` tv) (b `dot` tv) (c `dot` tv) (d `dot` tv))
 
 transpose :: Matrix -> Matrix
-transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
+transpose a =
+  Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
 
 transposeV :: VMatrix -> VMatrix
 transposeV
@@ -363,9 +331,6 @@ submatrixV
       2 -> (VMatrix2x2
             (dropAtV a j)
             (dropAtV b j))
-
-test = submatrix (makeMatrix [[1,1,1],[2,2,2], [3,3,3]]) (RowIndex 0) (ColumnIndex 0)
-test2 = dropAt 0 [[1,1,1],[2,2,2], [3,3,3]]
 
 minor :: Matrix -> RowIndex -> ColumnIndex -> Double
 minor a r = determinant . submatrix a r
