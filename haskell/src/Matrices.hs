@@ -1,46 +1,33 @@
 module Matrices
   ( Matrix
-  , UMatrix
   , VMatrix
   , makeMatrix
   , makeMatrix4x4
   , makeMatrix3x3
-  , makeUMatrix
   , makeVMatrix
   , getAt
-  , getAtU
   , getAtV
   , RowIndex (..)
   , ColumnIndex (..)
   , mul
   , mulT
-  , mulTU
   , mulTV
-  , mulU
   , Matrices.mulV
   , identity
-  , identityU
   , identityV
   , transpose
-  , transposeU
   , transposeV
   , determinant
-  , determinantU
   , determinantV
   , submatrix
-  , submatrixU
   , submatrixV
   , minor
-  , minorU
   , minorV
   , cofactor
-  , cofactorU
   , cofactorV
   , invertible
-  , invertibleU
   , invertibleV
   , inverse
-  , inverseU
   , inverseV
   ) where
 
@@ -101,52 +88,7 @@ makeMatrix _ = error "Unsupported Matrix size"
 -- https://hackage.haskell.org/package/vector-0.5/docs/Data-Vector-Storable.html
 
 -- https://github.com/haskell-numerics/hmatrix
-data UMatrix = UMatrix (UArray (Int, Int) Double)
-  deriving(Show, Ord)
 
-eqUMatrix :: UMatrix -> UMatrix -> Bool
-eqUMatrix (UMatrix x) (UMatrix y)
-  = let ((lix,ljx), (uix,ujx)) = bounds x
-        ((liy,ljy), (uiy,ujy)) = bounds y
-        result                 = [[abs (x!(i,k) - y!(i,k)) < 0.0001 | k <- [ljx..ujx]]
-                                 | i <- [lix..uix]]
-    in (bounds x) == (bounds y) && (and $ concat result)
-
-instance Eq UMatrix where
-  x == y = eqUMatrix x y
-
-instance Semigroup UMatrix where
-  (<>) x y = x `mulU` y
-
-instance Monoid UMatrix where
-  mempty = identityU
-
-m1 = makeUMatrix [[1, 2], [3,4]]
-m2 = makeUMatrix [[1, 2], [3,4]]
-m3 = makeUMatrix [[2, 2], [4,4]]
-m4 = makeUMatrix [[2, 2.001], [4,4]]
-m5 = makeUMatrix [[2, 2.00001], [4,4]]
-
-makeUMatrix :: [[Double]] -> UMatrix
-makeUMatrix [ [a11, a12, a13, a14]
-            , [a21, a22, a23, a24]
-            , [a31, a32, a33, a34]
-            , [a41, a42, a43, a44]]
-  = UMatrix (array ((0,0), (3,3)) [ ((0,0),a11), ((0,1),a12), ((0,2),a13), ((0,3),a14)
-                                  , ((1,0),a21), ((1,1),a22), ((1,2),a23), ((1,3),a24)
-                                  , ((2,0),a31), ((2,1),a32), ((2,2),a33), ((2,3),a34)
-                                  , ((3,0),a41), ((3,1),a42), ((3,2),a43), ((3,3),a44)])
-makeUMatrix [ [a11, a12, a13]
-            , [a21, a22, a23]
-            , [a31, a32, a33]]
-  = UMatrix (array ((0,0), (2,2)) [ ((0,0),a11), ((0,1),a12), ((0,2),a13)
-                                  , ((1,0),a21), ((1,1),a22), ((1,2),a23)
-                                  , ((2,0),a31), ((2,1),a32), ((2,2),a33)])
-makeUMatrix [ [a11, a12]
-            , [a21, a22]]
-  = UMatrix (array ((0,0), (1,1)) [ ((0,0),a11), ((0,1),a12)
-                                  , ((1,0),a21), ((1,1),a22)])
-makeUMatrix _ = error "Unsupported UMatrix size"
 
 ----
 -- Specialized matrix
@@ -225,14 +167,6 @@ identity :: Matrix
 identity = Matrix [[1, 0, 0, 0], [0, 1, 0, 0],
                    [0, 0, 1, 0], [0, 0, 0, 1]]
 
-identityU :: UMatrix
-identityU = UMatrix
-  (array ((0,0), (3,3))
-    [ ((0,0),1), ((0,1),0), ((0,2),0), ((0,3),0)
-    , ((1,0),0), ((1,1),1), ((1,2),0), ((1,3),0)
-    , ((2,0),0), ((2,1),0), ((2,2),1), ((2,3),0)
-    , ((3,0),0), ((3,1),0), ((3,2),0), ((3,3),1)])
-
 identityV :: VMatrix
 identityV =
   VMatrix4x4
@@ -249,9 +183,6 @@ newtype ColumnIndex = ColumnIndex Int
 
 getAt :: Matrix -> RowIndex -> ColumnIndex -> Double
 getAt (Matrix m) (RowIndex r) (ColumnIndex c) = (m !! r) !! c
-
-getAtU :: UMatrix -> RowIndex -> ColumnIndex -> Double
-getAtU (UMatrix m) (RowIndex r) (ColumnIndex c) = m!(r,c)
 
 getAtV :: VMatrix -> RowIndex -> ColumnIndex -> Double
 getAtV (VMatrix4x4 x y z w) (RowIndex r) (ColumnIndex c)
@@ -271,16 +202,6 @@ mul a b =
   let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
       rxc = (\m1 m2 r c k -> get m1 r k * get m2 k c)
   in Matrix [[sum (map (rxc a b i j) [0..3]) | j <- [0..3]] | i <- [0..3]]
-
-mulU :: UMatrix -> UMatrix -> UMatrix
-mulU (UMatrix a) (UMatrix b) =
-  let resultBounds  = bounds a
-      (ri, rj) = resultBounds
-      result = array resultBounds
-                     [((i,j), sum [a!(i,k) * b!(k,j) | k <- [0..3]])
-                                  | i <- [0..3],
-                                    j <- [0..3]]
-  in UMatrix result
 
 mulV :: VMatrix -> VMatrix -> VMatrix
 mulV (VMatrix3x3
@@ -332,17 +253,6 @@ mulT a@(Matrix m) b = let get = (\m r c -> getAt m (RowIndex r) (ColumnIndex c))
                       in tupleFromList [tupleFromList (m !! i) `T.dot` b
                                        | i <- [0..3]]
 
-matrixRow :: UMatrix -> Int -> [Double]
-matrixRow (UMatrix m) r = let ((_, _), (_, uj)) = bounds m
-                          in [m!(r,i) | i <- [0..uj]]
-
-mulTU :: UMatrix -> T.Tuple -> T.Tuple
-mulTU a@(UMatrix m) b =
-  let (ri, rj)                   = bounds m
-      tupleFromList [x, y, z, w] = T.Tuple x y z w
-      result                     = [ tupleFromList (matrixRow a i) `T.dot` b | i <- [0..3]]
-  in tupleFromList result
-
 mulTV :: VMatrix -> T.Tuple -> T.Tuple
 mulTV (VMatrix4x4 a b c d) (T.Tuple x y z w)
   = let tv = Vector4D x y z w
@@ -350,10 +260,6 @@ mulTV (VMatrix4x4 a b c d) (T.Tuple x y z w)
 
 transpose :: Matrix -> Matrix
 transpose a = Matrix [[getAt a (RowIndex j) (ColumnIndex i) | j <- [0..3]] | i <- [0..3]]
-
-transposeU :: UMatrix -> UMatrix
-transposeU (UMatrix a) = UMatrix (array ((0,0),(3,3))
-                                  [((i,j), a!(j,i)) | j <- [0..3], i <- [0..3]])
 
 transposeV :: VMatrix -> VMatrix
 transposeV
@@ -375,13 +281,6 @@ determinant m@(Matrix x) =
   let onRowZero = (\f c -> f m (RowIndex 0) (ColumnIndex c))
       size      = length (head x) - 1
   in sum $ map (\j -> onRowZero getAt j * onRowZero cofactor j) [0..size]
-
-determinantU :: UMatrix -> Double
-determinantU a@(UMatrix m) =
-  let ((li,hi), (lj, hj)) = bounds m
-  in case hj of
-    1 -> (m!(0,0) * m!(1,1)) - (m!(1,0) * m!(0,1))
-    otherwise -> sum $ map (\j -> m!(0,j) * (cofactorU a (RowIndex 0) (ColumnIndex j))) [0..hj]
 
 determinantV :: VMatrix -> Double
 determinantV (VMatrix2x2 (Vector2D a b) (Vector2D c d)) =  a * d - c * b
@@ -430,90 +329,6 @@ submatrix (Matrix a) (RowIndex r) (ColumnIndex c)
         subCols = subColsX c (Matrix subRows)
     in subCols
 
-dropRow4x4 :: UMatrix -> Int -> UMatrix
-dropRow4x4 (UMatrix m) i
-  = let xs = case i of
-               0 -> [ ((0,0),m!(1,0)), ((0,1),m!(1,1)), ((0,2),m!(1,2)), ((0,3),m!(1,3))
-                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,2)), ((1,3),m!(2,3))
-                    , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
-               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
-                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,2)), ((1,3),m!(2,3))
-                    , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
-               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2)), ((1,3),m!(1,3))
-                    , ((2,0),m!(3,0)), ((2,1),m!(3,1)), ((2,2),m!(3,2)), ((2,3),m!(3,3))]
-               3 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2)), ((0,3),m!(0,3))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2)), ((1,3),m!(1,3))
-                    , ((2,0),m!(2,0)), ((2,1),m!(2,1)), ((2,2),m!(2,2)), ((2,3),m!(2,3))]
-    in UMatrix (array ((0,0), (2,3)) xs)
-
-dropRow3x3 :: UMatrix -> Int -> UMatrix
-dropRow3x3 (UMatrix m) i
-  = let xs = case i of
-               0 -> [ ((0,0),m!(1,0)), ((0,1),m!(1,1)), ((0,2),m!(1,2))
-                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,2))]
-               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2))
-                    , ((1,0),m!(2,0)), ((1,1),m!(2,1)), ((1,2),m!(2,2))]
-               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2))]
-    in UMatrix (array ((0,0), (1,2)) xs)
-
-dropCol3x4 :: UMatrix -> Int -> UMatrix
-dropCol3x4 (UMatrix m) j
-  = let xs = case j of
-               0 -> [ ((0,0),m!(0,1)), ((0,1),m!(0,2)), ((0,2),m!(0,3))
-                    , ((1,0),m!(1,1)), ((1,1),m!(1,2)), ((1,2),m!(1,3))
-                    , ((2,0),m!(2,1)), ((2,1),m!(2,2)), ((2,2),m!(2,3))]
-               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,2)), ((0,2),m!(0,3))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,2)), ((1,2),m!(1,3))
-                    , ((2,0),m!(2,0)), ((2,1),m!(2,2)), ((2,2),m!(2,3))]
-               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,3))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,3))
-                    , ((2,0),m!(2,0)), ((2,1),m!(2,1)), ((2,2),m!(2,3))]
-               3 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1)), ((0,2),m!(0,2))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,1)), ((1,2),m!(1,2))
-                    , ((2,0),m!(2,0)), ((2,1),m!(2,1)), ((2,2),m!(2,2))]
-    in UMatrix (array ((0,0), (2,2)) xs)
-
-dropCol2x3 :: UMatrix -> Int -> UMatrix
-dropCol2x3 (UMatrix m) j
-  = let xs = case j of
-               0 -> [ ((0,0),m!(0,1)), ((0,1),m!(0,2))
-                    , ((1,0),m!(1,1)), ((1,1),m!(1,2))]
-               1 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,2))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,2))]
-               2 -> [ ((0,0),m!(0,0)), ((0,1),m!(0,1))
-                    , ((1,0),m!(1,0)), ((1,1),m!(1,1))]
-    in UMatrix (array ((0,0), (1,1)) xs)
-
-au = makeUMatrix [[- 6, 1, 1, 6], [- 8, 5, 8, 6],
-                  [- 1, 0, 8, 2], [- 7, 1, -1, 1]]
-
-su = submatrixU au (RowIndex 2) (ColumnIndex 1)
-
-bu = makeUMatrix [[- 6, 1, 6], [- 8, 8, 6], [- 7, - 1, 1]]
-
--- https://github.com/haskell-numerics/hmatrix/blob/master/packages/base/src/Internal/Matrix.hs#L383
-submatrix4x4 :: UMatrix -> Int -> Int -> UMatrix
-submatrix4x4 a@(UMatrix m) i j = 
-  let woRow = dropRow4x4 a i
-      woCol = dropCol3x4 woRow j
-  in woCol
-  
-submatrix3x3 :: UMatrix -> Int -> Int -> UMatrix
-submatrix3x3 a@(UMatrix m) i j =
-  let woRow = dropRow3x3 a i
-      woCol = dropCol2x3 woRow j
-  in woCol
-
-submatrixU :: UMatrix -> RowIndex -> ColumnIndex -> UMatrix
-submatrixU a@(UMatrix m) (RowIndex i) (ColumnIndex j) =
-  let ((li,ui), (lj,uj)) = bounds m
-      woCol = case uj of
-                2 -> submatrix3x3 a i j
-                3 -> submatrix4x4 a i j
-  in woCol
-
 submatrixV :: VMatrix -> RowIndex -> ColumnIndex -> VMatrix
 submatrixV
   (VMatrix4x4 a b c d)
@@ -555,9 +370,6 @@ test2 = dropAt 0 [[1,1,1],[2,2,2], [3,3,3]]
 minor :: Matrix -> RowIndex -> ColumnIndex -> Double
 minor a r = determinant . submatrix a r
 
-minorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
-minorU a r = determinantU . submatrixU a r
-
 minorV :: VMatrix -> RowIndex -> ColumnIndex -> Double
 minorV a r c = determinantV (submatrixV a r c)
 
@@ -565,11 +377,6 @@ cofactor :: Matrix -> RowIndex -> ColumnIndex -> Double
 cofactor a r@(RowIndex ri) c@(ColumnIndex ci)
   | odd (ri + ci) = - minor a r c
   | otherwise     = minor a r c
-
-cofactorU :: UMatrix -> RowIndex -> ColumnIndex -> Double
-cofactorU a r@(RowIndex ri) c@(ColumnIndex ci)
-  | odd (ri + ci) = - minorU a r c
-  | otherwise     = minorU a r c
 
 cofactorV :: VMatrix -> RowIndex -> ColumnIndex -> Double
 cofactorV a r@(RowIndex ri) c@(ColumnIndex ci)
@@ -580,11 +387,6 @@ invertible :: Matrix -> Bool
 invertible a
   | determinant a == 0 = False
   | otherwise          = True
-
-invertibleU :: UMatrix -> Bool
-invertibleU a
-  | determinantU a == 0 = False
-  | otherwise           = True
 
 invertibleV :: VMatrix -> Bool
 invertibleV a
@@ -599,16 +401,6 @@ inverse a
                        cofactors = [[cofactor a (RowIndex i) (ColumnIndex j) / det
                                     | i <- [0..3]] | j <- [0..3]]
                    in Matrix cofactors
-  | otherwise    = error "Matrix is not invertible"
-
-inverseU :: UMatrix -> UMatrix
-inverseU a
-  | invertibleU a = let det       = determinantU a
-                                   -- note that the transpose is implicit, indexes
-                                   -- are changed, i.e., (i,j) -> (j,i)
-                        cofactors = [[cofactorU a (RowIndex i) (ColumnIndex j) / det
-                                     | i <- [0..3]] | j <- [0..3]]
-                   in makeUMatrix cofactors
   | otherwise    = error "Matrix is not invertible"
 
 inverseV :: VMatrix -> VMatrix

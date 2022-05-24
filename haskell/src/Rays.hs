@@ -6,7 +6,7 @@ module Rays
   ) where
 
 import Tuples
-import Matrices (Matrix (..), mulT, UMatrix (..), mulTU, VMatrix (..), mulTV)
+import Matrices (Matrix (..), mulT, VMatrix (..), mulTV)
 
 data Ray = Ray { origin :: Tuple
                , direction :: Tuple }
