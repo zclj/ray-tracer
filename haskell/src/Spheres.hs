@@ -17,5 +17,5 @@ makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV
 
 normalAt :: Sphere -> Tuple -> Tuple
-normalAt s p = undefined
+normalAt s p = norm (p `sub` (point 0 0 0))
 
