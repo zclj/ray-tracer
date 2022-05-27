@@ -1,6 +1,7 @@
 module Spheres
   ( Sphere (..)
   , makeUnitSphere
+  , normalAt
   ) where
 
 import Rays
@@ -14,4 +15,7 @@ data Sphere = Sphere { id        :: Int
 
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV
+
+normalAt :: Sphere -> Tuple -> Tuple
+normalAt s p = undefined
 

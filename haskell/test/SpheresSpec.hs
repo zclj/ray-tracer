@@ -16,7 +16,57 @@ spheresTests :: TestTree
 spheresTests = testGroup "Spheres Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Spheres" sphereIntersections)
-  , unsafePerformIO (testSpec "Spheres" sphereTransformation)]]
+  , unsafePerformIO (testSpec "Spheres" sphereTransformation)
+  , unsafePerformIO (testSpec "Spheres" sphereNormals)]]
+
+sphereNormals :: Spec
+sphereNormals =
+  describe "Normals" $ do
+    {- Scenario: The normal on a sphere at a point on the x axis
+         Given s ← sphere()
+         When n ← normal_at(s, point(1, 0, 0))
+         Then n = vector(1, 0, 0) -}
+    describe "The normal on a sphere at a point on the x axis" $ do
+      let s = SUT.makeUnitSphere 1
+          n = SUT.normalAt s (point 1 0 0)
+      it "is the vector(1, 0, 0)" $ do
+        n `shouldBe` (vector 1 0 0)
+    {- Scenario: The normal on a sphere at a point on the y axis
+         Given s ← sphere()
+         When n ← normal_at(s, point(0, 1, 0))
+         Then n = vector(0, 1, 0) -}
+    describe "The normal on a sphere at a point on the y axis" $ do
+      let s = SUT.makeUnitSphere 1
+          n = SUT.normalAt s (point 0 1 0)
+      it "is the vector(0, 1, 0)" $ do
+        n `shouldBe` (vector 0 1 0)
+    {- Scenario: The normal on a sphere at a point on the z axis
+         Given s ← sphere()
+         When n ← normal_at(s, point(0, 0, 1))
+         Then n = vector(0, 0, 1) -}
+    describe "The normal on a sphere at a point on the z axis" $ do
+      let s = SUT.makeUnitSphere 1
+          n = SUT.normalAt s (point 0 0 1)
+      it "is the vector(0, 0, 1)" $ do
+        n `shouldBe` (vector 0 0 1)
+    {- Scenario: The normal on a sphere at a nonaxial point
+         Given s ← sphere()
+         When n ← normal_at(s, point(√3/3, √3/3, √3/3))
+         Then n = vector(√3/3, √3/3, √3/3) -}
+    describe "The normal on a sphere at a nonaxial point" $ do
+      let s = SUT.makeUnitSphere 1
+          n = SUT.normalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+      it "is the vector(√3/3, √3/3, √3/3)" $ do
+        n `shouldBe` (vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+    {- Scenario: The normal is a normalized vector
+         Given s ← sphere()
+         When n ← normal_at(s, point(√3/3, √3/3, √3/3))
+         Then n = normalize(n) -}
+    describe "The normal is a normalized vector" $ do
+      let s = SUT.makeUnitSphere 1
+          n = SUT.normalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+      it "is the vector(√3/3, √3/3, √3/3)" $ do
+        n `shouldBe` norm n
 
 sphereTransformation :: Spec
 sphereTransformation =
