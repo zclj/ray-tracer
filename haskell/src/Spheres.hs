@@ -2,6 +2,7 @@ module Spheres
   ( Sphere (..)
   , makeUnitSphere
   , normalAt
+  , setTransform
   ) where
 
 import Rays
@@ -19,3 +20,5 @@ makeUnitSphere id = Sphere id 1.0 identityV
 normalAt :: Sphere -> Tuple -> Tuple
 normalAt s p = norm (p `sub` (point 0 0 0))
 
+setTransform :: Sphere -> VMatrix -> Sphere
+setTransform s m = undefined
