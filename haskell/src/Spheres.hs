@@ -5,7 +5,6 @@ module Spheres
   , setTransform
   ) where
 
-import Rays
 import Tuples
 import Matrices
 
@@ -21,4 +20,4 @@ normalAt :: Sphere -> Tuple -> Tuple
 normalAt s p = norm (p `sub` (point 0 0 0))
 
 setTransform :: Sphere -> VMatrix -> Sphere
-setTransform s m = undefined
+setTransform s m = s {transform = m}
