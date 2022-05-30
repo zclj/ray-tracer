@@ -73,9 +73,9 @@ sphereNormals =
          When n ← normal_at(s, point(0, 1.70711, -0.70711))
          Then n = vector(0, 0.70711, -0.70711) -}
     describe "Computing the normal on a translated sphere" $ do
-      let s = SUT.makeUnitSphere 1
+      let s  = SUT.makeUnitSphere 1
           s' = SUT.setTransform s (translation 0 1 0)
-          n = SUT.normalAt s (point 0 1.70711 (-0.70711))
+          n  = SUT.normalAt s' (point 0 1.70711 (-0.70711))
       it "is the vector(0, 0.70711, -0.70711)" $ do
         n `shouldBe` vector 0 0.70711 (-0.70711)
     {- Scenario: Computing the normal on a transformed sphere
@@ -88,8 +88,8 @@ sphereNormals =
       let s = SUT.makeUnitSphere 1
           m = (scaling 1 0.5 1) `mulV` rotationZ(pi/5)
           s' = SUT.setTransform s m
-          n = SUT.normalAt s (point 0 (sqrt 2 / 2) (sqrt 2 / 2))
-      it "is the vector(0, 0.70711, -0.70711)" $ do
+          n = SUT.normalAt s' (point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
+      it "is the vector(0, 0.97014, -0.24254)" $ do
         n `shouldBe` vector 0 0.97014 (-0.24254)
 
 sphereTransformation :: Spec
