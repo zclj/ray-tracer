@@ -29,6 +29,7 @@ library
       Clock
       Intersections
       Lib
+      Lights
       Matrices
       PPMCanvas
       Projectile
@@ -67,6 +68,7 @@ test-suite ray-tracer-test
   other-modules:
       CanvasSpec
       IntersectionsSpec
+      LightsSpec
       MatricesSpec
       RaysSpec
       SpheresSpec
