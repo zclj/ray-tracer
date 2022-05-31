@@ -109,3 +109,6 @@ mulC (Color (Red r1) (Green g1) (Blue b1)) (Color (Red r2) (Green g2) (Blue b2))
       g = Green (g1 * g2)
       b = Blue (b1 * b2)
   in Color r g b
+
+reflect :: Tuple -> Tuple -> Tuple
+reflect x normal = x `sub` ((normal `mul` 2) `mul` (x `dot` normal))

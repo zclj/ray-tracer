@@ -18,7 +18,34 @@ tupleTests = testGroup "Tuple Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Tuple" tupleBasics),
     unsafePerformIO (testSpec "Tuple" tupleArithmetic),
-    unsafePerformIO (testSpec "Tuple" colorsAreTuples)]]
+    unsafePerformIO (testSpec "Tuple" colorsAreTuples),
+    unsafePerformIO (testSpec "Tuple" vectorReflection)]]
+
+vectorReflection :: Spec
+vectorReflection =
+  describe "Reflection" $ do
+    {- Scenario: Reflecting a vector approaching at 45°
+         Given v ← vector(1, -1, 0)
+           And n ← vector(0, 1, 0)
+         When r ← reflect(v, n)
+         Then r = vector(1, 1, 0) -}
+    describe "Reflecting a vector approaching at 45°" $ do
+      let v = SUT.vector 1 (-1) 0
+          n = SUT.vector 0 1 0
+          r = SUT.reflect v n
+      it "reflects vector(1, 1, 0)" $ do
+        r `shouldBe` vector 1 1 0
+    {- Scenario: Reflecting a vector off a slanted surface
+         Given v ← vector(0, -1, 0)
+           And n ← vector(√2/2, √2/2, 0)
+         When r ← reflect(v, n)
+         Then r = vector(1, 0, 0) -}
+    describe "Reflecting a vector off a slanted surface" $ do
+      let v = SUT.vector 0 (-1) 0
+          n = SUT.vector (sqrt 2/2) (sqrt 2/2) 0
+          r = SUT.reflect v n
+      it "reflects vector(1, 0, 0)" $ do
+        r `shouldBe` vector 1 0 0
 
 tupleBasics :: Spec
 tupleBasics =
