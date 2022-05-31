@@ -30,6 +30,7 @@ library
       Intersections
       Lib
       Lights
+      Materials
       Matrices
       PPMCanvas
       Projectile
@@ -69,6 +70,7 @@ test-suite ray-tracer-test
       CanvasSpec
       IntersectionsSpec
       LightsSpec
+      MaterialsSpec
       MatricesSpec
       RaysSpec
       SpheresSpec
