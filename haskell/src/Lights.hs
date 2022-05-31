@@ -10,4 +10,4 @@ data Light = Light { position  :: Tuple
              deriving (Show, Eq)
 
 pointLight :: Tuple -> Color -> Light
-pointLight position intensity = undefined
+pointLight position intensity = Light position intensity
