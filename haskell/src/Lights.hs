@@ -15,4 +15,6 @@ pointLight :: Tuple -> Color -> Light
 pointLight position intensity = Light position intensity
 
 lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Color
-lighting m l pos eye normal = undefined
+lighting material light point eyev normalv =
+  let effectiveColor = (color material) `mulC` (intensity light)
+  in effectiveColor
