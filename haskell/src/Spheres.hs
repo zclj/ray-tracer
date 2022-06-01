@@ -7,14 +7,16 @@ module Spheres
 
 import Tuples
 import Matrices
+import Materials as M
 
 data Sphere = Sphere { id        :: Int
                      , radius    :: Double
-                     , transform :: VMatrix}
+                     , transform :: VMatrix
+                     , material  :: M.Material}
               deriving (Show, Eq, Ord)
 
 makeUnitSphere :: Int -> Sphere
-makeUnitSphere id = Sphere id 1.0 identityV
+makeUnitSphere id = Sphere id 1.0 identityV M.material
 
 normalAt :: Sphere -> Tuple -> Tuple
 normalAt Sphere{transform = t} worldPoint

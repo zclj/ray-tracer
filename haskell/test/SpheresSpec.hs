@@ -10,6 +10,7 @@ import Rays
 import Intersections
 import Matrices
 import Transformations
+import Materials as M
 import Spheres as SUT
 
 spheresTests :: TestTree
@@ -17,7 +18,34 @@ spheresTests = testGroup "Spheres Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Spheres" sphereIntersections)
   , unsafePerformIO (testSpec "Spheres" sphereTransformation)
-  , unsafePerformIO (testSpec "Spheres" sphereNormals)]]
+  , unsafePerformIO (testSpec "Spheres" sphereNormals)
+  , unsafePerformIO (testSpec "Spheres" sphereMaterials)]]
+
+sphereMaterials :: Spec
+sphereMaterials =
+  describe "Materials" $ do
+    {- Scenario: A sphere has a default material
+         Given s ← sphere()
+         When m ← s.material
+         Then m = material() -}
+    describe "A sphere has a default material" $ do
+      let s = SUT.makeUnitSphere 1
+          m = (SUT.material s)
+      it "is the same as the default material" $ do
+        m `shouldBe` M.material
+    {- Scenario: A sphere may be assigned a material
+         Given s ← sphere()
+           And m ← material()
+           And m.ambient ← 1
+         When s.material ← m
+         Then s.material = m -}
+    describe "A sphere may be assigned a material" $ do
+      let s  = SUT.makeUnitSphere 1
+          m  = M.material
+          m' = m {ambient = 1}
+          s' = s {SUT.material = m'}
+      it "it has the new material" $ do
+        SUT.material s' `shouldBe` m'
 
 sphereNormals :: Spec
 sphereNormals =
