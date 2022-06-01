@@ -6,12 +6,33 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Tuples
+import Lights
 import Materials as SUT
 
 materialTests :: TestTree
 materialTests = testGroup "Material Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Materials" materialBasics)]]
+  [ unsafePerformIO (testSpec "Materials" materialBasics)
+  , unsafePerformIO (testSpec "Materials" materialLighting)]]
+
+materialLighting :: Spec
+materialLighting =
+  describe "Lighting" $ do
+    {- Scenario: Lighting with the eye between the light and the surface
+         Given eyev ← vector(0, 0, -1)
+           And normalv ← vector(0, 0, -1)
+           And light ← point_light(point(0, 0, -10), color(1, 1, 1))
+         When result ← lighting(m, light, position, eyev, normalv)
+         Then result = color(1.9, 1.9, 1.9) -}
+    describe "Lighting with the eye between the light and the surface" $ do
+      let position = point 0 0 0
+          m        = material
+          eyev     = vector 0 0 (-1)
+          normalv  = vector 0 0 (-1)
+          light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          result   = lighting m light position eyev normalv
+      it "result in color(1.9, 1.9, 1.9)" $ do
+        result `shouldBe` (Color (Red 1.9) (Green 1.9) (Blue 1.9))
 
 materialBasics :: Spec
 materialBasics =
