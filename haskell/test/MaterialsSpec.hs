@@ -106,6 +106,8 @@ materialBasics =
            And m.shininess = 200.0 -}
     describe "The default material" $ do
       let m = SUT.material
+      it "color(1, 1, 1)" $ do
+        color m `shouldBe` Color (Red 1) (Green 1) (Blue 1)
       it "ambient = 0.1" $ do
         ambient m `shouldBe` 0.1
       it "diffuse = 0.9" $ do
