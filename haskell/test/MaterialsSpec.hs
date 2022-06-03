@@ -89,7 +89,7 @@ materialLighting =
           m        = material
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (point 0 0 (10)) (Color (Red 1) (Green 1) (Blue 1))
           result   = lighting m light position eyev normalv
       it "result in color(0.1, 0.1, 0.1)" $ do
         result `shouldBe` (Color (Red 0.1) (Green 0.1) (Blue 0.1))
