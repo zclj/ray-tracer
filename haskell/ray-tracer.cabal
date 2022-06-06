@@ -42,6 +42,7 @@ library
       Tuples
       Utils
       Vector
+      World
   other-modules:
       Paths_ray_tracer
   hs-source-dirs:
@@ -78,6 +79,7 @@ test-suite ray-tracer-test
       TransformationsSpec
       TuplesSpec
       UtilsSpec
+      WorldSpec
       Paths_ray_tracer
   hs-source-dirs:
       test
