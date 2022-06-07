@@ -1,8 +1,12 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module World
   ( World(..)
   , defaultWorld
   , intersectWorld
   )where
+
+import Data.List as DL
 
 import Spheres
 import Materials
@@ -42,5 +46,9 @@ defaultWorld = let defaultSphere1 = Sphere
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World [defaultSphere1, defaultSphere2] defaultLight
 
+{-|
+  Iterate over the objects in the world, intersecting each with the given `Ray`
+-}
 intersectWorld :: World -> Ray -> [Intersection]
-intersectWorld w r = undefined
+intersectWorld World{ objects } r
+  = DL.sort $ concatMap (\obj -> Intersections.intersect obj r) objects
