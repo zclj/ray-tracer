@@ -27,6 +27,7 @@ library
   exposed-modules:
       Canvas
       Clock
+      Computation
       Intersections
       Lib
       Lights

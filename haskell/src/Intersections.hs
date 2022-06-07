@@ -2,12 +2,14 @@ module Intersections
   ( Intersection (..)
   , intersect
   , hit
+  , prepareComputations
   ) where
 
 import Spheres as S
 import Rays as R
 import Tuples
 import Matrices
+import Computation
 import Data.List (sort, find)
 
 data Intersection = Intersection { t      :: Double
@@ -16,7 +18,7 @@ data Intersection = Intersection { t      :: Double
 
 intersect :: Sphere -> Ray -> [Intersection]
 intersect s r = let r'           = R.transform r (inverseV (S.transform s))
-                    sphereToRay  = origin r' `sub` point 0 0 0
+                    sphereToRay  = origin r' `sub` Tuples.point 0 0 0
                     a            = direction r' `dot` direction r'
                     b            = 2 * (direction r' `dot` sphereToRay)
                     c            = (sphereToRay `dot` sphereToRay) - 1
@@ -30,3 +32,6 @@ intersect s r = let r'           = R.transform r (inverseV (S.transform s))
 -- Intersections with a negative value are 'behind', positive 'infront'
 hit :: [Intersection] -> Maybe Intersection
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
+
+prepareComputations :: Intersection -> Ray -> Computation
+prepareComputations i r = undefined

@@ -6,13 +6,38 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Spheres
+import Rays
+import Tuples
+import qualified Computation
 import Intersections as SUT
 
 intersectionsTests :: TestTree
 intersectionsTests = testGroup "Intersections Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Intersections" intersections)
-  , unsafePerformIO (testSpec "Intersections" hits)]]
+  , unsafePerformIO (testSpec "Intersections" hits)
+  , unsafePerformIO (testSpec "Intersections" precompute)]]
+
+precompute :: Spec
+precompute =
+  describe "Precomputations" $ do
+    {- Scenario: Precomputing the state of an intersection
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And shape ← sphere()
+           And i ← intersection(4, shape)
+         When comps ← prepare_computations(i, r)
+         Then comps.t = i.t
+           And comps.object = i.object
+           And comps.point = point(0, 0, -1)
+           And comps.eyev = vector(0, 0, -1)
+           And comps.normalv = vector(0, 0, -1) -}
+    describe "Precomputing the state of an intersection" $ do
+      let r = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          shape = makeUnitSphere 1
+          i = SUT.Intersection 4 shape
+          comps = SUT.prepareComputations i r
+      it "computation t = i.t" $ do
+        (Computation.t comps) `shouldBe` (t i)
 
 intersections :: Spec
 intersections =
