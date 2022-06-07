@@ -1,6 +1,7 @@
 module World
   ( World(..)
   , defaultWorld
+  , intersectWorld
   )where
 
 import Spheres
@@ -8,6 +9,8 @@ import Materials
 import Matrices
 import Transformations
 import Tuples
+import Rays
+import Intersections
 import Lights
 
 data World = World { objects :: [Sphere]
@@ -38,3 +41,6 @@ defaultWorld = let defaultSphere1 = Sphere
                                     (point (-10) (-10) (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World [defaultSphere1, defaultSphere2] defaultLight
+
+intersectWorld :: World -> Ray -> [Intersection]
+intersectWorld w r = undefined

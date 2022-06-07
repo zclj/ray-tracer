@@ -10,13 +10,44 @@ import Spheres
 import Materials
 import Matrices
 import Transformations
+import Intersections
 import Tuples
+import Rays
 import World as SUT
 
 worldTests :: TestTree
 worldTests = testGroup "World Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "World" worldBasics)]]
+  [ unsafePerformIO (testSpec "World" worldBasics)
+  , unsafePerformIO (testSpec "World" worldIntersections)]]
+
+worldIntersections :: Spec
+worldIntersections =
+  describe "World Intersections" $ do
+    {- Scenario: Intersect a world with a ray
+         Given w ← default_world()
+           And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+         When xs ← intersect_world(w, r)
+         Then xs.count = 4
+           And xs[0].t = 4
+           And xs[1].t = 4.5
+           And xs[2].t = 5.5
+           And xs[3].t = 6 -}
+    describe "Intersect a world with a ray" $ do
+      let w  = SUT.defaultWorld
+          r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          xs = SUT.intersectWorld w r
+          [x1, x2, x3, x4] = xs
+      it "contains 4 intersections" $ do
+        length xs `shouldBe` 4
+      it "xs[0].t = 4" $ do
+        t x1 `shouldBe` 4.0
+      it "xs[1].t = 4.5" $ do
+        t x2 `shouldBe` 4.5
+      it "xs[2].t = 5.5" $ do
+        t x3 `shouldBe` 5.5
+      it "xs[3].t = 6" $ do
+        t x4 `shouldBe` 6
 
 worldBasics :: Spec
 worldBasics =
