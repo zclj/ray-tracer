@@ -59,6 +59,29 @@ precompute =
           comps = SUT.prepareComputations i r
       it "comps.inside = false" $ do
         C.inside comps `shouldBe` False
+    {- Scenario: The hit, when an intersection occurs on the inside
+         Given r ← ray(point(0, 0, 0), vector(0, 0, 1))
+           And shape ← sphere()
+           And i ← intersection(1, shape)
+         When comps ← prepare_computations(i, r)
+         Then comps.point = point(0, 0, 1)
+           And comps.eyev = vector(0, 0, -1)
+           And comps.inside = true
+           # normal would have been (0, 0, 1), but is inverted!
+           And comps.normalv = vector(0, 0, -1) -}
+    describe "The hit, when an intersection occurs on the inside" $ do
+      let r     = makeRay (point 0 0 0) (vector 0 0 1)
+          shape = makeUnitSphere 1
+          i     = SUT.Intersection 1 shape
+          comps = SUT.prepareComputations i r
+      it "computation point = point(0, 0, 1)" $ do
+        C.point comps `shouldBe` point 0 0 1
+      it "computation eyev = vector(0, 0, -1)" $ do
+        C.eyev comps `shouldBe` vector 0 0 (-1)
+      it "comps.inside = true" $ do
+        C.inside comps `shouldBe` True
+      it "computation normalv = vector(0, 0, -1)" $ do
+        C.normalv comps `shouldBe` vector 0 0 (-1)
 
 intersections :: Spec
 intersections =
