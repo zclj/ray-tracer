@@ -32,9 +32,9 @@ precompute =
            And comps.eyev = vector(0, 0, -1)
            And comps.normalv = vector(0, 0, -1) -}
     describe "Precomputing the state of an intersection" $ do
-      let r = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
           shape = makeUnitSphere 1
-          i = SUT.Intersection 4 shape
+          i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r
       it "computation t = i.t" $ do
         (C.t comps) `shouldBe` (t i)
@@ -46,6 +46,19 @@ precompute =
         C.eyev comps `shouldBe` vector 0 0 (-1)
       it "computation normalv = vector(0, 0, -1)" $ do
         C.normalv comps `shouldBe` vector 0 0 (-1)
+    {- Scenario: The hit, when an intersection occurs on the outside
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And shape ← sphere()
+           And i ← intersection(4, shape)
+         When comps ← prepare_computations(i, r)
+         Then comps.inside = false -}
+    describe "The hit, when an intersection occurs on the outside" $ do
+      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          shape = makeUnitSphere 1
+          i     = SUT.Intersection 4 shape
+          comps = SUT.prepareComputations i r
+      it "comps.inside = false" $ do
+        C.inside comps `shouldBe` False
 
 intersections :: Spec
 intersections =
