@@ -8,7 +8,7 @@ import Test.Tasty.Hspec as HS
 import Spheres
 import Rays
 import Tuples
-import qualified Computation
+import qualified Computation as C
 import Intersections as SUT
 
 intersectionsTests :: TestTree
@@ -37,7 +37,15 @@ precompute =
           i = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r
       it "computation t = i.t" $ do
-        (Computation.t comps) `shouldBe` (t i)
+        (C.t comps) `shouldBe` (t i)
+      it "computation object = i.object" $ do
+        C.object comps `shouldBe` object i
+      it "computation point = point(0, 0, -1)" $ do
+        C.point comps `shouldBe` point 0 0 (-1)
+      it "computation eyev = vector(0, 0, -1)" $ do
+        C.eyev comps `shouldBe` vector 0 0 (-1)
+      it "computation normalv = vector(0, 0, -1)" $ do
+        C.normalv comps `shouldBe` vector 0 0 (-1)
 
 intersections :: Spec
 intersections =
