@@ -9,7 +9,7 @@ import Spheres as S
 import Rays as R
 import Tuples
 import Matrices
-import Computation
+import qualified Computation as C
 import Data.List (sort, find)
 
 data Intersection = Intersection { t      :: Double
@@ -33,5 +33,10 @@ intersect s r = let r'           = R.transform r (inverseV (S.transform s))
 hit :: [Intersection] -> Maybe Intersection
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
-prepareComputations :: Intersection -> Ray -> Computation
-prepareComputations i r = undefined
+prepareComputations :: Intersection -> Ray -> C.Computation
+prepareComputations i r =
+  C.Computation { C.t       = (t i)
+                , C.object  = object i
+                , C.point   = position r (t i)
+                , C.eyev    = neg (direction r)
+                , C.normalv = normalAt (object i) (position r (t i))}
