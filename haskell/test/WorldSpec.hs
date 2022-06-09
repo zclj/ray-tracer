@@ -19,7 +19,49 @@ worldTests :: TestTree
 worldTests = testGroup "World Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "World" worldBasics)
-  , unsafePerformIO (testSpec "World" worldIntersections)]]
+  , unsafePerformIO (testSpec "World" worldIntersections)
+  , unsafePerformIO (testSpec "World" worldShading)]]
+
+worldShading :: Spec
+worldShading =
+  describe "World Shading" $ do
+    {- Scenario: Shading an intersection
+         Given w ← default_world()
+           And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And shape ← the first object in w
+           And i ← intersection(4, shape)
+         When comps ← prepare_computations(i, r)
+           And c ← shade_hit(w, comps)
+         Then c = color(0.38066, 0.47583, 0.2855) -}
+    describe "Shading an intersection" $ do
+      let w     = SUT.defaultWorld
+          r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          s     = head (objects w)
+          i     = Intersection 4 s
+          comps = prepareComputations i r
+          c     = SUT.shadeHit w comps
+      it "shaded color c = color(0.38066, 0.47583, 0.2855)" $ do
+        c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
+    {- Scenario: Shading an intersection from the inside
+         Given w ← default_world()
+           And w.light ← point_light(point(0, 0.25, 0), color(1, 1, 1))
+           And r ← ray(point(0, 0, 0), vector(0, 0, 1))
+           And shape ← the second object in w
+           And i ← intersection(0.5, shape)
+         When comps ← prepare_computations(i, r)
+           And c ← shade_hit(w, comps)
+         Then c = color(0.90498, 0.90498, 0.90498) -}
+    describe "Shading an intersection from the inside" $ do
+      let w     = SUT.defaultWorld
+          w'    = w { light = pointLight (point 0 0.25 0)
+                              (Color (Red 1) (Green 1) (Blue 1)) }
+          r     = makeRay (point 0 0 0) (vector 0 0 1)
+          s     = head (objects w')
+          i     = Intersection 0.5 s
+          comps = prepareComputations i r
+          c     = SUT.shadeHit w comps
+      it "shaded color c = color(0.90498, 0.90498, 0.90498)" $ do
+        c `shouldBe` Color (Red 0.90498) (Green 0.90498) (Blue 0.90498)
 
 worldIntersections :: Spec
 worldIntersections =

@@ -4,6 +4,7 @@ module World
   ( World(..)
   , defaultWorld
   , intersectWorld
+  , shadeHit
   )where
 
 import Data.List as DL
@@ -16,6 +17,7 @@ import Tuples
 import Rays
 import Intersections
 import Lights
+import qualified Computation as C
 
 data World = World { objects :: [Sphere]
                    , light   :: Light}
@@ -52,3 +54,6 @@ defaultWorld = let defaultSphere1 = Sphere
 intersectWorld :: World -> Ray -> [Intersection]
 intersectWorld World{ objects } r
   = DL.sort $ concatMap (\obj -> Intersections.intersect obj r) objects
+
+shadeHit :: World -> C.Computation -> Color
+shadeHit w c = undefined
