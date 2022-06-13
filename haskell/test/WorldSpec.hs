@@ -85,6 +85,26 @@ worldShading =
           c = SUT.colorAt w r
       it "c = color(0.38066, 0.47583, 0.2855)" $ do
         c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
+    {- Scenario: The color with an intersection behind the ray
+         Given w ← default_world()
+           And outer ← the first object in w
+           And outer.material.ambient ← 1
+           And inner ← the second object in w
+           And inner.material.ambient ← 1
+           And r ← ray(point(0, 0, 0.75), vector(0, 0, -1))
+         When c ← color_at(w, r)
+         Then c = inner.material.color -}
+    describe "The color with an intersection behind the ray" $ do
+      let w      = SUT.defaultWorld
+          outer  = head (objects w)
+          inner  = last (objects w)
+          outer' = outer { Spheres.material = (Spheres.material outer) { ambient = 1 }}
+          inner' = inner { Spheres.material = (Spheres.material inner) { ambient = 1 }}
+          w'     = w { objects = [outer', inner'] }
+          r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
+          c      = SUT.colorAt w' r
+      it "c = inner.material.color" $ do
+        c `shouldBe` color (Spheres.material inner)
 
 worldIntersections :: Spec
 worldIntersections =
