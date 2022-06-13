@@ -30,22 +30,17 @@ defaultWorld = let defaultSphere1 = Sphere
                                     , Spheres.transform = identityV
                                     , Spheres.material  = Material
                                       { color     = (Color (Red 0.8) (Green 1) (Blue 0.6))
-                                      , ambient   = 0
+                                      , ambient   = 0.1
                                       , diffuse   = 0.7
                                       , specular  = 0.2
-                                      , shininess = 0 }}
+                                      , shininess = 200 }}
                    defaultSphere2 = Sphere
                                     { Spheres.id        = 2
                                     , radius            = 1.0
                                     , Spheres.transform = scaling 0.5 0.5 0.5
-                                    , Spheres.material  = Material
-                                      { color     = (Color (Red 0.8) (Green 1) (Blue 0.6))
-                                      , ambient   = 0
-                                      , diffuse   = 0.7
-                                      , specular  = 0.2
-                                      , shininess = 0 }}
+                                    , Spheres.material  = Materials.material}
                    defaultLight   = pointLight
-                                    (point (-10) (-10) (-10))
+                                    (point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World [defaultSphere1, defaultSphere2] defaultLight
 

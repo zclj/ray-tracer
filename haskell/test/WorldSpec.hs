@@ -56,12 +56,23 @@ worldShading =
           w'    = w { light = pointLight (point 0 0.25 0)
                               (Color (Red 1) (Green 1) (Blue 1)) }
           r     = makeRay (point 0 0 0) (vector 0 0 1)
-          s     = head (objects w')
+          s     = last (objects w')
           i     = Intersection 0.5 s
           comps = prepareComputations i r
-          c     = SUT.shadeHit w comps
+          c     = SUT.shadeHit w' comps
       it "shaded color c = color(0.90498, 0.90498, 0.90498)" $ do
         c `shouldBe` Color (Red 0.90498) (Green 0.90498) (Blue 0.90498)
+    {- Scenario: The color when a ray misses
+         Given w ← default_world()
+           And r ← ray(point(0, 0, -5), vector(0, 1, 0))
+         When c ← color_at(w, r)
+         Then c = color(0, 0, 0) -}
+    describe "The color when a ray misses" $ do
+      let w = SUT.defaultWorld
+          r = makeRay (point 0 0 (-5)) (vector 0 1 0)
+          c = SUT.colorAt w r
+      it "c = color(0, 0, 0)" $ do
+        c `shouldBe` Color (Red 0) (Green 0) (Blue 0)
 
 worldIntersections :: Spec
 worldIntersections =
