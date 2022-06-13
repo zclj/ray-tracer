@@ -11,3 +11,4 @@ data Computation = Computation { t       :: Double
                                , eyev    :: Tuple
                                , normalv :: Tuple
                                , inside  :: Bool}
+                   deriving(Show)
