@@ -74,6 +74,17 @@ worldShading =
           c = SUT.colorAt w r
       it "c = color(0, 0, 0)" $ do
         c `shouldBe` Color (Red 0) (Green 0) (Blue 0)
+    {- Scenario: The color when a ray hits
+         Given w ← default_world()
+           And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+         When c ← color_at(w, r)
+         Then c = color(0.38066, 0.47583, 0.2855) -}
+    describe "The color when a ray hits" $ do
+      let w = SUT.defaultWorld
+          r = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          c = SUT.colorAt w r
+      it "c = color(0.38066, 0.47583, 0.2855)" $ do
+        c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
 
 worldIntersections :: Spec
 worldIntersections =
