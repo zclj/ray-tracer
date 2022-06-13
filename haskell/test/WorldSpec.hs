@@ -91,7 +91,7 @@ worldIntersections =
       let w  = SUT.defaultWorld
           r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
           xs = SUT.intersectWorld w r
-          (x1:x2:x3:x4:[]) = xs
+          [x1, x2, x3, x4] = xs
       it "contains 4 intersections" $ do
         length xs `shouldBe` 4
       it "xs[0].t = 4" $ do
@@ -114,8 +114,8 @@ worldBasics =
       let l   = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
           w   = SUT.World { objects = []
                           , light   = l}
-          obj = (objects w)
-          wl  = (light w)
+          obj = objects w
+          wl  = light w
       it "world contains no objects" $ do
         obj `shouldBe` []
       it "world contains light source" $ do
@@ -138,7 +138,7 @@ worldBasics =
                          , radius            = 1.0
                          , Spheres.transform = identityV
                          , Spheres.material  = Materials.material
-                           { color     = (Color (Red 0.8) (Green 1) (Blue 0.6))
+                           { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                            , diffuse   = 0.7
                            , specular  = 0.2}}
           s2    = Sphere { Spheres.id        = 2
@@ -151,4 +151,4 @@ worldBasics =
       it "contains Sphere S2" $ do
         last (objects w) `shouldBe` s2
       it "contains the default light" $ do
-        (SUT.light w) `shouldBe` light
+        SUT.light w `shouldBe` light

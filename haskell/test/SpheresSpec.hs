@@ -30,7 +30,7 @@ sphereMaterials =
          Then m = material() -}
     describe "A sphere has a default material" $ do
       let s = SUT.makeUnitSphere 1
-          m = (SUT.material s)
+          m = SUT.material s
       it "is the same as the default material" $ do
         m `shouldBe` M.material
     {- Scenario: A sphere may be assigned a material
@@ -58,7 +58,7 @@ sphereNormals =
       let s = SUT.makeUnitSphere 1
           n = SUT.normalAt s (point 1 0 0)
       it "is the vector(1, 0, 0)" $ do
-        n `shouldBe` (vector 1 0 0)
+        n `shouldBe` vector 1 0 0
     {- Scenario: The normal on a sphere at a point on the y axis
          Given s ← sphere()
          When n ← normal_at(s, point(0, 1, 0))
@@ -67,7 +67,7 @@ sphereNormals =
       let s = SUT.makeUnitSphere 1
           n = SUT.normalAt s (point 0 1 0)
       it "is the vector(0, 1, 0)" $ do
-        n `shouldBe` (vector 0 1 0)
+        n `shouldBe` vector 0 1 0
     {- Scenario: The normal on a sphere at a point on the z axis
          Given s ← sphere()
          When n ← normal_at(s, point(0, 0, 1))
@@ -76,7 +76,7 @@ sphereNormals =
       let s = SUT.makeUnitSphere 1
           n = SUT.normalAt s (point 0 0 1)
       it "is the vector(0, 0, 1)" $ do
-        n `shouldBe` (vector 0 0 1)
+        n `shouldBe` vector 0 0 1
     {- Scenario: The normal on a sphere at a nonaxial point
          Given s ← sphere()
          When n ← normal_at(s, point(√3/3, √3/3, √3/3))
@@ -85,7 +85,7 @@ sphereNormals =
       let s = SUT.makeUnitSphere 1
           n = SUT.normalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
-        n `shouldBe` (vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+        n `shouldBe` vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)
     {- Scenario: The normal is a normalized vector
          Given s ← sphere()
          When n ← normal_at(s, point(√3/3, √3/3, √3/3))
@@ -114,7 +114,7 @@ sphereNormals =
          Then n = vector(0, 0.97014, -0.24254) -}
     describe "Computing the normal on a transformed sphere" $ do
       let s = SUT.makeUnitSphere 1
-          m = (scaling 1 0.5 1) `mulV` rotationZ(pi/5)
+          m = scaling 1 0.5 1 `mulV` rotationZ(pi/5)
           s' = SUT.setTransform s m
           n = SUT.normalAt s' (point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
       it "is the vector(0, 0.97014, -0.24254)" $ do

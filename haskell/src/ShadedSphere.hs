@@ -17,15 +17,15 @@ wallSize :: Double
 wallSize = 7.0
 
 canvasPixels = 1000
-pixelSize = wallSize / (fromIntegral canvasPixels)
+pixelSize = wallSize / fromIntegral canvasPixels
 
 half = wallSize / 2
 
 toWorldX :: Int -> Double
-toWorldX x = (-half) + (pixelSize * (fromIntegral x))
+toWorldX x = (-half) + (pixelSize * fromIntegral x)
 
 toWorldY :: Int -> Double
-toWorldY y = half - (pixelSize * (fromIntegral y))
+toWorldY y = half - (pixelSize * fromIntegral y)
 
 processPixel :: Int -> Int -> Sphere -> (Maybe Intersection, Ray)
 processPixel x y shape = let worldX   = toWorldX x
@@ -40,7 +40,7 @@ castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                         in case hit of
                              Just n -> let p      = Rays.position ray (t n)
                                            normal = Spheres.normalAt (object n) p
-                                           eye    = (neg (direction ray))
+                                           eye    = neg (direction ray)
                                        in lighting (Spheres.material (object n)) l p eye normal
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 

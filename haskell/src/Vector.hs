@@ -28,10 +28,10 @@ instance Eq Vector where
       in ltep x1 x2 && ltep y1 y2
 
 fromList3D :: [Double] -> Vector
-fromList3D (x:y:z:_) = (Vector3D x y z)
+fromList3D (x:y:z:_) = Vector3D x y z
 
 fromList4D :: [Double] -> Vector
-fromList4D (x:y:z:w:_) = (Vector4D x y z w)
+fromList4D (x:y:z:w:_) = Vector4D x y z w
 
 toList3D :: Vector -> [Double]
 toList3D (Vector3D x y z) = [x, y, z]

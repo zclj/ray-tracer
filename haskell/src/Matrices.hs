@@ -302,35 +302,35 @@ submatrixV
   (VMatrix4x4 a b c d)
   (RowIndex i) (ColumnIndex j)
   = case i of
-      0 -> (VMatrix3x3
-            (dropAtV b j)
-            (dropAtV c j)
-            (dropAtV d j))
-      1 -> (VMatrix3x3
-            (dropAtV a j)
-            (dropAtV c j)
-            (dropAtV d j))
-      2 -> (VMatrix3x3
-            (dropAtV a j)
-            (dropAtV b j)
-            (dropAtV d j))
-      3 -> (VMatrix3x3
-            (dropAtV a j)
-            (dropAtV b j)
-            (dropAtV c j))
+      0 -> VMatrix3x3
+           (dropAtV b j)
+           (dropAtV c j)
+           (dropAtV d j)
+      1 -> VMatrix3x3
+           (dropAtV a j)
+           (dropAtV c j)
+           (dropAtV d j)
+      2 -> VMatrix3x3
+           (dropAtV a j)
+           (dropAtV b j)
+           (dropAtV d j)
+      3 -> VMatrix3x3
+           (dropAtV a j)
+           (dropAtV b j)
+           (dropAtV c j)
 submatrixV
   (VMatrix3x3 a b c)
   (RowIndex i) (ColumnIndex j)
   = case i of
-      0 -> (VMatrix2x2
-            (dropAtV b j)
-            (dropAtV c j))
-      1 -> (VMatrix2x2
-            (dropAtV a j)
-            (dropAtV c j))
-      2 -> (VMatrix2x2
-            (dropAtV a j)
-            (dropAtV b j))
+      0 -> VMatrix2x2
+           (dropAtV b j)
+           (dropAtV c j)
+      1 -> VMatrix2x2
+           (dropAtV a j)
+           (dropAtV c j)
+      2 -> VMatrix2x2
+           (dropAtV a j)
+           (dropAtV b j)
 
 minor :: Matrix -> RowIndex -> ColumnIndex -> Double
 minor a r = determinant . submatrix a r
@@ -398,6 +398,6 @@ inverseV
   --                    ((cofactorV a (RowIndex 2) (ColumnIndex 3)) / determinantV a)
   --                    ((cofactorV a (RowIndex 3) (ColumnIndex 3)) / determinantV a))
   | invertibleV a = makeVMatrix4x4
-                    [[(cofactorV a (RowIndex i) (ColumnIndex j)) / determinantV a
+                    [[cofactorV a (RowIndex i) (ColumnIndex j) / determinantV a
                      | i <- [0..3]] | j <- [0..3]]
   | otherwise     = error "Matrix is not invertible"

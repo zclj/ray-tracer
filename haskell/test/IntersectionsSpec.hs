@@ -37,7 +37,7 @@ precompute =
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r
       it "computation t = i.t" $ do
-        (C.t comps) `shouldBe` (t i)
+        C.t comps `shouldBe` t i
       it "computation object = i.object" $ do
         C.object comps `shouldBe` object i
       it "computation point = point(0, 0, -1)" $ do

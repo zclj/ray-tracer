@@ -58,9 +58,9 @@ canvasBasics =
       it "returns the Canvas" $ do
          pixelAt canvas (Width 0) (Height 0) `shouldBe` Color (Red 1) (Green 0) (Blue 0)
       it "the width is correct" $ do
-        width canvas `shouldBe` (Width 2)
+        width canvas `shouldBe` Width 2
       it "the height is correct" $ do
-        height canvas `shouldBe` (Height 3)
+        height canvas `shouldBe` Height 3
       it "should throw if rows are not of the same length" $ do
         evaluate (SUT.fromColors unbalanced) `shouldThrow` anyException
 

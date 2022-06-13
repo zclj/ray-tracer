@@ -15,15 +15,15 @@ wallSize :: Double
 wallSize = 7.0
 
 canvasPixels = 1000
-pixelSize = wallSize / (fromIntegral canvasPixels)
+pixelSize = wallSize / fromIntegral canvasPixels
 
 half = wallSize / 2
 
 toWorldX :: Int -> Double
-toWorldX x = (-half) + (pixelSize * (fromIntegral x))
+toWorldX x = (-half) + (pixelSize * fromIntegral x)
 
 toWorldY :: Int -> Double
-toWorldY y = half - (pixelSize * (fromIntegral y))
+toWorldY y = half - (pixelSize * fromIntegral y)
 
 processPixel :: Int -> Int -> Sphere -> Maybe Intersection
 processPixel x y shape = let worldX   = toWorldX x

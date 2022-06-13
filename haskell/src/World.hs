@@ -30,7 +30,7 @@ defaultWorld = let defaultSphere1 = Sphere
                                     , radius            = 1.0
                                     , Spheres.transform = identityV
                                     , Spheres.material  = Material
-                                      { color     = (Color (Red 0.8) (Green 1) (Blue 0.6))
+                                      { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                                       , ambient   = 0.1
                                       , diffuse   = 0.7
                                       , specular  = 0.2
@@ -50,7 +50,7 @@ defaultWorld = let defaultSphere1 = Sphere
 -}
 intersectWorld :: World -> Ray -> [Intersection]
 intersectWorld World{ objects } r
-  = DL.sort $ concatMap (\obj -> Intersections.intersect obj r) objects
+  = DL.sort $ concatMap (`Intersections.intersect` r) objects
 
 shadeHit :: World -> C.Computation -> Color
 shadeHit world c = Lights.lighting
