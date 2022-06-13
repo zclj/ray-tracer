@@ -35,14 +35,17 @@ hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
 prepareComputations :: Intersection -> Ray -> C.Computation
 prepareComputations i r =
-  let normalv          = normalAt (object i) (position r (t i))
+  let it               = (t i)
+      po               = (position r it)
+      obj              = (object i)
+      normalv          = S.normalAt obj po
       eyev             = neg (direction r)
       (inside, normal) = if (normalv `dot` eyev) < 0
                          then (True, neg normalv)
                          else (False, normalv)
-  in C.Computation { C.t       = (t i)
-                   , C.object  = object i
-                   , C.point   = position r (t i)
+  in C.Computation { C.t       = it
+                   , C.object  = obj
+                   , C.point   = po
                    , C.eyev    = eyev
                    , C.normalv = normal
                    , C.inside  = inside}

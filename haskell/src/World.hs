@@ -5,6 +5,7 @@ module World
   , defaultWorld
   , intersectWorld
   , shadeHit
+  , colorAt
   )where
 
 import Data.List as DL
@@ -52,4 +53,14 @@ intersectWorld World{ objects } r
   = DL.sort $ concatMap (\obj -> Intersections.intersect obj r) objects
 
 shadeHit :: World -> C.Computation -> Color
-shadeHit w c = undefined
+shadeHit world c = Lights.lighting
+                   (Spheres.material (C.object c))
+                   (light world)
+                   (C.point c)
+                   (C.eyev c)
+                   (C.normalv c)
+
+colorAt :: World -> Ray -> Color
+colorAt w r = let is = intersectWorld w r
+              in Color (Red 0) (Green 0) (Blue 0)
+

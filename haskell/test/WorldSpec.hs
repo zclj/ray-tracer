@@ -13,6 +13,7 @@ import Transformations
 import Intersections
 import Tuples
 import Rays
+import qualified Computation
 import World as SUT
 
 worldTests :: TestTree
@@ -36,7 +37,7 @@ worldShading =
     describe "Shading an intersection" $ do
       let w     = SUT.defaultWorld
           r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s     = head (objects w)
+          s     = head (SUT.objects w)
           i     = Intersection 4 s
           comps = prepareComputations i r
           c     = SUT.shadeHit w comps
@@ -132,25 +133,18 @@ worldBasics =
            And w contains s1
            And w contains s2 -}
     describe "The default world" $ do
-      let light = pointLight (point (-10) (-10) (-10)) (Color (Red 1) (Green 1) (Blue 1))
+      let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s1    = Sphere { Spheres.id        = 1
                          , radius            = 1.0
                          , Spheres.transform = identityV
-                         , Spheres.material  = Material
+                         , Spheres.material  = Materials.material
                            { color     = (Color (Red 0.8) (Green 1) (Blue 0.6))
-                           , ambient   = 0
                            , diffuse   = 0.7
-                           , specular  = 0.2
-                           , shininess = 0 }}
+                           , specular  = 0.2}}
           s2    = Sphere { Spheres.id        = 2
                          , radius            = 1.0
                          , Spheres.transform = scaling 0.5 0.5 0.5
-                         , Spheres.material  = Material
-                           { color     = (Color (Red 0.8) (Green 1) (Blue 0.6))
-                           , ambient   = 0
-                           , diffuse   = 0.7
-                           , specular  = 0.2
-                           , shininess = 0 }}
+                         , Spheres.material  = Materials.material}
           w     = defaultWorld
       it "contains Sphere S1" $ do
         head (objects w) `shouldBe` s1
