@@ -21,6 +21,7 @@ import qualified Computation as C
 
 data World = World { objects :: [Sphere]
                    , light   :: Light}
+             deriving(Show)
 
 defaultWorld :: World
 defaultWorld = let defaultSphere1 = Sphere
