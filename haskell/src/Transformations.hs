@@ -58,8 +58,9 @@ viewTransform from to up =
       upn         = norm up
       left        = forward `cross` upn
       trueUp      = left `cross` forward
-      orientation = makeVMatrix [[(x left), (y left), (z left), 0]
-                                ,[(x trueUp), (y trueUp), (z trueUp), 0]
-                                ,[(- (x forward)), (- (y forward)), (- (z forward)), 0]
-                                ,[0, 0, 0, 1]]
-  in orientation `mulV` (translation (-(x from)) (-(y from)) (-(z from)))
+      orientation = makeVMatrix
+                    [[x left       , y left       , z left       , 0]
+                    ,[x trueUp     , y trueUp     , z trueUp     , 0]
+                    ,[- (x forward), - (y forward), - (z forward), 0]
+                    ,[0              , 0              , 0              , 1]]
+  in orientation `mulV` translation (- (x from)) (- (y from)) (- (z from))
