@@ -62,5 +62,9 @@ shadeHit world c = Lights.lighting
 
 colorAt :: World -> Ray -> Color
 colorAt w r = let is = intersectWorld w r
-              in Color (Red 0) (Green 0) (Blue 0)
+                  h  = hit is
+              in case h of
+                   Nothing -> Color (Red 0) (Green 0) (Blue 0)
+                   Just i  -> let c = prepareComputations i r
+                              in shadeHit w c
 
