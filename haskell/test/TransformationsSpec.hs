@@ -81,7 +81,7 @@ transformationView =
                              ,[-0.35857, 0.59761, (-0.71714), 0.00000]
                              ,[0.00000, 0.00000, 0.00000, 1.00000]]
       it "t = 4x4 translation matrix" $ do
-        t `shouldBe` SUT.translation 0 0 (-8)
+        t `shouldBe` v
 
 transformationApplication :: Spec
 transformationApplication =
