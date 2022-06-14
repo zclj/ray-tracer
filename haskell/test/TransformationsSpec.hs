@@ -35,6 +35,53 @@ transformationView =
           t    = SUT.viewTransform from to up
       it "t = identity_matrix" $ do
         t `shouldBe` identityV
+    {- Scenario: A view transformation matrix looking in positive z direction
+         Given from ← point(0, 0, 0)
+           And to ← point(0, 0, 1)
+           And up ← vector(0, 1, 0)
+         When t ← view_transform(from, to, up)
+         Then t = scaling(-1, 1, -1) -}
+    describe "A view transformation matrix looking in positive z direction" $ do
+      let from = point 0 0 0
+          to   = point 0 0 1
+          up   = vector 0 1 0
+          t    = SUT.viewTransform from to up
+      it "t = scaling(-1, 1, -1)" $ do
+        t `shouldBe` SUT.scaling (-1) 1 (-1)
+    {- Scenario: The view transformation moves the world
+         Given from ← point(0, 0, 8)
+           And to ← point(0, 0, 0)
+           And up ← vector(0, 1, 0)
+         When t ← view_transform(from, to, up)
+         Then t = translation(0, 0, -8) -}
+    describe "The view transformation moves the world" $ do
+      let from = point 0 0 8
+          to   = point 0 0 0
+          up   = vector 0 1 0
+          t    = SUT.viewTransform from to up
+      it "t = translation(0, 0, -8)" $ do
+        t `shouldBe` SUT.translation 0 0 (-8)
+    {- Scenario: An arbitrary view transformation
+         Given from ← point(1, 3, 2)
+           And to ← point(4, -2, 8)
+           And up ← vector(1, 1, 0)
+         When t ← view_transform(from, to, up)
+         Then t is the following 4x4 matrix:
+             | -0.50709 | 0.50709 |  0.67612 | -2.36643 |
+             |  0.76772 | 0.60609 |  0.12122 | -2.82843 |
+             | -0.35857 | 0.59761 | -0.71714 |  0.00000 |
+             |  0.00000 | 0.00000 |  0.00000 |  1.00000 | -}
+    describe "An arbitrary view transformation" $ do
+      let from = point 1 3 2
+          to   = point 4 (-2) 8
+          up   = vector 1 1 0
+          t    = SUT.viewTransform from to up
+          v    = makeVMatrix [[(-0.50709), 0.50709, 0.67612, (-2.36643)]
+                             ,[0.76772, 0.60609, 0.12122, (-2.82843)]
+                             ,[-0.35857, 0.59761, (-0.71714), 0.00000]
+                             ,[0.00000, 0.00000, 0.00000, 1.00000]]
+      it "t = 4x4 translation matrix" $ do
+        t `shouldBe` SUT.translation 0 0 (-8)
 
 transformationApplication :: Spec
 transformationApplication =
