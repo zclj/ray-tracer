@@ -16,7 +16,25 @@ transformationTests = testGroup "Transformation Tests" [
     unsafePerformIO (testSpec "Transformation" transformationScaling),
     unsafePerformIO (testSpec "Transformation" transformationRotation),
     unsafePerformIO (testSpec "Transformation" transformationShearing),
-    unsafePerformIO (testSpec "Transformation" transformationApplication)]]
+    unsafePerformIO (testSpec "Transformation" transformationApplication)
+  , unsafePerformIO (testSpec "Transformation" transformationView)]]
+
+transformationView :: Spec
+transformationView =
+  describe "View" $ do
+    {- Scenario: The transformation matrix for the default orientation
+         Given from ← point(0, 0, 0)
+           And to ← point(0, 0, -1)
+           And up ← vector(0, 1, 0)
+         When t ← view_transform(from, to, up)
+         Then t = identity_matrix -}
+    describe "The transformation matrix for the default orientation" $ do
+      let from = point 0 0 0
+          to   = point 0 0 (-1)
+          up   = vector 0 1 0
+          t    = SUT.viewTransform from to up
+      it "t = identity_matrix" $ do
+        t `shouldBe` identityV
 
 transformationApplication :: Spec
 transformationApplication =

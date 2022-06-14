@@ -6,10 +6,12 @@ module Transformations
   , rotationZ
   , shearing
   , transform
+  , viewTransform
   ) where
 
 import Data.Foldable
 import Matrices
+import Tuples
 
 translation :: Double -> Double -> Double -> VMatrix
 translation x y z = makeVMatrix [[1, 0, 0, x],
@@ -49,3 +51,6 @@ shearing xy xz yx yz zx zy = makeVMatrix [[1 , xy, xz, 0],
 
 transform :: [VMatrix] -> VMatrix
 transform ms = fold (reverse ms)
+
+viewTransform :: Tuple -> Tuple -> Tuple -> VMatrix
+viewTransform from to up = undefined
