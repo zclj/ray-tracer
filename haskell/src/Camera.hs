@@ -1,9 +1,11 @@
 module Camera
   ( Camera (..)
   , makeCamera
+  , rayForPixel
   ) where
 
 import Matrices
+import Rays
 
 data Camera = Camera { hsize       :: Int
                      , vsize       :: Int
@@ -21,3 +23,5 @@ makeCamera hs vs fov =
       pxSize     = (chw * 2) / (fromIntegral hs)
   in Camera hs vs fov identityV pxSize
 
+rayForPixel :: Camera -> Int -> Int -> Ray
+rayForPixel c h w = undefined
