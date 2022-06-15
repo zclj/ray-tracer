@@ -11,4 +11,4 @@ data Camera = Camera { hsize       :: Int
                      , transform   :: VMatrix }
 
 makeCamera :: Int -> Int -> Double -> Camera
-makeCamera hs vs fov = undefined
+makeCamera hs vs fov = Camera hs vs fov identityV
