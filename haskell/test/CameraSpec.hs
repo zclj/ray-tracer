@@ -8,6 +8,10 @@ import Test.Tasty.Hspec as HS
 import Matrices
 import Camera as SUT
 
+epsilonCompare :: Double -> Double -> Bool
+epsilonCompare x y = let epsilon = 0.0001
+                     in abs (x - y) < epsilon
+
 cameraTests :: TestTree
 cameraTests = testGroup "Camera Tests" [
   testGroup "Specs for"
@@ -38,3 +42,17 @@ cameraBasics =
         fieldOfView c `shouldBe` (pi/2)
       it "c.transform = identity_matrix" $ do
         transform c `shouldBe` identityV
+    {- Scenario: The pixel size for a horizontal canvas
+         Given c ← camera(200, 125, π/2)
+         Then c.pixel_size = 0.01 -}
+    describe "The pixel size for a horizontal canvas" $ do
+      let c = SUT.makeCamera 200 125 (pi/2)
+      it "c.pixel_size = 0.01" $ do
+        True `shouldBe` epsilonCompare (pixelSize c) 0.01
+    describe "The pixel size for a vertical canvas" $ do
+    {- Scenario: The pixel size for a vertical canvas
+         Given c ← camera(125, 200, π/2)
+         Then c.pixel_size = 0.01 -}
+      let c = SUT.makeCamera 125 200 (pi/2)
+      it "c.pixel_size = 0.01" $ do
+        True `shouldBe` epsilonCompare (pixelSize c) 0.01
