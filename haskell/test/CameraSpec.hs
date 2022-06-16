@@ -56,12 +56,12 @@ cameraRays =
            And r.direction = vector(√2/2, 0, -√2/2) -}
     describe "Constructing a ray when the camera is transformed" $ do
       let c  = SUT.makeCamera 201 101 (pi/2)
-          c' = c { SUT.transform = (rotationY (pi/4)) `mulV` (translation 0 (-2) 5) }
-          r  = SUT.rayForPixel c' 0 0
+          c' = c { SUT.transform = rotationY (pi/4) `mulV` translation 0 (-2) 5 }
+          r  = SUT.rayForPixel c' 100 50
       it "r.origin = point(0, 2, -5)" $ do
         origin r `shouldBe` point 0 2 (-5)
       it "r.direction = vector(√2/2, 0, -√2/2)" $ do
-        direction r `shouldBe` (vector (sqrt 2/2) 0 (-(sqrt 2/2)))
+        direction r `shouldBe` vector (sqrt 2/2) 0 (-(sqrt 2/2))
 
 cameraBasics :: Spec
 cameraBasics =
@@ -78,7 +78,7 @@ cameraBasics =
     describe "Constructing a camera" $ do
       let hs  = 160
           vs  = 120
-          fov = (pi/2)
+          fov = pi/2
           c   = SUT.makeCamera hs vs fov
       it "c.hsize = 160" $ do
         hsize c `shouldBe` 160
