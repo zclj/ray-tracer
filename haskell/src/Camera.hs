@@ -40,5 +40,13 @@ rayForPixel c px py = let xoffset   = (fromIntegral px + 0.5) * pixelSize c
                           direction = norm (pixel `sub` origin)
                       in makeRay origin direction
 
+renderPixel :: Int -> Int -> Camera -> World -> Color
+renderPixel x y c w = let ray = rayForPixel c x y
+                      in colorAt w ray
+
+renderRow :: Int -> Camera -> World -> [Color]
+renderRow y c w = map (\x -> renderPixel x y c w) [0..hsize c - 1]
+
 render :: Camera -> World -> Canvas
-render c w = undefined
+render c w = let pixels = map (\y -> renderRow y c w) [0..vsize c - 1]
+             in fromColors pixels
