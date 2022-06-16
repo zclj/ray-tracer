@@ -37,6 +37,7 @@ library
       PPMCanvas
       Projectile
       Rays
+      Scene
       ShadedSphere
       Silhouette
       Spheres
