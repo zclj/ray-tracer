@@ -8,6 +8,8 @@ import Test.Tasty.Hspec as HS
 import Matrices
 import Rays
 import Tuples
+import World
+import Canvas
 import Transformations
 import Camera as SUT
 
@@ -19,7 +21,32 @@ cameraTests :: TestTree
 cameraTests = testGroup "Camera Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Camera" cameraBasics)
-  , unsafePerformIO (testSpec "Camera" cameraRays)]]
+  , unsafePerformIO (testSpec "Camera" cameraRays)
+  , unsafePerformIO (testSpec "Camera" cameraRendering)]]
+
+cameraRendering :: Spec
+cameraRendering =
+  describe "Camera Rendering" $ do
+    {- Scenario: Rendering a world with a camera
+         Given w ← default_world()
+           And c ← camera(11, 11, π/2)
+           And from ← point(0, 0, -5)
+           And to ← point(0, 0, 0)
+           And up ← vector(0, 1, 0)
+           And c.transform ← view_transform(from, to, up)
+         When image ← render(c, w)
+         Then pixel_at(image, 5, 5) = color(0.38066, 0.47583, 0.2855) -}
+    describe "Rendering a world with a camera" $ do
+      let w = defaultWorld
+          c = makeCamera 11 11 (pi/2)
+          from = point 0 0 (-5)
+          to = point 0 0 0
+          up = vector 0 1 0
+          c' = c { SUT.transform = viewTransform from to up }
+          image = SUT.render c' w
+      it "pixel_at(image, 5, 5) = color(0.38066, 0.47583, 0.2855)" $ do
+        pixelAt image (Width 5) (Height 5) `shouldBe`
+          Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
 
 cameraRays :: Spec
 cameraRays =

@@ -2,10 +2,13 @@ module Camera
   ( Camera (..)
   , makeCamera
   , rayForPixel
+  , render
   ) where
 
 import Matrices
 import Tuples
+import World
+import Canvas
 import Rays
 
 data Camera = Camera { hsize       :: Int
@@ -36,3 +39,6 @@ rayForPixel c px py = let xoffset   = (fromIntegral px + 0.5) * pixelSize c
                           origin    = inverseV (Camera.transform c) `mulTV` point 0 0 0
                           direction = norm (pixel `sub` origin)
                       in makeRay origin direction
+
+render :: Camera -> World -> Canvas
+render c w = undefined
