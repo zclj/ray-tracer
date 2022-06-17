@@ -42,4 +42,6 @@ lighting material light point eyev normalv inShadow =
                      else let factor = reflectDotEye ** shininess material
                           in intensity light `mulCS` specular material `mulCS` factor
           in (d, spec)
-  in ambientContrib `addC` diffuseContrib `addC` specularContrib
+  in if inShadow
+     then ambientContrib
+     else ambientContrib `addC` diffuseContrib `addC` specularContrib
