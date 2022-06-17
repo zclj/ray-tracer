@@ -14,8 +14,8 @@ data Light = Light { position  :: Tuple
 pointLight :: Tuple -> Color -> Light
 pointLight = Light
 
-lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Color
-lighting material light point eyev normalv =
+lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
+lighting material light point eyev normalv inShadow =
       -- combine the surface color with the light's color/intensity
   let effectiveColor = color material `mulC` intensity light
       -- find the direction to the light source
