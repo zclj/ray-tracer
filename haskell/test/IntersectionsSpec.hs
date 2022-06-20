@@ -96,8 +96,8 @@ precompute =
           shape = (makeUnitSphere 1) { Spheres.transform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           comps = SUT.prepareComputations i r
-          ze    = (z (C.overPoint comps)) < (-(Tuples.epsilon)/2)
-          pc    = (z (C.point comps)) > (z (C.overPoint comps))
+          ze    = z (C.overPoint comps) < (-Tuples.epsilon/2)
+          pc    = z (C.point comps) > z (C.overPoint comps)
       it "comps.over_point.z < -EPSILON/2" $ do
         ze `shouldBe` True
       it "comps.point.z > comps.over_point.z" $ do
