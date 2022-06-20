@@ -6,13 +6,14 @@ data Tuple = Tuple { x :: Double
                    , w :: Double}
              deriving (Show)
 
+epsilon = 0.0001
+
 -- Implement Eq based on Epsilon comparison of floats
 -- this avoids two floats that are "equal" being evaluated as not equal
 -- due too how floats are represented
 instance Eq Tuple where
   (Tuple x1 y1 z1 w1) == (Tuple x2 y2 z2 w2)
-    = let epsilon = 0.0001
-          ltep    = (\x y -> abs (x - y) < epsilon)
+    = let ltep    = (\x y -> abs (x - y) < epsilon)
       in ltep x1 x2 && ltep y1 y2 && ltep z1 z2 && ltep w1 w2  
 
 point :: Double -> Double -> Double -> Tuple
@@ -60,7 +61,6 @@ cross (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
   = vector (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2) 
 
 {- Colors -}
-epsilon = 0.0001
 
 (~=) :: Double -> Double -> Bool
 (~=) x y = abs (x - y) < epsilon

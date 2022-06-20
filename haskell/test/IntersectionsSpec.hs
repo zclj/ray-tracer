@@ -8,6 +8,7 @@ import Test.Tasty.Hspec as HS
 import Spheres
 import Rays
 import Tuples
+import Transformations
 import qualified Computation as C
 import Intersections as SUT
 
@@ -82,6 +83,25 @@ precompute =
         C.inside comps `shouldBe` True
       it "computation normalv = vector(0, 0, -1)" $ do
         C.normalv comps `shouldBe` vector 0 0 (-1)
+    {- Scenario: The hit should offset the point
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And shape ← sphere() with:
+             | transform | translation(0, 0, 1) |
+           And i ← intersection(5, shape)
+         When comps ← prepare_computations(i, r)
+         Then comps.over_point.z < -EPSILON/2
+           And comps.point.z > comps.over_point.z -}
+    describe "The hit should offset the point" $ do
+      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          shape = (makeUnitSphere 1) { Spheres.transform = translation 0 0 1 }
+          i     = SUT.Intersection 5 shape
+          comps = SUT.prepareComputations i r
+          ze    = (z (C.overPoint comps)) < (-(Tuples.epsilon)/2)
+          pc    = (z (C.point comps)) > (z (C.overPoint comps))
+      it "comps.over_point.z < -EPSILON/2" $ do
+        ze `shouldBe` True
+      it "comps.point.z > comps.over_point.z" $ do
+        pc `shouldBe` True
 
 intersections :: Spec
 intersections =

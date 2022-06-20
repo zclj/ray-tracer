@@ -43,9 +43,10 @@ prepareComputations i r =
       (inside, normal) = if (normalv `dot` eyev) < 0
                          then (True, neg normalv)
                          else (False, normalv)
-  in C.Computation { C.t       = it
-                   , C.object  = obj
-                   , C.point   = po
-                   , C.eyev    = eyev
-                   , C.normalv = normal
-                   , C.inside  = inside}
+  in C.Computation { C.t         = it
+                   , C.object    = obj
+                   , C.point     = po
+                   , C.eyev      = eyev
+                   , C.normalv   = normal
+                   , C.inside    = inside
+                   , C.overPoint = po `add` (normal `Tuples.mul` epsilon)}

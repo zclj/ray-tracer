@@ -60,7 +60,7 @@ shadeHit world c = Lights.lighting
                    (C.point c)
                    (C.eyev c)
                    (C.normalv c)
-                   False
+                   (isShadowed world (C.overPoint c))
 
 colorAt :: World -> Ray -> Color
 colorAt w r = let is = intersectWorld w r
