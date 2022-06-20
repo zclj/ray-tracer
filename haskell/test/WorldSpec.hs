@@ -141,6 +141,32 @@ worldShading =
           p = point (-2) 2 (-2)
       it "is_shadowed(w, p) is false" $ do
         isShadowed w p `shouldBe` False
+    {- Scenario: shade_hit() is given an intersection in shadow
+         Given w ← world()
+           And w.light ← point_light(point(0, 0, -10), color(1, 1, 1))
+           And s1 ← sphere()
+           And s1 is added to w
+           And s2 ← sphere() with:
+             | transform | translation(0, 0, 10) |
+           And s2 is added to w
+           And r ← ray(point(0, 0, 5), vector(0, 0, 1))
+           And i ← intersection(4, s2)
+         When comps ← prepare_computations(i, r)
+           And c ← shade_hit(w, comps)
+         Then c = color(0.1, 0.1, 0.1) -}
+    describe "shade_hit() is given an intersection in shadow" $ do
+      let s1 = (makeUnitSphere 1) { Spheres.transform = translation 0 0 10 }
+          s2 = makeUnitSphere 2
+          w = World { light   = pointLight
+                                (point 0 0 (-10))
+                                (Color (Red 1) (Green 1) (Blue 1))
+                    , objects = [ s1, s2] }
+          r = makeRay (point 0 0 5) (vector 0 0 1)
+          i = Intersection 4 s2
+          comps = prepareComputations i r
+          c = SUT.shadeHit w comps
+      it "c = color(0.1, 0.1, 0.1)" $ do
+        c `shouldBe` Color (Red 0.1) (Green 0.1) (Blue 0.1)
 
 worldIntersections :: Spec
 worldIntersections =
