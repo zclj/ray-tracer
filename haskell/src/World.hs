@@ -71,4 +71,12 @@ colorAt w r = let is = intersectWorld w r
                               in shadeHit w c
 
 isShadowed :: World -> Tuple -> Bool
-isShadowed w p = False
+isShadowed w p = let v = (Lights.position (light w)) `sub` p
+                     distance      = mag v
+                     direction     = norm v
+                     r             = makeRay p direction
+                     intersections = intersectWorld w r
+                     h             = hit intersections
+                 in case h of
+                      Just i  -> (t i) < distance
+                      Nothing -> False
