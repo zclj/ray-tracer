@@ -6,6 +6,7 @@ module World
   , intersectWorld
   , shadeHit
   , colorAt
+  , isShadowed
   )where
 
 import Data.List as DL
@@ -69,3 +70,5 @@ colorAt w r = let is = intersectWorld w r
                    Just i  -> let c = prepareComputations i r
                               in shadeHit w c
 
+isShadowed :: World -> Tuple -> Bool
+isShadowed w p = False

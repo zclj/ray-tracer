@@ -105,6 +105,42 @@ worldShading =
           c      = SUT.colorAt w' r
       it "c = inner.material.color" $ do
         c `shouldBe` color (Spheres.material inner)
+    {- Scenario: There is no shadow when nothing is collinear with point and light
+         Given w ← default_world()
+           And p ← point(0, 10, 0)
+         Then is_shadowed(w, p) is false -}
+    describe "There is no shadow when nothing is collinear with point and light" $ do
+      let w = SUT.defaultWorld
+          p = point 0 10 0
+      it "is_shadowed(w, p) is false" $ do
+        isShadowed w p `shouldBe` False
+    {- Scenario: The shadow when an object is between the point and the light
+         Given w ← default_world()
+           And p ← point(10, -10, 10)
+         Then is_shadowed(w, p) is true -}
+    describe "The shadow when an object is between the point and the light" $ do
+      let w = SUT.defaultWorld
+          p = point 10 (-10) 10
+      it "is_shadowed(w, p) is true" $ do
+        isShadowed w p `shouldBe` True
+    {- Scenario: There is no shadow when an object is behind the light
+         Given w ← default_world()
+           And p ← point(-20, 20, -20)
+         Then is_shadowed(w, p) is false -}
+    describe "There is no shadow when an object is behind the light" $ do
+      let w = SUT.defaultWorld
+          p = point (-20) 20 (-20)
+      it "is_shadowed(w, p) is false" $ do
+        isShadowed w p `shouldBe` False
+    {- Scenario: There is no shadow when an object is behind the point
+         Given w ← default_world()
+           And p ← point(-2, 2, -2)
+         Then is_shadowed(w, p) is false -}
+    describe "There is no shadow when an object is behind the point" $ do
+      let w = SUT.defaultWorld
+          p = point (-2) 2 (-2)
+      it "is_shadowed(w, p) is false" $ do
+        isShadowed w p `shouldBe` False
 
 worldIntersections :: Spec
 worldIntersections =
