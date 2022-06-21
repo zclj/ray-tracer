@@ -8,6 +8,7 @@ module Spheres
 import Tuples
 import Matrices
 import Materials as M
+import Shapes
 
 data Sphere = Sphere { id        :: Int
                      , radius    :: Double
@@ -15,11 +16,15 @@ data Sphere = Sphere { id        :: Int
                      , material  :: M.Material}
               deriving (Show, Eq, Ord)
 
+instance Shape Sphere where
+  transform = Spheres.transform
+  material  = Spheres.material
+
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV M.material
 
 normalAt :: Sphere -> Tuple -> Tuple
-normalAt Sphere{transform = t} worldPoint
+normalAt Sphere{Spheres.transform = t} worldPoint
   = let objectPoint  = inverseV t `mulTV` worldPoint
         objectNormal = objectPoint `sub` point 0 0 0
         worldNormal  = transposeV (inverseV t) `mulTV` objectNormal
@@ -27,4 +32,4 @@ normalAt Sphere{transform = t} worldPoint
     in norm worldNormal'
 
 setTransform :: Sphere -> VMatrix -> Sphere
-setTransform s m = s {transform = m}
+setTransform s m = s {Spheres.transform = m}
