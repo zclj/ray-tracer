@@ -93,7 +93,7 @@ precompute =
            And comps.point.z > comps.over_point.z -}
     describe "The hit should offset the point" $ do
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          shape = (makeUnitSphere 1) { Spheres.transform = translation 0 0 1 }
+          shape = (makeUnitSphere 1) { sphereTransform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           comps = SUT.prepareComputations i r
           ze    = z (C.overPoint comps) < (-Tuples.epsilon/2)

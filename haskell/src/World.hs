@@ -29,7 +29,7 @@ defaultWorld :: World
 defaultWorld = let defaultSphere1 = Sphere
                                     { Spheres.id        = 1
                                     , radius            = 1.0
-                                    , Spheres.transform = identityV
+                                    , sphereTransform   = identityV
                                     , Spheres.material  = Material
                                       { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                                       , ambient   = 0.1
@@ -39,7 +39,7 @@ defaultWorld = let defaultSphere1 = Sphere
                    defaultSphere2 = Sphere
                                     { Spheres.id        = 2
                                     , radius            = 1.0
-                                    , Spheres.transform = scaling 0.5 0.5 0.5
+                                    , sphereTransform   = scaling 0.5 0.5 0.5
                                     , Spheres.material  = Materials.material}
                    defaultLight   = pointLight
                                     (point (-10) 10 (-10))

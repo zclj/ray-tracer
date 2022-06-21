@@ -155,7 +155,7 @@ worldShading =
            And c ← shade_hit(w, comps)
          Then c = color(0.1, 0.1, 0.1) -}
     describe "shade_hit() is given an intersection in shadow" $ do
-      let s1 = (makeUnitSphere 1) { Spheres.transform = translation 0 0 10 }
+      let s1 = (makeUnitSphere 1) { sphereTransform = translation 0 0 10 }
           s2 = makeUnitSphere 2
           w = World { light   = pointLight
                                 (point 0 0 (-10))
@@ -229,14 +229,14 @@ worldBasics =
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s1    = Sphere { Spheres.id        = 1
                          , radius            = 1.0
-                         , Spheres.transform = identityV
+                         , sphereTransform   = identityV
                          , Spheres.material  = Materials.material
                            { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                            , diffuse   = 0.7
                            , specular  = 0.2}}
           s2    = Sphere { Spheres.id        = 2
                          , radius            = 1.0
-                         , Spheres.transform = scaling 0.5 0.5 0.5
+                         , sphereTransform   = scaling 0.5 0.5 0.5
                          , Spheres.material  = Materials.material}
           w     = defaultWorld
       it "contains Sphere S1" $ do

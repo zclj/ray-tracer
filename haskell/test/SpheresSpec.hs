@@ -129,7 +129,7 @@ sphereTransformation =
     describe "A sphere's default transformation" $ do
       let s = SUT.makeUnitSphere 1
       it "is the identity matrix" $ do
-        SUT.transform s `shouldBe` identityV
+        SUT.sphereTransform s `shouldBe` identityV
     {- Scenario: Changing a sphere's transformation
          Given s ← sphere()
            And t ← translation(2, 3, 4)
@@ -138,9 +138,9 @@ sphereTransformation =
     describe "Changing a sphere's transformation" $ do
       let s  = SUT.makeUnitSphere 1
           t  = translation 2 3 4
-          s' = s { SUT.transform = t }
+          s' = s { SUT.sphereTransform = t }
       it "result in a new sphere with the new transformation" $ do
-        SUT.transform s' `shouldBe` t
+        SUT.sphereTransform s' `shouldBe` t
 
 sphereIntersections :: Spec
 sphereIntersections =
@@ -253,7 +253,7 @@ sphereIntersections =
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
           m          = scaling 2 2 2
-          s'         = s { SUT.transform = m }
+          s'         = s { SUT.sphereTransform = m }
           xs@(x:y:_) = s' `intersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -271,7 +271,7 @@ sphereIntersections =
       let r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s  = SUT.makeUnitSphere 1
           m  = translation 5 0 0
-          s' = s { SUT.transform = m }
+          s' = s { SUT.sphereTransform = m }
           xs = s' `intersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 0
