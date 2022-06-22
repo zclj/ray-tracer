@@ -30,7 +30,7 @@ sphereMaterials =
          Then m = material() -}
     describe "A sphere has a default material" $ do
       let s = SUT.makeUnitSphere 1
-          m = SUT.material s
+          m = SUT.sphereMaterial s
       it "is the same as the default material" $ do
         m `shouldBe` M.material
     {- Scenario: A sphere may be assigned a material
@@ -43,9 +43,9 @@ sphereMaterials =
       let s  = SUT.makeUnitSphere 1
           m  = M.material
           m' = m {ambient = 1}
-          s' = s {SUT.material = m'}
+          s' = s {SUT.sphereMaterial = m'}
       it "it has the new material" $ do
-        SUT.material s' `shouldBe` m'
+        SUT.sphereMaterial s' `shouldBe` m'
 
 sphereNormals :: Spec
 sphereNormals =

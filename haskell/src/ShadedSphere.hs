@@ -41,7 +41,7 @@ castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                              Just n -> let p      = Rays.position ray (t n)
                                            normal = Spheres.normalAt (object n) p
                                            eye    = neg (direction ray)
-                                       in lighting (Spheres.material (object n)) l p eye normal False
+                                       in lighting (sphereMaterial (object n)) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
 castRow :: Int -> Sphere -> Color -> Light -> [Color]
@@ -51,7 +51,7 @@ render :: Canvas
 render = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
              color  = Color (Red 1) (Green 0) (Blue 0)
              sphere = (makeUnitSphere 1)
-                      { Spheres.material =
+                      { sphereMaterial =
                           Mat.material { color = Color (Red 1) (Green 0.2) (Blue 1)}}
              lightPos = point (-10) 10 (-10)
              lightColor = Color (Red 1) (Green 1) (Blue 1)

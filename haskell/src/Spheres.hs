@@ -10,15 +10,15 @@ import Matrices
 import Materials as M
 import Shapes
 
-data Sphere = Sphere { id        :: Int
-                     , radius    :: Double
+data Sphere = Sphere { id              :: Int
+                     , radius          :: Double
                      , sphereTransform :: VMatrix
-                     , material  :: M.Material}
+                     , sphereMaterial  :: M.Material}
               deriving (Show, Eq, Ord)
 
 instance Shape Sphere where
-  transform = sphereTransform
-  material  = Spheres.material
+  shapeTransform = sphereTransform
+  shapeMaterial  = sphereMaterial
 
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV M.material

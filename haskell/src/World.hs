@@ -27,20 +27,20 @@ data World = World { objects :: [Sphere]
 
 defaultWorld :: World
 defaultWorld = let defaultSphere1 = Sphere
-                                    { Spheres.id        = 1
-                                    , radius            = 1.0
-                                    , sphereTransform   = identityV
-                                    , Spheres.material  = Material
+                                    { Spheres.id      = 1
+                                    , radius          = 1.0
+                                    , sphereTransform = identityV
+                                    , sphereMaterial  = Material
                                       { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                                       , ambient   = 0.1
                                       , diffuse   = 0.7
                                       , specular  = 0.2
                                       , shininess = 200 }}
                    defaultSphere2 = Sphere
-                                    { Spheres.id        = 2
-                                    , radius            = 1.0
-                                    , sphereTransform   = scaling 0.5 0.5 0.5
-                                    , Spheres.material  = Materials.material}
+                                    { Spheres.id      = 2
+                                    , radius          = 1.0
+                                    , sphereTransform = scaling 0.5 0.5 0.5
+                                    , sphereMaterial  = Materials.material}
                    defaultLight   = pointLight
                                     (point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
@@ -55,7 +55,7 @@ intersectWorld World{ objects } r
 
 shadeHit :: World -> C.Computation -> Color
 shadeHit world c = Lights.lighting
-                   (Spheres.material (C.object c))
+                   (sphereMaterial (C.object c))
                    (light world)
                    (C.point c)
                    (C.eyev c)

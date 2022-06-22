@@ -6,18 +6,18 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Matrices
-import Materials
+import Materials as M
 import Shapes as SUT
 
 data TestShape = TestShape { transform :: VMatrix
                            , material  :: Material}
 
 testShape :: TestShape
-testShape = undefined
+testShape = TestShape { ShapesSpec.transform = identityV, ShapesSpec.material = M.material }
 
 instance Shape TestShape where
-  transform = ShapesSpec.transform
-  material  = ShapesSpec.material
+  shapeTransform = ShapesSpec.transform
+  shapeMaterial  = ShapesSpec.material
 
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [
@@ -33,4 +33,4 @@ shapeBasics =
     describe "The default transformation" $ do
       let s = testShape
       it "s.transform = identity_matrix" $ do
-        SUT.transform s `shouldBe` identityV
+        SUT.shapeTransform s `shouldBe` identityV

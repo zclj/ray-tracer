@@ -98,13 +98,13 @@ worldShading =
       let w      = SUT.defaultWorld
           outer  = head (objects w)
           inner  = last (objects w)
-          outer' = outer { Spheres.material = (Spheres.material outer) { ambient = 1 }}
-          inner' = inner { Spheres.material = (Spheres.material inner) { ambient = 1 }}
+          outer' = outer { sphereMaterial = (sphereMaterial outer) { ambient = 1 }}
+          inner' = inner { sphereMaterial = (sphereMaterial inner) { ambient = 1 }}
           w'     = w { objects = [outer', inner'] }
           r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
           c      = SUT.colorAt w' r
       it "c = inner.material.color" $ do
-        c `shouldBe` color (Spheres.material inner)
+        c `shouldBe` color (sphereMaterial inner)
     {- Scenario: There is no shadow when nothing is collinear with point and light
          Given w ← default_world()
            And p ← point(0, 10, 0)
@@ -227,17 +227,17 @@ worldBasics =
            And w contains s2 -}
     describe "The default world" $ do
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s1    = Sphere { Spheres.id        = 1
-                         , radius            = 1.0
-                         , sphereTransform   = identityV
-                         , Spheres.material  = Materials.material
+          s1    = Sphere { Spheres.id      = 1
+                         , radius          = 1.0
+                         , sphereTransform = identityV
+                         , sphereMaterial  = Materials.material
                            { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                            , diffuse   = 0.7
                            , specular  = 0.2}}
-          s2    = Sphere { Spheres.id        = 2
-                         , radius            = 1.0
-                         , sphereTransform   = scaling 0.5 0.5 0.5
-                         , Spheres.material  = Materials.material}
+          s2    = Sphere { Spheres.id      = 2
+                         , radius          = 1.0
+                         , sphereTransform = scaling 0.5 0.5 0.5
+                         , sphereMaterial  = Materials.material}
           w     = defaultWorld
       it "contains Sphere S1" $ do
         head (objects w) `shouldBe` s1
