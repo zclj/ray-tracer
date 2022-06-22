@@ -19,6 +19,7 @@ data Sphere = Sphere { id              :: Int
 instance Shape Sphere where
   shapeTransform = sphereTransform
   shapeMaterial  = sphereMaterial
+  shapeNormalAt  = normalAt
 
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV M.material

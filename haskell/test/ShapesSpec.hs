@@ -18,6 +18,7 @@ testShape = TestShape { ShapesSpec.transform = identityV, ShapesSpec.material = 
 instance Shape TestShape where
   shapeTransform = ShapesSpec.transform
   shapeMaterial  = ShapesSpec.material
+  shapeNormalAt  = undefined
 
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [

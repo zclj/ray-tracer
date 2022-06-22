@@ -34,6 +34,7 @@ library
       Lights
       Materials
       Matrices
+      Planes
       PPMCanvas
       Projectile
       Rays
@@ -79,6 +80,7 @@ test-suite ray-tracer-test
       LightsSpec
       MaterialsSpec
       MatricesSpec
+      PlanesSpec
       RaysSpec
       ShapesSpec
       SpheresSpec
