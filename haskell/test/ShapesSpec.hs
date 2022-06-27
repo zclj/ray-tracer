@@ -19,6 +19,7 @@ instance Shape TestShape where
   shapeTransform = ShapesSpec.transform
   shapeMaterial  = ShapesSpec.material
   shapeNormalAt  = undefined
+  shapeIntersect = undefined
 
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [

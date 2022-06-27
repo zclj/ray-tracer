@@ -1,5 +1,6 @@
 module Planes
-  (makePlane
+  ( Plane(..)
+  , makePlane
   )where
 
 import Shapes
@@ -10,11 +11,13 @@ import Materials
 data Plane = Plane { id             :: Int
                    , planeTransform :: VMatrix
                    , planeMaterial  :: Material }
+             deriving(Show, Eq)
 
 instance Shape Plane where
   shapeTransform = planeTransform
   shapeMaterial  = planeMaterial
   shapeNormalAt  = normalAt
+  shapeIntersect = undefined
 
 makePlane :: Int -> Plane
 makePlane id = Plane id identityV material

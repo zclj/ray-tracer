@@ -28,8 +28,6 @@ library
       Camera
       Canvas
       Clock
-      Computation
-      Intersections
       Lib
       Lights
       Materials

@@ -9,8 +9,7 @@ import Spheres
 import Rays
 import Tuples
 import Transformations
-import qualified Computation as C
-import Intersections as SUT
+import Shapes as SUT
 
 intersectionsTests :: TestTree
 intersectionsTests = testGroup "Intersections Tests" [
@@ -38,15 +37,15 @@ precompute =
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r
       it "computation t = i.t" $ do
-        C.t comps `shouldBe` t i
+        cT comps `shouldBe` intersectionT i
       it "computation object = i.object" $ do
-        C.object comps `shouldBe` object i
+        cObject comps `shouldBe` intersectionObject i
       it "computation point = point(0, 0, -1)" $ do
-        C.point comps `shouldBe` point 0 0 (-1)
+        cPoint comps `shouldBe` point 0 0 (-1)
       it "computation eyev = vector(0, 0, -1)" $ do
-        C.eyev comps `shouldBe` vector 0 0 (-1)
+        cEyev comps `shouldBe` vector 0 0 (-1)
       it "computation normalv = vector(0, 0, -1)" $ do
-        C.normalv comps `shouldBe` vector 0 0 (-1)
+        cNormalv comps `shouldBe` vector 0 0 (-1)
     {- Scenario: The hit, when an intersection occurs on the outside
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And shape ← sphere()
@@ -59,7 +58,7 @@ precompute =
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r
       it "comps.inside = false" $ do
-        C.inside comps `shouldBe` False
+        cInside comps `shouldBe` False
     {- Scenario: The hit, when an intersection occurs on the inside
          Given r ← ray(point(0, 0, 0), vector(0, 0, 1))
            And shape ← sphere()
@@ -76,13 +75,13 @@ precompute =
           i     = SUT.Intersection 1 shape
           comps = SUT.prepareComputations i r
       it "computation point = point(0, 0, 1)" $ do
-        C.point comps `shouldBe` point 0 0 1
+        cPoint comps `shouldBe` point 0 0 1
       it "computation eyev = vector(0, 0, -1)" $ do
-        C.eyev comps `shouldBe` vector 0 0 (-1)
+        cEyev comps `shouldBe` vector 0 0 (-1)
       it "comps.inside = true" $ do
-        C.inside comps `shouldBe` True
+        cInside comps `shouldBe` True
       it "computation normalv = vector(0, 0, -1)" $ do
-        C.normalv comps `shouldBe` vector 0 0 (-1)
+        cNormalv comps `shouldBe` vector 0 0 (-1)
     {- Scenario: The hit should offset the point
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And shape ← sphere() with:
@@ -96,8 +95,8 @@ precompute =
           shape = (makeUnitSphere 1) { sphereTransform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           comps = SUT.prepareComputations i r
-          ze    = z (C.overPoint comps) < (-Tuples.epsilon/2)
-          pc    = z (C.point comps) > z (C.overPoint comps)
+          ze    = z (cOverPoint comps) < (-Tuples.epsilon/2)
+          pc    = z (cPoint comps) > z (cOverPoint comps)
       it "comps.over_point.z < -EPSILON/2" $ do
         ze `shouldBe` True
       it "comps.point.z > comps.over_point.z" $ do
@@ -115,9 +114,9 @@ intersections =
       let s = makeUnitSphere 1
           i = SUT.Intersection 3.5 s
       it "t of intersection is 3.5" $ do
-        t i `shouldBe` 3.5
+        intersectionT i `shouldBe` 3.5
       it "object is the sphere" $ do
-        object i `shouldBe` s
+        intersectionObject i `shouldBe` s
     {- Scenario: Aggregating intersections
          Given s ← sphere()
            And i1 ← intersection(1, s)
@@ -136,9 +135,9 @@ intersections =
       it "the number of intersections is 2" $ do
         length xs `shouldBe` 2
       it "the first intersections t is 1" $ do
-        t (head xs) `shouldBe` 1
+        intersectionT (head xs) `shouldBe` 1
       it "the second intersections t is 2" $ do
-        t (last xs) `shouldBe` 2
+        intersectionT (last xs) `shouldBe` 2
 
 hits :: Spec
 hits =

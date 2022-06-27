@@ -7,12 +7,29 @@ import Test.Tasty.Hspec as HS
 
 import Shapes
 import Tuples
+import Rays
 import Planes as SUT
 
 planesTests :: TestTree
 planesTests = testGroup "Planes Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Planes" planeNormal)]]
+  [ unsafePerformIO (testSpec "Planes" planeNormal)
+  , unsafePerformIO (testSpec "Planes" planeIntersections)]]
+
+planeIntersections :: Spec
+planeIntersections =
+  describe "Intersections" $ do
+    {- Scenario: Intersect with a ray parallel to the plane
+         Given p ← plane()
+           And r ← ray(point(0, 10, 0), vector(0, 0, 1))
+         When xs ← local_intersect(p, r)
+         Then xs is empty -}
+    describe "Intersect with a ray parallel to the plane" $ do
+      let p  = SUT.makePlane 1
+          r  = makeRay (point 0 10 0) (vector 0 0 1)
+          xs = shapeIntersect p r
+      it "intersections are empty" $ do
+        xs `shouldBe` []
 
 planeNormal :: Spec
 planeNormal =

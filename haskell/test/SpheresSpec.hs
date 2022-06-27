@@ -7,11 +7,11 @@ import Test.Tasty.Hspec as HS
 
 import Tuples
 import Rays
-import Intersections
 import Matrices
 import Transformations
 import Materials as M
 import Spheres as SUT
+import Shapes
 
 spheresTests :: TestTree
 spheresTests = testGroup "Spheres Tests" [
@@ -155,13 +155,13 @@ sphereIntersections =
     describe "A ray intersects a sphere at two points" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `intersect` r
+          xs@(x:y:_) = s `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is 4.0" $ do
-        t x `shouldBe` 4.0
+        intersectionT x `shouldBe` 4.0
       it "intersection two is 6.0" $ do
-        t y `shouldBe` 6.0
+        intersectionT y `shouldBe` 6.0
     {- Scenario: A ray intersects a sphere at a tangent
          Given r ← ray(point(0, 1, -5), vector(0, 0, 1))
            And s ← sphere()
@@ -172,13 +172,13 @@ sphereIntersections =
     describe "A ray intersects a sphere at a tangent" $ do
       let r          = makeRay (point 0 1 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `intersect` r
+          xs@(x:y:_) = s `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is 5.0" $ do
-        t x `shouldBe` 5.0
+        intersectionT x `shouldBe` 5.0
       it "intersection two is 5.0" $ do
-        t y `shouldBe` 5.0
+        intersectionT y `shouldBe` 5.0
     {- Scenario: A ray misses a sphere
          Given r ← ray(point(0, 2, -5), vector(0, 0, 1))
            And s ← sphere()
@@ -187,7 +187,7 @@ sphereIntersections =
     describe "A ray misses a sphere" $ do
       let r  = makeRay (point 0 2 (-5)) (vector 0 0 1)
           s  = SUT.makeUnitSphere 1
-          xs = s `intersect` r
+          xs = s `shapeIntersect` r
       it "there are no intersections" $ do
         length xs `shouldBe` 0
     {- Scenario: A ray originates inside a sphere
@@ -200,13 +200,13 @@ sphereIntersections =
     describe "A ray originates inside a sphere" $ do
       let r = makeRay (point 0 0 0) (vector 0 0 1)
           s = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `intersect` r
+          xs@(x:y:_) = s `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is -1.0" $ do
-        t x `shouldBe` (-1.0)
+        intersectionT x `shouldBe` (-1.0)
       it "intersection two is 1.0" $ do
-        t y `shouldBe` 1.0
+        intersectionT y `shouldBe` 1.0
     {- Scenario: A sphere is behind a ray
          Given r ← ray(point(0, 0, 5), vector(0, 0, 1))
            And s ← sphere()
@@ -217,13 +217,13 @@ sphereIntersections =
     describe "A sphere is behind a ray" $ do
       let r = makeRay (point 0 0 5) (vector 0 0 1)
           s = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `intersect` r
+          xs@(x:y:_) = s `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is -6.0" $ do
-        t x `shouldBe` (-6.0)
+        intersectionT x `shouldBe` (-6.0)
       it "intersection two is -4.0" $ do
-        t y `shouldBe` (-4.0)
+        intersectionT y `shouldBe` (-4.0)
     {- Scenario: Intersect sets the object on the intersection
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And s ← sphere()
@@ -234,13 +234,13 @@ sphereIntersections =
     describe "Intersect sets the object on the intersection" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `intersect` r
+          xs@(x:y:_) = s `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "the object of the first intersection is s" $ do
-        object x `shouldBe` s
+        intersectionObject x `shouldBe` s
       it "the object of the second intersection is s" $ do
-        object y `shouldBe` s
+        intersectionObject y `shouldBe` s
     {- Scenario: Intersecting a scaled sphere with a ray
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And s ← sphere()
@@ -254,13 +254,13 @@ sphereIntersections =
           s          = SUT.makeUnitSphere 1
           m          = scaling 2 2 2
           s'         = s { SUT.sphereTransform = m }
-          xs@(x:y:_) = s' `intersect` r
+          xs@(x:y:_) = s' `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "the object of the first intersection is s" $ do
-        t x `shouldBe` 3
+        intersectionT x `shouldBe` 3
       it "the object of the second intersection is s" $ do
-        t y `shouldBe` 7
+        intersectionT y `shouldBe` 7
     {- Scenario: Intersecting a translated sphere with a ray
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And s ← sphere()
@@ -272,6 +272,6 @@ sphereIntersections =
           s  = SUT.makeUnitSphere 1
           m  = translation 5 0 0
           s' = s { SUT.sphereTransform = m }
-          xs = s' `intersect` r
+          xs = s' `shapeIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 0

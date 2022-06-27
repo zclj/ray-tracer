@@ -10,10 +10,9 @@ import Spheres
 import Materials
 import Matrices
 import Transformations
-import Intersections
+import Shapes
 import Tuples
 import Rays
-import qualified Computation
 import World as SUT
 
 worldTests :: TestTree
@@ -37,8 +36,8 @@ worldShading =
     describe "Shading an intersection" $ do
       let w     = SUT.defaultWorld
           r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s     = head (SUT.objects w)
-          i     = Intersection 4 s
+          s     = head (SUT.sphereObjects w)
+          i     = Shapes.Intersection 4 s
           comps = prepareComputations i r
           c     = SUT.shadeHit w comps
       it "shaded color c = color(0.38066, 0.47583, 0.2855)" $ do
@@ -57,7 +56,7 @@ worldShading =
           w'    = w { light = pointLight (point 0 0.25 0)
                               (Color (Red 1) (Green 1) (Blue 1)) }
           r     = makeRay (point 0 0 0) (vector 0 0 1)
-          s     = last (objects w')
+          s     = last (sphereObjects w')
           i     = Intersection 0.5 s
           comps = prepareComputations i r
           c     = SUT.shadeHit w' comps
@@ -96,11 +95,11 @@ worldShading =
          Then c = inner.material.color -}
     describe "The color with an intersection behind the ray" $ do
       let w      = SUT.defaultWorld
-          outer  = head (objects w)
-          inner  = last (objects w)
+          outer  = head (sphereObjects w)
+          inner  = last (sphereObjects w)
           outer' = outer { sphereMaterial = (sphereMaterial outer) { ambient = 1 }}
           inner' = inner { sphereMaterial = (sphereMaterial inner) { ambient = 1 }}
-          w'     = w { objects = [outer', inner'] }
+          w'     = w { sphereObjects = [outer', inner'] }
           r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
           c      = SUT.colorAt w' r
       it "c = inner.material.color" $ do
@@ -160,7 +159,8 @@ worldShading =
           w = World { light   = pointLight
                                 (point 0 0 (-10))
                                 (Color (Red 1) (Green 1) (Blue 1))
-                    , objects = [ s1, s2] }
+                    , sphereObjects = [ s1, s2]
+                    , planeObjects  = []}
           r = makeRay (point 0 0 5) (vector 0 0 1)
           i = Intersection 4 s2
           comps = prepareComputations i r
@@ -188,13 +188,13 @@ worldIntersections =
       it "contains 4 intersections" $ do
         length xs `shouldBe` 4
       it "xs[0].t = 4" $ do
-        t x1 `shouldBe` 4.0
+        intersectionT x1 `shouldBe` 4.0
       it "xs[1].t = 4.5" $ do
-        t x2 `shouldBe` 4.5
+        intersectionT x2 `shouldBe` 4.5
       it "xs[2].t = 5.5" $ do
-        t x3 `shouldBe` 5.5
+        intersectionT x3 `shouldBe` 5.5
       it "xs[3].t = 6" $ do
-        t x4 `shouldBe` 6
+        intersectionT x4 `shouldBe` 6
 
 worldBasics :: Spec
 worldBasics =
@@ -205,9 +205,10 @@ worldBasics =
            And w has no light source -}
     describe "Creating a world" $ do
       let l   = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
-          w   = SUT.World { objects = []
+          w   = SUT.World { sphereObjects = []
+                          , planeObjects  = []
                           , light   = l}
-          obj = objects w
+          obj = sphereObjects w
           wl  = light w
       it "world contains no objects" $ do
         obj `shouldBe` []
@@ -240,8 +241,8 @@ worldBasics =
                          , sphereMaterial  = Materials.material}
           w     = defaultWorld
       it "contains Sphere S1" $ do
-        head (objects w) `shouldBe` s1
+        head (sphereObjects w) `shouldBe` s1
       it "contains Sphere S2" $ do
-        last (objects w) `shouldBe` s2
+        last (sphereObjects w) `shouldBe` s2
       it "contains the default light" $ do
         SUT.light w `shouldBe` light

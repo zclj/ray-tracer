@@ -4,7 +4,7 @@ import Tuples
 import Canvas
 import Spheres
 import Rays
-import Intersections
+import Shapes
 import Materials as Mat
 import Lights
 {- Cast rays on a sphere with shading -}
@@ -27,21 +27,21 @@ toWorldX x = (-half) + (pixelSize * fromIntegral x)
 toWorldY :: Int -> Double
 toWorldY y = half - (pixelSize * fromIntegral y)
 
-processPixel :: Int -> Int -> Sphere -> (Maybe Intersection, Ray)
+processPixel :: Int -> Int -> Sphere -> (Maybe (Intersection Sphere), Ray)
 processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
                              position = point worldX worldY wallZ
                              ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
-                             xs       = intersect shape ray
+                             xs       = shapeIntersect shape ray
                          in (hit xs, ray)
 
 castOnPixel :: Int -> Int -> Sphere -> Color -> Light -> Color
 castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                         in case hit of
-                             Just n -> let p      = Rays.position ray (t n)
-                                           normal = Spheres.normalAt (object n) p
+                             Just n -> let p      = Rays.position ray (intersectionT n)
+                                           normal = Spheres.normalAt (intersectionObject n) p
                                            eye    = neg (direction ray)
-                                       in lighting (sphereMaterial (object n)) l p eye normal False
+                                       in lighting (sphereMaterial (intersectionObject n)) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
 castRow :: Int -> Sphere -> Color -> Light -> [Color]

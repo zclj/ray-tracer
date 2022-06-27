@@ -4,7 +4,7 @@ import Tuples
 import Canvas
 import Spheres
 import Rays
-import Intersections
+import Shapes
 {- Cast rays on a sphere to make out its silhouette -}
 
 rayOrigin = point 0 0 (-5)
@@ -25,12 +25,12 @@ toWorldX x = (-half) + (pixelSize * fromIntegral x)
 toWorldY :: Int -> Double
 toWorldY y = half - (pixelSize * fromIntegral y)
 
-processPixel :: Int -> Int -> Sphere -> Maybe Intersection
+processPixel :: Int -> Int -> Sphere -> Maybe (Intersection Sphere)
 processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
                              position = point worldX worldY wallZ
                              ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
-                             xs       = intersect shape ray
+                             xs       = shapeIntersect shape ray
                          in hit xs
 
 castOnPixel :: Int -> Int -> Sphere -> Color -> Color

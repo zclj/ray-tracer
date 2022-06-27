@@ -17,13 +17,14 @@ import Matrices
 import Transformations
 import Tuples
 import Rays
-import Intersections
 import Lights
-import qualified Computation as C
+import Shapes
+import Planes
 
-data World = World { objects :: [Sphere]
-                   , light   :: Light}
-             deriving(Show)
+data World = World { sphereObjects :: [Sphere]
+                   , planeObjects  :: [Plane]
+                   , light         :: Light}
+               deriving(Show)
 
 defaultWorld :: World
 defaultWorld = let defaultSphere1 = Sphere
@@ -44,23 +45,23 @@ defaultWorld = let defaultSphere1 = Sphere
                    defaultLight   = pointLight
                                     (point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
-               in World [defaultSphere1, defaultSphere2] defaultLight
+               in World [defaultSphere1, defaultSphere2] [] defaultLight
 
 {-|
   Iterate over the objects in the world, intersecting each with the given `Ray`
 -}
-intersectWorld :: World -> Ray -> [Intersection]
-intersectWorld World{ objects } r
-  = DL.sort $ concatMap (`Intersections.intersect` r) objects
+intersectWorld :: World -> Ray -> [Intersection Sphere]
+intersectWorld World{ sphereObjects } r
+  = DL.sort $ concatMap (`shapeIntersect` r) sphereObjects
 
-shadeHit :: World -> C.Computation -> Color
+shadeHit :: World -> Computation Sphere -> Color
 shadeHit world c = Lights.lighting
-                   (sphereMaterial (C.object c))
+                   (sphereMaterial (cObject c))
                    (light world)
-                   (C.point c)
-                   (C.eyev c)
-                   (C.normalv c)
-                   (isShadowed world (C.overPoint c))
+                   (cPoint c)
+                   (cEyev c)
+                   (cNormalv c)
+                   (isShadowed world (cOverPoint c))
 
 colorAt :: World -> Ray -> Color
 colorAt w r = let is = intersectWorld w r
@@ -78,5 +79,5 @@ isShadowed w p = let v             = Lights.position (light w) `sub` p
                      intersections = intersectWorld w r
                      h             = hit intersections
                  in case h of
-                      Just i  -> t i < distance
+                      Just i  -> intersectionT i < distance
                       Nothing -> False
