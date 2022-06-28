@@ -41,6 +41,40 @@ planeIntersections =
           xs = shapeIntersect p r
       it "intersections are empty" $ do
         xs `shouldBe` []
+    {- Scenario: A ray intersecting a plane from above
+         Given p ← plane()
+           And r ← ray(point(0, 1, 0), vector(0, -1, 0))
+         When xs ← local_intersect(p, r)
+         Then xs.count = 1
+           And xs[0].t = 1
+           And xs[0].object = p -}
+    describe "A ray intersecting a plane from above" $ do
+      let p  = SUT.makePlane 1
+          r  = makeRay (point 0 1 0) (vector 0 (-1) 0)
+          xs = shapeIntersect p r
+      it "one intersection" $ do
+        length xs `shouldBe` 1
+      it "xs[0].t = 1" $ do
+        intersectionT (head xs) `shouldBe` 1
+      it "xs[0].object" $ do
+        intersectionObject (head xs) `shouldBe` p
+    {- Scenario: A ray intersecting a plane from below
+         Given p ← plane()
+           And r ← ray(point(0, -1, 0), vector(0, 1, 0))
+         When xs ← local_intersect(p, r)
+         Then xs.count = 1
+           And xs[0].t = 1
+           And xs[0].object = p -}
+    describe "A ray intersecting a plane from below" $ do
+      let p  = SUT.makePlane 1
+          r  = makeRay (point 0 (-1) 0) (vector 0 1 0)
+          xs = shapeIntersect p r
+      it "one intersection" $ do
+        length xs `shouldBe` 1
+      it "xs[0].t = 1" $ do
+        intersectionT (head xs) `shouldBe` 1
+      it "xs[0].object" $ do
+        intersectionObject (head xs) `shouldBe` p
 
 planeNormal :: Spec
 planeNormal =
