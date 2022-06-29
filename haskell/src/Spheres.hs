@@ -17,7 +17,7 @@ data Sphere = Sphere { id              :: Int
                      , sphereMaterial  :: M.Material}
               deriving (Show, Eq, Ord)
 
-instance Shape Sphere where
+instance IsShape Sphere where
   shapeTransform = sphereTransform
   shapeMaterial  = sphereMaterial
   shapeNormalAt  = normalAt
@@ -37,7 +37,7 @@ normalAt Sphere{sphereTransform = t} worldPoint
 setTransform :: Sphere -> VMatrix -> Sphere
 setTransform s m = s {sphereTransform = m}
 
-intersect :: (Shape a) => a -> Ray -> [Intersection a]
+intersect :: (IsShape a) => a -> Ray -> [Intersection a]
 intersect s r = let r'           = R.transform r (inverseV (shapeTransform s))
                     sphereToRay  = origin r' `sub` Tuples.point 0 0 0
                     a            = direction r' `dot` direction r'

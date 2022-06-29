@@ -6,7 +6,7 @@ import Tuples
 import Rays
 import Data.List (sort, find)
 
-class Shape a where
+class IsShape a where
   shapeTransform :: a -> VMatrix
   shapeMaterial  :: a -> Material
   shapeNormalAt  :: a -> Tuple -> Tuple
@@ -21,7 +21,7 @@ data Computation a = Computation { cT         :: Double
                                  , cOverPoint :: Tuple}
                    deriving(Show)
 
-prepareComputations :: (Shape a) => Intersection a -> Ray -> Computation a
+prepareComputations :: (IsShape a) => Intersection a -> Ray -> Computation a
 prepareComputations i r =
   let it               = intersectionT i
       po               = position r it
@@ -47,5 +47,5 @@ data Intersection a = Intersection
 
 -- |The `hit` function returns the first non-negative intersection.
 -- Intersections with a negative value are 'behind', positive 'infront'
-hit :: (Shape a, Ord a) => [Intersection a] -> Maybe (Intersection a)
+hit :: (IsShape a, Ord a) => [Intersection a] -> Maybe (Intersection a)
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs

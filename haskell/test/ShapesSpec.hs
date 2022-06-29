@@ -15,7 +15,7 @@ data TestShape = TestShape { transform :: VMatrix
 testShape :: TestShape
 testShape = TestShape { ShapesSpec.transform = identityV, ShapesSpec.material = M.material }
 
-instance Shape TestShape where
+instance IsShape TestShape where
   shapeTransform = ShapesSpec.transform
   shapeMaterial  = ShapesSpec.material
   shapeNormalAt  = undefined

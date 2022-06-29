@@ -14,7 +14,7 @@ data Plane = Plane { id             :: Int
                    , planeMaterial  :: Material }
              deriving(Show, Eq)
 
-instance Shape Plane where
+instance IsShape Plane where
   shapeTransform = planeTransform
   shapeMaterial  = planeMaterial
   shapeNormalAt  = normalAt
