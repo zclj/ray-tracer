@@ -37,8 +37,8 @@ normalAt Sphere{sphereTransform = t} worldPoint
 setTransform :: Sphere -> VMatrix -> Sphere
 setTransform s m = s {sphereTransform = m}
 
-intersect :: Sphere -> Ray -> [Intersection Sphere]
-intersect s r = let r'           = R.transform r (inverseV (sphereTransform s))
+intersect :: (Shape a) => a -> Ray -> [Intersection a]
+intersect s r = let r'           = R.transform r (inverseV (shapeTransform s))
                     sphereToRay  = origin r' `sub` Tuples.point 0 0 0
                     a            = direction r' `dot` direction r'
                     b            = 2 * (direction r' `dot` sphereToRay)

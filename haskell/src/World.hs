@@ -51,7 +51,7 @@ defaultWorld = let defaultSphere1 = Sphere
   Iterate over the objects in the world, intersecting each with the given `Ray`
 -}
 intersectWorld :: World -> Ray -> [Intersection Sphere]
-intersectWorld World{ sphereObjects } r
+intersectWorld World{ sphereObjects, planeObjects} r
   = DL.sort $ concatMap (`shapeIntersect` r) sphereObjects
 
 shadeHit :: World -> Computation Sphere -> Color

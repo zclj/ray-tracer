@@ -6,6 +6,7 @@ module Lib
     , runDemoSilhouette
     , runDemoShadedSphere
     , runDemoScene
+    , runDemoScenePlanes
     ) where
 
 import Canvas
@@ -16,6 +17,7 @@ import Clock
 import Silhouette
 import ShadedSphere
 import Scene
+import ScenePlanesAndSpheres
 
 runDemo fname = writeCanvas fname projectileCanvas
 
@@ -26,6 +28,8 @@ runDemoSilhouette fname = writeCanvas fname silhouetteCanvas
 runDemoShadedSphere fname = writeCanvas fname shadedSphereCanvas
 
 runDemoScene fname = writeCanvas fname sceneCanvas
+
+runDemoScenePlanes fname = writeCanvas fname scenePlanesCanvas
 
 projectileCanvas :: String
 projectileCanvas
@@ -61,6 +65,9 @@ shadedSphereCanvas = PPM.canvasToPPMString render
 
 sceneCanvas :: String
 sceneCanvas = PPM.canvasToPPMString renderScene
+
+scenePlanesCanvas :: String
+scenePlanesCanvas = PPM.canvasToPPMString renderScenePlanes
 
 writeCanvas :: String -> String -> IO ()
 writeCanvas = writeFile

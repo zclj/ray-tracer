@@ -37,6 +37,7 @@ library
       Projectile
       Rays
       Scene
+      ScenePlanesAndSpheres
       ShadedSphere
       Shapes
       Silhouette
