@@ -15,8 +15,8 @@ import Planes as P
 floor = Plane { P.id = 1
               , planeTransform = scaling 10 0.01 10
               , planeMaterial  = M.material
-                                 { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
-                                 , specular = 0 }}
+                                 { color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
+                                 , specular = 0.5 }}
 
 leftWall = Sphere { S.id = 2
                   , radius = 1.0
@@ -71,6 +71,7 @@ camera = (makeCamera 1000 500 (pi/3)) { C.transform = viewTransform
 renderScenePlanes = render
                     camera
                     (world { sphereObjects =
-                             [leftWall, rightWall, middle, right, left]
+                             --[leftWall, rightWall, middle, right, left]
+                             [middle, right, left]
                            , planeObjects = [ScenePlanesAndSpheres.floor]})
 
