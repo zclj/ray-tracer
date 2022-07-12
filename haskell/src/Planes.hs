@@ -12,7 +12,7 @@ import Rays
 data Plane = Plane { id             :: Int
                    , planeTransform :: VMatrix
                    , planeMaterial  :: Material }
-             deriving(Show, Eq)
+             deriving(Show, Eq, Ord)
 
 instance IsShape Plane where
   shapeTransform = planeTransform
