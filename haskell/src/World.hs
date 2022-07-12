@@ -3,7 +3,7 @@
 module World
   ( World(..)
   , defaultWorld
-  , intersectWorld
+  , intersectWorldSpheres
   , shadeHit
   , colorAt
   , isShadowed
@@ -50,13 +50,17 @@ defaultWorld = let defaultSphere1 = Sphere
 {-|
   Iterate over the objects in the world, intersecting each with the given `Ray`
 -}
-intersectWorld :: World -> Ray -> [Intersection Sphere]
-intersectWorld World{ sphereObjects, planeObjects} r
+intersectWorldSpheres :: World -> Ray -> [Intersection Sphere]
+intersectWorldSpheres World{sphereObjects} r
   = DL.sort $ concatMap (`shapeIntersect` r) sphereObjects
 
-shadeHit :: World -> Computation Sphere -> Color
+intersectWorldPlanes :: World -> Ray -> [Intersection Plane]
+intersectWorldPlanes World{planeObjects} r
+  = DL.sort $ concatMap (`shapeIntersect` r) planeObjects
+
+shadeHit :: (IsShape a) => World -> Computation a -> Color
 shadeHit world c = Lights.lighting
-                   (sphereMaterial (cObject c))
+                   (shapeMaterial (cObject c))
                    (light world)
                    (cPoint c)
                    (cEyev c)
@@ -64,10 +68,15 @@ shadeHit world c = Lights.lighting
                    (isShadowed world (cOverPoint c))
 
 colorAt :: World -> Ray -> Color
-colorAt w r = let is = intersectWorld w r
-                  h  = hit is
-              in case h of
-                   Nothing -> Color (Red 0) (Green 0) (Blue 0)
+colorAt w r = let is = intersectWorldSpheres w r
+                  ip = intersectWorldPlanes w r
+                  hs = hit is
+                  hp = hit ip
+              in case hs of
+                   Nothing -> case hp of
+                                Nothing -> Color (Red 0) (Green 0) (Blue 0)
+                                Just i -> let c = prepareComputations i r
+                                          in shadeHit w c
                    Just i  -> let c = prepareComputations i r
                               in shadeHit w c
 
@@ -76,8 +85,12 @@ isShadowed w p = let v             = Lights.position (light w) `sub` p
                      distance      = mag v
                      direction     = norm v
                      r             = makeRay p direction
-                     intersections = intersectWorld w r
+                     intersections = intersectWorldSpheres w r
+                     intersectionsP = intersectWorldPlanes w r
                      h             = hit intersections
+                     hp = hit intersectionsP
                  in case h of
                       Just i  -> intersectionT i < distance
-                      Nothing -> False
+                      Nothing -> case hp of
+                                   Just i  -> intersectionT i < distance
+                                   Nothing -> False

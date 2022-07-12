@@ -183,7 +183,7 @@ worldIntersections =
     describe "Intersect a world with a ray" $ do
       let w  = SUT.defaultWorld
           r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          xs = SUT.intersectWorld w r
+          xs = SUT.intersectWorldSpheres w r
           [x1, x2, x3, x4] = xs
       it "contains 4 intersections" $ do
         length xs `shouldBe` 4
