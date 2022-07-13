@@ -12,30 +12,26 @@ import Camera as C
 import Matrices
 import Planes as P
 
-floor = Plane { P.id = 1
-              , planeTransform = scaling 10 0.01 10
-              , planeMaterial  = M.material
-                                 { color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
-                                 , specular = 0.5 }}
+-- Planes
+floorPlane = Plane { P.id = 1
+                   , planeTransform = scaling 10 0.01 10
+                   , planeMaterial  = M.material
+                                      { color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
+                                      , specular = 0.5 }}
 
-leftWall = Sphere { S.id = 2
-                  , radius = 1.0
-                  , sphereTransform = translation 0 0 5
-                                  `mulV` rotationY (-pi/4) `mulV` rotationX (pi/2)
-                                  `mulV` scaling 10 0.01 10
-                  , sphereMaterial = M.material
-                                     { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
-                                     , specular = 0 }}
+backdrop = Plane { P.id = 2
+                 , planeTransform = translation 0 0 (1.5) `mulV` rotationX (pi/2)
+                 , planeMaterial  = M.material
+                                    { color    = Color (Red 0.7) (Green 0.2) (Blue 0.2)
+                                    , specular = 0.5 }}
 
-rightWall = Sphere { S.id = 3
-                   , radius = 1.0
-                   , sphereTransform = translation 0 0 5
-                                   `mulV` rotationY (pi/4) `mulV` rotationX (pi/2)
-                                   `mulV` scaling 10 0.01 10
-                   , sphereMaterial = M.material
-                                      { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
-                                      , specular = 0 }}
+wall = Plane { P.id = 3
+             , planeTransform = translation (1.5) 0 0 `mulV` rotationZ (pi/2)
+             , planeMaterial  = M.material
+                                { color    = Color (Red 0) (Green 1) (Blue 0)
+                                , specular = 0.5 }}
 
+-- Spheres
 middle = Sphere { S.id = 4
                 , radius = 1.0
                 , sphereTransform = translation (-0.5) 1 0.5
@@ -70,8 +66,6 @@ camera = (makeCamera 1000 500 (pi/3)) { C.transform = viewTransform
 
 renderScenePlanes = render
                     camera
-                    (world { sphereObjects =
-                             --[leftWall, rightWall, middle, right, left]
-                             [middle, right, left]
-                           , planeObjects = [ScenePlanesAndSpheres.floor]})
+                    (world { sphereObjects = [middle, right, left]
+                           , planeObjects  = [floorPlane, backdrop, wall]})
 
