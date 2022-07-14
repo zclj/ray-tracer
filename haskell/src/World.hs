@@ -67,18 +67,25 @@ shadeHit world c = Lights.lighting
                    (cNormalv c)
                    (isShadowed world (cOverPoint c))
 
+colorizeShape :: World -> Ray -> Maybe (Intersection Plane) -> Maybe (Intersection Sphere) -> Color
+colorizeShape _ _ Nothing Nothing = Color (Red 0) (Green 0) (Blue 0)
+colorizeShape w r (Just i) Nothing = let c = prepareComputations i r
+                                     in shadeHit w c
+colorizeShape w r Nothing (Just i) = let c = prepareComputations i r
+                                     in shadeHit w c
+colorizeShape w r (Just p) (Just s) =
+  if (intersectionT p) > (intersectionT s)
+  then let c = prepareComputations s r
+       in shadeHit w c
+  else let c = prepareComputations p r
+       in shadeHit w c
+
 colorAt :: World -> Ray -> Color
 colorAt w r = let is = intersectWorldSpheres w r
                   ip = intersectWorldPlanes w r
                   hs = hit is
                   hp = hit ip
-              in case hs of
-                   Nothing -> case hp of
-                                Nothing -> Color (Red 0) (Green 0) (Blue 0)
-                                Just i -> let c = prepareComputations i r
-                                          in shadeHit w c
-                   Just i  -> let c = prepareComputations i r
-                              in shadeHit w c
+              in colorizeShape w r hp hs
 
 isShadowed :: World -> Tuple -> Bool
 isShadowed w p = let v             = Lights.position (light w) `sub` p
