@@ -29,5 +29,5 @@ normalAt _ _ = vector 0 1 0
 intersect :: Plane -> Ray -> [Intersection Plane]
 intersect p r = if abs(y (direction r)) < epsilon
                 then []
-                else let t = -(y (origin r)) / (y (direction r))
+                else let t = -y (origin r) / y (direction r)
                      in [Intersection t p]

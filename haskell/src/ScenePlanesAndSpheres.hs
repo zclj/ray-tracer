@@ -20,7 +20,7 @@ floorPlane = Plane { P.id = 1
                                       , specular = 0.5 }}
 
 backdrop = Plane { P.id = 2
-                 , planeTransform = translation 0 0 (1.5) `mulV` rotationX (pi/2)
+                 , planeTransform = translation 0 0 1.5 `mulV` rotationX (pi/2)
                  , planeMaterial  = M.material
                                     { color    = Color (Red 0.7) (Green 0.2) (Blue 0.2)
                                     , specular = 0.5 }}
