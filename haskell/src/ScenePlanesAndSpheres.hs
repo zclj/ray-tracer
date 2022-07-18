@@ -26,10 +26,10 @@ backdrop = Plane { P.id = 2
                                     , specular = 0.5 }}
 
 wall = Plane { P.id = 3
-             , planeTransform = translation (1.5) 0 0 `mulV` rotationZ (pi/2)
+             , planeTransform =  rotationY (pi/2) `mulV` rotationX (pi/2) `mulV` translation 1.5 1.5 0
              , planeMaterial  = M.material
-                                { color    = Color (Red 0) (Green 1) (Blue 0)
-                                , specular = 0.5 }}
+                                { color    = Color (Red 0.2) (Green 0.7) (Blue 0.2)
+                                , specular = 0.2 }}
 
 -- Spheres
 middle = Sphere { S.id = 4
