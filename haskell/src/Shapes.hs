@@ -3,7 +3,7 @@ module Shapes where
 import Matrices
 import Materials
 import Tuples
-import Rays
+import Rays as R
 import Data.List (sort, find)
 
 class IsShape a where
@@ -20,6 +20,10 @@ data Computation a = Computation { cT         :: Double
                                  , cInside    :: Bool
                                  , cOverPoint :: Tuple}
                    deriving(Show)
+
+intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
+intersectShapes objects r
+  = sort $ concatMap (\s -> shapeIntersect s (R.transform r (inverseV (shapeTransform s)))) objects
 
 objectNormalAt :: (IsShape a) => a -> Tuple -> Tuple
 objectNormalAt s worldPoint =

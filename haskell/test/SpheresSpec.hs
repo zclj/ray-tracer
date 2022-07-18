@@ -234,7 +234,7 @@ sphereIntersections =
     describe "Intersect sets the object on the intersection" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `shapeIntersect` r
+          xs@(x:y:_) = [s] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "the object of the first intersection is s" $ do
@@ -254,7 +254,7 @@ sphereIntersections =
           s          = SUT.makeUnitSphere 1
           m          = scaling 2 2 2
           s'         = s { SUT.sphereTransform = m }
-          xs@(x:y:_) = s' `shapeIntersect` r
+          xs@(x:y:_) = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "the object of the first intersection is s" $ do
@@ -272,6 +272,6 @@ sphereIntersections =
           s  = SUT.makeUnitSphere 1
           m  = translation 5 0 0
           s' = s { SUT.sphereTransform = m }
-          xs = s' `shapeIntersect` r
+          xs = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 0

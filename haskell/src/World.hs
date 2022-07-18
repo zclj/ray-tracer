@@ -5,7 +5,6 @@ module World
   , defaultWorld
   , shadeHit
   , colorAt
-  , intersectWorldObjects
   , isShadowed
   )where
 
@@ -16,7 +15,7 @@ import Materials
 import Matrices
 import Transformations
 import Tuples
-import Rays
+import Rays as R
 import Lights
 import Shapes
 import Planes
@@ -47,13 +46,6 @@ defaultWorld = let defaultSphere1 = Sphere
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World [defaultSphere1, defaultSphere2] [] defaultLight
 
-{-|
-  Iterate over the objects in the world, intersecting each with the given `Ray`
--}
-intersectWorldObjects :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
-intersectWorldObjects objects r
-  = DL.sort $ concatMap (`shapeIntersect` r) objects
-
 shadeHit :: (IsShape a) => World -> Computation a -> Color
 shadeHit world c = Lights.lighting
                    (shapeMaterial (cObject c))
@@ -77,8 +69,8 @@ colorizeShape w r (Just p) (Just s) =
        in shadeHit w c
 
 colorAt :: World -> Ray -> Color
-colorAt w r = let is = intersectWorldObjects (sphereObjects w) r
-                  ip = intersectWorldObjects (planeObjects w) r
+colorAt w r = let is = intersectShapes (sphereObjects w) r
+                  ip = intersectShapes (planeObjects w) r
                   hs = hit is
                   hp = hit ip
               in colorizeShape w r hp hs
@@ -88,8 +80,8 @@ isShadowed w p = let v             = Lights.position (light w) `sub` p
                      distance      = mag v
                      direction     = norm v
                      r             = makeRay p direction
-                     intersections = intersectWorldObjects (sphereObjects w) r
-                     intersectionsP = intersectWorldObjects (planeObjects w) r
+                     intersections = intersectShapes (sphereObjects w) r
+                     intersectionsP = intersectShapes (planeObjects w) r
                      h             = hit intersections
                      hp = hit intersectionsP
                  in case h of

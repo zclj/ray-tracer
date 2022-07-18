@@ -34,10 +34,9 @@ setTransform :: Sphere -> VMatrix -> Sphere
 setTransform s m = s {sphereTransform = m}
 
 intersect :: (IsShape a) => a -> Ray -> [Intersection a]
-intersect s r = let r'           = R.transform r (inverseV (shapeTransform s))
-                    sphereToRay  = origin r' `sub` Tuples.point 0 0 0
-                    a            = direction r' `dot` direction r'
-                    b            = 2 * (direction r' `dot` sphereToRay)
+intersect s r = let sphereToRay  = origin r `sub` Tuples.point 0 0 0
+                    a            = direction r `dot` direction r
+                    b            = 2 * (direction r `dot` sphereToRay)
                     c            = (sphereToRay `dot` sphereToRay) - 1
                     discriminant = b^2 - (4 * a * c)
                 in if discriminant < 0
