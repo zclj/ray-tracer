@@ -27,12 +27,8 @@ makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV M.material
 
 normalAt :: Sphere -> Tuple -> Tuple
-normalAt Sphere{sphereTransform = t} worldPoint
-  = let objectPoint  = inverseV t `mulTV` worldPoint
-        objectNormal = objectPoint `sub` point 0 0 0
-        worldNormal  = transposeV (inverseV t) `mulTV` objectNormal
-        worldNormal' = worldNormal {w=0}
-    in norm worldNormal'
+normalAt s objectPoint
+  = objectPoint `sub` point 0 0 0
 
 setTransform :: Sphere -> VMatrix -> Sphere
 setTransform s m = s {sphereTransform = m}

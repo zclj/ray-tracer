@@ -23,16 +23,8 @@ instance IsShape Plane where
 makePlane :: Int -> Plane
 makePlane id = Plane id identityV material
 
-localNormalAt :: Tuple
-localNormalAt = vector 0 1 0
-
 normalAt :: Plane -> Tuple -> Tuple
-normalAt Plane {planeTransform = t} worldPoint
-  = let localPoint   = inverseV t `mulTV` worldPoint
-        localNormal  = localNormalAt
-        worldNormal  = transposeV (inverseV t) `mulTV` localNormal
-        worldNormal' = worldNormal {w=0}
-    in norm worldNormal'
+normalAt _ _ = vector 0 1 0
 
 intersect :: Plane -> Ray -> [Intersection Plane]
 intersect p r = let r' = Rays.transform r (inverseV (shapeTransform p))

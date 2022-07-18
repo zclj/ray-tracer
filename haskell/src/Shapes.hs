@@ -21,12 +21,20 @@ data Computation a = Computation { cT         :: Double
                                  , cOverPoint :: Tuple}
                    deriving(Show)
 
+objectNormalAt :: (IsShape a) => a -> Tuple -> Tuple
+objectNormalAt s worldPoint =
+  let objectPoint  = inverseV (shapeTransform s) `mulTV` worldPoint
+      objectNormal = shapeNormalAt s objectPoint
+      worldNormal  = transposeV (inverseV (shapeTransform s)) `mulTV` objectNormal
+      worldNormal' = worldNormal {w=0}
+  in norm worldNormal'
+
 prepareComputations :: (IsShape a) => Intersection a -> Ray -> Computation a
 prepareComputations i r =
   let it               = intersectionT i
       po               = position r it
       obj              = intersectionObject i
-      normalv          = shapeNormalAt obj po
+      normalv          = objectNormalAt obj po
       eyev             = neg (direction r)
       (inside, normal) = if (normalv `dot` eyev) < 0
                          then (True, neg normalv)
