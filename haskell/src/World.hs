@@ -3,9 +3,9 @@
 module World
   ( World(..)
   , defaultWorld
-  , intersectWorldSpheres
   , shadeHit
   , colorAt
+  , intersectWorldObjects
   , isShadowed
   )where
 
@@ -50,13 +50,9 @@ defaultWorld = let defaultSphere1 = Sphere
 {-|
   Iterate over the objects in the world, intersecting each with the given `Ray`
 -}
-intersectWorldSpheres :: World -> Ray -> [Intersection Sphere]
-intersectWorldSpheres World{sphereObjects} r
-  = DL.sort $ concatMap (`shapeIntersect` r) sphereObjects
-
-intersectWorldPlanes :: World -> Ray -> [Intersection Plane]
-intersectWorldPlanes World{planeObjects} r
-  = DL.sort $ concatMap (`shapeIntersect` r) planeObjects
+intersectWorldObjects :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
+intersectWorldObjects objects r
+  = DL.sort $ concatMap (`shapeIntersect` r) objects
 
 shadeHit :: (IsShape a) => World -> Computation a -> Color
 shadeHit world c = Lights.lighting
@@ -81,8 +77,8 @@ colorizeShape w r (Just p) (Just s) =
        in shadeHit w c
 
 colorAt :: World -> Ray -> Color
-colorAt w r = let is = intersectWorldSpheres w r
-                  ip = intersectWorldPlanes w r
+colorAt w r = let is = intersectWorldObjects (sphereObjects w) r
+                  ip = intersectWorldObjects (planeObjects w) r
                   hs = hit is
                   hp = hit ip
               in colorizeShape w r hp hs
@@ -92,8 +88,8 @@ isShadowed w p = let v             = Lights.position (light w) `sub` p
                      distance      = mag v
                      direction     = norm v
                      r             = makeRay p direction
-                     intersections = intersectWorldSpheres w r
-                     intersectionsP = intersectWorldPlanes w r
+                     intersections = intersectWorldObjects (sphereObjects w) r
+                     intersectionsP = intersectWorldObjects (planeObjects w) r
                      h             = hit intersections
                      hp = hit intersectionsP
                  in case h of
