@@ -47,3 +47,33 @@ patternBasics =
          Then stripe_at(pattern, point(0, 0, 0)) = white
            And stripe_at(pattern, point(0, 0, 1)) = white
            And stripe_at(pattern, point(0, 0, 2)) = white -}
+    describe "A stripe pattern is constant in z" $ do
+      let p = SUT.stripePattern white black
+      it "stripe_at(pattern, point(0, 0, 0)) = white" $ do
+        stripeAt p (point 0 0 0) `shouldBe` white
+      it "stripe_at(pattern, point(0, 0, 1)) = white" $ do
+        stripeAt p (point 0 0 1) `shouldBe` white
+      it "stripe_at(pattern, point(0, 0, 2)) = white" $ do
+        stripeAt p (point 0 0 2) `shouldBe` white
+    {- Scenario: A stripe pattern alternates in x
+         Given pattern ← stripe_pattern(white, black)
+         Then stripe_at(pattern, point(0, 0, 0)) = white
+           And stripe_at(pattern, point(0.9, 0, 0)) = white
+           And stripe_at(pattern, point(1, 0, 0)) = black
+           And stripe_at(pattern, point(-0.1, 0, 0)) = black
+           And stripe_at(pattern, point(-1, 0, 0)) = black
+           And stripe_at(pattern, point(-1.1, 0, 0)) = white -}
+    describe "A stripe pattern alternates in x" $ do
+      let p = SUT.stripePattern white black
+      it "stripe_at(pattern, point(0, 0, 0)) = white" $ do
+        stripeAt p (point 0 0 0) `shouldBe` white
+      it "stripe_at(pattern, point(0.9, 0, 0)) = white" $ do
+        stripeAt p (point 0.9 0 0) `shouldBe` white
+      it "stripe_at(pattern, point(1, 0, 0)) = black" $ do
+        stripeAt p (point 1 0 0) `shouldBe` black
+      it "stripe_at(pattern, point(-0.1, 0, 0)) = black" $ do
+        stripeAt p (point (-0.1) 0 0) `shouldBe` black
+      it "stripe_at(pattern, point(-1, 0, 0)) = black" $ do
+        stripeAt p (point (-1) 0 0) `shouldBe` black
+      it "stripe_at(pattern, point(-1.1, 0, 0)) = white" $ do
+        stripeAt p (point (-1.1) 0 0) `shouldBe` white

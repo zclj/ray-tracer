@@ -9,6 +9,10 @@ import Tuples
 data Pattern = Pattern { a :: Color
                        , b :: Color }
 
-stripePattern = undefined
+stripePattern :: Color -> Color -> Pattern
+stripePattern aC bC = Pattern aC bC
 
-stripeAt = undefined
+stripeAt :: Pattern -> Tuple -> Color
+stripeAt p point = if (floor (x point)) `mod` 2 == 0
+                   then a p
+                   else b p
