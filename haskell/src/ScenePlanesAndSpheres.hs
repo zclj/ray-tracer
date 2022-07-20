@@ -11,12 +11,16 @@ import Lights
 import Camera as C
 import Matrices
 import Planes as P
+import Patterns
 
 -- Planes
 floorPlane = Plane { P.id = 1
                    , planeTransform = scaling 10 0.01 10
                    , planeMaterial  = M.material
-                                      { color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
+                                      { pattern  = Just (stripePattern
+                                                         (Color (Red 0) (Green 0) (Blue 0))
+                                                         (Color (Red 1) (Green 1) (Blue 1)))
+                                      , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
                                       , specular = 0.5 }}
 
 backdrop = Plane { P.id = 2
