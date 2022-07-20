@@ -8,6 +8,7 @@ import Tuples
 
 data Pattern = Pattern { a :: Color
                        , b :: Color }
+               deriving(Eq, Show, Ord)
 
 stripePattern :: Color -> Color -> Pattern
 stripePattern aC bC = Pattern aC bC
