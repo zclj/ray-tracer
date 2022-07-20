@@ -6,6 +6,7 @@ module Lights
 
 import Tuples
 import Materials
+import Patterns
 
 data Light = Light { position  :: Tuple
                    , intensity :: Color}
@@ -17,7 +18,10 @@ pointLight = Light
 lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
 lighting material light point eyev normalv inShadow =
       -- combine the surface color with the light's color/intensity
-  let effectiveColor = color material `mulC` intensity light
+  let materialColor  = case (pattern material) of
+                         Nothing -> color material
+                         Just p  -> stripeAt p point
+      effectiveColor = materialColor `mulC` intensity light
       -- find the direction to the light source
       lightv         = norm (position light `sub` point)
       -- compute the ambient contribution

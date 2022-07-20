@@ -124,8 +124,7 @@ materialLighting =
          Then c1 = color(1, 1, 1)
            And c2 = color(0, 0, 0) -}
     describe "Lighting with a pattern applied" $ do
-      let position = point 0 0 0
-          m        = Material { color     = Color (Red 1) (Green 1) (Blue 1)
+      let m        = Material { color     = Color (Red 1) (Green 1) (Blue 1)
                               , ambient   = 1
                               , diffuse   = 0
                               , specular  = 0
@@ -137,11 +136,12 @@ materialLighting =
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           inShadow = False
-          result   = lighting m light position eyev normalv inShadow
+          result1  = lighting m light (point 0.9 0 0) eyev normalv inShadow
+          result2  = lighting m light (point 1.1 0 0) eyev normalv inShadow
       it "lighting(m, light, point(0.9, 0, 0), eyev, normalv, false) -> color(1, 1, 1)" $ do
-        result `shouldBe` Color (Red 1) (Green 1) (Blue 1)
+        result1 `shouldBe` Color (Red 1) (Green 1) (Blue 1)
       it "lighting(m, light, point(1.1, 0, 0), eyev, normalv, false) -> color(0, 0, 0)" $ do
-        result `shouldBe` Color (Red 0) (Green 0) (Blue 0)
+        result2 `shouldBe` Color (Red 0) (Green 0) (Blue 0)
 
 materialBasics :: Spec
 materialBasics =
