@@ -7,6 +7,7 @@ module Lights
 import Tuples
 import Materials
 import Patterns
+import Shapes
 
 data Light = Light { position  :: Tuple
                    , intensity :: Color}
@@ -15,8 +16,8 @@ data Light = Light { position  :: Tuple
 pointLight :: Tuple -> Color -> Light
 pointLight = Light
 
-lighting :: Material -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
-lighting material light point eyev normalv inShadow =
+lighting :: (IsShape a) => Material -> a -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
+lighting material object light point eyev normalv inShadow =
       -- combine the surface color with the light's color/intensity
   let materialColor  = case (pattern material) of
                          Nothing -> color material

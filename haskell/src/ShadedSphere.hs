@@ -41,7 +41,7 @@ castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                              Just n -> let p      = Rays.position ray (intersectionT n)
                                            normal = Spheres.normalAt (intersectionObject n) p
                                            eye    = neg (direction ray)
-                                       in lighting (sphereMaterial (intersectionObject n)) l p eye normal False
+                                       in lighting (sphereMaterial (intersectionObject n)) (makeUnitSphere 1) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
 castRow :: Int -> Sphere -> Color -> Light -> [Color]
