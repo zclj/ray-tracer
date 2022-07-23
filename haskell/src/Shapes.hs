@@ -64,4 +64,7 @@ hit :: (IsShape a, Ord a) => [Intersection a] -> Maybe (Intersection a)
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
 stripeAtObject :: IsShape a => Pattern -> a -> Tuple -> Color
-stripeAtObject p shape point = undefined
+stripeAtObject p shape worldPoint =
+  let objectPoint  = inverseV (shapeTransform shape) `mulTV` worldPoint
+      patternPoint = inverseV (patternTransform p) `mulTV` objectPoint
+  in stripeAt p patternPoint
