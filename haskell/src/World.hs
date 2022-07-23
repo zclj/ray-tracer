@@ -48,7 +48,7 @@ defaultWorld = let defaultSphere1 = Sphere
 shadeHit :: (IsShape a) => World -> Computation a -> Color
 shadeHit world c = Lights.lighting
                    (shapeMaterial (cObject c))
-                   (makeUnitSphere 1) -- TODO
+                   (cObject c)
                    (light world)
                    (cPoint c)
                    (cEyev c)
