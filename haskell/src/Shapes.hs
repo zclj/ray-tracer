@@ -5,6 +5,7 @@ import Materials
 import Tuples
 import Rays as R
 import Data.List (sort, find)
+import Patterns
 
 class IsShape a where
   shapeTransform :: a -> VMatrix
@@ -61,3 +62,6 @@ data Intersection a = Intersection
 -- Intersections with a negative value are 'behind', positive 'infront'
 hit :: (IsShape a, Ord a) => [Intersection a] -> Maybe (Intersection a)
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
+
+stripeAtObject :: IsShape a => Pattern -> a -> Tuple -> Color
+stripeAtObject p shape point = undefined

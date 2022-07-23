@@ -7,14 +7,63 @@ import Test.Tasty.Hspec as HS
 
 import Patterns as SUT
 import Tuples
+import Spheres
+import Shapes
+import Transformations
 
 patternTests :: TestTree
 patternTests = testGroup "Pattern Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Patterns" patternBasics)]]
+  [ unsafePerformIO (testSpec "Patterns" patternBasics)
+  , unsafePerformIO (testSpec "Patterns" patternTransformations)]]
 
 white = Color (Red 1) (Green 1) (Blue 1)
 black = Color (Red 0) (Green 0) (Blue 0)
+
+patternTransformations :: Spec
+patternTransformations =
+  describe "Patterns" $ do
+    {- Scenario: Stripes with an object transformation
+         Given object ← sphere()
+           And set_transform(object, scaling(2, 2, 2))
+           And pattern ← stripe_pattern(white, black)
+         When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
+         Then c = white -}
+    describe "Stripes with an object transformation" $ do
+      let s  = makeUnitSphere 1
+          s' = s { sphereTransform = (scaling 2 2 2) }
+          p  = SUT.stripePattern white black
+          c  = stripeAtObject p s' (point 1.5 0 0)
+      it "color at point is white" $ do
+        c `shouldBe` white
+    {- Scenario: Stripes with a pattern transformation
+         Given object ← sphere()
+           And pattern ← stripe_pattern(white, black)
+           And set_pattern_transform(pattern, scaling(2, 2, 2))
+         When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
+         Then c = white -}
+    describe "Stripes with a pattern transformation" $ do
+      let s  = makeUnitSphere 1
+          p  = SUT.stripePattern white black
+          p' = p { patternTransform = scaling 2 2 2 }
+          c  = stripeAtObject p' s (point 1.5 0 0)
+      it "color at point is white" $ do
+        c `shouldBe` white
+    {- Scenario: Stripes with both an object and a pattern transformation
+         Given object ← sphere()
+           And set_transform(object, scaling(2, 2, 2))
+           And pattern ← stripe_pattern(white, black)
+           And set_pattern_transform(pattern, translation(0.5, 0, 0))
+         When c ← stripe_at_object(pattern, object, point(2.5, 0, 0))
+         Then c = white -}
+    describe "Stripes with both an object and a pattern transformation" $ do
+      let s  = makeUnitSphere 1
+          s' = s { sphereTransform = (scaling 2 2 2) }
+          p  = SUT.stripePattern white black
+          p' = p { patternTransform = translation 0.5 2 2 }
+          c  = stripeAtObject p' s' (point 2.5 0 0)
+      it "color at point is white" $ do
+        c `shouldBe` white
 
 patternBasics :: Spec
 patternBasics =

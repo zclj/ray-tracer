@@ -5,15 +5,18 @@ module Patterns
   )where
 
 import Tuples
+import Matrices
 
 data Pattern = Pattern { a :: Color
-                       , b :: Color }
+                       , b :: Color
+                       , patternTransform :: VMatrix}
                deriving(Eq, Show, Ord)
 
 stripePattern :: Color -> Color -> Pattern
-stripePattern aC bC = Pattern aC bC
+stripePattern aC bC = Pattern aC bC identityV
 
 stripeAt :: Pattern -> Tuple -> Color
 stripeAt p point = if (floor (x point)) `mod` 2 == 0
                    then a p
                    else b p
+
