@@ -6,12 +6,12 @@ module Materials
 import Tuples
 import Patterns
 
-data Material = Material { color     :: Color
-                         , ambient   :: Double
-                         , diffuse   :: Double
-                         , specular  :: Double
-                         , shininess :: Double
-                         , pattern   :: Maybe Pattern}
+data Material = Material { color           :: Color
+                         , ambient         :: Double
+                         , diffuse         :: Double
+                         , specular        :: Double
+                         , shininess       :: Double
+                         , materialPattern :: Maybe Pattern}
                 deriving (Show, Eq, Ord)
 
 material :: Material

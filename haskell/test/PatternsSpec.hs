@@ -33,7 +33,6 @@ patternTransformations =
       let s  = makeUnitSphere 1
           s' = s { sphereTransform = (scaling 2 2 2) }
           p  = SUT.stripePattern white black
-          --c  = stripeAtObject p s' (point 1.5 0 0)
           c  = patternAtShape p s' (point 1.5 0 0)
       it "color at point is white" $ do
         c `shouldBe` white

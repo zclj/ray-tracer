@@ -34,7 +34,7 @@ defaultWorld = let defaultSphere1 = Sphere
                                       , diffuse   = 0.7
                                       , specular  = 0.2
                                       , shininess = 200
-                                      , pattern   = Nothing}}
+                                      , materialPattern   = Nothing}}
                    defaultSphere2 = Sphere
                                     { Spheres.id      = 2
                                     , radius          = 1.0

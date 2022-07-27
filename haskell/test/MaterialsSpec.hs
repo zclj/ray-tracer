@@ -136,9 +136,10 @@ materialLighting =
                               , diffuse   = 0
                               , specular  = 0
                               , shininess = 200
-                              , pattern   = Just (stripePattern
-                                                 (Color (Red 1) (Green 1) (Blue 1))
-                                                 (Color (Red 0) (Green 0) (Blue 0)))}
+                              , materialPattern =
+                                Just (stripePattern
+                                       (Color (Red 1) (Green 1) (Blue 1))
+                                       (Color (Red 0) (Green 0) (Blue 0)))}
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))

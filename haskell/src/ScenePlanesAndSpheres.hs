@@ -22,7 +22,7 @@ p' = p { patternTransform = rotationY (pi/4) `mulV` scaling 0.1 0.1 0.1 }
 floorPlane = Plane { P.id = 1
                    , planeTransform = scaling 10 0.01 10
                    , planeMaterial  = M.material
-                                      { pattern  = Just p'
+                                      { materialPattern  = Just p'
                                       , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
                                       , specular = 0.5 }}
 
@@ -35,7 +35,7 @@ backdrop = Plane { P.id = 2
 wall = Plane { P.id = 3
              , planeTransform =  rotationY (pi/2) `mulV` rotationX (pi/2) `mulV` translation 1.5 1.5 0
              , planeMaterial  = M.material
-                                { pattern  = Just p'
+                                { materialPattern  = Just p'
                                 , color    = Color (Red 0.2) (Green 0.7) (Blue 0.2)
                                 , specular = 0.2 }}
 
@@ -65,7 +65,7 @@ left = Sphere { S.id = 6
               , radius = 1.0
               , sphereTransform = translation (-1.5) 0.33 (-0.75) `mulV` scaling 0.33 0.33 0.33
               , sphereMaterial = M.material
-                                 { pattern  = Just p1'
+                                 { materialPattern  = Just p1'
                                  , color    = Color (Red 1) (Green 0.8) (Blue 0.1)
                                  , diffuse  = 0.7
                                  , specular = 0.3 }}
