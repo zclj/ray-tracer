@@ -15,7 +15,7 @@ data Sphere = Sphere { id              :: Int
                      , radius          :: Double
                      , sphereTransform :: VMatrix
                      , sphereMaterial  :: M.Material}
-              deriving (Show, Eq, Ord)
+            deriving (Show, Eq, Ord)
 
 instance IsShape Sphere where
   shapeTransform = sphereTransform

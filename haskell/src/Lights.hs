@@ -16,12 +16,12 @@ data Light = Light { position  :: Tuple
 pointLight :: Tuple -> Color -> Light
 pointLight = Light
 
-lighting :: (IsShape a) => Material -> a -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
+lighting :: IsShape a => Material -> a -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
 lighting material object light point eyev normalv inShadow =
       -- combine the surface color with the light's color/intensity
   let materialColor  = case (pattern material) of
                          Nothing -> color material
-                         Just p  -> stripeAtObject p object point
+                         Just p  -> patternAtShape p object point
       effectiveColor = materialColor `mulC` intensity light
       -- find the direction to the light source
       lightv         = norm (position light `sub` point)
