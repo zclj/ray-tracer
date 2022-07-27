@@ -21,10 +21,10 @@ stripePattern :: Color -> Color -> Pattern
 stripePattern aC bC = Pattern aC bC identityV Stripes
 
 stripeAt :: Pattern -> Tuple -> Color
-stripeAt p point = if (floor (x point)) `mod` 2 == 0
+stripeAt p point = if even (floor (x point))
                    then a p
                    else b p
 
 patternAt :: Pattern -> Tuple -> Color
-patternAt p@(Pattern { patternShape = ps }) point = case ps of
-                                                      Stripes -> stripeAt p point
+patternAt p@Pattern { patternShape = ps } point = case ps of
+                                                    Stripes -> stripeAt p point

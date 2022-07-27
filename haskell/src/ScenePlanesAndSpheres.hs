@@ -14,9 +14,9 @@ import Planes as P
 import Patterns
 
 -- Planes
-p = (stripePattern
-      (Color (Red 0.5) (Green 0.5) (Blue 0.5))
-      (Color (Red 0.5) (Green 0.5) (Blue 1)))
+p = stripePattern
+    (Color (Red 0.5) (Green 0.5) (Blue 0.5))
+    (Color (Red 0.5) (Green 0.5) (Blue 1))
 p' = p { patternTransform = rotationY (pi/4) `mulV` scaling 0.1 0.1 0.1 }
 
 floorPlane = Plane { P.id = 1
@@ -56,9 +56,9 @@ right = Sphere { S.id = 5
                                    , diffuse  = 0.7
                               , specular = 0.3 }}
 
-p1  = (stripePattern
-       (Color (Red 0.9) (Green 0.9) (Blue 0.5))
-       (Color (Red 1) (Green 0.5) (Blue 0.5)))
+p1  = stripePattern
+      (Color (Red 0.9) (Green 0.9) (Blue 0.5))
+      (Color (Red 1) (Green 0.5) (Blue 0.5))
 p1' = p1 { patternTransform = rotationZ (pi/4) `mulV` scaling 0.2 0.2 0.2 }
 
 left = Sphere { S.id = 6

@@ -19,7 +19,7 @@ pointLight = Light
 lighting :: IsShape a => Material -> a -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
 lighting material object light point eyev normalv inShadow =
       -- combine the surface color with the light's color/intensity
-  let materialColor  = case (materialPattern material) of
+  let materialColor  = case materialPattern material of
                          Nothing -> color material
                          Just p  -> patternAtShape p object point
       effectiveColor = materialColor `mulC` intensity light

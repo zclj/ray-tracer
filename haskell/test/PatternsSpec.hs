@@ -31,7 +31,7 @@ patternTransformations =
          Then c = white -}
     describe "Stripes with an object transformation" $ do
       let s  = makeUnitSphere 1
-          s' = s { sphereTransform = (scaling 2 2 2) }
+          s' = s { sphereTransform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           c  = patternAtShape p s' (point 1.5 0 0)
       it "color at point is white" $ do
@@ -58,7 +58,7 @@ patternTransformations =
          Then c = white -}
     describe "Stripes with both an object and a pattern transformation" $ do
       let s  = makeUnitSphere 1
-          s' = s { sphereTransform = (scaling 2 2 2) }
+          s' = s { sphereTransform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           p' = p { patternTransform = translation 0.5 2 2 }
           c  = patternAtShape p' s' (point 2.5 0 0)
