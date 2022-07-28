@@ -15,10 +15,35 @@ patternTests :: TestTree
 patternTests = testGroup "Pattern Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Patterns" patternBasics)
-  , unsafePerformIO (testSpec "Patterns" patternTransformations)]]
+  , unsafePerformIO (testSpec "Patterns" patternTransformations)
+  , unsafePerformIO (testSpec "Patterns" patterns)]]
 
 white = Color (Red 1) (Green 1) (Blue 1)
 black = Color (Red 0) (Green 0) (Blue 0)
+
+patterns :: Spec
+patterns =
+  describe "Patterns" $ do
+    {- Scenario: A gradient linearly interpolates between colors
+         Given pattern ← gradient_pattern(white, black)
+         Then pattern_at(pattern, point(0, 0, 0)) = white
+           And pattern_at(pattern, point(0.25, 0, 0)) = color(0.75, 0.75, 0.75)
+           And pattern_at(pattern, point(0.5, 0, 0)) = color(0.5, 0.5, 0.5)
+           And pattern_at(pattern, point(0.75, 0, 0)) = color(0.25, 0.25, 0.25) -}
+    describe "A gradient linearly interpolates between colors" $ do
+      let p  = SUT.gradientPattern white black
+          c1 = SUT.patternAt p (point 0 0 0)
+          c2 = SUT.patternAt p (point 0.25 0 0)
+          c3 = SUT.patternAt p (point 0.5 0 0)
+          c4 = SUT.patternAt p (point 0.75 0 0)
+      it "color at (0, 0, 0) = white" $ do
+        c1 `shouldBe` white
+      it "color at (0.25, 0, 0) = color(0.75, 0.75, 0.75)" $ do
+        c2 `shouldBe` Color (Red 0.75) (Green 0.75) (Blue 0.75)
+      it "color at (0.5, 0, 0) = color(0.5, 0.5, 0.5)" $ do
+        c3 `shouldBe` Color (Red 0.5) (Green 0.5) (Blue 0.5)
+      it "color at (0.75, 0, 0) = color(0.25, 0.25, 0.25)" $ do
+        c4 `shouldBe` Color (Red 0.25) (Green 0.25) (Blue 0.25)
 
 patternTransformations :: Spec
 patternTransformations =
