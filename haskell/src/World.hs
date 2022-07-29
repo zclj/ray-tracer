@@ -50,7 +50,7 @@ shadeHit world c = Lights.lighting
                    (shapeMaterial (cObject c))
                    (cObject c)
                    (light world)
-                   (cPoint c)
+                   (cOverPoint c)
                    (cEyev c)
                    (cNormalv c)
                    (isShadowed world (cOverPoint c))
