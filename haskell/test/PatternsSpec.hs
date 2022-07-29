@@ -65,6 +65,54 @@ patterns =
         c3 `shouldBe` black
       it "color at (0.708, 0, 0.708) = black" $ do
         c4 `shouldBe` black
+    {- Scenario: Checkers should repeat in x
+         Given pattern ← checkers_pattern(white, black)
+         Then pattern_at(pattern, point(0, 0, 0)) = white
+           And pattern_at(pattern, point(0.99, 0, 0)) = white
+           And pattern_at(pattern, point(1.01, 0, 0)) = black -}
+    describe "Checkers should repeat in x" $ do
+      let p  = SUT.checkersPattern white black
+          c1 = SUT.patternAt p (point 0 0 0)
+          c2 = SUT.patternAt p (point 0.99 0 0)
+          c3 = SUT.patternAt p (point 1.01 0 0)
+      it "color at (0, 0, 0) = white" $ do
+        c1 `shouldBe` white
+      it "color at (0.99, 0, 0) = white" $ do
+        c2 `shouldBe` white
+      it "color at (1.01, 0, 0) = black" $ do
+        c3 `shouldBe` black
+    {- Scenario: Checkers should repeat in y
+         Given pattern ← checkers_pattern(white, black)
+         Then pattern_at(pattern, point(0, 0, 0)) = white
+           And pattern_at(pattern, point(0, 0.99, 0)) = white
+           And pattern_at(pattern, point(0, 1.01, 0)) = black -}
+    describe "Checkers should repeat in y" $ do
+      let p  = SUT.checkersPattern white black
+          c1 = SUT.patternAt p (point 0 0 0)
+          c2 = SUT.patternAt p (point 0 0.99 0)
+          c3 = SUT.patternAt p (point 0 1.01 0)
+      it "color at (0, 0, 0) = white" $ do
+        c1 `shouldBe` white
+      it "color at (0, 0.99, 0) = white" $ do
+        c2 `shouldBe` white
+      it "color at (0, 1.01, 0) = black" $ do
+        c3 `shouldBe` black
+    {- Scenario: Checkers should repeat in z
+         Given pattern ← checkers_pattern(white, black)
+         Then pattern_at(pattern, point(0, 0, 0)) = white
+           And pattern_at(pattern, point(0, 0, 0.99)) = white
+           And pattern_at(pattern, point(0, 0, 1.01)) = black -}
+    describe "Checkers should repeat in z" $ do
+      let p  = SUT.checkersPattern white black
+          c1 = SUT.patternAt p (point 0 0 0)
+          c2 = SUT.patternAt p (point 0 0 0.99)
+          c3 = SUT.patternAt p (point 0 0 1.01)
+      it "color at (0, 0, 0) = white" $ do
+        c1 `shouldBe` white
+      it "color at (0, 0, 0.99) = white" $ do
+        c2 `shouldBe` white
+      it "color at (0, 0, 1.01) = black" $ do
+        c3 `shouldBe` black
 
 patternTransformations :: Spec
 patternTransformations =

@@ -14,15 +14,16 @@ import Planes as P
 import Patterns
 
 -- Planes
-p = stripePattern
-    (Color (Red 0.5) (Green 0.5) (Blue 0.5))
-    (Color (Red 0.5) (Green 0.5) (Blue 1))
-p' = p { patternTransform = rotationY (pi/4) `mulV` scaling 0.1 0.1 0.1 }
+checkers = checkersPattern
+           (Color (Red 0.0) (Green 0.0) (Blue 0.0))
+           (Color (Red 1) (Green 1) (Blue 1))
+
+checkers' = checkers { patternTransform = scaling 0.1 0.1 0.1 }
 
 floorPlane = Plane { P.id = 1
                    , planeTransform = scaling 10 0.01 10
                    , planeMaterial  = M.material
-                                      { materialPattern  = Just p'
+                                      { materialPattern  = Just checkers'
                                       , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
                                       , specular = 0.5 }}
 
@@ -37,6 +38,11 @@ backdrop = Plane { P.id = 2
                                     { color    = Color (Red 0.7) (Green 0.2) (Blue 0.2)
                                     , specular = 0.5
                                     , materialPattern = Just wallGrad'}}
+
+p = stripePattern
+    (Color (Red 0.5) (Green 0.5) (Blue 0.5))
+    (Color (Red 0.5) (Green 0.5) (Blue 1))
+p' = p { patternTransform = rotationY (pi/4) `mulV` scaling 0.1 0.1 0.1 }
 
 wall = Plane { P.id = 3
              , planeTransform =  rotationY (pi/2) `mulV` rotationX (pi/2) `mulV` translation 1.5 1.5 0

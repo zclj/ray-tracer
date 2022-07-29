@@ -5,6 +5,7 @@ module Patterns
   , gradientPattern
   , patternAt
   , ringPattern
+  , checkersPattern
   )where
 
 import Tuples
@@ -13,6 +14,7 @@ import Matrices
 data PatternShape = Stripes
                   | Gradient
                   | Ring
+                  | Checkers
                   deriving(Eq, Show, Ord)
 
 data Pattern = Pattern { a :: Color
@@ -45,9 +47,18 @@ ringAt ring point = if even (floor (sqrt ((x point)**2 + (z point)**2)))
                     then a ring
                     else b ring
 
+checkersPattern :: Color -> Color -> Pattern
+checkersPattern a b = Pattern a b identityV Checkers
+
+checkersAt :: Pattern -> Tuple -> Color
+checkersAt checkers (Tuple x y z _) = if even ((floor x) + (floor y) + (floor z))
+                                      then (a checkers)
+                                      else (b checkers)
+
 patternAt :: Pattern -> Tuple -> Color
 patternAt p@Pattern { patternShape = ps } point =
   case ps of
     Stripes  -> stripeAt p point
     Gradient -> gradientAt p point
     Ring     -> ringAt p point
+    Checkers -> checkersAt p point
