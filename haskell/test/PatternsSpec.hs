@@ -44,6 +44,27 @@ patterns =
         c3 `shouldBe` Color (Red 0.5) (Green 0.5) (Blue 0.5)
       it "color at (0.75, 0, 0) = color(0.25, 0.25, 0.25)" $ do
         c4 `shouldBe` Color (Red 0.25) (Green 0.25) (Blue 0.25)
+    {- Scenario: A ring should extend in both x and z
+         Given pattern ← ring_pattern(white, black)
+         Then pattern_at(pattern, point(0, 0, 0)) = white
+           And pattern_at(pattern, point(1, 0, 0)) = black
+           And pattern_at(pattern, point(0, 0, 1)) = black
+           # 0.708 = just slightly more than √2/2
+           And pattern_at(pattern, point(0.708, 0, 0.708)) = black -}
+    describe "A ring should extend in both x and z" $ do
+      let p  = SUT.ringPattern white black
+          c1 = SUT.patternAt p (point 0 0 0)
+          c2 = SUT.patternAt p (point 1 0 0)
+          c3 = SUT.patternAt p (point 0 0 1)
+          c4 = SUT.patternAt p (point 0.708 0 0.708)
+      it "color at (0, 0, 0) = white" $ do
+        c1 `shouldBe` white
+      it "color at (1, 0, 0) = black" $ do
+        c2 `shouldBe` black
+      it "color at (0, 0, 1) = black" $ do
+        c3 `shouldBe` black
+      it "color at (0.708, 0, 0.708) = black" $ do
+        c4 `shouldBe` black
 
 patternTransformations :: Spec
 patternTransformations =

@@ -60,13 +60,19 @@ middle = Sphere { S.id = 4
                                     , specular = 0.3
                                     , materialPattern = Just grad'}}
 
+ring = ringPattern
+       (Color (Red 0.8) (Green 0.4) (Blue 0.3))
+       (Color (Red 0.3) (Green 0.4) (Blue 0.8))
+ring' = ring { patternTransform = rotationZ (pi/6) `mulV` rotationX (pi/2) `mulV` scaling 0.2 1 0.2 }
+
 right = Sphere { S.id = 5
                , radius = 1.0
                , sphereTransform = translation 1.5 0.5 (-0.5) `mulV` scaling 0.5 0.5 0.5
                , sphereMaterial  = M.material
                                    { color    = Color (Red 0.5) (Green 1) (Blue 0.1)
                                    , diffuse  = 0.7
-                              , specular = 0.3 }}
+                                   , materialPattern = Just ring'
+                                   , specular = 0.3 }}
 
 p1  = stripePattern
       (Color (Red 0.9) (Green 0.9) (Blue 0.5))
