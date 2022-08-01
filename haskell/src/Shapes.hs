@@ -19,7 +19,8 @@ data Computation a = Computation { cT         :: Double
                                  , cEyev      :: Tuple
                                  , cNormalv   :: Tuple
                                  , cInside    :: Bool
-                                 , cOverPoint :: Tuple}
+                                 , cOverPoint :: Tuple
+                                 , cReflectv  :: Tuple}
                    deriving(Show)
 
 intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
@@ -50,7 +51,8 @@ prepareComputations i r =
                  , cEyev      = eyev
                  , cNormalv   = normal
                  , cInside    = inside
-                 , cOverPoint = po `add` (normal `Tuples.mul` epsilon)}
+                 , cOverPoint = po `add` (normal `Tuples.mul` epsilon)
+                 , cReflectv  = reflect (direction r) normal }
 
 
 data Intersection a = Intersection

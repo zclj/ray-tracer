@@ -6,6 +6,7 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Spheres
+import Planes
 import Rays
 import Tuples
 import Transformations
@@ -101,6 +102,19 @@ precompute =
         ze `shouldBe` True
       it "comps.point.z > comps.over_point.z" $ do
         pc `shouldBe` True
+    {- Scenario: Precomputing the reflection vector
+         Given shape ← plane()
+           And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))
+           And i ← intersection(√2, shape)
+         When comps ← prepare_computations(i, r)
+         Then comps.reflectv = vector(0, √2/2, √2/2) -}
+    describe "Precomputing the reflection vector" $ do
+      let p = makePlane 1
+          r = makeRay (point 0 1 (-1)) (vector 0 (-(sqrt 2)) (sqrt 2))
+          i = Intersection (sqrt 2) p
+          comps = SUT.prepareComputations i r
+      it "the reflection vector is computed" $ do
+        cReflectv comps `shouldBe` vector 0 (sqrt 2) (sqrt 2)
 
 intersections :: Spec
 intersections =
