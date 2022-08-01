@@ -15,7 +15,19 @@ materialTests :: TestTree
 materialTests = testGroup "Material Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Materials" materialBasics)
-  , unsafePerformIO (testSpec "Materials" materialLighting)]]
+  , unsafePerformIO (testSpec "Materials" materialLighting)
+  , unsafePerformIO (testSpec "Materials" materialReflectivity)]]
+
+materialReflectivity :: Spec
+materialReflectivity =
+  describe "Reflectivity" $ do
+    {- Scenario: Reflectivity for the default material
+         Given m ← material()
+         Then m.reflective = 0.0 -}
+    describe "Reflectivity for the default material" $ do
+      let m = material
+      it "default reflectivity is 0.0" $ do
+        reflective m `shouldBe` 0.0
 
 materialLighting :: Spec
 materialLighting =
@@ -136,6 +148,7 @@ materialLighting =
                               , diffuse   = 0
                               , specular  = 0
                               , shininess = 200
+                              , reflective = 0
                               , materialPattern =
                                 Just (stripePattern
                                        (Color (Red 1) (Green 1) (Blue 1))
