@@ -4,6 +4,7 @@ module World
   , shadeHit
   , colorAt
   , isShadowed
+  , reflectedColor
   )where
 
 import Data.List as DL
@@ -86,3 +87,9 @@ isShadowed w p = let v              = Lights.position (light w) `sub` p
                       Nothing -> case hp of
                                    Just i  -> intersectionT i < distance
                                    Nothing -> False
+
+reflectedColor :: (IsShape a) => World -> Computation a -> Color
+reflectedColor w pc = let m = (shapeMaterial (cObject pc))
+                      in if (reflective m) == 0
+                         then Color (Red 0) (Green 0) (Blue 0)
+                         else Color (Red 1) (Green 1) (Blue 1)

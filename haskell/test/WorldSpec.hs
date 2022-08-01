@@ -20,7 +20,33 @@ worldTests = testGroup "World Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "World" worldBasics)
   , unsafePerformIO (testSpec "World" worldIntersections)
-  , unsafePerformIO (testSpec "World" worldShading)]]
+  , unsafePerformIO (testSpec "World" worldShading)
+  , unsafePerformIO (testSpec "World" worldReflection)]]
+
+worldReflection :: Spec
+worldReflection =
+  describe "World Shading" $ do
+    {- Scenario: The reflected color for a nonreflective material
+         Given w ← default_world()
+           And r ← ray(point(0, 0, 0), vector(0, 0, 1))
+           And shape ← the second object in w
+           And shape.material.ambient ← 1
+           And i ← intersection(1, shape)
+         When comps ← prepare_computations(i, r)
+           And color ← reflected_color(w, comps)
+         Then color = color(0, 0, 0) -}
+    describe "The reflected color for a nonreflective material" $ do
+      let w      = SUT.defaultWorld
+          r      = makeRay (point 0 0 0) (vector 0 0 1)
+          shape  = last (SUT.sphereObjects w)
+          mat    = sphereMaterial shape
+          mat'   = mat { ambient = 1 }
+          shape' = shape { sphereMaterial = mat' }
+          i      = Shapes.Intersection 1 shape'
+          comps  = prepareComputations i r
+          color  = SUT.reflectedColor w comps
+      it "color = color(0, 0, 0)" $ do
+        color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
 
 worldShading :: Spec
 worldShading =
