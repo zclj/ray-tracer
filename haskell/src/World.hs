@@ -92,4 +92,6 @@ reflectedColor :: (IsShape a) => World -> Computation a -> Color
 reflectedColor w pc = let m = (shapeMaterial (cObject pc))
                       in if (reflective m) == 0
                          then Color (Red 0) (Green 0) (Blue 0)
-                         else Color (Red 1) (Green 1) (Blue 1)
+                         else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
+                                  color      = colorAt w reflectRay
+                              in color `mulCS` (reflective m)
