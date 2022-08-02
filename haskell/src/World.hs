@@ -48,14 +48,16 @@ defaultWorld = let defaultSphere1 = Sphere
                in World [defaultSphere1, defaultSphere2] [] defaultLight
 
 shadeHit :: (IsShape a) => World -> Computation a -> Color
-shadeHit world c = Lights.lighting
-                   (shapeMaterial (cObject c))
-                   (cObject c)
-                   (light world)
-                   (cOverPoint c)
-                   (cEyev c)
-                   (cNormalv c)
-                   (isShadowed world (cOverPoint c))
+shadeHit world c = let surface   = Lights.lighting
+                                   (shapeMaterial (cObject c))
+                                   (cObject c)
+                                   (light world)
+                                   (cOverPoint c)
+                                   (cEyev c)
+                                   (cNormalv c)
+                                   (isShadowed world (cOverPoint c))
+                       reflected = reflectedColor world c
+                   in surface `addC` reflected
 
 colorizeShape :: (IsShape a, IsShape b) =>
   World -> Ray -> Maybe (Intersection a) -> Maybe (Intersection b) -> Color

@@ -70,6 +70,28 @@ worldReflection =
           color  = SUT.reflectedColor w comps
       it "color = color(0.19032, 0.2379, 0.14274)" $ do
         color `shouldBe` Color (Red 0.19032) (Green 0.2379) (Blue 0.14274)
+    {- Scenario: shade_hit() with a reflective material
+         Given w ← default_world()
+           And shape ← plane() with:
+             | material.reflective | 0.5                   |
+             | transform           | translation(0, -1, 0) |
+           And shape is added to w
+           And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+           And i ← intersection(√2, shape)
+         When comps ← prepare_computations(i, r)
+           And color ← shade_hit(w, comps)
+         Then color = color(0.87677, 0.92436, 0.82918) -}
+    describe "shade_hit() with a reflective material" $ do
+      let w      = SUT.defaultWorld
+          mat    = material { reflective = 0.5 }
+          shape  = Plane 1 (translation 0 (-1) 0) mat
+          w'     = w { planeObjects = [shape] }
+          r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
+          i      = Shapes.Intersection (sqrt 2) shape
+          comps  = prepareComputations i r
+          color  = SUT.shadeHit w comps
+      it "color = color(0.87677, 0.92436, 0.82918)" $ do
+        color `shouldBe` Color (Red 0.87677) (Green 0.92436) (Blue 0.82918)
 
 worldShading :: Spec
 worldShading =
