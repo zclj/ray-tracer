@@ -47,33 +47,38 @@ defaultWorld = let defaultSphere1 = Sphere
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World [defaultSphere1, defaultSphere2] [] defaultLight
 
-shadeHit :: (IsShape a) => World -> Computation a -> Color
-shadeHit world c = let surface   = Lights.lighting
-                                   (shapeMaterial (cObject c))
-                                   (cObject c)
-                                   (light world)
-                                   (cOverPoint c)
-                                   (cEyev c)
-                                   (cNormalv c)
-                                   (isShadowed world (cOverPoint c))
-                       reflected = reflectedColor world c
-                   in surface `addC` reflected
+shadeHit :: (IsShape a) => World -> Computation a -> Int -> Color
+shadeHit world c remaining
+  = let surface   = Lights.lighting
+                    (shapeMaterial (cObject c))
+                    (cObject c)
+                    (light world)
+                    (cOverPoint c)
+                    (cEyev c)
+                    (cNormalv c)
+                    (isShadowed world (cOverPoint c))
+        reflected = reflectedColor world c remaining
+    in surface `addC` reflected
 
 colorizeShape :: (IsShape a, IsShape b) =>
-  World -> Ray -> Maybe (Intersection a) -> Maybe (Intersection b) -> Color
-colorizeShape _ _ Nothing Nothing   = Color (Red 0) (Green 0) (Blue 0)
-colorizeShape w r (Just i) Nothing  = shadeHit w (prepareComputations i r)
-colorizeShape w r Nothing (Just i)  = shadeHit w (prepareComputations i r)
-colorizeShape w r (Just p) (Just s) = if intersectionT p > intersectionT s
-                                      then shadeHit w (prepareComputations s r)
-                                      else shadeHit w (prepareComputations p r)
+  World -> Ray -> Int -> Maybe (Intersection a) -> Maybe (Intersection b) -> Color
+colorizeShape _ _ _ Nothing Nothing   = Color (Red 0) (Green 0) (Blue 0)
+colorizeShape w r remaining (Just i) Nothing
+  = shadeHit w (prepareComputations i r) remaining
+colorizeShape w r remaining Nothing (Just i)  =
+  shadeHit w (prepareComputations i r) remaining
+colorizeShape w r remaining (Just p) (Just s) =
+  if intersectionT p > intersectionT s
+  then shadeHit w (prepareComputations s r) remaining
+  else shadeHit w (prepareComputations p r) remaining
 
-colorAt :: World -> Ray -> Color
-colorAt w r = let is = intersectShapes (sphereObjects w) r
-                  ip = intersectShapes (planeObjects w) r
-                  hs = hit is
-                  hp = hit ip
-              in colorizeShape w r hp hs
+colorAt :: World -> Ray -> Int -> Color
+colorAt w r remaining
+  = let is = intersectShapes (sphereObjects w) r
+        ip = intersectShapes (planeObjects w) r
+        hs = hit is
+        hp = hit ip
+    in colorizeShape w r remaining hp hs
 
 isShadowed :: World -> Tuple -> Bool
 isShadowed w p = let v              = Lights.position (light w) `sub` p
@@ -90,10 +95,11 @@ isShadowed w p = let v              = Lights.position (light w) `sub` p
                                    Just i  -> intersectionT i < distance
                                    Nothing -> False
 
-reflectedColor :: (IsShape a) => World -> Computation a -> Color
-reflectedColor w pc = let m = (shapeMaterial (cObject pc))
-                      in if (reflective m) == 0
-                         then Color (Red 0) (Green 0) (Blue 0)
-                         else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
-                                  color      = colorAt w reflectRay
-                              in color `mulCS` (reflective m)
+reflectedColor :: (IsShape a) => World -> Computation a -> Int -> Color
+reflectedColor w pc remaining
+  = let m = (shapeMaterial (cObject pc))
+    in if (reflective m) == 0 || remaining == 0
+       then Color (Red 0) (Green 0) (Blue 0)
+       else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
+                color      = colorAt w reflectRay (remaining - 1)
+            in color `mulCS` (reflective m)

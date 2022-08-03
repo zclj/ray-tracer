@@ -45,7 +45,7 @@ worldReflection =
           shape' = shape { sphereMaterial = mat' }
           i      = Shapes.Intersection 1 shape'
           comps  = prepareComputations i r
-          color  = SUT.reflectedColor w comps
+          color  = SUT.reflectedColor w comps 1
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
     {- Scenario: The reflected color for a reflective material
@@ -67,7 +67,7 @@ worldReflection =
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r
-          color  = SUT.reflectedColor w comps
+          color  = SUT.reflectedColor w comps 1
       it "color = color(0.19032, 0.2379, 0.14274)" $ do
         color `shouldBe` Color (Red 0.19032) (Green 0.2379) (Blue 0.14274)
     {- Scenario: shade_hit() with a reflective material
@@ -89,9 +89,54 @@ worldReflection =
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r
-          color  = SUT.shadeHit w comps
+          color  = SUT.shadeHit w comps 1
       it "color = color(0.87677, 0.92436, 0.82918)" $ do
         color `shouldBe` Color (Red 0.87677) (Green 0.92436) (Blue 0.82918)
+    {- Scenario: color_at() with mutually reflective surfaces
+         Given w ← world()
+           And w.light ← point_light(point(0, 0, 0), color(1, 1, 1))
+           And lower ← plane() with:
+             | material.reflective | 1                     |
+             | transform           | translation(0, -1, 0) |
+           And lower is added to w
+           And upper ← plane() with:
+             | material.reflective | 1                    |
+             | transform           | translation(0, 1, 0) |
+           And upper is added to w
+           And r ← ray(point(0, 0, 0), vector(0, 1, 0))
+         Then color_at(w, r) should terminate successfully -}
+    describe "color_at() with mutually reflective surfaces" $ do
+      let light = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
+          mat   = material { reflective = 1 }
+          lower = Plane 1 (translation 0 (-1) 0) mat
+          upper = Plane 2 (translation 0 1 0) mat
+          w     = World [] [lower, upper] light
+          r     = makeRay (point 0 0 0) (vector 0 1 0)
+          c     = colorAt w r 1
+      it "terminates" $ do
+        c `shouldBe` Color (Red 3.8) (Green 3.8) (Blue 3.8)
+    {- Scenario: The reflected color at the maximum recursive depth
+         Given w ← default_world()
+           And shape ← plane() with:
+             | material.reflective | 0.5                   |
+             | transform           | translation(0, -1, 0) |
+           And shape is added to w
+           And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+           And i ← intersection(√2, shape)
+         When comps ← prepare_computations(i, r)
+           And color ← reflected_color(w, comps, 0)
+         Then color = color(0, 0, 0) -}
+    describe "The reflected color at the maximum recursive depth" $ do
+      let w      = SUT.defaultWorld
+          mat    = material { reflective = 0.5 }
+          shape  = Plane 1 (translation 0 (-1) 0) mat
+          w'     = w { planeObjects = [shape] }
+          r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
+          i      = Shapes.Intersection (sqrt 2) shape
+          comps  = prepareComputations i r
+          color  = SUT.reflectedColor w comps 0
+      it "color = color(0, 0, 0)" $ do
+        color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
 
 worldShading :: Spec
 worldShading =
@@ -110,7 +155,7 @@ worldShading =
           s     = head (SUT.sphereObjects w)
           i     = Shapes.Intersection 4 s
           comps = prepareComputations i r
-          c     = SUT.shadeHit w comps
+          c     = SUT.shadeHit w comps 1
       it "shaded color c = color(0.38066, 0.47583, 0.2855)" $ do
         c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
     {- Scenario: Shading an intersection from the inside
@@ -130,7 +175,7 @@ worldShading =
           s     = last (sphereObjects w')
           i     = Intersection 0.5 s
           comps = prepareComputations i r
-          c     = SUT.shadeHit w' comps
+          c     = SUT.shadeHit w' comps 1
       it "shaded color c = color(0.90498, 0.90498, 0.90498)" $ do
         c `shouldBe` Color (Red 0.90498) (Green 0.90498) (Blue 0.90498)
     {- Scenario: The color when a ray misses
@@ -141,7 +186,7 @@ worldShading =
     describe "The color when a ray misses" $ do
       let w = SUT.defaultWorld
           r = makeRay (point 0 0 (-5)) (vector 0 1 0)
-          c = SUT.colorAt w r
+          c = SUT.colorAt w r 1
       it "c = color(0, 0, 0)" $ do
         c `shouldBe` Color (Red 0) (Green 0) (Blue 0)
     {- Scenario: The color when a ray hits
@@ -152,7 +197,7 @@ worldShading =
     describe "The color when a ray hits" $ do
       let w = SUT.defaultWorld
           r = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          c = SUT.colorAt w r
+          c = SUT.colorAt w r 1
       it "c = color(0.38066, 0.47583, 0.2855)" $ do
         c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
     {- Scenario: The color with an intersection behind the ray
@@ -172,7 +217,7 @@ worldShading =
           inner' = inner { sphereMaterial = (sphereMaterial inner) { ambient = 1 }}
           w'     = w { sphereObjects = [outer', inner'] }
           r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
-          c      = SUT.colorAt w' r
+          c      = SUT.colorAt w' r 1
       it "c = inner.material.color" $ do
         c `shouldBe` color (sphereMaterial inner)
     {- Scenario: There is no shadow when nothing is collinear with point and light
@@ -235,7 +280,7 @@ worldShading =
           r = makeRay (point 0 0 5) (vector 0 0 1)
           i = Intersection 4 s2
           comps = prepareComputations i r
-          c = SUT.shadeHit w comps
+          c = SUT.shadeHit w comps 1
       it "c = color(0.1, 0.1, 0.1)" $ do
         c `shouldBe` Color (Red 0.1) (Green 0.1) (Blue 0.1)
 

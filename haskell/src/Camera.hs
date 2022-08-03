@@ -42,7 +42,7 @@ rayForPixel c px py = let xoffset   = (fromIntegral px + 0.5) * pixelSize c
 
 renderPixel :: Int -> Int -> Camera -> World -> Color
 renderPixel x y c w = let ray = rayForPixel c x y
-                      in colorAt w ray
+                      in colorAt w ray 1
 
 renderRow :: Int -> Camera -> World -> [Color]
 renderRow y c w = map (\x -> renderPixel x y c w) [0..hsize c - 1]
