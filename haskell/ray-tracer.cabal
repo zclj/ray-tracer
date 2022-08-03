@@ -39,6 +39,7 @@ library
       Rays
       Scene
       ScenePlanesAndSpheres
+      SceneReflectionRefraction
       ShadedSphere
       Shapes
       Silhouette
