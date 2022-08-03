@@ -28,6 +28,16 @@ materialReflectivity =
       let m = material
       it "default reflectivity is 0.0" $ do
         reflective m `shouldBe` 0.0
+    {- Scenario: Transparency and Refractive Index for the default material
+         Given m ← material()
+         Then m.transparency = 0.0
+           And m.refractive_index = 1.0 -}
+    describe "Transparency and Refractive Index for the default material" $ do
+      let m = material
+      it "transparency = 0.0" $ do
+        transparency m `shouldBe` 0.0
+      it "refractive_index = 1.0" $ do
+        refractiveIndex m `shouldBe` 1.0
 
 materialLighting :: Spec
 materialLighting =
@@ -149,6 +159,8 @@ materialLighting =
                               , specular  = 0
                               , shininess = 200
                               , reflective = 0
+                              , transparency = 0
+                              , refractiveIndex = 1.0
                               , materialPattern =
                                 Just (stripePattern
                                        (Color (Red 1) (Green 1) (Blue 1))
