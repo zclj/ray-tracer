@@ -20,7 +20,9 @@ data Computation a = Computation { cT         :: Double
                                  , cNormalv   :: Tuple
                                  , cInside    :: Bool
                                  , cOverPoint :: Tuple
-                                 , cReflectv  :: Tuple}
+                                 , cReflectv  :: Tuple
+                                 , cN1        :: Double
+                                 , cN2        :: Double}
                    deriving(Show)
 
 intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
@@ -35,8 +37,9 @@ objectNormalAt s worldPoint =
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'
 
-prepareComputations :: (IsShape a) => Intersection a -> Ray -> Computation a
-prepareComputations i r =
+prepareComputations ::
+  (IsShape a) => Intersection a -> Ray -> [Intersection a] -> Computation a
+prepareComputations i r xs =
   let it               = intersectionT i
       po               = position r it
       obj              = intersectionObject i
@@ -52,7 +55,9 @@ prepareComputations i r =
                  , cNormalv   = normal
                  , cInside    = inside
                  , cOverPoint = po `add` (normal `Tuples.mul` epsilon)
-                 , cReflectv  = reflect (direction r) normal }
+                 , cReflectv  = reflect (direction r) normal
+                 , cN1        = 0
+                 , cN2        = 0 }
 
 
 data Intersection a = Intersection

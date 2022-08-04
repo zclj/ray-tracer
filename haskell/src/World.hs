@@ -66,13 +66,13 @@ colorizeShape :: (IsShape a, IsShape b) =>
   World -> Ray -> Int -> Maybe (Intersection a) -> Maybe (Intersection b) -> Color
 colorizeShape _ _ _ Nothing Nothing   = Color (Red 0) (Green 0) (Blue 0)
 colorizeShape w r remaining (Just i) Nothing
-  = shadeHit w (prepareComputations i r) remaining
+  = shadeHit w (prepareComputations i r [i]) remaining
 colorizeShape w r remaining Nothing (Just i)  =
-  shadeHit w (prepareComputations i r) remaining
+  shadeHit w (prepareComputations i r [i]) remaining
 colorizeShape w r remaining (Just p) (Just s) =
   if intersectionT p > intersectionT s
-  then shadeHit w (prepareComputations s r) remaining
-  else shadeHit w (prepareComputations p r) remaining
+  then shadeHit w (prepareComputations s r [s]) remaining
+  else shadeHit w (prepareComputations p r [p]) remaining
 
 colorAt :: World -> Ray -> Int -> Color
 colorAt w r remaining

@@ -44,7 +44,7 @@ worldReflection =
           mat'   = mat { ambient = 1 }
           shape' = shape { sphereMaterial = mat' }
           i      = Shapes.Intersection 1 shape'
-          comps  = prepareComputations i r
+          comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
@@ -66,7 +66,7 @@ worldReflection =
           w'     = w { planeObjects = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
-          comps  = prepareComputations i r
+          comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
       it "color = color(0.19032, 0.2379, 0.14274)" $ do
         color `shouldBe` Color (Red 0.19032) (Green 0.2379) (Blue 0.14274)
@@ -88,7 +88,7 @@ worldReflection =
           w'     = w { planeObjects = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
-          comps  = prepareComputations i r
+          comps  = prepareComputations i r [i]
           color  = SUT.shadeHit w comps 1
       it "color = color(0.87677, 0.92436, 0.82918)" $ do
         color `shouldBe` Color (Red 0.87677) (Green 0.92436) (Blue 0.82918)
@@ -133,7 +133,7 @@ worldReflection =
           w'     = w { planeObjects = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
-          comps  = prepareComputations i r
+          comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 0
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
@@ -154,7 +154,7 @@ worldShading =
           r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s     = head (SUT.sphereObjects w)
           i     = Shapes.Intersection 4 s
-          comps = prepareComputations i r
+          comps = prepareComputations i r [i]
           c     = SUT.shadeHit w comps 1
       it "shaded color c = color(0.38066, 0.47583, 0.2855)" $ do
         c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
@@ -174,7 +174,7 @@ worldShading =
           r     = makeRay (point 0 0 0) (vector 0 0 1)
           s     = last (sphereObjects w')
           i     = Intersection 0.5 s
-          comps = prepareComputations i r
+          comps = prepareComputations i r [i]
           c     = SUT.shadeHit w' comps 1
       it "shaded color c = color(0.90498, 0.90498, 0.90498)" $ do
         c `shouldBe` Color (Red 0.90498) (Green 0.90498) (Blue 0.90498)
@@ -279,7 +279,7 @@ worldShading =
                     , planeObjects  = []}
           r = makeRay (point 0 0 5) (vector 0 0 1)
           i = Intersection 4 s2
-          comps = prepareComputations i r
+          comps = prepareComputations i r [i]
           c = SUT.shadeHit w comps 1
       it "c = color(0.1, 0.1, 0.1)" $ do
         c `shouldBe` Color (Red 0.1) (Green 0.1) (Blue 0.1)

@@ -11,6 +11,7 @@ import Rays
 import Tuples
 import Transformations
 import Shapes as SUT
+import Materials
 
 intersectionsTests :: TestTree
 intersectionsTests = testGroup "Intersections Tests" [
@@ -36,7 +37,7 @@ precompute =
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
           shape = makeUnitSphere 1
           i     = SUT.Intersection 4 shape
-          comps = SUT.prepareComputations i r
+          comps = SUT.prepareComputations i r [i]
       it "computation t = i.t" $ do
         cT comps `shouldBe` intersectionT i
       it "computation object = i.object" $ do
@@ -57,7 +58,7 @@ precompute =
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
           shape = makeUnitSphere 1
           i     = SUT.Intersection 4 shape
-          comps = SUT.prepareComputations i r
+          comps = SUT.prepareComputations i r [i]
       it "comps.inside = false" $ do
         cInside comps `shouldBe` False
     {- Scenario: The hit, when an intersection occurs on the inside
@@ -74,7 +75,7 @@ precompute =
       let r     = makeRay (point 0 0 0) (vector 0 0 1)
           shape = makeUnitSphere 1
           i     = SUT.Intersection 1 shape
-          comps = SUT.prepareComputations i r
+          comps = SUT.prepareComputations i r [i]
       it "computation point = point(0, 0, 1)" $ do
         cPoint comps `shouldBe` point 0 0 1
       it "computation eyev = vector(0, 0, -1)" $ do
@@ -95,7 +96,7 @@ precompute =
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
           shape = (makeUnitSphere 1) { sphereTransform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
-          comps = SUT.prepareComputations i r
+          comps = SUT.prepareComputations i r [i]
           ze    = z (cOverPoint comps) < (-Tuples.epsilon/2)
           pc    = z (cPoint comps) > z (cOverPoint comps)
       it "comps.over_point.z < -EPSILON/2" $ do
@@ -112,9 +113,66 @@ precompute =
       let p = makePlane 1
           r = makeRay (point 0 1 (-1)) (vector 0 (-(sqrt 2)) (sqrt 2))
           i = Intersection (sqrt 2) p
-          comps = SUT.prepareComputations i r
+          comps = SUT.prepareComputations i r [i]
       it "the reflection vector is computed" $ do
         cReflectv comps `shouldBe` vector 0 (sqrt 2) (sqrt 2)
+    {- Scenario Outline: Finding n1 and n2 at various intersections
+         Given A ← glass_sphere() with:
+             | transform                 | scaling(2, 2, 2) |
+             | material.refractive_index | 1.5              |
+           And B ← glass_sphere() with:
+             | transform                 | translation(0, 0, -0.25) |
+             | material.refractive_index | 2.0                      |
+           And C ← glass_sphere() with:
+             | transform                 | translation(0, 0, 0.25) |
+             | material.refractive_index | 2.5                     |
+           And r ← ray(point(0, 0, -4), vector(0, 0, 1))
+           And xs ← intersections(2:A, 2.75:B, 3.25:C, 4.75:B, 5.25:C, 6:A)
+         When comps ← prepare_computations(xs[<index>], r, xs)
+         Then comps.n1 = <n1>
+           And comps.n2 = <n2>
+
+         Examples:
+           | index | n1  | n2  |
+           | 0     | 1.0 | 1.5 |
+           | 1     | 1.5 | 2.0 |
+           | 2     | 2.0 | 2.5 |
+           | 3     | 2.5 | 2.5 |
+           | 4     | 2.5 | 1.5 |
+           | 5     | 1.5 | 1.0 | -}
+    describe "Finding n1 and n2 at various intersections" $ do
+      let a  = makeGlassSphere 1
+          b  = makeGlassSphere 2
+          c  = makeGlassSphere 3
+          m  = sphereMaterial a
+          a' = a { sphereTransform = scaling 2 2 2,
+                   sphereMaterial  = m { refractiveIndex = 1.5 }}
+          b' = b { sphereTransform = scaling 0 0 (-0.25),
+                   sphereMaterial  = m { refractiveIndex = 2.0 }}
+          c' = c { sphereTransform = scaling 0 0 0.25,
+                   sphereMaterial  = m { refractiveIndex = 2.5 }}
+          r  = makeRay (point 0 0 (-4)) (vector 0 0 1)
+          xs = [ SUT.Intersection 2 a'   , SUT.Intersection 2.75 b'
+               , SUT.Intersection 3.25 c', SUT.Intersection 4.75 b'
+               , SUT.Intersection 5.25 c', SUT.Intersection 6 a']
+          c0 = SUT.prepareComputations (xs !! 0) r xs
+          c1 = SUT.prepareComputations (xs !! 1) r xs
+          c2 = SUT.prepareComputations (xs !! 2) r xs
+          c3 = SUT.prepareComputations (xs !! 3) r xs
+          c4 = SUT.prepareComputations (xs !! 4) r xs
+          c5 = SUT.prepareComputations (xs !! 5) r xs
+      it "Index 0, n1 1.0, n2 1.5" $ do
+        [cN1 c0, cN2 c0] `shouldBe` [1.0, 1.5]
+      it "Index 1, n1 1.5, n2 2.0" $ do
+        [cN1 c1, cN2 c1] `shouldBe` [1.5, 2.0]
+      it "Index 2, n1 2.0, n2 2.5" $ do
+        [cN1 c2, cN2 c2] `shouldBe` [2.0, 2.5]
+      it "Index 3, n1 2.5, n2 2.5" $ do
+        [cN1 c3, cN2 c3] `shouldBe` [2.5, 2.5]
+      it "Index 4, n1 2.5, n2 1.5" $ do
+        [cN1 c4, cN2 c4] `shouldBe` [2.5, 1.5]
+      it "Index 5, n1 1.5, n2 1.0" $ do
+        [cN1 c5, cN2 c5] `shouldBe` [1.5, 1.0]
 
 intersections :: Spec
 intersections =
