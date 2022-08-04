@@ -3,6 +3,7 @@ module Spheres
   , makeUnitSphere
   , normalAt
   , setTransform
+  , makeGlassSphere
   ) where
 
 import Tuples
@@ -25,6 +26,10 @@ instance IsShape Sphere where
 
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV M.material
+
+makeGlassSphere :: Int -> Sphere
+makeGlassSphere id =
+  Sphere id 1.0 identityV (M.material { transparency = 1.0, refractiveIndex = 1.5 })
 
 normalAt :: Sphere -> Tuple -> Tuple
 normalAt s objectPoint

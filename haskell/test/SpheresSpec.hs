@@ -46,6 +46,19 @@ sphereMaterials =
           s' = s {SUT.sphereMaterial = m'}
       it "it has the new material" $ do
         SUT.sphereMaterial s' `shouldBe` m'
+    {- Scenario: A helper for producing a sphere with a glassy material
+         Given s ← glass_sphere()
+         Then s.transform = identity_matrix
+           And s.material.transparency = 1.0
+           And s.material.refractive_index = 1.5 -}
+    describe "A helper for producing a sphere with a glassy material" $ do
+      let s = SUT.makeGlassSphere 1
+      it "transform is identity matrix" $ do
+        sphereTransform s `shouldBe` identityV
+      it "material is transparent (1.0)" $ do
+        transparency (sphereMaterial s) `shouldBe` 1.0
+      it "refractive indes is 1.5" $ do
+        refractiveIndex (sphereMaterial s) `shouldBe` 1.5
 
 sphereNormals :: Spec
 sphereNormals =
