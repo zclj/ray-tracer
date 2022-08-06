@@ -62,7 +62,7 @@ shadeHit world c remaining
         reflected = reflectedColor world c remaining
     in surface `addC` reflected
 
-colorizeShape :: (IsShape a, IsShape b) =>
+colorizeShape :: (IsShape a, IsShape b, Ord a, Ord b) =>
   World -> Ray -> Int -> Maybe (Intersection a) -> Maybe (Intersection b) -> Color
 colorizeShape _ _ _ Nothing Nothing   = Color (Red 0) (Green 0) (Blue 0)
 colorizeShape w r remaining (Just i) Nothing
