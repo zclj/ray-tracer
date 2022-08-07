@@ -104,6 +104,7 @@ camera = (makeCamera 1000 500 (pi/3)) { C.transform = viewTransform
 
 renderScenePlanes = render
                     camera
-                    (world { sphereObjects = [middle, right, left]
-                           , planeObjects  = [floorPlane, backdrop, wall]})
+                    (world { aShapes =
+                              (map S.toAShape [middle, right, left]) ++
+                              (map P.toAShape [floorPlane, backdrop, wall])})
 

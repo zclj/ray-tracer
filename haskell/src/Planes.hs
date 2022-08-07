@@ -1,6 +1,7 @@
 module Planes
   ( Plane(..)
   , makePlane
+  , toAShape
   )where
 
 import Shapes
@@ -22,6 +23,9 @@ instance IsShape Plane where
 
 makePlane :: Int -> Plane
 makePlane id = Plane id identityV material
+
+toAShape :: Plane -> AShape
+toAShape p = APlane (Planes.id p) (planeTransform p) (planeMaterial p)
 
 normalAt :: Plane -> Tuple -> Tuple
 normalAt _ _ = vector 0 1 0

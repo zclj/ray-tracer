@@ -12,6 +12,7 @@ import Camera as C
 import Matrices
 import Planes as P
 import Patterns
+import Shapes
 
 -- Planes
 checkers = checkersPattern
@@ -123,11 +124,20 @@ camera = (makeCamera 1200 600 1.152) { C.transform = viewTransform
 ----
 world = defaultWorld { light = lightSource }
 
+----
+-- AShape test
+---
+
+fooShape = ASphere 5 2.0
+           (translation (-2.5) 0.33 (-1.75) `mulV` scaling 0.33 0.33 0.33)
+           (M.material { materialPattern  = Just p1'
+                       , color = Color (Red 1) (Green 0.1) (Blue 0.1)
+                       , diffuse  = 0.7
+                       , specular = 0.3 })
 
 renderSceneReflectionRefraction
   = render
     camera
-    (world { sphereObjects = [middle, right, left]
-           , planeObjects  = [floorPlane, backdrop, wall]})
+    (world { aShapes = [fooShape, S.toAShape middle, S.toAShape right, S.toAShape left, P.toAShape floorPlane, P.toAShape backdrop, P.toAShape wall]})
 
 

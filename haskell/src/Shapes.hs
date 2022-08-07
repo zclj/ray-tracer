@@ -7,6 +7,56 @@ import Rays as R
 import Data.List (sort, find)
 import Patterns
 
+----------------------------------------
+-- Sum Type shapes
+----------------------------------------
+
+data AShape = ASphere { id               :: Int
+                      , asphereRadius    :: Double
+                      , asphereTransform :: VMatrix
+                      , asphereMaterial  :: Material }
+            | APlane { id              :: Int
+                     , aplaneTransform :: VMatrix
+                     , aplaneMaterial  :: Material }
+            deriving (Show, Eq, Ord)
+
+aShapeTransform :: AShape -> VMatrix
+aShapeTransform (ASphere _ _ t _) = t
+aShapeTransform (APlane _ t _) = t
+
+aShapeMaterial :: AShape -> Material
+aShapeMaterial (ASphere _ _ _ m) = m
+aShapeMaterial (APlane _ _ m) = m
+
+aNormalAt :: AShape -> Tuple -> Tuple
+aNormalAt (ASphere _ _ _ _) objectPoint = objectPoint `sub` point 0 0 0
+aNormalAt (APlane _ _ _) _ = vector 0 1 0
+
+aIntersect :: AShape -> Ray -> [Intersection AShape]
+aIntersect s@(ASphere _ _ _ _) r =
+  let sphereToRay  = origin r `sub` Tuples.point 0 0 0
+      a            = direction r `dot` direction r
+      b            = 2 * (direction r `dot` sphereToRay)
+      c            = (sphereToRay `dot` sphereToRay) - 1
+      discriminant = b^2 - (4 * a * c)
+  in if discriminant < 0
+     then []
+     else [ Shapes.Intersection (((-b) - sqrt discriminant) / (2 * a)) s
+          , Shapes.Intersection (((-b) + sqrt discriminant) / (2 * a)) s]
+aIntersect p@(APlane _ _ _) r =
+  if abs(y (direction r)) < epsilon
+  then []
+  else let t = -y (origin r) / y (direction r)
+       in [Intersection t p]
+
+instance IsShape AShape where
+  shapeTransform = aShapeTransform
+  shapeMaterial  = aShapeMaterial
+  shapeNormalAt  = aNormalAt
+  shapeIntersect = aIntersect
+
+----------------------------------------
+
 class IsShape a where
   shapeTransform :: a -> VMatrix
   shapeMaterial  :: a -> Material

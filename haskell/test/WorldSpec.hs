@@ -39,10 +39,10 @@ worldReflection =
     describe "The reflected color for a nonreflective material" $ do
       let w      = SUT.defaultWorld
           r      = makeRay (point 0 0 0) (vector 0 0 1)
-          shape  = last (SUT.sphereObjects w)
-          mat    = sphereMaterial shape
+          shape  = last (SUT.aShapes w)
+          mat    = asphereMaterial shape
           mat'   = mat { ambient = 1 }
-          shape' = shape { sphereMaterial = mat' }
+          shape' = shape { asphereMaterial = mat' }
           i      = Shapes.Intersection 1 shape'
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
@@ -62,8 +62,8 @@ worldReflection =
     describe "The reflected color for a reflective material" $ do
       let w      = SUT.defaultWorld
           mat    = material { reflective = 0.5 }
-          shape  = Plane 1 (translation 0 (-1) 0) mat
-          w'     = w { planeObjects = [shape] }
+          shape  = APlane 1 (translation 0 (-1) 0) mat
+          w'     = w { aShapes = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
@@ -84,8 +84,8 @@ worldReflection =
     describe "shade_hit() with a reflective material" $ do
       let w      = SUT.defaultWorld
           mat    = material { reflective = 0.5 }
-          shape  = Plane 1 (translation 0 (-1) 0) mat
-          w'     = w { planeObjects = [shape] }
+          shape  = APlane 1 (translation 0 (-1) 0) mat
+          w'     = w { aShapes = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
@@ -108,9 +108,9 @@ worldReflection =
     describe "color_at() with mutually reflective surfaces" $ do
       let light = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
           mat   = material { reflective = 1 }
-          lower = Plane 1 (translation 0 (-1) 0) mat
-          upper = Plane 2 (translation 0 1 0) mat
-          w     = World [] [lower, upper] light
+          lower = APlane 1 (translation 0 (-1) 0) mat
+          upper = APlane 2 (translation 0 1 0) mat
+          w     = World [lower, upper] light
           r     = makeRay (point 0 0 0) (vector 0 1 0)
           c     = colorAt w r 1
       it "terminates" $ do
@@ -129,8 +129,8 @@ worldReflection =
     describe "The reflected color at the maximum recursive depth" $ do
       let w      = SUT.defaultWorld
           mat    = material { reflective = 0.5 }
-          shape  = Plane 1 (translation 0 (-1) 0) mat
-          w'     = w { planeObjects = [shape] }
+          shape  = APlane 1 (translation 0 (-1) 0) mat
+          w'     = w { aShapes = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
@@ -152,7 +152,7 @@ worldShading =
     describe "Shading an intersection" $ do
       let w     = SUT.defaultWorld
           r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s     = head (SUT.sphereObjects w)
+          s     = head (SUT.aShapes w)
           i     = Shapes.Intersection 4 s
           comps = prepareComputations i r [i]
           c     = SUT.shadeHit w comps 1
@@ -172,7 +172,7 @@ worldShading =
           w'    = w { light = pointLight (point 0 0.25 0)
                               (Color (Red 1) (Green 1) (Blue 1)) }
           r     = makeRay (point 0 0 0) (vector 0 0 1)
-          s     = last (sphereObjects w')
+          s     = last (aShapes w')
           i     = Intersection 0.5 s
           comps = prepareComputations i r [i]
           c     = SUT.shadeHit w' comps 1
@@ -211,15 +211,15 @@ worldShading =
          Then c = inner.material.color -}
     describe "The color with an intersection behind the ray" $ do
       let w      = SUT.defaultWorld
-          outer  = head (sphereObjects w)
-          inner  = last (sphereObjects w)
-          outer' = outer { sphereMaterial = (sphereMaterial outer) { ambient = 1 }}
-          inner' = inner { sphereMaterial = (sphereMaterial inner) { ambient = 1 }}
-          w'     = w { sphereObjects = [outer', inner'] }
+          (ASphere oid or ot om)  = head (aShapes w)
+          (ASphere lid lr lt lm)  = last (aShapes w)
+          outer' = ASphere oid or ot (om { ambient = 1 })
+          inner' = ASphere lid lr lt (lm { ambient = 1 })
+          w'     = w { aShapes = [inner', outer'] }
           r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
           c      = SUT.colorAt w' r 1
       it "c = inner.material.color" $ do
-        c `shouldBe` color (sphereMaterial inner)
+        c `shouldBe` (color lm)
     {- Scenario: There is no shadow when nothing is collinear with point and light
          Given w ← default_world()
            And p ← point(0, 10, 0)
@@ -275,8 +275,7 @@ worldShading =
           w = World { light   = pointLight
                                 (point 0 0 (-10))
                                 (Color (Red 1) (Green 1) (Blue 1))
-                    , sphereObjects = [ s1, s2]
-                    , planeObjects  = []}
+                    , aShapes = [ Spheres.toAShape s1, Spheres.toAShape s2]}
           r = makeRay (point 0 0 5) (vector 0 0 1)
           i = Intersection 4 s2
           comps = prepareComputations i r [i]
@@ -299,7 +298,7 @@ worldIntersections =
     describe "Intersect a world with a ray" $ do
       let w  = SUT.defaultWorld
           r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          xs = intersectShapes (sphereObjects w) r
+          xs = intersectShapes (aShapes w) r
           [x1, x2, x3, x4] = xs
       it "contains 4 intersections" $ do
         length xs `shouldBe` 4
@@ -321,10 +320,9 @@ worldBasics =
            And w has no light source -}
     describe "Creating a world" $ do
       let l   = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
-          w   = SUT.World { sphereObjects = []
-                          , planeObjects  = []
+          w   = SUT.World { aShapes = []
                           , light   = l}
-          obj = sphereObjects w
+          obj = aShapes w
           wl  = light w
       it "world contains no objects" $ do
         obj `shouldBe` []
@@ -344,21 +342,21 @@ worldBasics =
            And w contains s2 -}
     describe "The default world" $ do
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s1    = Sphere { Spheres.id      = 1
-                         , radius          = 1.0
-                         , sphereTransform = identityV
-                         , sphereMaterial  = Materials.material
-                           { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
-                           , diffuse   = 0.7
-                           , specular  = 0.2}}
-          s2    = Sphere { Spheres.id      = 2
-                         , radius          = 1.0
-                         , sphereTransform = scaling 0.5 0.5 0.5
-                         , sphereMaterial  = Materials.material}
+          s1    = ASphere { Shapes.id        = 1
+                          , asphereRadius    = 1.0
+                          , asphereTransform = identityV
+                          , asphereMaterial  = Materials.material
+                            { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
+                            , diffuse   = 0.7
+                            , specular  = 0.2}}
+          s2    = ASphere { Shapes.id        = 2
+                          , asphereRadius    = 1.0
+                          , asphereTransform = scaling 0.5 0.5 0.5
+                          , asphereMaterial  = Materials.material}
           w     = defaultWorld
       it "contains Sphere S1" $ do
-        head (sphereObjects w) `shouldBe` s1
+        head (aShapes w) `shouldBe` s1
       it "contains Sphere S2" $ do
-        last (sphereObjects w) `shouldBe` s2
+        last (aShapes w) `shouldBe` s2
       it "contains the default light" $ do
         SUT.light w `shouldBe` light

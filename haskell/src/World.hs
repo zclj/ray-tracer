@@ -19,8 +19,9 @@ import Lights
 import Shapes
 import Planes
 
-data World = World { sphereObjects :: [Sphere]
-                   , planeObjects  :: [Plane]
+data World = World { --sphereObjects :: [Sphere]
+                   --, planeObjects  :: [Plane]
+                     aShapes       :: [AShape]
                    , light         :: Light}
                deriving(Show)
 
@@ -47,7 +48,9 @@ defaultWorld = let defaultSphere1 = Sphere
                    defaultLight   = pointLight
                                     (point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
-               in World [defaultSphere1, defaultSphere2] [] defaultLight
+               in World
+                  [Spheres.toAShape defaultSphere1, Spheres.toAShape defaultSphere2]
+                  defaultLight
 
 shadeHit :: (IsShape a) => World -> Computation a -> Int -> Color
 shadeHit world c remaining
@@ -62,40 +65,28 @@ shadeHit world c remaining
         reflected = reflectedColor world c remaining
     in surface `addC` reflected
 
-colorizeShape :: (IsShape a, IsShape b, Ord a, Ord b) =>
-  World -> Ray -> Int -> Maybe (Intersection a) -> Maybe (Intersection b) -> Color
-colorizeShape _ _ _ Nothing Nothing   = Color (Red 0) (Green 0) (Blue 0)
-colorizeShape w r remaining (Just i) Nothing
-  = shadeHit w (prepareComputations i r [i]) remaining
-colorizeShape w r remaining Nothing (Just i)  =
-  shadeHit w (prepareComputations i r [i]) remaining
-colorizeShape w r remaining (Just p) (Just s) =
-  if intersectionT p > intersectionT s
-  then shadeHit w (prepareComputations s r [s]) remaining
-  else shadeHit w (prepareComputations p r [p]) remaining
+colorizeShape :: (IsShape a, Ord a) =>
+  World -> Ray -> Int -> Maybe (Intersection a) -> Color
+colorizeShape _ _ _ Nothing   = Color (Red 0) (Green 0) (Blue 0)
+colorizeShape w r remaining (Just s) =
+  shadeHit w (prepareComputations s r [s]) remaining
 
 colorAt :: World -> Ray -> Int -> Color
 colorAt w r remaining
-  = let is = intersectShapes (sphereObjects w) r
-        ip = intersectShapes (planeObjects w) r
-        hs = hit is
-        hp = hit ip
-    in colorizeShape w r remaining hp hs
+  = let xx = intersectShapes (aShapes w) r
+        yy = hit xx
+    in colorizeShape w r remaining yy
 
 isShadowed :: World -> Tuple -> Bool
 isShadowed w p = let v              = Lights.position (light w) `sub` p
                      distance       = mag v
                      direction      = norm v
                      r              = makeRay p direction
-                     intersections  = intersectShapes (sphereObjects w) r
-                     intersectionsP = intersectShapes (planeObjects w) r
+                     intersections  = intersectShapes (aShapes w) r
                      h              = hit intersections
-                     hp             = hit intersectionsP
                  in case h of
                       Just i  -> intersectionT i < distance
-                      Nothing -> case hp of
-                                   Just i  -> intersectionT i < distance
-                                   Nothing -> False
+                      Nothing -> False
 
 reflectedColor :: (IsShape a) => World -> Computation a -> Int -> Color
 reflectedColor w pc remaining

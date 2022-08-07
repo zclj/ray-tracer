@@ -4,6 +4,7 @@ module Spheres
   , normalAt
   , setTransform
   , makeGlassSphere
+  , toAShape
   ) where
 
 import Tuples
@@ -26,6 +27,9 @@ instance IsShape Sphere where
 
 makeUnitSphere :: Int -> Sphere
 makeUnitSphere id = Sphere id 1.0 identityV M.material
+
+toAShape :: Sphere -> AShape
+toAShape s = ASphere (Spheres.id s) (radius s) (sphereTransform s) (sphereMaterial s)
 
 makeGlassSphere :: Int -> Sphere
 makeGlassSphere id =
