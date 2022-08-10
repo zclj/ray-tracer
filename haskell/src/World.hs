@@ -19,9 +19,7 @@ import Lights
 import Shapes
 import Planes
 
-data World = World { --sphereObjects :: [Sphere]
-                   --, planeObjects  :: [Plane]
-                     aShapes       :: [AShape]
+data World = World { aShapes       :: [AShape]
                    , light         :: Light}
                deriving(Show)
 

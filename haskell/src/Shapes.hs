@@ -87,46 +87,24 @@ objectNormalAt s worldPoint =
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'
 
--- containers ← empty list --/ seems this list should contain refractive_index
+removeOrAppend :: (Eq a) => [a] -> a -> [a]
+removeOrAppend xs i = if i `elem` xs
+                      then filter (\c -> c /= i) xs
+                      else xs ++ [i]
 
--- for i ← each intersection in xs
---   if i = hit then
---     if containers is empty
---       comps.n1 ← 1.0
---     else
---       comps.n1 ← last(containers).material.refractive_index
---     end if
---   end if
+refractiveIndexValue :: (IsShape a) => [a] -> Double
+refractiveIndexValue shapes =
+  if null shapes
+  then 1.0
+  else refractiveIndex (shapeMaterial (last shapes))
 
---   if containers includes i.object then
---     remove i.object from containers --/ id should be enough?
---   else
---     append i.object onto containers
---   end if
-
---   if i = hit then
---     if containers is empty
---       comps.n2 ← 1.0
---     else
---       comps.n2 ← last(containers).material.refractive_index
---     end if
-
---     terminate loop
---   end if
--- end for
-
-refractive :: (IsShape a, Ord a) => Intersection a -> (Double, Double)
-refractive i = let aHit       = hit [i]
-                   containers = []::[a]
-               in case aHit of
-                    Nothing  -> (0,0)
-                    Just (h) -> if null containers
-                                then (1.0, 0.0)
-                                else (1.0, 0.0)--(refractiveIndex (shapeMaterial (last containers)), 0.0)
-
-refractiveIndices :: (IsShape a, Ord a) => [Intersection a] -> (Double, Double)
-refractiveIndices xs =
-  head $ map (\i -> refractive i) xs
+refractive :: (IsShape a, Ord a) => [Intersection a] -> [a] -> Intersection a -> (Double, Double) -> (Double, Double)
+refractive [] shapes hit (n1, n2)     = (n1, n2)
+refractive (i:is) shapes hit (n1, n2) =
+  let shapes' = removeOrAppend shapes (intersectionObject i)
+  in if hit == i
+     then (refractiveIndexValue shapes, refractiveIndexValue shapes')
+     else refractive is shapes' hit (n1, n2)
 
 prepareComputations ::
   (IsShape a, Ord a) => Intersection a -> Ray -> [Intersection a] -> Computation a
@@ -139,7 +117,7 @@ prepareComputations i r xs =
       (inside, normal) = if (normalv `dot` eyev) < 0
                          then (True, neg normalv)
                          else (False, normalv)
-      (n1, n2)         = refractiveIndices xs
+      (n1, n2)         = refractive xs [] i (0.0, 0.0)
   in Computation { cT         = it
                  , cObject    = obj
                  , cPoint     = po
