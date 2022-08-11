@@ -5,6 +5,7 @@ module World
   , colorAt
   , isShadowed
   , reflectedColor
+  , refractedColor
   )where
 
 import Data.List as DL
@@ -94,3 +95,10 @@ reflectedColor w pc remaining
        else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
                 color      = colorAt w reflectRay (remaining - 1)
             in color `mulCS` (reflective m)
+
+refractedColor :: (IsShape a) => World -> Computation a -> Int -> Color
+refractedColor w pc remaining =
+  let m = (shapeMaterial (cObject pc))
+  in if transparency m == 0
+     then Color (Red 0) (Green 0) (Blue 0)
+     else Color (Red 1) (Green 1) (Blue 1)
