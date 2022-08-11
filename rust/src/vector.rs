@@ -63,4 +63,24 @@ mod tests {
         assert_eq!(a.is_point(), true);
         assert_eq!(a.is_vector(), false);
     }
+
+    // Scenario: A tuple with w=0 is a vector
+    // Given a ← tuple(4.3, -4.2, 3.1, 0.0)
+    // Then a.x = 4.3
+    //   And a.y = -4.2
+    //   And a.z = 3.1
+    //   And a.w = 0.0
+    //   And a is not a point
+    //   And a is a vector
+    #[test]
+    fn a_tulpe_with_w_0_is_a_vector() {
+        let a = Vector4D::new(4.3, -4.2, 3.1, 0.0);
+
+        assert_eq!(a.x(), 4.3);
+        assert_eq!(a.y(), -4.2);
+        assert_eq!(a.z(), 3.1);
+        assert_eq!(a.w(), 0.0);
+        assert_eq!(a.is_point(), false);
+        assert_eq!(a.is_vector(), true);
+    }
 }
