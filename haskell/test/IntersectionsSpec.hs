@@ -103,6 +103,25 @@ precompute =
         ze `shouldBe` True
       it "comps.point.z > comps.over_point.z" $ do
         pc `shouldBe` True
+    {- Scenario: The under point is offset below the surface
+         Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And shape ← glass_sphere() with:
+             | transform | translation(0, 0, 1) |
+           And i ← intersection(5, shape)
+           And xs ← intersections(i)
+         When comps ← prepare_computations(i, r, xs)
+         Then comps.under_point.z > EPSILON/2
+           And comps.point.z < comps.under_point.z -}
+    describe "The under point is offset below the surface" $ do
+      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          shape = (makeGlassSphere 1) { sphereTransform = translation 0 0 1 }
+          i     = SUT.Intersection 5 shape
+          xs    = [i]
+          comps = SUT.prepareComputations i r xs
+      it "comps.under_point.z > EPSILON/2" $ do
+        (z (cUnderPoint comps)) > (Tuples.epsilon/2) `shouldBe` True
+      it "comps.point.z < comps.under_point.z" $ do
+        (z (cPoint comps)) < (z (cUnderPoint comps)) `shouldBe` True
     {- Scenario: Precomputing the reflection vector
          Given shape ← plane()
            And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))

@@ -63,16 +63,17 @@ class IsShape a where
   shapeNormalAt  :: a -> Tuple -> Tuple
   shapeIntersect :: a -> Ray -> [Intersection a]
 
-data Computation a = Computation { cT         :: Double
-                                 , cObject    :: a
-                                 , cPoint     :: Tuple
-                                 , cEyev      :: Tuple
-                                 , cNormalv   :: Tuple
-                                 , cInside    :: Bool
-                                 , cOverPoint :: Tuple
-                                 , cReflectv  :: Tuple
-                                 , cN1        :: Double
-                                 , cN2        :: Double}
+data Computation a = Computation { cT          :: Double
+                                 , cObject     :: a
+                                 , cPoint      :: Tuple
+                                 , cEyev       :: Tuple
+                                 , cNormalv    :: Tuple
+                                 , cInside     :: Bool
+                                 , cOverPoint  :: Tuple
+                                 , cUnderPoint :: Tuple
+                                 , cReflectv   :: Tuple
+                                 , cN1         :: Double
+                                 , cN2         :: Double}
                    deriving(Show)
 
 intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
@@ -118,16 +119,17 @@ prepareComputations i r xs =
                          then (True, neg normalv)
                          else (False, normalv)
       (n1, n2)         = refractive xs [] i (0.0, 0.0)
-  in Computation { cT         = it
-                 , cObject    = obj
-                 , cPoint     = po
-                 , cEyev      = eyev
-                 , cNormalv   = normal
-                 , cInside    = inside
-                 , cOverPoint = po `add` (normal `Tuples.mul` epsilon)
-                 , cReflectv  = reflect (direction r) normal
-                 , cN1        = n1
-                 , cN2        = n2 }
+  in Computation { cT          = it
+                 , cObject     = obj
+                 , cPoint      = po
+                 , cEyev       = eyev
+                 , cNormalv    = normal
+                 , cInside     = inside
+                 , cOverPoint  = po `add` (normal `Tuples.mul` epsilon)
+                 , cUnderPoint = po `sub` (normal `Tuples.mul` epsilon)
+                 , cReflectv   = reflect (direction r) normal
+                 , cN1         = n1
+                 , cN2         = n2 }
 
 
 data Intersection a = Intersection
