@@ -99,6 +99,6 @@ reflectedColor w pc remaining
 refractedColor :: (IsShape a) => World -> Computation a -> Int -> Color
 refractedColor w pc remaining =
   let m = (shapeMaterial (cObject pc))
-  in if transparency m == 0
+  in if transparency m == 0 || remaining == 0
      then Color (Red 0) (Green 0) (Blue 0)
      else Color (Red 1) (Green 1) (Blue 1)

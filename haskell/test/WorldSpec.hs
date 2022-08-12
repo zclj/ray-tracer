@@ -154,6 +154,28 @@ worldReflection =
           color = SUT.refractedColor w comps 5
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
+    {- Scenario: The refracted color at the maximum recursive depth
+         Given w ← default_world()
+           And shape ← the first object in w
+           And shape has:
+             | material.transparency     | 1.0 |
+             | material.refractive_index | 1.5 |
+           And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+           And xs ← intersections(4:shape, 6:shape)
+         When comps ← prepare_computations(xs[0], r, xs)
+           And c ← refracted_color(w, comps, 0)
+         Then c = color(0, 0, 0) -}
+    describe "The refracted color at the maximum recursive depth" $ do
+      let w      = SUT.defaultWorld
+          shape  = head (aShapes w)
+          m      = (aShapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
+          shape' = shape { asphereMaterial = m }
+          r      = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          xs     = [Shapes.Intersection 4 shape', Shapes.Intersection 6 shape']
+          comps  = prepareComputations (xs !! 0) r xs
+          color  = SUT.refractedColor w comps 0
+      it "color = color(0, 0, 0)" $ do
+        color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
 
 worldShading :: Spec
 worldShading =
