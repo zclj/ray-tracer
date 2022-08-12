@@ -176,6 +176,31 @@ worldReflection =
           color  = SUT.refractedColor w comps 0
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
+    {- Scenario: The refracted color under total internal reflection
+         Given w ← default_world()
+           And shape ← the first object in w
+           And shape has:
+             | material.transparency     | 1.0 |
+             | material.refractive_index | 1.5 |
+           And r ← ray(point(0, 0, √2/2), vector(0, 1, 0))
+           And xs ← intersections(-√2/2:shape, √2/2:shape)
+         # NOTE: this time you're inside the sphere, so you need
+         # to look at the second intersection, xs[1], not xs[0]
+         When comps ← prepare_computations(xs[1], r, xs)
+           And c ← refracted_color(w, comps, 5)
+         Then c = color(0, 0, 0) -}
+    describe "The refracted color under total internal reflection" $ do
+      let w      = SUT.defaultWorld
+          shape  = head (aShapes w)
+          m      = (aShapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
+          shape' = shape { asphereMaterial = m }
+          r      = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
+          xs     = [ Shapes.Intersection (-sqrt 2/2) shape'
+                   , Shapes.Intersection (sqrt 2/2) shape']
+          comps  = prepareComputations (xs !! 1) r xs
+          color  = SUT.refractedColor w comps 5
+      it "color = color(0, 0, 0)" $ do
+        color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
 
 worldShading :: Spec
 worldShading =
