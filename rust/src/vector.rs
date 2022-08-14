@@ -40,6 +40,19 @@ impl Vector4D {
     }
 }
 
+impl std::ops::Add<Vector4D> for Vector4D {
+    type Output = Self;
+
+    fn add(self, rhs: Vector4D) -> Self {
+        let [lx, ly, lz, lw] = &self.data;
+        let [rx, ry, rz, rw] = rhs.data;
+
+        Vector4D {
+            data: [lx + rx, ly + ry, lz + rz, lw + rw],
+        }
+    }
+}
+
 pub fn point(x: f32, y: f32, z: f32) -> Vector4D {
     Vector4D::new(x, y, z, 1.0)
 }
@@ -111,5 +124,17 @@ mod tests {
         let v = vector(4.0, -4.0, 3.0);
 
         assert_eq!(v, Vector4D::new(4.0, -4.0, 3.0, 0.0));
+    }
+
+    // Scenario: Adding two tuples
+    // Given a1 ← tuple(3, -2, 5, 1)
+    //   And a2 ← tuple(-2, 3, 1, 0)
+    // Then a1 + a2 = tuple(1, 1, 6, 1)
+    #[test]
+    fn adding_two_vectors() {
+        let a1 = vector(3.0, -2.0, 5.0);
+        let a2 = point(-2.0, 3.0, 1.0);
+
+        assert_eq!(a1 + a2, Vector4D::new(1.0, 1.0, 6.0, 1.0));
     }
 }
