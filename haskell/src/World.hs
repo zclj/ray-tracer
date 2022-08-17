@@ -103,9 +103,21 @@ totalInternalReflection pc =
       sin2_t  = n_ratio^2 * (1 - cos_i^2)
   in sin2_t
 
+refractedRayColor :: (IsShape a) => World -> Computation a -> Int -> Color
+refractedRayColor w pc remaining =
+  -- TODO: lots of common calculations with totalInternalreflection..
+  let n_ratio = (cN1 pc) / (cN2 pc)
+      cos_i   = (cEyev pc) `dot` (cNormalv pc)
+      sin2_t  = n_ratio^2 * (1 - cos_i^2)
+      cos_t   = sqrt (1 - sin2_t)
+      direction = ((cNormalv pc) `Tuples.mul` (n_ratio * cos_i - cos_t)) `sub` ((cEyev pc) `Tuples.mul` n_ratio)
+      refractRay = makeRay (cUnderPoint pc) direction
+      color = (colorAt w refractRay (remaining - 1)) `mulCS` (transparency (shapeMaterial (cObject pc)))
+  in color
+
 refractedColor :: (IsShape a) => World -> Computation a -> Int -> Color
 refractedColor w pc remaining =
   let m = (shapeMaterial (cObject pc))
   in if transparency m == 0 || remaining == 0 || totalInternalReflection pc > 1.0
      then Color (Red 0) (Green 0) (Blue 0)
-     else Color (Red 1) (Green 1) (Blue 1)
+     else refractedRayColor w pc remaining

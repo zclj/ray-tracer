@@ -219,23 +219,24 @@ worldReflection =
          Then c = color(0, 0.99888, 0.04725) -}
     describe "The refracted color with a refracted ray" $ do
       let w      = SUT.defaultWorld
-          a  = head (aShapes w)
+          a      = head (aShapes w)
           am     = (aShapeMaterial a)
-                   { ambient = 1.0,
-                     materialPattern = Just identityPattern }
-          a' = a { asphereMaterial = am }
-          b = last (aShapes w)
-          bm = (aShapeMaterial b)
-               { transparency    = 1.0,
-                 refractiveIndex = 1.5 }
-          b' = b {asphereMaterial = bm }
+                   { ambient         = 1.0,
+                     materialPattern = Just pointPattern}
+          a'     = a { asphereMaterial = am }
+          b      = last (aShapes w)
+          bm     = (aShapeMaterial b)
+                   { transparency    = 1.0,
+                     refractiveIndex = 1.5 }
+          b'     = b {asphereMaterial = bm }
           r      = makeRay (point 0 0 0.1) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-0.9899) a'
                    , Shapes.Intersection (-0.4899) b'
                    , Shapes.Intersection 0.4899 b'
                    , Shapes.Intersection 0.9899 a']
           comps  = prepareComputations (xs !! 2) r xs
-          color  = SUT.refractedColor w comps 5
+          w'     = w { aShapes = [a', b'] }
+          color  = SUT.refractedColor w' comps 5
       it "color = color(0, 0.99888, 0.04725)" $ do
         color `shouldBe` Color (Red 0) (Green 0.99888) (Blue 0.04725)
 
