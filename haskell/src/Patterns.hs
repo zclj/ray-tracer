@@ -6,7 +6,7 @@ module Patterns
   , patternAt
   , ringPattern
   , checkersPattern
-  , identityPattern
+  , pointPattern
   )where
 
 import Tuples
@@ -16,7 +16,7 @@ data PatternShape = Stripes
                   | Gradient
                   | Ring
                   | Checkers
-                  | Identity
+                  | Point
                   deriving(Eq, Show, Ord)
 
 data Pattern = Pattern { a :: Color
@@ -25,8 +25,11 @@ data Pattern = Pattern { a :: Color
                        , patternShape :: PatternShape}
                deriving(Eq, Show, Ord)
 
-identityPattern :: Pattern
-identityPattern = Pattern (Color (Red 0) (Green 0) (Blue 0)) (Color (Red 0) (Green 0) (Blue 0)) identityV Identity
+pointPattern :: Pattern
+pointPattern = Pattern (Color (Red 0) (Green 0) (Blue 0)) (Color (Red 0) (Green 0) (Blue 0)) identityV Point
+
+pointAt :: Pattern -> Tuple -> Color
+pointAt p (Tuple x y z _) = Color (Red x) (Green y) (Blue z)
 
 stripePattern :: Color -> Color -> Pattern
 stripePattern aC bC = Pattern aC bC identityV Stripes
@@ -67,3 +70,4 @@ patternAt p@Pattern { patternShape = ps } point =
     Gradient -> gradientAt p point
     Ring     -> ringAt p point
     Checkers -> checkersAt p point
+    Point    -> pointAt p point
