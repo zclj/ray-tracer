@@ -4,7 +4,7 @@
 /// # use ray_tracer::vector::Vector4D;
 /// assert_eq!(Vector4D::new(4.0, 1.0, 4.0, 1.0).x() , 4.0)
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct Vector4D {
     // @TODO: measure if the different stores make a performance diff.
     data: [f32; 4], //Vec<f32>,
@@ -50,6 +50,19 @@ impl std::ops::Add<Vector4D> for Vector4D {
         Vector4D {
             data: [lx + rx, ly + ry, lz + rz, lw + rw],
         }
+    }
+}
+
+impl std::cmp::PartialEq<Vector4D> for Vector4D {
+    fn eq(&self, rhs: &Vector4D) -> bool {
+        let [lx, ly, lz, lw] = &self.data;
+        let [rx, ry, rz, rw] = rhs.data;
+        let epsilon = 0.00001;
+
+        (lx - rx).abs() < epsilon
+            && (ly - ry).abs() < epsilon
+            && (lz - rz).abs() < epsilon
+            && (lw - rw).abs() < epsilon
     }
 }
 
