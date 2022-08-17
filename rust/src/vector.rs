@@ -7,6 +7,7 @@
 #[derive(Debug)]
 pub struct Vector4D {
     // @TODO: measure if the different stores make a performance diff.
+    //        In addition, try a struct based storage for x..w
     data: [f32; 4], //Vec<f32>,
 }
 
@@ -49,6 +50,31 @@ impl std::ops::Add<Vector4D> for Vector4D {
 
         Vector4D {
             data: [lx + rx, ly + ry, lz + rz, lw + rw],
+        }
+    }
+}
+
+impl std::ops::Sub<Vector4D> for Vector4D {
+    type Output = Self;
+
+    fn sub(self, rhs: Vector4D) -> Self {
+        let [lx, ly, lz, lw] = &self.data;
+        let [rx, ry, rz, rw] = rhs.data;
+
+        Vector4D {
+            data: [lx - rx, ly - ry, lz - rz, lw - rw],
+        }
+    }
+}
+
+impl std::ops::Neg for Vector4D {
+    type Output = Self;
+
+    fn neg(self) -> Self {
+        let [x, y, z, w] = &self.data;
+
+        Vector4D {
+            data: [-x, -y, -z, -w],
         }
     }
 }
@@ -149,5 +175,62 @@ mod tests {
         let a2 = point(-2.0, 3.0, 1.0);
 
         assert_eq!(a1 + a2, Vector4D::new(1.0, 1.0, 6.0, 1.0));
+    }
+    // Scenario: Subtracting two points
+    // Given p1 ← point(3, 2, 1)
+    // And p2 ← point(5, 6, 7)
+    // Then p1 - p2 = vector(-2, -4, -6)
+    #[test]
+    fn subtracting_two_points() {
+        let p1 = point(3.0, 2.0, 1.0);
+        let p2 = point(5.0, 6.0, 7.0);
+
+        assert_eq!(p1 - p2, vector(-2.0, -4.0, -6.0));
+    }
+
+    // Scenario: Subtracting a vector from a point
+    // Given p ← point(3, 2, 1)
+    //   And v ← vector(5, 6, 7)
+    // Then p - v = point(-2, -4, -6)
+    #[test]
+    fn subtracting_a_vector_from_a_point() {
+        let p = point(3.0, 2.0, 1.0);
+        let v = vector(5.0, 6.0, 7.0);
+
+        assert_eq!(p - v, point(-2.0, -4.0, -6.0));
+    }
+
+    // Scenario: Subtracting two vectors
+    // Given v1 ← vector(3, 2, 1)
+    //   And v2 ← vector(5, 6, 7)
+    // Then v1 - v2 = vector(-2, -4, -6)
+    #[test]
+    fn subtracting_two_vectors() {
+        let v1 = vector(3.0, 2.0, 1.0);
+        let v2 = vector(5.0, 6.0, 7.0);
+
+        assert_eq!(v1 - v2, vector(-2.0, -4.0, -6.0));
+    }
+
+    // Scenario: Subtracting a vector from the zero vector
+    // Given zero ← vector(0, 0, 0)
+    //   And v ← vector(1, -2, 3)
+    // Then zero - v = vector(-1, 2, -3)
+    #[test]
+    fn subtracting_a_vector_from_the_zero_vector() {
+        let zero = vector(0.0, 0.0, 0.0);
+        let v = vector(1.0, -2.0, 3.0);
+
+        assert_eq!(zero - v, vector(-1.0, 2.0, -3.0));
+    }
+
+    // Scenario: Negating a tuple
+    // Given a ← tuple(1, -2, 3, -4)
+    // Then -a = tuple(-1, 2, -3, 4)
+    #[test]
+    fn negating_a_vector() {
+        let v = Vector4D::new(1.0, -2.0, 3.0, -4.0);
+
+        assert_eq!(-v, Vector4D::new(-1.0, 2.0, -3.0, 4.0));
     }
 }
