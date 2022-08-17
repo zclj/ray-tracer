@@ -27,9 +27,9 @@ floorPlane = Plane { P.id = 1
                                       , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
                                       , specular = 0.5 }}
 
-wallGrad = (gradientPattern
-         (Color (Red 0.9) (Green 0.4) (Blue 0.9))
-         (Color (Red 0.9) (Green 0.1) (Blue 0.4)))
+wallGrad = gradientPattern
+           (Color (Red 0.9) (Green 0.4) (Blue 0.9))
+           (Color (Red 0.9) (Green 0.1) (Blue 0.4))
 wallGrad' = wallGrad { patternTransform = translation 3.5 1 1 `mulV` scaling 10 1 1 }
 
 backdrop = Plane { P.id = 2
@@ -105,6 +105,6 @@ camera = (makeCamera 1000 500 (pi/3)) { C.transform = viewTransform
 renderScenePlanes = render
                     camera
                     (world { aShapes =
-                              (map S.toAShape [middle, right, left]) ++
-                              (map P.toAShape [floorPlane, backdrop, wall])})
+                              map S.toAShape [middle, right, left] ++
+                              map P.toAShape [floorPlane, backdrop, wall]})
 
