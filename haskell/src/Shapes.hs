@@ -29,11 +29,11 @@ aShapeMaterial (ASphere _ _ _ m) = m
 aShapeMaterial (APlane _ _ m) = m
 
 aNormalAt :: AShape -> Tuple -> Tuple
-aNormalAt (ASphere _ _ _ _) objectPoint = objectPoint `sub` point 0 0 0
-aNormalAt (APlane _ _ _) _ = vector 0 1 0
+aNormalAt ASphere {} objectPoint = objectPoint `sub` point 0 0 0
+aNormalAt APlane {} _ = vector 0 1 0
 
 aIntersect :: AShape -> Ray -> [Intersection AShape]
-aIntersect s@(ASphere _ _ _ _) r =
+aIntersect s@ASphere {} r =
   let sphereToRay  = origin r `sub` Tuples.point 0 0 0
       a            = direction r `dot` direction r
       b            = 2 * (direction r `dot` sphereToRay)
@@ -43,7 +43,7 @@ aIntersect s@(ASphere _ _ _ _) r =
      then []
      else [ Shapes.Intersection (((-b) - sqrt discriminant) / (2 * a)) s
           , Shapes.Intersection (((-b) + sqrt discriminant) / (2 * a)) s]
-aIntersect p@(APlane _ _ _) r =
+aIntersect p@APlane {} r =
   if abs(y (direction r)) < epsilon
   then []
   else let t = -y (origin r) / y (direction r)
@@ -90,7 +90,7 @@ objectNormalAt s worldPoint =
 
 removeOrAppend :: (Eq a) => [a] -> a -> [a]
 removeOrAppend xs i = if i `elem` xs
-                      then filter (\c -> c /= i) xs
+                      then filter (/= i) xs
                       else xs ++ [i]
 
 refractiveIndexValue :: (IsShape a) => [a] -> Double

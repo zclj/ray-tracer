@@ -89,24 +89,24 @@ isShadowed w p = let v              = Lights.position (light w) `sub` p
 
 reflectedColor :: (IsShape a) => World -> Computation a -> Int -> Color
 reflectedColor w pc remaining
-  = let m = (shapeMaterial (cObject pc))
-    in if (reflective m) == 0 || remaining == 0
+  = let m = shapeMaterial (cObject pc)
+    in if reflective m == 0 || remaining == 0
        then Color (Red 0) (Green 0) (Blue 0)
        else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
                 color      = colorAt w reflectRay (remaining - 1)
-            in color `mulCS` (reflective m)
+            in color `mulCS` reflective m
 
 refractedColor :: (IsShape a) => World -> Computation a -> Int -> Color
 refractedColor w pc remaining =
-  let m       = (shapeMaterial (cObject pc))
-      n_ratio = (cN1 pc) / (cN2 pc)
-      cos_i   = (cEyev pc) `dot` (cNormalv pc)
+  let m       = shapeMaterial (cObject pc)
+      n_ratio = cN1 pc / cN2 pc
+      cos_i   = cEyev pc `dot` cNormalv pc
       sin2_t  = n_ratio^2 * (1 - cos_i^2)
   in if transparency m == 0 || remaining == 0 || sin2_t > 1.0
      then Color (Red 0) (Green 0) (Blue 0)
      else let cos_t      = sqrt (1 - sin2_t)
-              direction  = ((cNormalv pc) `Tuples.mul` (n_ratio * cos_i - cos_t))
-                          `sub` ((cEyev pc) `Tuples.mul` n_ratio)
+              direction  = cNormalv pc `Tuples.mul` (n_ratio * cos_i - cos_t)
+                          `sub` (cEyev pc `Tuples.mul` n_ratio)
               refractRay = makeRay (cUnderPoint pc) direction
-          in (colorAt w refractRay (remaining - 1)) `mulCS`
-             (transparency (shapeMaterial (cObject pc)))
+          in colorAt w refractRay (remaining - 1) `mulCS`
+             transparency (shapeMaterial (cObject pc))

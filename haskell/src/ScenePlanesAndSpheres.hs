@@ -52,9 +52,9 @@ wall = Plane { P.id = 3
                                 , specular = 0.2 }}
 
 -- Spheres
-grad = (gradientPattern
-         (Color (Red 0.9) (Green 0.9) (Blue 0.9))
-         (Color (Red 0.9) (Green 0.1) (Blue 0.1)))
+grad = gradientPattern
+       (Color (Red 0.9) (Green 0.9) (Blue 0.9))
+       (Color (Red 0.9) (Green 0.1) (Blue 0.1))
 grad' = grad { patternTransform = translation 1.5 1 1 `mulV` scaling 3.5 1 1 }
 
 middle = Sphere { S.id = 4

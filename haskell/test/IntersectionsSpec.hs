@@ -119,9 +119,9 @@ precompute =
           xs    = [i]
           comps = SUT.prepareComputations i r xs
       it "comps.under_point.z > EPSILON/2" $ do
-        (z (cUnderPoint comps)) > (Tuples.epsilon/2) `shouldBe` True
+        z (cUnderPoint comps) > (Tuples.epsilon/2) `shouldBe` True
       it "comps.point.z < comps.under_point.z" $ do
-        (z (cPoint comps)) < (z (cUnderPoint comps)) `shouldBe` True
+        z (cPoint comps) < z (cUnderPoint comps) `shouldBe` True
     {- Scenario: Precomputing the reflection vector
          Given shape ← plane()
            And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))
@@ -174,7 +174,7 @@ precompute =
           xs = [ SUT.Intersection 2 a'   , SUT.Intersection 2.75 b'
                , SUT.Intersection 3.25 c', SUT.Intersection 4.75 b'
                , SUT.Intersection 5.25 c', SUT.Intersection 6 a']
-          c0 = SUT.prepareComputations (xs !! 0) r xs
+          c0 = SUT.prepareComputations (head xs) r xs
           c1 = SUT.prepareComputations (xs !! 1) r xs
           c2 = SUT.prepareComputations (xs !! 2) r xs
           c3 = SUT.prepareComputations (xs !! 3) r xs

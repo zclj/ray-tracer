@@ -29,9 +29,9 @@ floorPlane = Plane { P.id = 1
                                       , reflective = 0.5
                                       , specular = 0.5 }}
 
-wallGrad = (gradientPattern
-         (Color (Red 0.9) (Green 0.4) (Blue 0.9))
-         (Color (Red 0.9) (Green 0.1) (Blue 0.4)))
+wallGrad = gradientPattern
+           (Color (Red 0.9) (Green 0.4) (Blue 0.9))
+           (Color (Red 0.9) (Green 0.1) (Blue 0.4))
 wallGrad' = wallGrad { patternTransform = translation 3.5 1 1 `mulV` scaling 10 1 1 }
 
 backdrop = Plane { P.id = 2
@@ -59,9 +59,9 @@ wall = Plane { P.id = 3
                                 , specular = 0.9 }}
 
 -- Spheres
-grad = (gradientPattern
-         (Color (Red 0.9) (Green 0.9) (Blue 0.9))
-         (Color (Red 0.9) (Green 0.1) (Blue 0.1)))
+grad = gradientPattern
+       (Color (Red 0.9) (Green 0.9) (Blue 0.9))
+       (Color (Red 0.9) (Green 0.1) (Blue 0.1))
 grad' = grad { patternTransform = translation 1.5 1 1 `mulV` scaling 3.5 1 1 }
 
 middle = Sphere { S.id = 4

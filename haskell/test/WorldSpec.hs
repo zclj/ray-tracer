@@ -65,7 +65,7 @@ worldReflection =
           mat    = material { reflective = 0.5 }
           shape  = APlane 1 (translation 0 (-1) 0) mat
           w'     = w { aShapes = [shape] }
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
+          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
@@ -87,7 +87,7 @@ worldReflection =
           mat    = material { reflective = 0.5 }
           shape  = APlane 1 (translation 0 (-1) 0) mat
           w'     = w { aShapes = [shape] }
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
+          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
           color  = SUT.shadeHit w comps 1
@@ -132,7 +132,7 @@ worldReflection =
           mat    = material { reflective = 0.5 }
           shape  = APlane 1 (translation 0 (-1) 0) mat
           w'     = w { aShapes = [shape] }
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-(sqrt 2)/2) (sqrt 2/2))
+          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 0
@@ -151,7 +151,7 @@ worldReflection =
           shape = head (aShapes w)
           r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
           xs    = [Shapes.Intersection 4 shape, Shapes.Intersection 6 shape]
-          comps = prepareComputations (xs !! 0) r xs
+          comps = prepareComputations (head xs) r xs
           color = SUT.refractedColor w comps 5
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
@@ -173,7 +173,7 @@ worldReflection =
           shape' = shape { asphereMaterial = m }
           r      = makeRay (point 0 0 (-5)) (vector 0 0 1)
           xs     = [Shapes.Intersection 4 shape', Shapes.Intersection 6 shape']
-          comps  = prepareComputations (xs !! 0) r xs
+          comps  = prepareComputations (head xs) r xs
           color  = SUT.refractedColor w comps 0
       it "color = color(0, 0, 0)" $ do
         color `shouldBe` Color (Red 0) (Green 0) (Blue 0)
@@ -321,7 +321,7 @@ worldShading =
           r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
           c      = SUT.colorAt w' r 1
       it "c = inner.material.color" $ do
-        c `shouldBe` (color lm)
+        c `shouldBe` color lm
     {- Scenario: There is no shadow when nothing is collinear with point and light
          Given w ← default_world()
            And p ← point(0, 10, 0)
