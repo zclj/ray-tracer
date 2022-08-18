@@ -45,7 +45,7 @@ gradientPattern aC bC = Pattern aC bC identityV Gradient
 gradientAt :: Pattern -> Tuple -> Color
 gradientAt gradient point = let distance = b gradient `subC` a gradient
                                 fraction = x point - fromIntegral (floor (x point))
-                            in a gradient `addC` distance `mulCS` fraction
+                            in a gradient `addC` (distance `mulCS` fraction)
 
 ringPattern :: Color -> Color -> Pattern
 ringPattern a b = Pattern a b identityV Ring
