@@ -62,7 +62,8 @@ shadeHit world c remaining
                     (cNormalv c)
                     (isShadowed world (cOverPoint c))
         reflected = reflectedColor world c remaining
-    in surface `addC` reflected
+        refracted = refractedColor world c remaining
+    in surface `addC` reflected `addC` refracted
 
 colorizeShape :: (IsShape a, Ord a) =>
   World -> Ray -> Int -> Maybe (Intersection a) -> Color
