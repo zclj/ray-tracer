@@ -192,6 +192,21 @@ precompute =
         [cN1 c4, cN2 c4] `shouldBe` [2.5, 1.5]
       it "Index 5, n1 1.5, n2 1.0" $ do
         [cN1 c5, cN2 c5] `shouldBe` [1.5, 1.0]
+    {- Scenario: The Schlick approximation under total internal reflection
+         Given shape ← glass_sphere()
+           And r ← ray(point(0, 0, √2/2), vector(0, 1, 0))
+           And xs ← intersections(-√2/2:shape, √2/2:shape)
+         When comps ← prepare_computations(xs[1], r, xs)
+           And reflectance ← schlick(comps)
+         Then reflectance = 1.0 -}
+    describe "The Schlick approximation under total internal reflection" $ do
+      let shape = makeGlassSphere 1
+          r     = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
+          xs    = [SUT.Intersection (-sqrt 2/2) shape, SUT.Intersection (sqrt 2/2) shape]
+          comps = SUT.prepareComputations (xs !! 1) r xs
+          reflectance = SUT.schlick comps
+      it "schlick reflectance is 1.0" $ do
+        reflectance `shouldBe` 1.0
 
 intersections :: Spec
 intersections =

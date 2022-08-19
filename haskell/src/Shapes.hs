@@ -147,3 +147,14 @@ patternAtShape p shape worldPoint =
   let objectPoint  = inverseV (shapeTransform shape) `mulTV` worldPoint
       patternPoint = inverseV (patternTransform p) `mulTV` objectPoint
   in patternAt p patternPoint
+
+schlick :: Computation a -> Double
+schlick c =
+  let cos = (cEyev c) `dot` (cNormalv c)
+  in if (cN1 c) > (cN2 c)
+     then let n = (cN1 c) / (cN2 c)
+              sin2_t = n**2 * (1.0 - cos**2)
+          in if sin2_t > 1.0
+             then 1.0
+             else 0
+     else 0
