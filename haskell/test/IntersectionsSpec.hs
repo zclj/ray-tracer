@@ -207,6 +207,38 @@ precompute =
           reflectance = SUT.schlick comps
       it "schlick reflectance is 1.0" $ do
         reflectance `shouldBe` 1.0
+    {- Scenario: The Schlick approximation with a perpendicular viewing angle
+         Given shape ← glass_sphere()
+           And r ← ray(point(0, 0, 0), vector(0, 1, 0))
+           And xs ← intersections(-1:shape, 1:shape)
+         When comps ← prepare_computations(xs[1], r, xs)
+           And reflectance ← schlick(comps)
+         Then reflectance = 0.04 -}
+    describe "The Schlick approximation with a perpendicular viewing angle" $ do
+      let shape = makeGlassSphere 1
+          r     = makeRay (point 0 0 0) (vector 0 1 0)
+          xs    = [SUT.Intersection (-1) shape, SUT.Intersection 1 shape]
+          comps = SUT.prepareComputations (xs !! 1) r xs
+          reflectance = SUT.schlick comps
+      it "schlick reflectance is 0.04" $ do
+        -- wrap in vector to get epsilon comparison
+        vector reflectance 0 0 `shouldBe` vector 0.04 0 0
+      {- Scenario: The Schlick approximation with small angle and n2 > n1
+           Given shape ← glass_sphere()
+             And r ← ray(point(0, 0.99, -2), vector(0, 0, 1))
+             And xs ← intersections(1.8589:shape)
+           When comps ← prepare_computations(xs[0], r, xs)
+             And reflectance ← schlick(comps)
+           Then reflectance = 0.48873 -}
+    describe "The Schlick approximation with small angle and n2 > n1" $ do
+      let shape = makeGlassSphere 1
+          r     = makeRay (point 0 0.99 (-2)) (vector 0 0 1)
+          xs    = [SUT.Intersection 1.8589 shape]
+          comps = SUT.prepareComputations (head xs) r xs
+          reflectance = SUT.schlick comps
+      it "schlick reflectance is 0.48873" $ do
+        -- wrap in vector to get epsilon comparison
+        vector reflectance 0 0 `shouldBe` vector 0.48873 0 0
 
 intersections :: Spec
 intersections =
