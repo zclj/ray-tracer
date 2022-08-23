@@ -63,8 +63,8 @@ shadeHit world c remaining
                     (isShadowed world (cOverPoint c))
         reflected = reflectedColor world c remaining
         refracted = refractedColor world c remaining
-        m         = (shapeMaterial (cObject c))
-    in if (reflective m) > 0 && (transparency m) > 0
+        m         = shapeMaterial (cObject c)
+    in if reflective m > 0 && transparency m > 0
        then let reflectance = schlick c
             in surface                         `addC`
                (reflected `mulCS` reflectance) `addC`

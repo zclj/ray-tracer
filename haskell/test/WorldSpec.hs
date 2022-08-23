@@ -311,7 +311,7 @@ worldReflection =
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Shapes.Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
-          w'     = w { aShapes = (aShapes w) ++ [floor, ball] }
+          w'     = w { aShapes = aShapes w ++ [floor, ball] }
           color  = SUT.shadeHit w' comps 5
       it "color = color(0.93391, 0.69643, 0.69243)" $ do
         color `shouldBe` Color (Red 0.93391) (Green 0.69643) (Blue 0.69243)

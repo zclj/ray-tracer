@@ -150,14 +150,14 @@ patternAtShape p shape worldPoint =
 
 schlick :: Computation a -> Double
 schlick c =
-  let n      = (cN1 c) / (cN2 c)
-      co_s    = (cEyev c) `dot` (cNormalv c)
-      sin2_t = n**2 * (1.0 - co_s**2)
-      cos_t  = (sqrt (1.0 - sin2_t))
-      r0     = (((cN1 c) - (cN2 c)) / ((cN1 c) + (cN2 c)))**2
-  in if (cN1 c) > (cN2 c)
+  let n      = cN1 c / cN2 c
+      cos    = cEyev c `dot` cNormalv c
+      sin2_t = n**2 * (1.0 - cos**2)
+      cos_t  = sqrt (1.0 - sin2_t)
+      r0     = ((cN1 c - cN2 c) / (cN1 c + cN2 c))**2
+  in if cN1 c > cN2 c
      then if sin2_t > 1.0
           then 1.0
           else r0 + (1.0 - r0) * ((1 - cos_t)**5)
-     else r0 + (1.0 - r0) * ((1 - co_s)**5)
+     else r0 + (1.0 - r0) * ((1 - cos)**5)
 
