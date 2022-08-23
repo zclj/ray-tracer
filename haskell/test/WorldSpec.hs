@@ -276,6 +276,45 @@ worldReflection =
           color  = SUT.shadeHit w' comps 5
       it "color = color(0.93642, 0.68642, 0.68642)" $ do
         color `shouldBe` Color (Red 0.93642) (Green 0.68642) (Blue 0.68642)
+    {- Scenario: shade_hit() with a reflective, transparent material
+         Given w ← default_world()
+           And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+           And floor ← plane() with:
+             | transform                 | translation(0, -1, 0) |
+             | material.reflective       | 0.5                   |
+             | material.transparency     | 0.5                   |
+             | material.refractive_index | 1.5                   |
+           And floor is added to w
+           And ball ← sphere() with:
+             | material.color     | (1, 0, 0)                  |
+             | material.ambient   | 0.5                        |
+             | transform          | translation(0, -3.5, -0.5) |
+           And ball is added to w
+           And xs ← intersections(√2:floor)
+         When comps ← prepare_computations(xs[0], r, xs)
+           And color ← shade_hit(w, comps, 5)
+         Then color = color(0.93391, 0.69643, 0.69243) -}
+    describe "shade_hit() with a reflective, transparent material" $ do
+      let w      = SUT.defaultWorld
+          floor  = APlane { Shapes.id       = 3
+                          , aplaneTransform = translation 0 (-1) 0
+                          , aplaneMaterial  =
+                              material { transparency    = 0.5
+                                       , reflective      = 0.5
+                                       , refractiveIndex = 1.5} }
+          ball   = ASphere { Shapes.id        = 4
+                           , asphereRadius    = 1.0
+                           , asphereTransform = translation 0 (-3.5) (-0.5)
+                           , asphereMaterial  =
+                               material { color   = Color (Red 1) (Green 0) (Blue 0)
+                                        , ambient = 0.5}}
+          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
+          xs     = [ Shapes.Intersection (sqrt 2) floor]
+          comps  = prepareComputations (head xs) r xs
+          w'     = w { aShapes = (aShapes w) ++ [floor, ball] }
+          color  = SUT.shadeHit w' comps 5
+      it "color = color(0.93391, 0.69643, 0.69243)" $ do
+        color `shouldBe` Color (Red 0.93391) (Green 0.69643) (Blue 0.69243)
 
 worldShading :: Spec
 worldShading =

@@ -63,7 +63,13 @@ shadeHit world c remaining
                     (isShadowed world (cOverPoint c))
         reflected = reflectedColor world c remaining
         refracted = refractedColor world c remaining
-    in surface `addC` reflected `addC` refracted
+        m         = (shapeMaterial (cObject c))
+    in if (reflective m) > 0 && (transparency m) > 0
+       then let reflectance = schlick c
+            in surface                         `addC`
+               (reflected `mulCS` reflectance) `addC`
+               (refracted `mulCS` (1 - reflectance))
+       else surface `addC` reflected `addC` refracted
 
 colorizeShape :: (IsShape a, Ord a) =>
   World -> Ray -> Int -> Maybe (Intersection a) -> Color
