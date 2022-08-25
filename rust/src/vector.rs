@@ -153,6 +153,12 @@ impl Vector {
     }
 }
 
+impl Vector {
+    fn mag(&self) -> f32 {
+        (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
+}
+
 impl std::ops::Add<Point> for Vector {
     type Output = Point;
 
@@ -383,5 +389,55 @@ mod tests {
         let v = Vector::new(1.0, -2.0, 3.0);
 
         assert_eq!(v / 2.0, Vector::new(0.5, -1.0, 1.5));
+    }
+
+    // Scenario: Computing the magnitude of vector(1, 0, 0)
+    // Given v ← vector(1, 0, 0)
+    // Then magnitude(v) = 1
+    #[test]
+    fn computing_the_magnitude_of_vector_1_0_0() {
+        let v = Vector::new(1.0, 0.0, 0.0);
+
+        assert_eq!(v.mag(), 1.0);
+    }
+
+    // Scenario: Computing the magnitude of vector(0, 1, 0)
+    // Given v ← vector(0, 1, 0)
+    // Then magnitude(v) = 1
+    #[test]
+    fn computing_the_magnitude_of_vector_0_1_0() {
+        let v = Vector::new(0.0, 1.0, 0.0);
+
+        assert_eq!(v.mag(), 1.0);
+    }
+
+    // Scenario: Computing the magnitude of vector(0, 0, 1)
+    // Given v ← vector(0, 0, 1)
+    // Then magnitude(v) = 1
+    #[test]
+    fn computing_the_magnitude_of_vector_0_0_1() {
+        let v = Vector::new(0.0, 0.0, 1.0);
+
+        assert_eq!(v.mag(), 1.0);
+    }
+
+    // Scenario: Computing the magnitude of vector(1, 2, 3)
+    // Given v ← vector(1, 2, 3)
+    // Then magnitude(v) = √14
+    #[test]
+    fn computing_the_magnitude_of_vector_1_2_3() {
+        let v = Vector::new(1.0, 2.0, 3.0);
+
+        assert_eq!(v.mag(), 14.0_f32.sqrt());
+    }
+
+    // Scenario: Computing the magnitude of vector(-1, -2, -3)
+    // Given v ← vector(-1, -2, -3)
+    // Then magnitude(v) = √14
+    #[test]
+    fn computing_the_magnitude_of_vector_negative_1_2_3() {
+        let v = Vector::new(-1.0, -2.0, -3.0);
+
+        assert_eq!(v.mag(), 14.0_f32.sqrt());
     }
 }
