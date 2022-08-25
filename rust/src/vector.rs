@@ -189,6 +189,14 @@ impl std::ops::Mul<f32> for Vector {
     }
 }
 
+impl std::ops::Div<f32> for Vector {
+    type Output = Self;
+
+    fn div(self, rhs: f32) -> Self {
+        Vector::new(self.x / rhs, self.y / rhs, self.z / rhs)
+    }
+}
+
 impl std::cmp::PartialEq<Vector> for Vector {
     fn eq(&self, rhs: &Vector) -> bool {
         let epsilon = 0.00001;
@@ -365,5 +373,15 @@ mod tests {
         let v = Vector::new(1.0, -2.0, 3.0);
 
         assert_eq!(v * 0.5, Vector::new(0.5, -1.0, 1.5));
+    }
+
+    // Scenario: Dividing a tuple by a scalar
+    // Given a ← tuple(1, -2, 3, -4)
+    // Then a / 2 = tuple(0.5, -1, 1.5, -2)
+    #[test]
+    fn dividing_a_tuple_by_a_scalar() {
+        let v = Vector::new(1.0, -2.0, 3.0);
+
+        assert_eq!(v / 2.0, Vector::new(0.5, -1.0, 1.5));
     }
 }
