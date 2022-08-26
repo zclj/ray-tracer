@@ -16,6 +16,7 @@ data Plane = Plane { id             :: Int
              deriving(Show, Eq, Ord)
 
 instance IsShape Plane where
+  shapeId        = Planes.id
   shapeTransform = planeTransform
   shapeMaterial  = planeMaterial
   shapeNormalAt  = normalAt

@@ -9,13 +9,15 @@ import Matrices
 import Materials as M
 import Shapes as SUT
 
-data TestShape = TestShape { transform :: VMatrix
+data TestShape = TestShape { id :: Int
+                           , transform :: VMatrix
                            , material  :: Material}
 
 testShape :: TestShape
-testShape = TestShape { ShapesSpec.transform = identityV, ShapesSpec.material = M.material }
+testShape = TestShape { ShapesSpec.id = 1, ShapesSpec.transform = identityV, ShapesSpec.material = M.material }
 
 instance IsShape TestShape where
+  shapeId        = ShapesSpec.id
   shapeTransform = ShapesSpec.transform
   shapeMaterial  = ShapesSpec.material
   shapeNormalAt  = undefined

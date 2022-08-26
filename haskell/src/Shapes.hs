@@ -50,6 +50,7 @@ aIntersect p@APlane {} r =
        in [Intersection t p]
 
 instance IsShape AShape where
+  shapeId        = Shapes.id
   shapeTransform = aShapeTransform
   shapeMaterial  = aShapeMaterial
   shapeNormalAt  = aNormalAt
@@ -58,6 +59,7 @@ instance IsShape AShape where
 ----------------------------------------
 
 class IsShape a where
+  shapeId        :: a -> Int
   shapeTransform :: a -> VMatrix
   shapeMaterial  :: a -> Material
   shapeNormalAt  :: a -> Tuple -> Tuple

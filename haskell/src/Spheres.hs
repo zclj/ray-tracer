@@ -20,6 +20,7 @@ data Sphere = Sphere { id              :: Int
             deriving (Show, Eq, Ord)
 
 instance IsShape Sphere where
+  shapeId        = Spheres.id
   shapeTransform = sphereTransform
   shapeMaterial  = sphereMaterial
   shapeNormalAt  = normalAt
