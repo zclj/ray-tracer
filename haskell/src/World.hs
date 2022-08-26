@@ -72,16 +72,16 @@ shadeHit world c remaining
        else surface `addC` reflected `addC` refracted
 
 colorizeShape :: (IsShape a, Ord a) =>
-  World -> Ray -> Int -> Maybe (Intersection a) -> Color
-colorizeShape _ _ _ Nothing   = Color (Red 0) (Green 0) (Blue 0)
-colorizeShape w r remaining (Just s) =
-  shadeHit w (prepareComputations s r [s]) remaining
+  World -> Ray -> Int -> Maybe (Intersection a) -> [Intersection a] -> Color
+colorizeShape _ _ _ Nothing _  = Color (Red 0) (Green 0) (Blue 0)
+colorizeShape w r remaining (Just s) is =
+  shadeHit w (prepareComputations s r is) remaining
 
 colorAt :: World -> Ray -> Int -> Color
 colorAt w r remaining
   = let xx = intersectShapes (aShapes w) r
         yy = hit xx
-    in colorizeShape w r remaining yy
+    in colorizeShape w r remaining yy xx
 
 isShadowed :: World -> Tuple -> Bool
 isShadowed w p = let v              = Lights.position (light w) `sub` p
