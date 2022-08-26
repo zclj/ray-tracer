@@ -111,11 +111,7 @@ impl Point {
 
 impl std::cmp::PartialEq<Point> for Point {
     fn eq(&self, rhs: &Point) -> bool {
-        let epsilon = 0.00001;
-
-        (self.x - rhs.x).abs() < epsilon
-            && (self.y - rhs.y).abs() < epsilon
-            && (self.z - rhs.z).abs() < epsilon
+        epsilon_eq(self.x, rhs.x) && epsilon_eq(self.y, rhs.y) && epsilon_eq(self.z, rhs.z)
     }
 }
 
@@ -162,6 +158,12 @@ impl Vector {
 impl Vector {
     fn mag(&self) -> f32 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
+    }
+
+    fn norm(&self) -> Self {
+        let m = self.mag();
+
+        Vector::new(self.x / m, self.y / m, self.z / m)
     }
 }
 
@@ -211,18 +213,14 @@ impl std::ops::Div<f32> for Vector {
 
 impl std::cmp::PartialEq<Vector> for Vector {
     fn eq(&self, rhs: &Vector) -> bool {
-        let epsilon = 0.00001;
-
-        (self.x - rhs.x).abs() < epsilon
-            && (self.y - rhs.y).abs() < epsilon
-            && (self.z - rhs.z).abs() < epsilon
+        epsilon_eq(self.x, rhs.x) && epsilon_eq(self.y, rhs.y) && epsilon_eq(self.z, rhs.z)
     }
 }
 
 #[cfg(test)]
 mod tests {
 
-    use crate::vector::{Point, Vector};
+    use crate::vector::{Point, Vector, epsilon_eq};
 
     // Scenario: A tuple with w=1.0 is a point
     // Given a ← tuple(4.3, -4.2, 3.1, 1.0)
@@ -445,5 +443,38 @@ mod tests {
         let v = Vector::new(-1.0, -2.0, -3.0);
 
         assert_eq!(v.mag(), 14.0_f32.sqrt());
+    }
+
+    // Scenario: Normalizing vector(4, 0, 0) gives (1, 0, 0)
+    // Given v ← vector(4, 0, 0)
+    // Then normalize(v) = vector(1, 0, 0)
+    #[test]
+    fn normalizing_vector_4_0_0_gives_1_0_0() {
+        let v = Vector::new(4.0, 0.0, 0.0);
+
+        assert_eq!(v.norm(), Vector::new(1.0, 0.0, 0.0));
+    }
+    // Scenario: Normalizing vector(1, 2, 3)
+    //   Given v ← vector(1, 2, 3)
+    //                                   # vector(1/√14,   2/√14,   3/√14)
+    //   Then normalize(v) = approximately vector(0.26726, 0.53452, 0.80178)
+    #[test]
+    fn normalizing_vector_1_2_3() {
+        let v = Vector::new(1.0, 2.0, 3.0);
+        let s = 14.0_f32.sqrt();
+
+        assert_eq!(v.norm(), Vector::new(1.0 / s, 2.0 / s, 3.0 / s));
+    }
+
+    // Scenario: The magnitude of a normalized vector
+    // Given v ← vector(1, 2, 3)
+    // When norm ← normalize(v)
+    // Then magnitude(norm) = 1
+    #[test]
+    fn the_magnitude_of_a_normalized_vector() {
+        let v = Vector::new(1.0, 2.0, 3.0);
+        let n = v.norm();
+
+        assert_eq!(epsilon_eq(n.mag(), 1.0), true);
     }
 }
