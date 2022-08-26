@@ -51,6 +51,10 @@ get (Vector3D x y z) i
       0 -> x
       1 -> y
       2 -> z
+get (Vector2D x y) i
+  = case i of
+      0 -> x
+      1 -> y
 
 dot :: Vector -> Vector -> Double
 dot (Vector4D x1 y1 z1 w1) (Vector4D x2 y2 z2 w2)
