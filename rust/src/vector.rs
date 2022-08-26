@@ -165,6 +165,10 @@ impl Vector {
 
         Vector::new(self.x / m, self.y / m, self.z / m)
     }
+
+    fn dot(&self, rhs: Vector) -> f32 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    }
 }
 
 impl std::ops::Add<Point> for Vector {
@@ -220,7 +224,7 @@ impl std::cmp::PartialEq<Vector> for Vector {
 #[cfg(test)]
 mod tests {
 
-    use crate::vector::{Point, Vector, epsilon_eq};
+    use crate::vector::{epsilon_eq, Point, Vector};
 
     // Scenario: A tuple with w=1.0 is a point
     // Given a ← tuple(4.3, -4.2, 3.1, 1.0)
@@ -476,5 +480,17 @@ mod tests {
         let n = v.norm();
 
         assert_eq!(epsilon_eq(n.mag(), 1.0), true);
+    }
+
+    // Scenario: The dot product of two tuples
+    // Given a ← vector(1, 2, 3)
+    //   And b ← vector(2, 3, 4)
+    // Then dot(a, b) = 20
+    #[test]
+    fn the_dot_product_of_two_tuples() {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(2.0, 3.0, 4.0);
+
+        assert_eq!(a.dot(b), 20.0);
     }
 }
