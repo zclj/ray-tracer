@@ -10,11 +10,11 @@ import Materials as M
 import Shapes as SUT
 
 data TestShape = TestShape { id :: Int
-                           , transform :: VMatrix
+                           , transform :: Matrix
                            , material  :: Material}
 
 testShape :: TestShape
-testShape = TestShape { ShapesSpec.id = 1, ShapesSpec.transform = identityV, ShapesSpec.material = M.material }
+testShape = TestShape { ShapesSpec.id = 1, ShapesSpec.transform = identity, ShapesSpec.material = M.material }
 
 instance IsShape TestShape where
   shapeId        = ShapesSpec.id
@@ -37,4 +37,4 @@ shapeBasics =
     describe "The default transformation" $ do
       let s = testShape
       it "s.transform = identity_matrix" $ do
-        SUT.shapeTransform s `shouldBe` identityV
+        SUT.shapeTransform s `shouldBe` identity

@@ -47,7 +47,7 @@ wall =
 
 -- glass ball
 glassBall = ASphere { Shapes.id        = 2
-                    , asphereTransform = identityV
+                    , asphereTransform = identity
                     , asphereRadius    = 1.0
                     , asphereMaterial  =
                       M.material

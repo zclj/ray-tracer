@@ -21,18 +21,18 @@ data PatternShape = Stripes
 
 data Pattern = Pattern { a :: Color
                        , b :: Color
-                       , patternTransform :: VMatrix
+                       , patternTransform :: Matrix
                        , patternShape :: PatternShape}
                deriving(Eq, Show, Ord)
 
 pointPattern :: Pattern
-pointPattern = Pattern (Color (Red 0) (Green 0) (Blue 0)) (Color (Red 0) (Green 0) (Blue 0)) identityV Point
+pointPattern = Pattern (Color (Red 0) (Green 0) (Blue 0)) (Color (Red 0) (Green 0) (Blue 0)) identity Point
 
 pointAt :: Pattern -> Tuple -> Color
 pointAt p (Tuple x y z _) = Color (Red x) (Green y) (Blue z)
 
 stripePattern :: Color -> Color -> Pattern
-stripePattern aC bC = Pattern aC bC identityV Stripes
+stripePattern aC bC = Pattern aC bC identity Stripes
 
 stripeAt :: Pattern -> Tuple -> Color
 stripeAt p point = if even (floor (x point))
@@ -40,7 +40,7 @@ stripeAt p point = if even (floor (x point))
                    else b p
 
 gradientPattern :: Color -> Color -> Pattern
-gradientPattern aC bC = Pattern aC bC identityV Gradient
+gradientPattern aC bC = Pattern aC bC identity Gradient
 
 gradientAt :: Pattern -> Tuple -> Color
 gradientAt gradient point = let distance = b gradient `subC` a gradient
@@ -48,7 +48,7 @@ gradientAt gradient point = let distance = b gradient `subC` a gradient
                             in a gradient `addC` (distance `mulCS` fraction)
 
 ringPattern :: Color -> Color -> Pattern
-ringPattern a b = Pattern a b identityV Ring
+ringPattern a b = Pattern a b identity Ring
 
 ringAt :: Pattern -> Tuple -> Color
 ringAt ring point = if even (floor (sqrt (x point ** 2 + z point ** 2)))
@@ -56,7 +56,7 @@ ringAt ring point = if even (floor (sqrt (x point ** 2 + z point ** 2)))
                     else b ring
 
 checkersPattern :: Color -> Color -> Pattern
-checkersPattern a b = Pattern a b identityV Checkers
+checkersPattern a b = Pattern a b identity Checkers
 
 checkersAt :: Pattern -> Tuple -> Color
 checkersAt checkers (Tuple x y z _) = if even (floor x + floor y + floor z)

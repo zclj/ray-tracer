@@ -15,7 +15,7 @@ import Rays as R
 
 data Sphere = Sphere { id              :: Int
                      , radius          :: Double
-                     , sphereTransform :: VMatrix
+                     , sphereTransform :: Matrix
                      , sphereMaterial  :: M.Material}
             deriving (Show, Eq, Ord)
 
@@ -27,20 +27,20 @@ instance IsShape Sphere where
   shapeIntersect = intersect
 
 makeUnitSphere :: Int -> Sphere
-makeUnitSphere id = Sphere id 1.0 identityV M.material
+makeUnitSphere id = Sphere id 1.0 identity M.material
 
 toAShape :: Sphere -> AShape
 toAShape s = ASphere (Spheres.id s) (radius s) (sphereTransform s) (sphereMaterial s)
 
 makeGlassSphere :: Int -> Sphere
 makeGlassSphere id =
-  Sphere id 1.0 identityV (M.material { transparency = 1.0, refractiveIndex = 1.5 })
+  Sphere id 1.0 identity (M.material { transparency = 1.0, refractiveIndex = 1.5 })
 
 normalAt :: Sphere -> Tuple -> Tuple
 normalAt s objectPoint
   = objectPoint `sub` point 0 0 0
 
-setTransform :: Sphere -> VMatrix -> Sphere
+setTransform :: Sphere -> Matrix -> Sphere
 setTransform s m = s {sphereTransform = m}
 
 intersect :: (IsShape a) => a -> Ray -> [Intersection a]

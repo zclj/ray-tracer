@@ -2,7 +2,7 @@ module Vector
   ( Vector (..)
   , get
   , dot
-  , dropAtV
+  , dropAt
   ) where
 
 data Vector = Vector2D Double Double
@@ -60,14 +60,14 @@ dot :: Vector -> Vector -> Double
 dot (Vector4D x1 y1 z1 w1) (Vector4D x2 y2 z2 w2)
   = x1 * x2 + y1 * y2 + z1 * z2 + w1 * w2
 
-dropAtV :: Vector -> Int -> Vector
-dropAtV (Vector4D x1 y1 z1 w1) i
+dropAt :: Vector -> Int -> Vector
+dropAt (Vector4D x1 y1 z1 w1) i
   = case i of
       0 -> Vector3D y1 z1 w1
       1 -> Vector3D x1 z1 w1
       2 -> Vector3D x1 y1 w1
       3 -> Vector3D x1 y1 z1
-dropAtV (Vector3D x1 y1 z1) i
+dropAt (Vector3D x1 y1 z1) i
   = case i of
       0 -> Vector2D y1 z1
       1 -> Vector2D x1 z1

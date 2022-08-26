@@ -13,14 +13,14 @@ import Patterns
 
 data AShape = ASphere { id               :: Int
                       , asphereRadius    :: Double
-                      , asphereTransform :: VMatrix
+                      , asphereTransform :: Matrix
                       , asphereMaterial  :: Material }
             | APlane { id              :: Int
-                     , aplaneTransform :: VMatrix
+                     , aplaneTransform :: Matrix
                      , aplaneMaterial  :: Material }
             deriving (Show, Eq, Ord)
 
-aShapeTransform :: AShape -> VMatrix
+aShapeTransform :: AShape -> Matrix
 aShapeTransform (ASphere _ _ t _) = t
 aShapeTransform (APlane _ t _) = t
 
@@ -60,7 +60,7 @@ instance IsShape AShape where
 
 class IsShape a where
   shapeId        :: a -> Int
-  shapeTransform :: a -> VMatrix
+  shapeTransform :: a -> Matrix
   shapeMaterial  :: a -> Material
   shapeNormalAt  :: a -> Tuple -> Tuple
   shapeIntersect :: a -> Ray -> [Intersection a]
@@ -80,13 +80,13 @@ data Computation a = Computation { cT          :: Double
 
 intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
 intersectShapes objects r
-  = sort $ concatMap (\s -> shapeIntersect s (R.transform r (inverseV (shapeTransform s)))) objects
+  = sort $ concatMap (\s -> shapeIntersect s (R.transform r (inverse (shapeTransform s)))) objects
 
 objectNormalAt :: (IsShape a) => a -> Tuple -> Tuple
 objectNormalAt s worldPoint =
-  let objectPoint  = inverseV (shapeTransform s) `mulTV` worldPoint
+  let objectPoint  = inverse (shapeTransform s) `mulT` worldPoint
       objectNormal = shapeNormalAt s objectPoint
-      worldNormal  = transposeV (inverseV (shapeTransform s)) `mulTV` objectNormal
+      worldNormal  = transpose (inverse (shapeTransform s)) `mulT` objectNormal
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'
 
@@ -146,8 +146,8 @@ hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
 patternAtShape :: IsShape a => Pattern -> a -> Tuple -> Color
 patternAtShape p shape worldPoint =
-  let objectPoint  = inverseV (shapeTransform shape) `mulTV` worldPoint
-      patternPoint = inverseV (patternTransform p) `mulTV` objectPoint
+  let objectPoint  = inverse (shapeTransform shape) `mulT` worldPoint
+      patternPoint = inverse (patternTransform p) `mulT` objectPoint
   in patternAt p patternPoint
 
 schlick :: Computation a -> Double

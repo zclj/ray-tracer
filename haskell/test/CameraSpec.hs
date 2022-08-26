@@ -83,7 +83,7 @@ cameraRays =
            And r.direction = vector(√2/2, 0, -√2/2) -}
     describe "Constructing a ray when the camera is transformed" $ do
       let c  = SUT.makeCamera 201 101 (pi/2)
-          c' = c { SUT.transform = rotationY (pi/4) `mulV` translation 0 (-2) 5 }
+          c' = c { SUT.transform = rotationY (pi/4) `Matrices.mul` translation 0 (-2) 5 }
           r  = SUT.rayForPixel c' 100 50
       it "r.origin = point(0, 2, -5)" $ do
         origin r `shouldBe` point 0 2 (-5)
@@ -114,7 +114,7 @@ cameraBasics =
       it "c.field_of_view = π/2" $ do
         fieldOfView c `shouldBe` (pi/2)
       it "c.transform = identity_matrix" $ do
-        SUT.transform c `shouldBe` identityV
+        SUT.transform c `shouldBe` identity
     {- Scenario: The pixel size for a horizontal canvas
          Given c ← camera(200, 125, π/2)
          Then c.pixel_size = 0.01 -}

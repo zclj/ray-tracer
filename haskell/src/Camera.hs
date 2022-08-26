@@ -14,7 +14,7 @@ import Rays
 data Camera = Camera { hsize       :: Int
                      , vsize       :: Int
                      , fieldOfView :: Double
-                     , transform   :: VMatrix
+                     , transform   :: Matrix
                      , pixelSize   :: Double
                      , halfWidth   :: Double
                      , halfHeight  :: Double }
@@ -27,16 +27,16 @@ makeCamera hs vs fov =
                    then (halfView, halfView / aspect)
                    else (halfView * aspect, halfView)
       pxSize     = (chw * 2) / fromIntegral hs
-  in Camera hs vs fov identityV pxSize chw chh
+  in Camera hs vs fov identity pxSize chw chh
 
 rayForPixel :: Camera -> Int -> Int -> Ray
 rayForPixel c px py = let xoffset   = (fromIntegral px + 0.5) * pixelSize c
                           yoffset   = (fromIntegral py + 0.5) * pixelSize c
                           worldX    = halfWidth c - xoffset
                           worldY    = halfHeight c - yoffset
-                          pixel     = inverseV (Camera.transform c)
-                                      `mulTV` point worldX worldY (-1)
-                          origin    = inverseV (Camera.transform c) `mulTV` point 0 0 0
+                          pixel     = inverse (Camera.transform c)
+                                      `mulT` point worldX worldY (-1)
+                          origin    = inverse (Camera.transform c) `mulT` point 0 0 0
                           direction = norm (pixel `sub` origin)
                       in makeRay origin direction
 

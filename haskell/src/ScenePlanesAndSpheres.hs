@@ -30,10 +30,10 @@ floorPlane = Plane { P.id = 1
 wallGrad = gradientPattern
            (Color (Red 0.9) (Green 0.4) (Blue 0.9))
            (Color (Red 0.9) (Green 0.1) (Blue 0.4))
-wallGrad' = wallGrad { patternTransform = translation 3.5 1 1 `mulV` scaling 10 1 1 }
+wallGrad' = wallGrad { patternTransform = translation 3.5 1 1 `Matrices.mul` scaling 10 1 1 }
 
 backdrop = Plane { P.id = 2
-                 , planeTransform = translation 0 0 1.5 `mulV` rotationX (pi/2)
+                 , planeTransform = translation 0 0 1.5 `Matrices.mul` rotationX (pi/2)
                  , planeMaterial  = M.material
                                     { color    = Color (Red 0.7) (Green 0.2) (Blue 0.2)
                                     , specular = 0.5
@@ -42,10 +42,10 @@ backdrop = Plane { P.id = 2
 p = stripePattern
     (Color (Red 0.5) (Green 0.5) (Blue 0.5))
     (Color (Red 0.5) (Green 0.5) (Blue 1))
-p' = p { patternTransform = rotationY (pi/4) `mulV` scaling 0.1 0.1 0.1 }
+p' = p { patternTransform = rotationY (pi/4) `Matrices.mul` scaling 0.1 0.1 0.1 }
 
 wall = Plane { P.id = 3
-             , planeTransform =  rotationY (pi/2) `mulV` rotationX (pi/2) `mulV` translation 1.5 1.5 0
+             , planeTransform =  rotationY (pi/2) `Matrices.mul` rotationX (pi/2) `Matrices.mul` translation 1.5 1.5 0
              , planeMaterial  = M.material
                                 { materialPattern  = Just p'
                                 , color    = Color (Red 0.2) (Green 0.7) (Blue 0.2)
@@ -55,7 +55,7 @@ wall = Plane { P.id = 3
 grad = gradientPattern
        (Color (Red 0.9) (Green 0.9) (Blue 0.9))
        (Color (Red 0.9) (Green 0.1) (Blue 0.1))
-grad' = grad { patternTransform = translation 1.5 1 1 `mulV` scaling 3.5 1 1 }
+grad' = grad { patternTransform = translation 1.5 1 1 `Matrices.mul` scaling 3.5 1 1 }
 
 middle = Sphere { S.id = 4
                 , radius = 1.0
@@ -69,11 +69,11 @@ middle = Sphere { S.id = 4
 ring = ringPattern
        (Color (Red 0.8) (Green 0.4) (Blue 0.3))
        (Color (Red 0.3) (Green 0.4) (Blue 0.8))
-ring' = ring { patternTransform = rotationZ (pi/6) `mulV` rotationX (pi/2) `mulV` scaling 0.2 1 0.2 }
+ring' = ring { patternTransform = rotationZ (pi/6) `Matrices.mul` rotationX (pi/2) `Matrices.mul` scaling 0.2 1 0.2 }
 
 right = Sphere { S.id = 5
                , radius = 1.0
-               , sphereTransform = translation 1.5 0.5 (-0.5) `mulV` scaling 0.5 0.5 0.5
+               , sphereTransform = translation 1.5 0.5 (-0.5) `Matrices.mul` scaling 0.5 0.5 0.5
                , sphereMaterial  = M.material
                                    { color    = Color (Red 0.5) (Green 1) (Blue 0.1)
                                    , diffuse  = 0.7
@@ -83,11 +83,11 @@ right = Sphere { S.id = 5
 p1  = stripePattern
       (Color (Red 0.9) (Green 0.9) (Blue 0.5))
       (Color (Red 1) (Green 0.5) (Blue 0.5))
-p1' = p1 { patternTransform = rotationZ (pi/4) `mulV` scaling 0.2 0.2 0.2 }
+p1' = p1 { patternTransform = rotationZ (pi/4) `Matrices.mul` scaling 0.2 0.2 0.2 }
 
 left = Sphere { S.id = 6
               , radius = 1.0
-              , sphereTransform = translation (-1.5) 0.33 (-0.75) `mulV` scaling 0.33 0.33 0.33
+              , sphereTransform = translation (-1.5) 0.33 (-0.75) `Matrices.mul` scaling 0.33 0.33 0.33
               , sphereMaterial = M.material
                                  { materialPattern  = Just p1'
                                  , color    = Color (Red 1) (Green 0.8) (Blue 0.1)

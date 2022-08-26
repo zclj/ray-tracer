@@ -11,7 +11,7 @@ import Materials
 import Rays
 
 data Plane = Plane { id             :: Int
-                   , planeTransform :: VMatrix
+                   , planeTransform :: Matrix
                    , planeMaterial  :: Material }
              deriving(Show, Eq, Ord)
 
@@ -23,7 +23,7 @@ instance IsShape Plane where
   shapeIntersect = intersect
 
 makePlane :: Int -> Plane
-makePlane id = Plane id identityV material
+makePlane id = Plane id identity material
 
 toAShape :: Plane -> AShape
 toAShape p = APlane (Planes.id p) (planeTransform p) (planeMaterial p)

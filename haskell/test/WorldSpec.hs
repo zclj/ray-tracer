@@ -522,7 +522,7 @@ worldBasics =
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s1    = ASphere { Shapes.id        = 1
                           , asphereRadius    = 1.0
-                          , asphereTransform = identityV
+                          , asphereTransform = identity
                           , asphereMaterial  = Materials.material
                             { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                             , diffuse   = 0.7

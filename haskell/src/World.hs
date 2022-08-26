@@ -28,7 +28,7 @@ defaultWorld :: World
 defaultWorld = let defaultSphere1 = Sphere
                                     { Spheres.id      = 1
                                     , radius          = 1.0
-                                    , sphereTransform = identityV
+                                    , sphereTransform = identity
                                     , sphereMaterial  = Material
                                       { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                                       , ambient   = 0.1

@@ -54,7 +54,7 @@ sphereMaterials =
     describe "A helper for producing a sphere with a glassy material" $ do
       let s = SUT.makeGlassSphere 1
       it "transform is identity matrix" $ do
-        sphereTransform s `shouldBe` identityV
+        sphereTransform s `shouldBe` identity
       it "material is transparent (1.0)" $ do
         transparency (sphereMaterial s) `shouldBe` 1.0
       it "refractive indes is 1.5" $ do
@@ -127,7 +127,7 @@ sphereNormals =
          Then n = vector(0, 0.97014, -0.24254) -}
     describe "Computing the normal on a transformed sphere" $ do
       let s = SUT.makeUnitSphere 1
-          m = scaling 1 0.5 1 `mulV` rotationZ(pi/5)
+          m = scaling 1 0.5 1 `Matrices.mul` rotationZ(pi/5)
           s' = SUT.setTransform s m
           n = objectNormalAt s' (point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
       it "is the vector(0, 0.97014, -0.24254)" $ do
@@ -142,7 +142,7 @@ sphereTransformation =
     describe "A sphere's default transformation" $ do
       let s = SUT.makeUnitSphere 1
       it "is the identity matrix" $ do
-        SUT.sphereTransform s `shouldBe` identityV
+        SUT.sphereTransform s `shouldBe` identity
     {- Scenario: Changing a sphere's transformation
          Given s ← sphere()
            And t ← translation(2, 3, 4)
