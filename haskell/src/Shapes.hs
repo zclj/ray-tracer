@@ -90,9 +90,9 @@ objectNormalAt s worldPoint =
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'
 
-removeOrAppend :: (Eq a) => [a] -> a -> [a]
-removeOrAppend xs i = if i `elem` xs
-                      then filter (/= i) xs
+removeOrAppend :: (IsShape a, Eq a) => [a] -> a -> [a]
+removeOrAppend xs i = if (shapeId i) `elem` (map shapeId xs)
+                      then filter (\x -> (shapeId x) /= (shapeId i)) xs
                       else xs ++ [i]
 
 refractiveIndexValue :: (IsShape a) => [a] -> Double
