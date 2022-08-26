@@ -114,7 +114,7 @@ lightSource = pointLight
 ----
 -- Camera
 ---
-camera = (makeCamera 1200 600 1.152) { C.transform = viewTransform
+camera = (makeCamera 1200 1200 1.152) { C.transform = viewTransform
                                                      (point 0 1.5 (-5))
                                                      (point 0 1 0)
                                                      (point 0 1 0) }
@@ -128,8 +128,17 @@ world = defaultWorld { light = lightSource }
 -- AShape test
 ---
 
-fooShape = makeGlassSphere 6
-fooShape' = S.toAShape (fooShape { sphereTransform = translation (-0.5) 1 (-1) })
+fooShape = Sphere 8 1.0 identityV (M.material
+                                    { transparency = 1.0,
+                                      diffuse = 0.1,
+                                      ambient = 0.1,
+                                      color = Color (Red 0.1) (Green 0) (Blue 0),
+                                      specular = 1.0,
+                                      shininess = 300,
+                                      reflective = 1.0,
+                                      refractiveIndex = 1.5 })--makeGlassSphere 6
+fooShape' = S.toAShape (fooShape { sphereTransform = translation (-0.5) 1 (-1.9)
+                                   `mulV` scaling 0.4 0.4 0.4})
 -- fooShape = ASphere 5 2.0
 --            (translation (-2.5) 0.33 (-1.75) `mulV` scaling 0.33 0.33 0.33)
 --            (M.material { materialPattern  = Just p1'

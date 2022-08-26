@@ -39,6 +39,7 @@ library
       Rays
       Scene
       SceneChapter11
+      SceneNestedGlass
       ScenePlanesAndSpheres
       SceneReflectionRefraction
       ShadedSphere

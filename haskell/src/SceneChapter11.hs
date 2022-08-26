@@ -17,7 +17,7 @@ import Shapes
 ----------------------------------------
 -- The Camera
 ----------------------------------------
-camera = (makeCamera 1200 600 1.152)--400 200 1.152)
+camera = (makeCamera 1200 600 1.152)
          { C.transform = viewTransform
                          (point (-2.6) 1.5 (-3.9))
                          (point (-0.6) 1 (-0.8))
@@ -145,6 +145,7 @@ redSphere =
           , asphereTransform = translation (-0.6) 1 0.6
           , asphereMaterial  = M.material
                                { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
+                               , specular  = 0.4
                                , shininess = 5 }}
 
 blueGlassSphere =

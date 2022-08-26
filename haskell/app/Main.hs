@@ -12,3 +12,4 @@ main = do runDemo
             -- >> runDemoScenePlanes "./demos/canvasScenePlanes.ppm"
             -- >> runDemoSceneReflectionRefraction "./demos/canvasSceneReflectionRefraction.ppm"
             >> (runDemoSceneChapter11 "./demos/canvasSceneChapter11.ppm")
+            -- >> (runDemoSceneNestedGlass "./demos/canvasSceneNestedGlass.ppm")
