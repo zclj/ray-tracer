@@ -27,7 +27,7 @@ toWorldX x = (-half) + (pixelSize * fromIntegral x)
 toWorldY :: Int -> Double
 toWorldY y = half - (pixelSize * fromIntegral y)
 
-processPixel :: Int -> Int -> Sphere -> (Maybe (Intersection Sphere), Ray)
+processPixel :: Int -> Int -> AShape -> (Maybe Intersection, Ray)
 processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
                              position = point worldX worldY wallZ
@@ -35,23 +35,23 @@ processPixel x y shape = let worldX   = toWorldX x
                              xs       = shapeIntersect shape ray
                          in (hit xs, ray)
 
-castOnPixel :: Int -> Int -> Sphere -> Color -> Light -> Color
+castOnPixel :: Int -> Int -> AShape -> Color -> Light -> Color
 castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                         in case hit of
                              Just n -> let p      = Rays.position ray (intersectionT n)
-                                           normal = Spheres.normalAt (intersectionObject n) p
+                                           normal = aNormalAt (intersectionObject n) p
                                            eye    = neg (direction ray)
-                                       in lighting (sphereMaterial (intersectionObject n)) (makeUnitSphere 1) l p eye normal False
+                                       in lighting (asphereMaterial (intersectionObject n)) (makeUnitSphere 1) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
-castRow :: Int -> Sphere -> Color -> Light -> [Color]
+castRow :: Int -> AShape -> Color -> Light -> [Color]
 castRow y s c l = map (\x -> castOnPixel x y s c l) [0..(canvasPixels - 1)]
 
 render :: Canvas
 render = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
              color  = Color (Red 1) (Green 0) (Blue 0)
              sphere = (makeUnitSphere 1)
-                      { sphereMaterial =
+                      { asphereMaterial =
                           Mat.material { color = Color (Red 1) (Green 0.2) (Blue 1)}}
              lightPos = point (-10) 10 (-10)
              lightColor = Color (Red 1) (Green 1) (Blue 1)

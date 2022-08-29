@@ -32,7 +32,7 @@ aNormalAt :: AShape -> Tuple -> Tuple
 aNormalAt ASphere {} objectPoint = objectPoint `sub` point 0 0 0
 aNormalAt APlane {} _ = vector 0 1 0
 
-aIntersect :: AShape -> Ray -> [Intersection AShape]
+aIntersect :: AShape -> Ray -> [Intersection]
 aIntersect s@ASphere {} r =
   let sphereToRay  = origin r `sub` Tuples.point 0 0 0
       a            = direction r `dot` direction r
@@ -63,22 +63,22 @@ class IsShape a where
   shapeTransform :: a -> Matrix
   shapeMaterial  :: a -> Material
   shapeNormalAt  :: a -> Tuple -> Tuple
-  shapeIntersect :: a -> Ray -> [Intersection a]
+  shapeIntersect :: a -> Ray -> [Intersection]
 
-data Computation a = Computation { cT          :: Double
-                                 , cObject     :: a
-                                 , cPoint      :: Tuple
-                                 , cEyev       :: Tuple
-                                 , cNormalv    :: Tuple
-                                 , cInside     :: Bool
-                                 , cOverPoint  :: Tuple
-                                 , cUnderPoint :: Tuple
-                                 , cReflectv   :: Tuple
-                                 , cN1         :: Double
-                                 , cN2         :: Double}
-                   deriving(Show)
+data Computation = Computation { cT          :: Double
+                               , cObject     :: AShape
+                               , cPoint      :: Tuple
+                               , cEyev       :: Tuple
+                               , cNormalv    :: Tuple
+                               , cInside     :: Bool
+                               , cOverPoint  :: Tuple
+                               , cUnderPoint :: Tuple
+                               , cReflectv   :: Tuple
+                               , cN1         :: Double
+                               , cN2         :: Double}
+                 deriving(Show)
 
-intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection a]
+intersectShapes :: (Ord a, IsShape a) => [a] -> Ray -> [Intersection]
 intersectShapes objects r
   = sort $ concatMap (\s -> shapeIntersect s (R.transform r (inverse (shapeTransform s)))) objects
 
@@ -101,7 +101,7 @@ refractiveIndexValue shapes =
   then 1.0
   else refractiveIndex (shapeMaterial (last shapes))
 
-refractive :: (IsShape a, Ord a) => [Intersection a] -> [a] -> Intersection a -> (Double, Double) -> (Double, Double)
+refractive :: [Intersection] -> [AShape] -> Intersection -> (Double, Double) -> (Double, Double)
 refractive [] shapes hit (n1, n2)     = (n1, n2)
 refractive (i:is) shapes hit (n1, n2) =
   let shapes' = removeOrAppend shapes (intersectionObject i)
@@ -109,8 +109,7 @@ refractive (i:is) shapes hit (n1, n2) =
      then (refractiveIndexValue shapes, refractiveIndexValue shapes')
      else refractive is shapes' hit (n1, n2)
 
-prepareComputations ::
-  (IsShape a, Ord a) => Intersection a -> Ray -> [Intersection a] -> Computation a
+prepareComputations :: Intersection -> Ray -> [Intersection] -> Computation
 prepareComputations i r xs =
   let it               = intersectionT i
       po               = position r it
@@ -134,14 +133,14 @@ prepareComputations i r xs =
                  , cN2         = n2 }
 
 
-data Intersection a = Intersection
-                      { intersectionT      :: Double
-                      , intersectionObject :: a}
-                    deriving (Show, Eq, Ord)
+data Intersection = Intersection
+                    { intersectionT      :: Double
+                    , intersectionObject :: AShape}
+                  deriving (Show, Eq, Ord)
 
 -- |The `hit` function returns the first non-negative intersection.
 -- Intersections with a negative value are 'behind', positive 'infront'
-hit :: (IsShape a, Ord a) => [Intersection a] -> Maybe (Intersection a)
+hit :: [Intersection] -> Maybe (Intersection)
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
 patternAtShape :: IsShape a => Pattern -> a -> Tuple -> Color
@@ -150,7 +149,7 @@ patternAtShape p shape worldPoint =
       patternPoint = inverse (patternTransform p) `mulT` objectPoint
   in patternAt p patternPoint
 
-schlick :: Computation a -> Double
+schlick :: Computation -> Double
 schlick c =
   let n      = cN1 c / cN2 c
       cos    = cEyev c `dot` cNormalv c

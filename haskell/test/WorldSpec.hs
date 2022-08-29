@@ -448,12 +448,12 @@ worldShading =
            And c ← shade_hit(w, comps)
          Then c = color(0.1, 0.1, 0.1) -}
     describe "shade_hit() is given an intersection in shadow" $ do
-      let s1 = (makeUnitSphere 1) { sphereTransform = translation 0 0 10 }
+      let s1 = (makeUnitSphere 1) { asphereTransform = translation 0 0 10 }
           s2 = makeUnitSphere 2
           w = World { light   = pointLight
                                 (point 0 0 (-10))
                                 (Color (Red 1) (Green 1) (Blue 1))
-                    , aShapes = [ Spheres.toAShape s1, Spheres.toAShape s2]}
+                    , aShapes = [ s1, s2]}
           r = makeRay (point 0 0 5) (vector 0 0 1)
           i = Intersection 4 s2
           comps = prepareComputations i r [i]

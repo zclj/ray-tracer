@@ -19,31 +19,31 @@ data Sphere = Sphere { id              :: Int
                      , sphereMaterial  :: M.Material}
             deriving (Show, Eq, Ord)
 
-instance IsShape Sphere where
-  shapeId        = Spheres.id
-  shapeTransform = sphereTransform
-  shapeMaterial  = sphereMaterial
-  shapeNormalAt  = normalAt
-  shapeIntersect = intersect
+-- instance IsShape Sphere where
+--   shapeId        = Spheres.id
+--   shapeTransform = sphereTransform
+--   shapeMaterial  = sphereMaterial
+--   shapeNormalAt  = normalAt
+--   shapeIntersect = intersect
 
-makeUnitSphere :: Int -> Sphere
-makeUnitSphere id = Sphere id 1.0 identity M.material
+makeUnitSphere :: Int -> AShape
+makeUnitSphere id = ASphere id 1.0 identity M.material
 
 toAShape :: Sphere -> AShape
 toAShape s = ASphere (Spheres.id s) (radius s) (sphereTransform s) (sphereMaterial s)
 
-makeGlassSphere :: Int -> Sphere
+makeGlassSphere :: Int -> AShape
 makeGlassSphere id =
-  Sphere id 1.0 identity (M.material { transparency = 1.0, refractiveIndex = 1.5 })
+  ASphere id 1.0 identity (M.material { transparency = 1.0, refractiveIndex = 1.5 })
 
 normalAt :: Sphere -> Tuple -> Tuple
 normalAt s objectPoint
   = objectPoint `sub` point 0 0 0
 
-setTransform :: Sphere -> Matrix -> Sphere
-setTransform s m = s {sphereTransform = m}
+setTransform :: AShape -> Matrix -> AShape
+setTransform s m = s {asphereTransform = m}
 
-intersect :: (IsShape a) => a -> Ray -> [Intersection a]
+intersect :: AShape -> Ray -> [Intersection]
 intersect s r = let sphereToRay  = origin r `sub` Tuples.point 0 0 0
                     a            = direction r `dot` direction r
                     b            = 2 * (direction r `dot` sphereToRay)

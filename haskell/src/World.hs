@@ -51,7 +51,7 @@ defaultWorld = let defaultSphere1 = Sphere
                   [Spheres.toAShape defaultSphere1, Spheres.toAShape defaultSphere2]
                   defaultLight
 
-shadeHit :: (IsShape a) => World -> Computation a -> Int -> Color
+shadeHit :: World -> Computation -> Int -> Color
 shadeHit world c remaining
   = let surface   = Lights.lighting
                     (shapeMaterial (cObject c))
@@ -71,8 +71,7 @@ shadeHit world c remaining
                (refracted `mulCS` (1 - reflectance))
        else surface `addC` reflected `addC` refracted
 
-colorizeShape :: (IsShape a, Ord a) =>
-  World -> Ray -> Int -> Maybe (Intersection a) -> [Intersection a] -> Color
+colorizeShape :: World -> Ray -> Int -> Maybe Intersection -> [Intersection] -> Color
 colorizeShape _ _ _ Nothing _  = Color (Red 0) (Green 0) (Blue 0)
 colorizeShape w r remaining (Just s) is =
   shadeHit w (prepareComputations s r is) remaining
@@ -94,7 +93,7 @@ isShadowed w p = let v              = Lights.position (light w) `sub` p
                       Just i  -> intersectionT i < distance
                       Nothing -> False
 
-reflectedColor :: (IsShape a) => World -> Computation a -> Int -> Color
+reflectedColor :: World -> Computation -> Int -> Color
 reflectedColor w pc remaining
   = let m = shapeMaterial (cObject pc)
     in if reflective m == 0 || remaining == 0
@@ -103,7 +102,7 @@ reflectedColor w pc remaining
                 color      = colorAt w reflectRay (remaining - 1)
             in color `mulCS` reflective m
 
-refractedColor :: (IsShape a) => World -> Computation a -> Int -> Color
+refractedColor :: World -> Computation -> Int -> Color
 refractedColor w pc remaining =
   let m       = shapeMaterial (cObject pc)
       n_ratio = cN1 pc / cN2 pc

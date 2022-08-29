@@ -30,7 +30,7 @@ sphereMaterials =
          Then m = material() -}
     describe "A sphere has a default material" $ do
       let s = SUT.makeUnitSphere 1
-          m = SUT.sphereMaterial s
+          m = asphereMaterial s
       it "is the same as the default material" $ do
         m `shouldBe` M.material
     {- Scenario: A sphere may be assigned a material
@@ -43,9 +43,9 @@ sphereMaterials =
       let s  = SUT.makeUnitSphere 1
           m  = M.material
           m' = m {ambient = 1}
-          s' = s {SUT.sphereMaterial = m'}
+          s' = s {asphereMaterial = m'}
       it "it has the new material" $ do
-        SUT.sphereMaterial s' `shouldBe` m'
+        asphereMaterial s' `shouldBe` m'
     {- Scenario: A helper for producing a sphere with a glassy material
          Given s ← glass_sphere()
          Then s.transform = identity_matrix
@@ -54,11 +54,11 @@ sphereMaterials =
     describe "A helper for producing a sphere with a glassy material" $ do
       let s = SUT.makeGlassSphere 1
       it "transform is identity matrix" $ do
-        sphereTransform s `shouldBe` identity
+        asphereTransform s `shouldBe` identity
       it "material is transparent (1.0)" $ do
-        transparency (sphereMaterial s) `shouldBe` 1.0
+        transparency (asphereMaterial s) `shouldBe` 1.0
       it "refractive indes is 1.5" $ do
-        refractiveIndex (sphereMaterial s) `shouldBe` 1.5
+        refractiveIndex (asphereMaterial s) `shouldBe` 1.5
 
 sphereNormals :: Spec
 sphereNormals =
@@ -69,7 +69,7 @@ sphereNormals =
          Then n = vector(1, 0, 0) -}
     describe "The normal on a sphere at a point on the x axis" $ do
       let s = SUT.makeUnitSphere 1
-          n = SUT.normalAt s (point 1 0 0)
+          n = aNormalAt s (point 1 0 0)
       it "is the vector(1, 0, 0)" $ do
         n `shouldBe` vector 1 0 0
     {- Scenario: The normal on a sphere at a point on the y axis
@@ -78,7 +78,7 @@ sphereNormals =
          Then n = vector(0, 1, 0) -}
     describe "The normal on a sphere at a point on the y axis" $ do
       let s = SUT.makeUnitSphere 1
-          n = SUT.normalAt s (point 0 1 0)
+          n = aNormalAt s (point 0 1 0)
       it "is the vector(0, 1, 0)" $ do
         n `shouldBe` vector 0 1 0
     {- Scenario: The normal on a sphere at a point on the z axis
@@ -87,7 +87,7 @@ sphereNormals =
          Then n = vector(0, 0, 1) -}
     describe "The normal on a sphere at a point on the z axis" $ do
       let s = SUT.makeUnitSphere 1
-          n = SUT.normalAt s (point 0 0 1)
+          n = aNormalAt s (point 0 0 1)
       it "is the vector(0, 0, 1)" $ do
         n `shouldBe` vector 0 0 1
     {- Scenario: The normal on a sphere at a nonaxial point
@@ -96,7 +96,7 @@ sphereNormals =
          Then n = vector(√3/3, √3/3, √3/3) -}
     describe "The normal on a sphere at a nonaxial point" $ do
       let s = SUT.makeUnitSphere 1
-          n = SUT.normalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = aNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)
     {- Scenario: The normal is a normalized vector
@@ -105,7 +105,7 @@ sphereNormals =
          Then n = normalize(n) -}
     describe "The normal is a normalized vector" $ do
       let s = SUT.makeUnitSphere 1
-          n = SUT.normalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = aNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` norm n
     {- Scenario: Computing the normal on a translated sphere
@@ -142,7 +142,7 @@ sphereTransformation =
     describe "A sphere's default transformation" $ do
       let s = SUT.makeUnitSphere 1
       it "is the identity matrix" $ do
-        SUT.sphereTransform s `shouldBe` identity
+        asphereTransform s `shouldBe` identity
     {- Scenario: Changing a sphere's transformation
          Given s ← sphere()
            And t ← translation(2, 3, 4)
@@ -151,9 +151,9 @@ sphereTransformation =
     describe "Changing a sphere's transformation" $ do
       let s  = SUT.makeUnitSphere 1
           t  = translation 2 3 4
-          s' = s { SUT.sphereTransform = t }
+          s' = s { asphereTransform = t }
       it "result in a new sphere with the new transformation" $ do
-        SUT.sphereTransform s' `shouldBe` t
+        asphereTransform s' `shouldBe` t
 
 sphereIntersections :: Spec
 sphereIntersections =
@@ -266,7 +266,7 @@ sphereIntersections =
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
           m          = scaling 2 2 2
-          s'         = s { SUT.sphereTransform = m }
+          s'         = s { asphereTransform = m }
           xs@(x:y:_) = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -284,7 +284,7 @@ sphereIntersections =
       let r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s  = SUT.makeUnitSphere 1
           m  = translation 5 0 0
-          s' = s { SUT.sphereTransform = m }
+          s' = s { asphereTransform = m }
           xs = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 0
