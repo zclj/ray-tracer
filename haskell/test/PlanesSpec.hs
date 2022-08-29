@@ -27,7 +27,7 @@ planeIntersections =
     describe "Intersect with a ray parallel to the plane" $ do
       let p  = SUT.makePlane 1
           r  = makeRay (point 0 10 0) (vector 0 0 1)
-          xs = shapeIntersect p r
+          xs = localIntersect p r
       it "intersections are empty" $ do
         xs `shouldBe` []
     {- Scenario: Intersect with a coplanar ray
@@ -38,7 +38,7 @@ planeIntersections =
     describe "Intersect with a coplanar ray" $ do
       let p  = SUT.makePlane 1
           r  = makeRay (point 0 0 0) (vector 0 0 1)
-          xs = shapeIntersect p r
+          xs = localIntersect p r
       it "intersections are empty" $ do
         xs `shouldBe` []
     {- Scenario: A ray intersecting a plane from above
@@ -51,7 +51,7 @@ planeIntersections =
     describe "A ray intersecting a plane from above" $ do
       let p  = SUT.makePlane 1
           r  = makeRay (point 0 1 0) (vector 0 (-1) 0)
-          xs = shapeIntersect p r
+          xs = localIntersect p r
       it "one intersection" $ do
         length xs `shouldBe` 1
       it "xs[0].t = 1" $ do
@@ -68,7 +68,7 @@ planeIntersections =
     describe "A ray intersecting a plane from below" $ do
       let p  = SUT.makePlane 1
           r  = makeRay (point 0 (-1) 0) (vector 0 1 0)
-          xs = shapeIntersect p r
+          xs = localIntersect p r
       it "one intersection" $ do
         length xs `shouldBe` 1
       it "xs[0].t = 1" $ do
@@ -89,9 +89,9 @@ planeNormal =
            And n3 = vector(0, 1, 0) -}
     describe "The normal of a plane is constant everywhere" $ do
       let p  = SUT.makePlane 1
-          n1 = shapeNormalAt p (point 0 0 0)
-          n2 = shapeNormalAt p (point 10 0 (-10))
-          n3 = shapeNormalAt p (point (-5) 0 150)
+          n1 = aNormalAt p (point 0 0 0)
+          n2 = aNormalAt p (point 10 0 (-10))
+          n3 = aNormalAt p (point (-5) 0 150)
       it "n1 = vector(0, 1, 0)" $ do
         n1 `shouldBe` vector 0 1 0
       it "n2 = vector(0, 1, 0)" $ do

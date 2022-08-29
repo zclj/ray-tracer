@@ -41,9 +41,9 @@ worldReflection =
       let w      = SUT.defaultWorld
           r      = makeRay (point 0 0 0) (vector 0 0 1)
           shape  = last (SUT.aShapes w)
-          mat    = asphereMaterial shape
+          mat    = ashapeMaterial shape
           mat'   = mat { ambient = 1 }
-          shape' = shape { asphereMaterial = mat' }
+          shape' = shape { ashapeMaterial = mat' }
           i      = Shapes.Intersection 1 shape'
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
@@ -170,7 +170,7 @@ worldReflection =
       let w      = SUT.defaultWorld
           shape  = head (aShapes w)
           m      = (aShapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
-          shape' = shape { asphereMaterial = m }
+          shape' = shape { ashapeMaterial = m }
           r      = makeRay (point 0 0 (-5)) (vector 0 0 1)
           xs     = [Shapes.Intersection 4 shape', Shapes.Intersection 6 shape']
           comps  = prepareComputations (head xs) r xs
@@ -194,7 +194,7 @@ worldReflection =
       let w      = SUT.defaultWorld
           shape  = head (aShapes w)
           m      = (aShapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
-          shape' = shape { asphereMaterial = m }
+          shape' = shape { ashapeMaterial = m }
           r      = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-sqrt 2/2) shape'
                    , Shapes.Intersection (sqrt 2/2) shape']
@@ -223,12 +223,12 @@ worldReflection =
           am     = (aShapeMaterial a)
                    { ambient         = 1.0,
                      materialPattern = Just pointPattern}
-          a'     = a { asphereMaterial = am }
+          a'     = a { ashapeMaterial = am }
           b      = last (aShapes w)
           bm     = (aShapeMaterial b)
                    { transparency    = 1.0,
                      refractiveIndex = 1.5 }
-          b'     = b {asphereMaterial = bm }
+          b'     = b { ashapeMaterial = bm }
           r      = makeRay (point 0 0 0.1) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-0.9899) a'
                    , Shapes.Intersection (-0.4899) b'
@@ -259,14 +259,14 @@ worldReflection =
     describe "shade_hit() with a transparent material" $ do
       let w      = SUT.defaultWorld
           floor  = APlane { Shapes.id       = 3
-                          , aplaneTransform = translation 0 (-1) 0
-                          , aplaneMaterial  =
+                          , ashapeTransform = translation 0 (-1) 0
+                          , ashapeMaterial  =
                               material { transparency    = 0.5
                                        , refractiveIndex = 1.5} }
           ball   = ASphere { Shapes.id        = 4
                            , asphereRadius    = 1.0
-                           , asphereTransform = translation 0 (-3.5) (-0.5)
-                           , asphereMaterial  =
+                           , ashapeTransform = translation 0 (-3.5) (-0.5)
+                           , ashapeMaterial  =
                                material { color   = Color (Red 1) (Green 0) (Blue 0)
                                         , ambient = 0.5}}
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
@@ -297,15 +297,15 @@ worldReflection =
     describe "shade_hit() with a reflective, transparent material" $ do
       let w      = SUT.defaultWorld
           floor  = APlane { Shapes.id       = 3
-                          , aplaneTransform = translation 0 (-1) 0
-                          , aplaneMaterial  =
+                          , ashapeTransform = translation 0 (-1) 0
+                          , ashapeMaterial  =
                               material { transparency    = 0.5
                                        , reflective      = 0.5
                                        , refractiveIndex = 1.5} }
           ball   = ASphere { Shapes.id        = 4
                            , asphereRadius    = 1.0
-                           , asphereTransform = translation 0 (-3.5) (-0.5)
-                           , asphereMaterial  =
+                           , ashapeTransform = translation 0 (-3.5) (-0.5)
+                           , ashapeMaterial  =
                                material { color   = Color (Red 1) (Green 0) (Blue 0)
                                         , ambient = 0.5}}
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
@@ -448,7 +448,7 @@ worldShading =
            And c ← shade_hit(w, comps)
          Then c = color(0.1, 0.1, 0.1) -}
     describe "shade_hit() is given an intersection in shadow" $ do
-      let s1 = (makeUnitSphere 1) { asphereTransform = translation 0 0 10 }
+      let s1 = (makeUnitSphere 1) { ashapeTransform = translation 0 0 10 }
           s2 = makeUnitSphere 2
           w = World { light   = pointLight
                                 (point 0 0 (-10))
@@ -522,15 +522,15 @@ worldBasics =
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s1    = ASphere { Shapes.id        = 1
                           , asphereRadius    = 1.0
-                          , asphereTransform = identity
-                          , asphereMaterial  = Materials.material
+                          , ashapeTransform = identity
+                          , ashapeMaterial  = Materials.material
                             { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                             , diffuse   = 0.7
                             , specular  = 0.2}}
           s2    = ASphere { Shapes.id        = 2
                           , asphereRadius    = 1.0
-                          , asphereTransform = scaling 0.5 0.5 0.5
-                          , asphereMaterial  = Materials.material}
+                          , ashapeTransform = scaling 0.5 0.5 0.5
+                          , ashapeMaterial  = Materials.material}
           w     = defaultWorld
       it "contains Sphere S1" $ do
         head (aShapes w) `shouldBe` s1

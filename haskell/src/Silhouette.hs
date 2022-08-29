@@ -30,7 +30,7 @@ processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
                              position = point worldX worldY wallZ
                              ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
-                             xs       = shapeIntersect shape ray
+                             xs       = localIntersect shape ray
                          in hit xs
 
 castOnPixel :: Int -> Int -> AShape -> Color -> Color

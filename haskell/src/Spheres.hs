@@ -41,7 +41,7 @@ normalAt s objectPoint
   = objectPoint `sub` point 0 0 0
 
 setTransform :: AShape -> Matrix -> AShape
-setTransform s m = s {asphereTransform = m}
+setTransform s m = s {ashapeTransform = m}
 
 intersect :: AShape -> Ray -> [Intersection]
 intersect s r = let sphereToRay  = origin r `sub` Tuples.point 0 0 0

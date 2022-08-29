@@ -94,7 +94,7 @@ precompute =
            And comps.point.z > comps.over_point.z -}
     describe "The hit should offset the point" $ do
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          shape = (makeUnitSphere 1) { asphereTransform = translation 0 0 1 }
+          shape = (makeUnitSphere 1) { ashapeTransform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           comps = SUT.prepareComputations i r [i]
           ze    = z (cOverPoint comps) < (-Tuples.epsilon/2)
@@ -114,7 +114,7 @@ precompute =
            And comps.point.z < comps.under_point.z -}
     describe "The under point is offset below the surface" $ do
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          shape = (makeGlassSphere 1) { asphereTransform = translation 0 0 1 }
+          shape = (makeGlassSphere 1) { ashapeTransform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           xs    = [i]
           comps = SUT.prepareComputations i r xs
@@ -163,13 +163,13 @@ precompute =
       let a  = makeGlassSphere 1
           b  = makeGlassSphere 2
           c  = makeGlassSphere 3
-          m  = asphereMaterial a
-          a' = a { asphereTransform = scaling 2 2 2,
-                   asphereMaterial  = m { refractiveIndex = 1.5 }}
-          b' = b { asphereTransform = scaling 0 0 (-0.25),
-                   asphereMaterial  = m { refractiveIndex = 2.0 }}
-          c' = c { asphereTransform = scaling 0 0 0.25,
-                   asphereMaterial  = m { refractiveIndex = 2.5 }}
+          m  = ashapeMaterial a
+          a' = a { ashapeTransform = scaling 2 2 2,
+                   ashapeMaterial  = m { refractiveIndex = 1.5 }}
+          b' = b { ashapeTransform = scaling 0 0 (-0.25),
+                   ashapeMaterial  = m { refractiveIndex = 2.0 }}
+          c' = c { ashapeTransform = scaling 0 0 0.25,
+                   ashapeMaterial  = m { refractiveIndex = 2.5 }}
           r  = makeRay (point 0 0 (-4)) (vector 0 0 1)
           xs = [ SUT.Intersection 2 a'   , SUT.Intersection 2.75 b'
                , SUT.Intersection 3.25 c', SUT.Intersection 4.75 b'

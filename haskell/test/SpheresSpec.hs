@@ -30,7 +30,7 @@ sphereMaterials =
          Then m = material() -}
     describe "A sphere has a default material" $ do
       let s = SUT.makeUnitSphere 1
-          m = asphereMaterial s
+          m = ashapeMaterial s
       it "is the same as the default material" $ do
         m `shouldBe` M.material
     {- Scenario: A sphere may be assigned a material
@@ -43,9 +43,9 @@ sphereMaterials =
       let s  = SUT.makeUnitSphere 1
           m  = M.material
           m' = m {ambient = 1}
-          s' = s {asphereMaterial = m'}
+          s' = s {ashapeMaterial = m'}
       it "it has the new material" $ do
-        asphereMaterial s' `shouldBe` m'
+        ashapeMaterial s' `shouldBe` m'
     {- Scenario: A helper for producing a sphere with a glassy material
          Given s ← glass_sphere()
          Then s.transform = identity_matrix
@@ -54,11 +54,11 @@ sphereMaterials =
     describe "A helper for producing a sphere with a glassy material" $ do
       let s = SUT.makeGlassSphere 1
       it "transform is identity matrix" $ do
-        asphereTransform s `shouldBe` identity
+        ashapeTransform s `shouldBe` identity
       it "material is transparent (1.0)" $ do
-        transparency (asphereMaterial s) `shouldBe` 1.0
+        transparency (ashapeMaterial s) `shouldBe` 1.0
       it "refractive indes is 1.5" $ do
-        refractiveIndex (asphereMaterial s) `shouldBe` 1.5
+        refractiveIndex (ashapeMaterial s) `shouldBe` 1.5
 
 sphereNormals :: Spec
 sphereNormals =
@@ -142,7 +142,7 @@ sphereTransformation =
     describe "A sphere's default transformation" $ do
       let s = SUT.makeUnitSphere 1
       it "is the identity matrix" $ do
-        asphereTransform s `shouldBe` identity
+        ashapeTransform s `shouldBe` identity
     {- Scenario: Changing a sphere's transformation
          Given s ← sphere()
            And t ← translation(2, 3, 4)
@@ -151,9 +151,9 @@ sphereTransformation =
     describe "Changing a sphere's transformation" $ do
       let s  = SUT.makeUnitSphere 1
           t  = translation 2 3 4
-          s' = s { asphereTransform = t }
+          s' = s { ashapeTransform = t }
       it "result in a new sphere with the new transformation" $ do
-        asphereTransform s' `shouldBe` t
+        ashapeTransform s' `shouldBe` t
 
 sphereIntersections :: Spec
 sphereIntersections =
@@ -168,7 +168,7 @@ sphereIntersections =
     describe "A ray intersects a sphere at two points" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `shapeIntersect` r
+          xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is 4.0" $ do
@@ -185,7 +185,7 @@ sphereIntersections =
     describe "A ray intersects a sphere at a tangent" $ do
       let r          = makeRay (point 0 1 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `shapeIntersect` r
+          xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is 5.0" $ do
@@ -200,7 +200,7 @@ sphereIntersections =
     describe "A ray misses a sphere" $ do
       let r  = makeRay (point 0 2 (-5)) (vector 0 0 1)
           s  = SUT.makeUnitSphere 1
-          xs = s `shapeIntersect` r
+          xs = s `localIntersect` r
       it "there are no intersections" $ do
         length xs `shouldBe` 0
     {- Scenario: A ray originates inside a sphere
@@ -213,7 +213,7 @@ sphereIntersections =
     describe "A ray originates inside a sphere" $ do
       let r = makeRay (point 0 0 0) (vector 0 0 1)
           s = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `shapeIntersect` r
+          xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is -1.0" $ do
@@ -230,7 +230,7 @@ sphereIntersections =
     describe "A sphere is behind a ray" $ do
       let r = makeRay (point 0 0 5) (vector 0 0 1)
           s = SUT.makeUnitSphere 1
-          xs@(x:y:_) = s `shapeIntersect` r
+          xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
       it "intersection one is -6.0" $ do
@@ -266,7 +266,7 @@ sphereIntersections =
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s          = SUT.makeUnitSphere 1
           m          = scaling 2 2 2
-          s'         = s { asphereTransform = m }
+          s'         = s { ashapeTransform = m }
           xs@(x:y:_) = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -284,7 +284,7 @@ sphereIntersections =
       let r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
           s  = SUT.makeUnitSphere 1
           m  = translation 5 0 0
-          s' = s { asphereTransform = m }
+          s' = s { ashapeTransform = m }
           xs = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 0

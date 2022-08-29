@@ -34,9 +34,9 @@ lightSource = pointLight
 -- wall
 wall =
   APlane { Shapes.id = 1
-         , aplaneTransform = T.transform [ rotationX (pi/2)
+         , ashapeTransform = T.transform [ rotationX (pi/2)
                                          , translation 0 0 10]
-         , aplaneMaterial  =
+         , ashapeMaterial  =
            M.material
            { materialPattern = Just (checkersPattern
                                       (Color (Red 0.15) (Green 0.15) (Blue 0.15))
@@ -47,9 +47,9 @@ wall =
 
 -- glass ball
 glassBall = ASphere { Shapes.id        = 2
-                    , asphereTransform = identity
+                    , ashapeTransform = identity
                     , asphereRadius    = 1.0
-                    , asphereMaterial  =
+                    , ashapeMaterial  =
                       M.material
                       { color     = Color (Red 1) (Green 1) (Blue 1)
                       , ambient = 0
@@ -61,10 +61,10 @@ glassBall = ASphere { Shapes.id        = 2
                       , refractiveIndex = 1.5 }}
 
 -- hollow center
-hollowBall = ASphere { Shapes.id        = 3
-                     , asphereTransform = scaling 0.5 0.5 0.5
-                     , asphereRadius    = 1.0
-                     , asphereMaterial  =
+hollowBall = ASphere { Shapes.id       = 3
+                     , ashapeTransform = scaling 0.5 0.5 0.5
+                     , asphereRadius   = 1.0
+                     , ashapeMaterial  =
                       M.material
                       { color     = Color (Red 1) (Green 1) (Blue 1)
                       , ambient = 0

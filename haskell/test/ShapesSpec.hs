@@ -16,13 +16,6 @@ data TestShape = TestShape { id :: Int
 testShape :: TestShape
 testShape = TestShape { ShapesSpec.id = 1, ShapesSpec.transform = identity, ShapesSpec.material = M.material }
 
-instance IsShape TestShape where
-  shapeId        = ShapesSpec.id
-  shapeTransform = ShapesSpec.transform
-  shapeMaterial  = ShapesSpec.material
-  shapeNormalAt  = undefined
-  shapeIntersect = undefined
-
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [
   testGroup "Specs for"
@@ -37,4 +30,4 @@ shapeBasics =
     describe "The default transformation" $ do
       let s = testShape
       it "s.transform = identity_matrix" $ do
-        SUT.shapeTransform s `shouldBe` identity
+        transform s `shouldBe` identity

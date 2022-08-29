@@ -32,7 +32,7 @@ processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
                              position = point worldX worldY wallZ
                              ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
-                             xs       = shapeIntersect shape ray
+                             xs       = localIntersect shape ray
                          in (hit xs, ray)
 
 castOnPixel :: Int -> Int -> AShape -> Color -> Light -> Color
@@ -41,7 +41,7 @@ castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                              Just n -> let p      = Rays.position ray (intersectionT n)
                                            normal = aNormalAt (intersectionObject n) p
                                            eye    = neg (direction ray)
-                                       in lighting (asphereMaterial (intersectionObject n)) (makeUnitSphere 1) l p eye normal False
+                                       in lighting (ashapeMaterial (intersectionObject n)) (makeUnitSphere 1) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
 castRow :: Int -> AShape -> Color -> Light -> [Color]
@@ -51,7 +51,7 @@ render :: Canvas
 render = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
              color  = Color (Red 1) (Green 0) (Blue 0)
              sphere = (makeUnitSphere 1)
-                      { asphereMaterial =
+                      { ashapeMaterial =
                           Mat.material { color = Color (Red 1) (Green 0.2) (Blue 1)}}
              lightPos = point (-10) 10 (-10)
              lightColor = Color (Red 1) (Green 1) (Blue 1)
