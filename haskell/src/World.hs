@@ -25,11 +25,8 @@ data World = World { aShapes       :: [AShape]
                deriving(Show)
 
 defaultWorld :: World
-defaultWorld = let defaultSphere1 = Sphere
-                                    { Spheres.id      = 1
-                                    , radius          = 1.0
-                                    , sphereTransform = identity
-                                    , sphereMaterial  = Material
+defaultWorld = let defaultSphere1 = (defaultSphere 1)
+                                    { ashapeMaterial  = Material
                                       { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                                       , ambient   = 0.1
                                       , diffuse   = 0.7
@@ -39,16 +36,13 @@ defaultWorld = let defaultSphere1 = Sphere
                                       , transparency = 0
                                       , refractiveIndex = 1.0
                                       , materialPattern   = Nothing}}
-                   defaultSphere2 = Sphere
-                                    { Spheres.id      = 2
-                                    , radius          = 1.0
-                                    , sphereTransform = scaling 0.5 0.5 0.5
-                                    , sphereMaterial  = Materials.material}
+                   defaultSphere2 = (defaultSphere 2)
+                                    { ashapeTransform = scaling 0.5 0.5 0.5 }
                    defaultLight   = pointLight
                                     (point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World
-                  [Spheres.toAShape defaultSphere1, Spheres.toAShape defaultSphere2]
+                  [defaultSphere1, defaultSphere2]
                   defaultLight
 
 shadeHit :: World -> Computation -> Int -> Color

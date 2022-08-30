@@ -62,7 +62,7 @@ worldReflection =
          Then color = color(0.19032, 0.2379, 0.14274) -}
     describe "The reflected color for a reflective material" $ do
       let w      = SUT.defaultWorld
-          mat    = material { reflective = 0.5 }
+          mat    = defaultMaterial { reflective = 0.5 }
           shape  = APlane 1 (translation 0 (-1) 0) mat
           w'     = w { aShapes = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
@@ -84,7 +84,7 @@ worldReflection =
          Then color = color(0.87677, 0.92436, 0.82918) -}
     describe "shade_hit() with a reflective material" $ do
       let w      = SUT.defaultWorld
-          mat    = material { reflective = 0.5 }
+          mat    = defaultMaterial { reflective = 0.5 }
           shape  = APlane 1 (translation 0 (-1) 0) mat
           w'     = w { aShapes = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
@@ -108,7 +108,7 @@ worldReflection =
          Then color_at(w, r) should terminate successfully -}
     describe "color_at() with mutually reflective surfaces" $ do
       let light = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
-          mat   = material { reflective = 1 }
+          mat   = defaultMaterial { reflective = 1 }
           lower = APlane 1 (translation 0 (-1) 0) mat
           upper = APlane 2 (translation 0 1 0) mat
           w     = World [lower, upper] light
@@ -129,7 +129,7 @@ worldReflection =
          Then color = color(0, 0, 0) -}
     describe "The reflected color at the maximum recursive depth" $ do
       let w      = SUT.defaultWorld
-          mat    = material { reflective = 0.5 }
+          mat    = defaultMaterial { reflective = 0.5 }
           shape  = APlane 1 (translation 0 (-1) 0) mat
           w'     = w { aShapes = [shape] }
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
@@ -169,7 +169,7 @@ worldReflection =
     describe "The refracted color at the maximum recursive depth" $ do
       let w      = SUT.defaultWorld
           shape  = head (aShapes w)
-          m      = (aShapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
+          m      = (ashapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
           shape' = shape { ashapeMaterial = m }
           r      = makeRay (point 0 0 (-5)) (vector 0 0 1)
           xs     = [Shapes.Intersection 4 shape', Shapes.Intersection 6 shape']
@@ -193,7 +193,7 @@ worldReflection =
     describe "The refracted color under total internal reflection" $ do
       let w      = SUT.defaultWorld
           shape  = head (aShapes w)
-          m      = (aShapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
+          m      = (ashapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
           shape' = shape { ashapeMaterial = m }
           r      = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-sqrt 2/2) shape'
@@ -220,12 +220,12 @@ worldReflection =
     describe "The refracted color with a refracted ray" $ do
       let w      = SUT.defaultWorld
           a      = head (aShapes w)
-          am     = (aShapeMaterial a)
+          am     = (ashapeMaterial a)
                    { ambient         = 1.0,
                      materialPattern = Just pointPattern}
           a'     = a { ashapeMaterial = am }
           b      = last (aShapes w)
-          bm     = (aShapeMaterial b)
+          bm     = (ashapeMaterial b)
                    { transparency    = 1.0,
                      refractiveIndex = 1.5 }
           b'     = b { ashapeMaterial = bm }
@@ -261,14 +261,15 @@ worldReflection =
           floor  = APlane { Shapes.id       = 3
                           , ashapeTransform = translation 0 (-1) 0
                           , ashapeMaterial  =
-                              material { transparency    = 0.5
-                                       , refractiveIndex = 1.5} }
+                              defaultMaterial { transparency    = 0.5
+                                              , refractiveIndex = 1.5} }
           ball   = ASphere { Shapes.id        = 4
                            , asphereRadius    = 1.0
                            , ashapeTransform = translation 0 (-3.5) (-0.5)
                            , ashapeMaterial  =
-                               material { color   = Color (Red 1) (Green 0) (Blue 0)
-                                        , ambient = 0.5}}
+                               defaultMaterial
+                               { color   = Color (Red 1) (Green 0) (Blue 0)
+                               , ambient = 0.5}}
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Shapes.Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
@@ -299,15 +300,16 @@ worldReflection =
           floor  = APlane { Shapes.id       = 3
                           , ashapeTransform = translation 0 (-1) 0
                           , ashapeMaterial  =
-                              material { transparency    = 0.5
-                                       , reflective      = 0.5
-                                       , refractiveIndex = 1.5} }
+                              defaultMaterial { transparency    = 0.5
+                                              , reflective      = 0.5
+                                              , refractiveIndex = 1.5} }
           ball   = ASphere { Shapes.id        = 4
                            , asphereRadius    = 1.0
                            , ashapeTransform = translation 0 (-3.5) (-0.5)
                            , ashapeMaterial  =
-                               material { color   = Color (Red 1) (Green 0) (Blue 0)
-                                        , ambient = 0.5}}
+                               defaultMaterial
+                               { color   = Color (Red 1) (Green 0) (Blue 0)
+                               , ambient = 0.5}}
           r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Shapes.Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
@@ -523,14 +525,14 @@ worldBasics =
           s1    = ASphere { Shapes.id        = 1
                           , asphereRadius    = 1.0
                           , ashapeTransform = identity
-                          , ashapeMaterial  = Materials.material
+                          , ashapeMaterial  = defaultMaterial
                             { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                             , diffuse   = 0.7
                             , specular  = 0.2}}
           s2    = ASphere { Shapes.id        = 2
                           , asphereRadius    = 1.0
                           , ashapeTransform = scaling 0.5 0.5 0.5
-                          , ashapeMaterial  = Materials.material}
+                          , ashapeMaterial  = defaultMaterial}
           w     = defaultWorld
       it "contains Sphere S1" $ do
         head (aShapes w) `shouldBe` s1

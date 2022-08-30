@@ -14,7 +14,8 @@ data TestShape = TestShape { id :: Int
                            , material  :: Material}
 
 testShape :: TestShape
-testShape = TestShape { ShapesSpec.id = 1, ShapesSpec.transform = identity, ShapesSpec.material = M.material }
+testShape = TestShape
+  { ShapesSpec.id = 1, ShapesSpec.transform = identity, material = defaultMaterial }
 
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [

@@ -1,10 +1,7 @@
 module Spheres
-  ( Sphere (..)
-  , makeUnitSphere
-  , normalAt
+  ( makeUnitSphere
   , setTransform
   , makeGlassSphere
-  , toAShape
   ) where
 
 import Tuples
@@ -13,11 +10,11 @@ import Materials as M
 import Shapes
 import Rays as R
 
-data Sphere = Sphere { id              :: Int
-                     , radius          :: Double
-                     , sphereTransform :: Matrix
-                     , sphereMaterial  :: M.Material}
-            deriving (Show, Eq, Ord)
+-- data Sphere = Sphere { id              :: Int
+--                      , radius          :: Double
+--                      , sphereTransform :: Matrix
+--                      , sphereMaterial  :: M.Material}
+--             deriving (Show, Eq, Ord)
 
 -- instance IsShape Sphere where
 --   shapeId        = Spheres.id
@@ -27,18 +24,18 @@ data Sphere = Sphere { id              :: Int
 --   shapeIntersect = intersect
 
 makeUnitSphere :: Int -> AShape
-makeUnitSphere id = ASphere id 1.0 identity M.material
+makeUnitSphere id = ASphere id 1.0 identity defaultMaterial
 
-toAShape :: Sphere -> AShape
-toAShape s = ASphere (Spheres.id s) (radius s) (sphereTransform s) (sphereMaterial s)
+-- toAShape :: Sphere -> AShape
+-- toAShape s = ASphere (Spheres.id s) (radius s) (sphereTransform s) (sphereMaterial s)
 
 makeGlassSphere :: Int -> AShape
 makeGlassSphere id =
-  ASphere id 1.0 identity (M.material { transparency = 1.0, refractiveIndex = 1.5 })
+  ASphere id 1.0 identity (defaultMaterial { transparency = 1.0, refractiveIndex = 1.5 })
 
-normalAt :: Sphere -> Tuple -> Tuple
-normalAt s objectPoint
-  = objectPoint `sub` point 0 0 0
+-- normalAt :: Sphere -> Tuple -> Tuple
+-- normalAt s objectPoint
+--   = objectPoint `sub` point 0 0 0
 
 setTransform :: AShape -> Matrix -> AShape
 setTransform s m = s {ashapeTransform = m}

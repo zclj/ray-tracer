@@ -37,7 +37,7 @@ wall =
          , ashapeTransform = T.transform [ rotationX (pi/2)
                                          , translation 0 0 10]
          , ashapeMaterial  =
-           M.material
+           defaultMaterial
            { materialPattern = Just (checkersPattern
                                       (Color (Red 0.15) (Green 0.15) (Blue 0.15))
                                       (Color (Red 0.85) (Green 0.85) (Blue 0.85)))
@@ -50,7 +50,7 @@ glassBall = ASphere { Shapes.id        = 2
                     , ashapeTransform = identity
                     , asphereRadius    = 1.0
                     , ashapeMaterial  =
-                      M.material
+                      defaultMaterial
                       { color     = Color (Red 1) (Green 1) (Blue 1)
                       , ambient = 0
                       , diffuse = 0
@@ -65,7 +65,7 @@ hollowBall = ASphere { Shapes.id       = 3
                      , ashapeTransform = scaling 0.5 0.5 0.5
                      , asphereRadius   = 1.0
                      , ashapeMaterial  =
-                      M.material
+                      defaultMaterial
                       { color     = Color (Red 1) (Green 1) (Blue 1)
                       , ambient = 0
                       , diffuse = 0

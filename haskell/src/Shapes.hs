@@ -20,17 +20,17 @@ data AShape = ASphere { id               :: Int
                      , ashapeMaterial  :: Material }
             deriving (Show, Eq, Ord)
 
-aShapeTransform :: AShape -> Matrix
-aShapeTransform (ASphere _ _ t _) = t
-aShapeTransform (APlane _ t _) = t
+----------------------------------------
+-- Defauls
+----------------------------------------
 
-aShapeMaterial :: AShape -> Material
-aShapeMaterial (ASphere _ _ _ m) = m
-aShapeMaterial (APlane _ _ m) = m
+defaultSphere :: Int -> AShape
+defaultSphere id = ASphere id 1.0 identity defaultMaterial
 
-aNormalAt :: AShape -> Tuple -> Tuple
-aNormalAt ASphere {} objectPoint = objectPoint `sub` point 0 0 0
-aNormalAt APlane {} _ = vector 0 1 0
+----------------------------------------
+localNormalAt :: AShape -> Tuple -> Tuple
+localNormalAt ASphere {} objectPoint = objectPoint `sub` point 0 0 0
+localNormalAt APlane {} _ = vector 0 1 0
 
 data Computation = Computation { cT          :: Double
                                , cObject     :: AShape
@@ -69,7 +69,7 @@ intersectShapes objects r
 objectNormalAt :: AShape -> Tuple -> Tuple
 objectNormalAt s worldPoint =
   let objectPoint  = inverse (ashapeTransform s) `mulT` worldPoint
-      objectNormal = aNormalAt s objectPoint
+      objectNormal = localNormalAt s objectPoint
       worldNormal  = transpose (inverse (ashapeTransform s)) `mulT` objectNormal
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'

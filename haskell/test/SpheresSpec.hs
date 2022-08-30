@@ -32,7 +32,7 @@ sphereMaterials =
       let s = SUT.makeUnitSphere 1
           m = ashapeMaterial s
       it "is the same as the default material" $ do
-        m `shouldBe` M.material
+        m `shouldBe` defaultMaterial
     {- Scenario: A sphere may be assigned a material
          Given s ← sphere()
            And m ← material()
@@ -41,7 +41,7 @@ sphereMaterials =
          Then s.material = m -}
     describe "A sphere may be assigned a material" $ do
       let s  = SUT.makeUnitSphere 1
-          m  = M.material
+          m  = defaultMaterial
           m' = m {ambient = 1}
           s' = s {ashapeMaterial = m'}
       it "it has the new material" $ do
@@ -69,7 +69,7 @@ sphereNormals =
          Then n = vector(1, 0, 0) -}
     describe "The normal on a sphere at a point on the x axis" $ do
       let s = SUT.makeUnitSphere 1
-          n = aNormalAt s (point 1 0 0)
+          n = localNormalAt s (point 1 0 0)
       it "is the vector(1, 0, 0)" $ do
         n `shouldBe` vector 1 0 0
     {- Scenario: The normal on a sphere at a point on the y axis
@@ -78,7 +78,7 @@ sphereNormals =
          Then n = vector(0, 1, 0) -}
     describe "The normal on a sphere at a point on the y axis" $ do
       let s = SUT.makeUnitSphere 1
-          n = aNormalAt s (point 0 1 0)
+          n = localNormalAt s (point 0 1 0)
       it "is the vector(0, 1, 0)" $ do
         n `shouldBe` vector 0 1 0
     {- Scenario: The normal on a sphere at a point on the z axis
@@ -87,7 +87,7 @@ sphereNormals =
          Then n = vector(0, 0, 1) -}
     describe "The normal on a sphere at a point on the z axis" $ do
       let s = SUT.makeUnitSphere 1
-          n = aNormalAt s (point 0 0 1)
+          n = localNormalAt s (point 0 0 1)
       it "is the vector(0, 0, 1)" $ do
         n `shouldBe` vector 0 0 1
     {- Scenario: The normal on a sphere at a nonaxial point
@@ -96,7 +96,7 @@ sphereNormals =
          Then n = vector(√3/3, √3/3, √3/3) -}
     describe "The normal on a sphere at a nonaxial point" $ do
       let s = SUT.makeUnitSphere 1
-          n = aNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = localNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)
     {- Scenario: The normal is a normalized vector
@@ -105,7 +105,7 @@ sphereNormals =
          Then n = normalize(n) -}
     describe "The normal is a normalized vector" $ do
       let s = SUT.makeUnitSphere 1
-          n = aNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = localNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` norm n
     {- Scenario: Computing the normal on a translated sphere

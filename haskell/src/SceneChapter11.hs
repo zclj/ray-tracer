@@ -33,7 +33,7 @@ lightSource = pointLight
 ----------------------------------------
 -- constants
 ----------------------------------------
-wallMaterial = M.material
+wallMaterial = defaultMaterial
                { materialPattern = Just (stripePattern
                                         (Color (Red 0.45) (Green 0.45) (Blue 0.45))
                                         (Color (Red 0.55) (Green 0.55) (Blue 0.55)))
@@ -55,7 +55,7 @@ floorPlane =
   APlane { Shapes.id = 1
          , ashapeTransform = rotationY 0.31415
          , ashapeMaterial  =
-           M.material
+           defaultMaterial
            { materialPattern = Just (checkersPattern
                                       (Color (Red 0.35) (Green 0.35) (Blue 0.35))
                                       (Color (Red 0.65) (Green 0.65) (Blue 0.65)))
@@ -65,7 +65,7 @@ floorPlane =
 ceilingPlane =
   APlane { Shapes.id = 2
          , ashapeTransform = translation 0 5 0
-         , ashapeMaterial  = M.material
+         , ashapeMaterial  = defaultMaterial
                              { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
                              , ambient    = 0.3
                              , specular   = 0 }}
@@ -104,7 +104,7 @@ ball1 = ASphere { Shapes.id        = 7
                 , ashapeTransform  = T.transform
                                      [ scaling 0.4 0.4 0.4
                                      , translation 4.6 0.4 1]
-                , ashapeMaterial   = M.material
+                , ashapeMaterial   = defaultMaterial
                                      { color     = Color (Red 0.8) (Green 0.5) (Blue 0.3)
                                      , shininess = 50 }}
 
@@ -113,7 +113,7 @@ ball2 = ASphere { Shapes.id       = 8
                 , ashapeTransform = T.transform
                                     [ scaling 0.3 0.3 0.3
                                     , translation 4.7 0.3 0.4]
-                , ashapeMaterial  = M.material
+                , ashapeMaterial  = defaultMaterial
                                     { color     = Color (Red 0.9) (Green 0.4) (Blue 0.5)
                                     , shininess = 50 }}
 
@@ -122,7 +122,7 @@ ball3 = ASphere { Shapes.id       = 9
                 , ashapeTransform = T.transform
                                     [ scaling 0.5 0.5 0.5
                                     , translation (-1) 0.5 4.5]
-                , ashapeMaterial  = M.material
+                , ashapeMaterial  = defaultMaterial
                                     { color     = Color (Red 0.4) (Green 0.9) (Blue 0.6)
                                     , shininess = 50 }}
 
@@ -131,7 +131,7 @@ ball4 = ASphere { Shapes.id       = 10
                 , ashapeTransform = T.transform
                                     [ scaling 0.3 0.3 0.3
                                     , translation (-1.7) 0.3 4.7]
-                , ashapeMaterial  = M.material
+                , ashapeMaterial  = defaultMaterial
                                     { color     = Color (Red 0.4) (Green 0.6) (Blue 0.9)
                                     , shininess = 50 }}
 
@@ -143,7 +143,7 @@ redSphere =
   ASphere { Shapes.id        = 11
           , asphereRadius    = 1.0
           , ashapeTransform = translation (-0.6) 1 0.6
-          , ashapeMaterial  = M.material
+          , ashapeMaterial  = defaultMaterial
                                { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
                                , specular  = 0.4
                                , shininess = 5 }}
@@ -154,7 +154,7 @@ blueGlassSphere =
           , ashapeTransform = T.transform
                               [ scaling 0.7 0.7 0.7
                               , translation 0.6 0.7 (-0.6)]
-          , ashapeMaterial  = M.material
+          , ashapeMaterial  = defaultMaterial
                               { color           = Color (Red 0) (Green 0) (Blue 0.2)
                               , ambient         = 0
                               , diffuse         = 0.4
@@ -170,7 +170,7 @@ greenGlassSphere =
           , ashapeTransform = T.transform
                               [ scaling 0.5 0.5 0.5
                               , translation (-0.7) 0.5 (-0.8)]
-          , ashapeMaterial  = M.material
+          , ashapeMaterial  = defaultMaterial
                               { color           = Color (Red 0) (Green 0.2) (Blue 0)
                               , ambient         = 0
                               , diffuse         = 0.4

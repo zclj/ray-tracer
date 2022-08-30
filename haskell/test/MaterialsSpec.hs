@@ -25,7 +25,7 @@ materialReflectivity =
          Given m ← material()
          Then m.reflective = 0.0 -}
     describe "Reflectivity for the default material" $ do
-      let m = material
+      let m = defaultMaterial
       it "default reflectivity is 0.0" $ do
         reflective m `shouldBe` 0.0
     {- Scenario: Transparency and Refractive Index for the default material
@@ -33,7 +33,7 @@ materialReflectivity =
          Then m.transparency = 0.0
            And m.refractive_index = 1.0 -}
     describe "Transparency and Refractive Index for the default material" $ do
-      let m = material
+      let m = defaultMaterial
       it "transparency = 0.0" $ do
         transparency m `shouldBe` 0.0
       it "refractive_index = 1.0" $ do
@@ -50,7 +50,7 @@ materialLighting =
          Then result = color(1.9, 1.9, 1.9) -}
     describe "Lighting with the eye between the light and the surface" $ do
       let position = point 0 0 0
-          m        = material
+          m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
@@ -66,7 +66,7 @@ materialLighting =
          Then result = color(1.0, 1.0, 1.0) -}
     describe "Lighting with the eye between light and surface, eye offset 45°" $ do
       let position = point 0 0 0
-          m        = material
+          m        = defaultMaterial
           eyev     = vector 0 (sqrt 2/2) (sqrt 2/2)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
@@ -82,7 +82,7 @@ materialLighting =
          Then result = color(0.7364, 0.7364, 0.7364) -}
     describe "Lighting with eye opposite surface, light offset 45°" $ do
       let position = point 0 0 0
-          m        = material
+          m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
@@ -98,7 +98,7 @@ materialLighting =
          Then result = color(1.6364, 1.6364, 1.6364) -}
     describe "Lighting with eye in the path of the reflection vector" $ do
       let position = point 0 0 0
-          m        = material
+          m        = defaultMaterial
           eyev     = vector 0 (- (sqrt 2/2)) (- (sqrt 2/2))
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
@@ -114,7 +114,7 @@ materialLighting =
          Then result = color(0.1, 0.1, 0.1) -}
     describe "Lighting with the light behind the surface" $ do
       let position = point 0 0 0
-          m        = material
+          m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 10) (Color (Red 1) (Green 1) (Blue 1))
@@ -131,7 +131,7 @@ materialLighting =
          Then result = color(0.1, 0.1, 0.1) -}
     describe "Lighting with the surface in shadow" $ do
       let position = point 0 0 0
-          m        = material
+          m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
@@ -188,7 +188,7 @@ materialBasics =
            And m.specular = 0.9
            And m.shininess = 200.0 -}
     describe "The default material" $ do
-      let m = SUT.material
+      let m = defaultMaterial
       it "color(1, 1, 1)" $ do
         color m `shouldBe` Color (Red 1) (Green 1) (Blue 1)
       it "ambient = 0.1" $ do

@@ -89,9 +89,9 @@ planeNormal =
            And n3 = vector(0, 1, 0) -}
     describe "The normal of a plane is constant everywhere" $ do
       let p  = SUT.makePlane 1
-          n1 = aNormalAt p (point 0 0 0)
-          n2 = aNormalAt p (point 10 0 (-10))
-          n3 = aNormalAt p (point (-5) 0 150)
+          n1 = localNormalAt p (point 0 0 0)
+          n2 = localNormalAt p (point 10 0 (-10))
+          n3 = localNormalAt p (point (-5) 0 150)
       it "n1 = vector(0, 1, 0)" $ do
         n1 `shouldBe` vector 0 1 0
       it "n2 = vector(0, 1, 0)" $ do
