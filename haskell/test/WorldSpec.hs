@@ -6,7 +6,6 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Lights
-import Spheres
 import Planes
 import Materials
 import Matrices
@@ -450,8 +449,8 @@ worldShading =
            And c ← shade_hit(w, comps)
          Then c = color(0.1, 0.1, 0.1) -}
     describe "shade_hit() is given an intersection in shadow" $ do
-      let s1 = (makeUnitSphere 1) { ashapeTransform = translation 0 0 10 }
-          s2 = makeUnitSphere 2
+      let s1 = (defaultSphere 1) { ashapeTransform = translation 0 0 10 }
+          s2 = defaultSphere 2
           w = World { light   = pointLight
                                 (point 0 0 (-10))
                                 (Color (Red 1) (Green 1) (Blue 1))

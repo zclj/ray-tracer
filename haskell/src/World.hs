@@ -10,7 +10,6 @@ module World
 
 import Data.List as DL
 
-import Spheres
 import Materials
 import Matrices
 import Transformations

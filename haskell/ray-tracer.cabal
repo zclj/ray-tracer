@@ -45,7 +45,6 @@ library
       ShadedSphere
       Shapes
       Silhouette
-      Spheres
       Transformations
       Tuples
       Utils

@@ -5,7 +5,6 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 
-import Spheres
 import Planes
 import Rays
 import Tuples
@@ -35,7 +34,7 @@ precompute =
            And comps.normalv = vector(0, 0, -1) -}
     describe "Precomputing the state of an intersection" $ do
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          shape = makeUnitSphere 1
+          shape = defaultSphere 1
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r [i]
       it "computation t = i.t" $ do
@@ -56,7 +55,7 @@ precompute =
          Then comps.inside = false -}
     describe "The hit, when an intersection occurs on the outside" $ do
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          shape = makeUnitSphere 1
+          shape = defaultSphere 1
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r [i]
       it "comps.inside = false" $ do
@@ -73,7 +72,7 @@ precompute =
            And comps.normalv = vector(0, 0, -1) -}
     describe "The hit, when an intersection occurs on the inside" $ do
       let r     = makeRay (point 0 0 0) (vector 0 0 1)
-          shape = makeUnitSphere 1
+          shape = defaultSphere 1
           i     = SUT.Intersection 1 shape
           comps = SUT.prepareComputations i r [i]
       it "computation point = point(0, 0, 1)" $ do
@@ -94,7 +93,7 @@ precompute =
            And comps.point.z > comps.over_point.z -}
     describe "The hit should offset the point" $ do
       let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          shape = (makeUnitSphere 1) { ashapeTransform = translation 0 0 1 }
+          shape = (defaultSphere 1) { ashapeTransform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           comps = SUT.prepareComputations i r [i]
           ze    = z (cOverPoint comps) < (-Tuples.epsilon/2)
@@ -249,7 +248,7 @@ intersections =
          Then i.t = 3.5
            And i.object = s -}
     describe "An intersection encapsulates t and object" $ do
-      let s = makeUnitSphere 1
+      let s = defaultSphere 1
           i = SUT.Intersection 3.5 s
       it "t of intersection is 3.5" $ do
         intersectionT i `shouldBe` 3.5
@@ -264,7 +263,7 @@ intersections =
            And xs[0].t = 1
            And xs[1].t = 2 -}
     describe "Aggregating intersections" $ do
-      let s = makeUnitSphere 1
+      let s = defaultSphere 1
           i1 = SUT.Intersection 1 s
           i2 = SUT.Intersection 2 s
           -- Feature says to use a type 'Intersections' but it seems to be just a
@@ -288,7 +287,7 @@ hits =
          When i ← hit(xs)
          Then i = i1 -}
     describe "The hit, when all intersections have positive t" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           i1 = SUT.Intersection 1 s
           i2 = SUT.Intersection 2 s
           xs = [i1, i2]
@@ -303,7 +302,7 @@ hits =
          When i ← hit(xs)
          Then i = i2 -}
     describe "The hit, when some intersections have negative t" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           i1 = SUT.Intersection (-1) s
           i2 = SUT.Intersection 1 s
           xs = [i2, i1]
@@ -318,7 +317,7 @@ hits =
          When i ← hit(xs)
          Then i is nothing -}
     describe "The hit, when all intersections have negative t" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           i1 = SUT.Intersection (-2) s
           i2 = SUT.Intersection (-1) s
           xs = [i2, i1]
@@ -335,7 +334,7 @@ hits =
          When i ← hit(xs)
          Then i = i4 -}
     describe "The hit is always the lowest nonnegative intersection" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           i1 = SUT.Intersection 5 s
           i2 = SUT.Intersection 7 s
           i3 = SUT.Intersection (-3) s

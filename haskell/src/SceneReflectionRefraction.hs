@@ -2,7 +2,6 @@ module SceneReflectionRefraction
   ( renderSceneReflectionRefraction
   ) where
 
-import Spheres as S
 import Transformations
 import Materials as M
 import Tuples

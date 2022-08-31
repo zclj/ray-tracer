@@ -7,7 +7,6 @@ import Test.Tasty.Hspec as HS
 
 import Patterns as SUT
 import Tuples
-import Spheres
 import Shapes
 import Transformations
 
@@ -124,7 +123,7 @@ patternTransformations =
          When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
          Then c = white -}
     describe "Stripes with an object transformation" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           s' = s { ashapeTransform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           c  = patternAtShape p s' (point 1.5 0 0)
@@ -137,7 +136,7 @@ patternTransformations =
          When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
          Then c = white -}
     describe "Stripes with a pattern transformation" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           p  = SUT.stripePattern white black
           p' = p { patternTransform = scaling 2 2 2 }
           c  = patternAtShape p' s (point 1.5 0 0)
@@ -151,7 +150,7 @@ patternTransformations =
          When c ← stripe_at_object(pattern, object, point(2.5, 0, 0))
          Then c = white -}
     describe "Stripes with both an object and a pattern transformation" $ do
-      let s  = makeUnitSphere 1
+      let s  = defaultSphere 1
           s' = s { ashapeTransform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           p' = p { patternTransform = translation 0.5 2 2 }

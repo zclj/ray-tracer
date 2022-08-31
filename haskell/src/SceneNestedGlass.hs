@@ -2,7 +2,6 @@ module SceneNestedGlass
   ( renderNestedGlass
   ) where
 
-import Spheres as S
 import Transformations as T
 import Materials as M
 import Tuples

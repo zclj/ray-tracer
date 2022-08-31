@@ -2,7 +2,6 @@ module Silhouette where
 
 import Tuples
 import Canvas
-import Spheres
 import Rays
 import Shapes
 {- Cast rays on a sphere to make out its silhouette -}
@@ -45,7 +44,7 @@ castRow y s c = map (\x -> castOnPixel x y s c) [0..(canvasPixels - 1)]
 cast :: Canvas
 cast = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
            color  = Color (Red 1) (Green 0) (Blue 0)
-           sphere = makeUnitSphere 1
+           sphere = defaultSphere 1
            pixels
              = map (\y -> castRow y sphere color) [0..(canvasPixels - 1)]
        in fromColors pixels

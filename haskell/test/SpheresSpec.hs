@@ -10,7 +10,6 @@ import Rays
 import Matrices
 import Transformations
 import Materials as M
-import Spheres as SUT
 import Shapes
 
 spheresTests :: TestTree
@@ -29,7 +28,7 @@ sphereMaterials =
          When m ← s.material
          Then m = material() -}
     describe "A sphere has a default material" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           m = ashapeMaterial s
       it "is the same as the default material" $ do
         m `shouldBe` defaultMaterial
@@ -40,7 +39,7 @@ sphereMaterials =
          When s.material ← m
          Then s.material = m -}
     describe "A sphere may be assigned a material" $ do
-      let s  = SUT.makeUnitSphere 1
+      let s  = defaultSphere 1
           m  = defaultMaterial
           m' = m {ambient = 1}
           s' = s {ashapeMaterial = m'}
@@ -52,7 +51,7 @@ sphereMaterials =
            And s.material.transparency = 1.0
            And s.material.refractive_index = 1.5 -}
     describe "A helper for producing a sphere with a glassy material" $ do
-      let s = SUT.makeGlassSphere 1
+      let s = makeGlassSphere 1
       it "transform is identity matrix" $ do
         ashapeTransform s `shouldBe` identity
       it "material is transparent (1.0)" $ do
@@ -68,7 +67,7 @@ sphereNormals =
          When n ← normal_at(s, point(1, 0, 0))
          Then n = vector(1, 0, 0) -}
     describe "The normal on a sphere at a point on the x axis" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           n = localNormalAt s (point 1 0 0)
       it "is the vector(1, 0, 0)" $ do
         n `shouldBe` vector 1 0 0
@@ -77,7 +76,7 @@ sphereNormals =
          When n ← normal_at(s, point(0, 1, 0))
          Then n = vector(0, 1, 0) -}
     describe "The normal on a sphere at a point on the y axis" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           n = localNormalAt s (point 0 1 0)
       it "is the vector(0, 1, 0)" $ do
         n `shouldBe` vector 0 1 0
@@ -86,7 +85,7 @@ sphereNormals =
          When n ← normal_at(s, point(0, 0, 1))
          Then n = vector(0, 0, 1) -}
     describe "The normal on a sphere at a point on the z axis" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           n = localNormalAt s (point 0 0 1)
       it "is the vector(0, 0, 1)" $ do
         n `shouldBe` vector 0 0 1
@@ -95,7 +94,7 @@ sphereNormals =
          When n ← normal_at(s, point(√3/3, √3/3, √3/3))
          Then n = vector(√3/3, √3/3, √3/3) -}
     describe "The normal on a sphere at a nonaxial point" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           n = localNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)
@@ -104,7 +103,7 @@ sphereNormals =
          When n ← normal_at(s, point(√3/3, √3/3, √3/3))
          Then n = normalize(n) -}
     describe "The normal is a normalized vector" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           n = localNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` norm n
@@ -114,8 +113,8 @@ sphereNormals =
          When n ← normal_at(s, point(0, 1.70711, -0.70711))
          Then n = vector(0, 0.70711, -0.70711) -}
     describe "Computing the normal on a translated sphere" $ do
-      let s  = SUT.makeUnitSphere 1
-          s' = SUT.setTransform s (translation 0 1 0)
+      let s  = defaultSphere 1
+          s' = s { ashapeTransform = (translation 0 1 0) }
           n  = objectNormalAt s' (point 0 1.70711 (-0.70711))
       it "is the vector(0, 0.70711, -0.70711)" $ do
         n `shouldBe` vector 0 0.70711 (-0.70711)
@@ -126,9 +125,9 @@ sphereNormals =
          When n ← normal_at(s, point(0, √2/2, -√2/2))
          Then n = vector(0, 0.97014, -0.24254) -}
     describe "Computing the normal on a transformed sphere" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
           m = scaling 1 0.5 1 `Matrices.mul` rotationZ(pi/5)
-          s' = SUT.setTransform s m
+          s' = s { ashapeTransform = m }
           n = objectNormalAt s' (point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
       it "is the vector(0, 0.97014, -0.24254)" $ do
         n `shouldBe` vector 0 0.97014 (-0.24254)
@@ -140,7 +139,7 @@ sphereTransformation =
          Given s ← sphere()
          Then s.transform = identity_matrix -}
     describe "A sphere's default transformation" $ do
-      let s = SUT.makeUnitSphere 1
+      let s = defaultSphere 1
       it "is the identity matrix" $ do
         ashapeTransform s `shouldBe` identity
     {- Scenario: Changing a sphere's transformation
@@ -149,7 +148,7 @@ sphereTransformation =
          When set_transform(s, t)
          Then s.transform = t -}
     describe "Changing a sphere's transformation" $ do
-      let s  = SUT.makeUnitSphere 1
+      let s  = defaultSphere 1
           t  = translation 2 3 4
           s' = s { ashapeTransform = t }
       it "result in a new sphere with the new transformation" $ do
@@ -167,7 +166,7 @@ sphereIntersections =
            And xs[1] = 6.0 -}
     describe "A ray intersects a sphere at two points" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s          = SUT.makeUnitSphere 1
+          s          = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -184,7 +183,7 @@ sphereIntersections =
            And xs[1] = 5.0 -}
     describe "A ray intersects a sphere at a tangent" $ do
       let r          = makeRay (point 0 1 (-5)) (vector 0 0 1)
-          s          = SUT.makeUnitSphere 1
+          s          = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -199,7 +198,7 @@ sphereIntersections =
          Then xs.count = 0 -}
     describe "A ray misses a sphere" $ do
       let r  = makeRay (point 0 2 (-5)) (vector 0 0 1)
-          s  = SUT.makeUnitSphere 1
+          s  = defaultSphere 1
           xs = s `localIntersect` r
       it "there are no intersections" $ do
         length xs `shouldBe` 0
@@ -212,7 +211,7 @@ sphereIntersections =
            And xs[1] = 1.0 -}
     describe "A ray originates inside a sphere" $ do
       let r = makeRay (point 0 0 0) (vector 0 0 1)
-          s = SUT.makeUnitSphere 1
+          s = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -229,7 +228,7 @@ sphereIntersections =
            And xs[1] = -4.0 -}
     describe "A sphere is behind a ray" $ do
       let r = makeRay (point 0 0 5) (vector 0 0 1)
-          s = SUT.makeUnitSphere 1
+          s = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -246,7 +245,7 @@ sphereIntersections =
            And xs[1].object = s -}
     describe "Intersect sets the object on the intersection" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s          = SUT.makeUnitSphere 1
+          s          = defaultSphere 1
           xs@(x:y:_) = [s] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -264,7 +263,7 @@ sphereIntersections =
            And xs[1].t = 7 -}
     describe "Intersecting a scaled sphere with a ray" $ do
       let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s          = SUT.makeUnitSphere 1
+          s          = defaultSphere 1
           m          = scaling 2 2 2
           s'         = s { ashapeTransform = m }
           xs@(x:y:_) = [s'] `intersectShapes` r
@@ -282,7 +281,7 @@ sphereIntersections =
          Then xs.count = 0 -}
     describe "Intersecting a translated sphere with a ray" $ do
       let r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
-          s  = SUT.makeUnitSphere 1
+          s  = defaultSphere 1
           m  = translation 5 0 0
           s' = s { ashapeTransform = m }
           xs = [s'] `intersectShapes` r

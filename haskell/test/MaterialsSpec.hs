@@ -9,7 +9,7 @@ import Tuples
 import Lights
 import Materials as SUT
 import Patterns
-import Spheres
+import Shapes
 
 materialTests :: TestTree
 materialTests = testGroup "Material Tests" [
@@ -54,7 +54,7 @@ materialLighting =
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(1.9, 1.9, 1.9)" $ do
         result `shouldBe` Color (Red 1.9) (Green 1.9) (Blue 1.9)
@@ -70,7 +70,7 @@ materialLighting =
           eyev     = vector 0 (sqrt 2/2) (sqrt 2/2)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(1.0, 1.0, 1.0)" $ do
         result `shouldBe` Color (Red 1.0) (Green 1.0) (Blue 1.0)
@@ -86,7 +86,7 @@ materialLighting =
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(0.7364, 0.7364, 0.7364)" $ do
         result `shouldBe` Color (Red 0.7364) (Green 0.7364) (Blue 0.7364)
@@ -102,7 +102,7 @@ materialLighting =
           eyev     = vector 0 (- (sqrt 2/2)) (- (sqrt 2/2))
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(1.6364, 1.6364, 1.6364)" $ do
         result `shouldBe` Color (Red 1.6364) (Green 1.6364) (Blue 1.6364)
@@ -118,7 +118,7 @@ materialLighting =
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 10) (Color (Red 1) (Green 1) (Blue 1))
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(0.1, 0.1, 0.1)" $ do
         result `shouldBe` Color (Red 0.1) (Green 0.1) (Blue 0.1)
@@ -136,7 +136,7 @@ materialLighting =
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           inShadow = True
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result   = lighting m s light position eyev normalv inShadow
       it "result in color(0.1, 0.1, 0.1)" $ do
         result `shouldBe` Color (Red 0.1) (Green 0.1) (Blue 0.1)
@@ -169,7 +169,7 @@ materialLighting =
           normalv  = vector 0 0 (-1)
           light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           inShadow = False
-          s        = makeUnitSphere 1
+          s        = defaultSphere 1
           result1  = lighting m s light (point 0.9 0 0) eyev normalv inShadow
           result2  = lighting m s light (point 1.1 0 0) eyev normalv inShadow
       it "lighting(m, light, point(0.9, 0, 0), eyev, normalv, false) -> color(1, 1, 1)" $ do

@@ -2,7 +2,6 @@ module ScenePlanesAndSpheres
   (renderScenePlanes
   ) where
 
-import Spheres as S
 import Shapes
 import Transformations
 import Materials as M
