@@ -24,7 +24,7 @@ data World = World { aShapes       :: [AShape]
 
 defaultWorld :: World
 defaultWorld = let defaultSphere1 = (defaultSphere 1)
-                                    { ashapeMaterial  = Material
+                                    { material  = Material
                                       { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                                       , ambient   = 0.1
                                       , diffuse   = 0.7
@@ -35,7 +35,7 @@ defaultWorld = let defaultSphere1 = (defaultSphere 1)
                                       , refractiveIndex = 1.0
                                       , materialPattern   = Nothing}}
                    defaultSphere2 = (defaultSphere 2)
-                                    { ashapeTransform = scaling 0.5 0.5 0.5 }
+                                    { Shapes.transform = scaling 0.5 0.5 0.5 }
                    defaultLight   = pointLight
                                     (point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
@@ -46,7 +46,7 @@ defaultWorld = let defaultSphere1 = (defaultSphere 1)
 shadeHit :: World -> Computation -> Int -> Color
 shadeHit world c remaining
   = let surface   = Lights.lighting
-                    (ashapeMaterial (cObject c))
+                    (material (cObject c))
                     (cObject c)
                     (light world)
                     (cOverPoint c)
@@ -55,7 +55,7 @@ shadeHit world c remaining
                     (isShadowed world (cOverPoint c))
         reflected = reflectedColor world c remaining
         refracted = refractedColor world c remaining
-        m         = ashapeMaterial (cObject c)
+        m         = material (cObject c)
     in if reflective m > 0 && transparency m > 0
        then let reflectance = schlick c
             in surface                         `addC`
@@ -87,7 +87,7 @@ isShadowed w p = let v              = Lights.position (light w) `sub` p
 
 reflectedColor :: World -> Computation -> Int -> Color
 reflectedColor w pc remaining
-  = let m = ashapeMaterial (cObject pc)
+  = let m = material (cObject pc)
     in if reflective m == 0 || remaining == 0
        then Color (Red 0) (Green 0) (Blue 0)
        else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
@@ -96,7 +96,7 @@ reflectedColor w pc remaining
 
 refractedColor :: World -> Computation -> Int -> Color
 refractedColor w pc remaining =
-  let m       = ashapeMaterial (cObject pc)
+  let m       = material (cObject pc)
       n_ratio = cN1 pc / cN2 pc
       cos_i   = cEyev pc `dot` cNormalv pc
       sin2_t  = n_ratio^2 * (1 - cos_i^2)
@@ -107,4 +107,4 @@ refractedColor w pc remaining =
                           `sub` (cEyev pc `Tuples.mul` n_ratio)
               refractRay = makeRay (cUnderPoint pc) direction
           in colorAt w refractRay (remaining - 1) `mulCS`
-             transparency (ashapeMaterial (cObject pc))
+             transparency (material (cObject pc))

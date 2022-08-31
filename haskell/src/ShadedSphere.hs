@@ -40,7 +40,7 @@ castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                              Just n -> let p      = Rays.position ray (intersectionT n)
                                            normal = localNormalAt (intersectionObject n) p
                                            eye    = neg (direction ray)
-                                       in lighting (ashapeMaterial (intersectionObject n)) (defaultSphere 1) l p eye normal False
+                                       in lighting (material (intersectionObject n)) (defaultSphere 1) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
 castRow :: Int -> AShape -> Color -> Light -> [Color]
@@ -50,7 +50,7 @@ render :: Canvas
 render = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
              color  = Color (Red 1) (Green 0) (Blue 0)
              sphere = (defaultSphere 1)
-                      { ashapeMaterial =
+                      { material =
                           defaultMaterial { color = Color (Red 1) (Green 0.2) (Blue 1)}}
              lightPos = point (-10) 10 (-10)
              lightColor = Color (Red 1) (Green 1) (Blue 1)

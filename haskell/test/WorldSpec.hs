@@ -39,9 +39,9 @@ worldReflection =
       let w      = SUT.defaultWorld
           r      = makeRay (point 0 0 0) (vector 0 0 1)
           shape  = last (SUT.aShapes w)
-          mat    = ashapeMaterial shape
+          mat    = material shape
           mat'   = mat { ambient = 1 }
-          shape' = shape { ashapeMaterial = mat' }
+          shape' = shape { material = mat' }
           i      = Shapes.Intersection 1 shape'
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
@@ -167,8 +167,8 @@ worldReflection =
     describe "The refracted color at the maximum recursive depth" $ do
       let w      = SUT.defaultWorld
           shape  = head (aShapes w)
-          m      = (ashapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
-          shape' = shape { ashapeMaterial = m }
+          m      = (material shape) { transparency = 1.0, refractiveIndex = 1.5 }
+          shape' = shape { material = m }
           r      = makeRay (point 0 0 (-5)) (vector 0 0 1)
           xs     = [Shapes.Intersection 4 shape', Shapes.Intersection 6 shape']
           comps  = prepareComputations (head xs) r xs
@@ -191,8 +191,8 @@ worldReflection =
     describe "The refracted color under total internal reflection" $ do
       let w      = SUT.defaultWorld
           shape  = head (aShapes w)
-          m      = (ashapeMaterial shape) { transparency = 1.0, refractiveIndex = 1.5 }
-          shape' = shape { ashapeMaterial = m }
+          m      = (material shape) { transparency = 1.0, refractiveIndex = 1.5 }
+          shape' = shape { material = m }
           r      = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-sqrt 2/2) shape'
                    , Shapes.Intersection (sqrt 2/2) shape']
@@ -218,15 +218,15 @@ worldReflection =
     describe "The refracted color with a refracted ray" $ do
       let w      = SUT.defaultWorld
           a      = head (aShapes w)
-          am     = (ashapeMaterial a)
+          am     = (material a)
                    { ambient         = 1.0,
                      materialPattern = Just pointPattern}
-          a'     = a { ashapeMaterial = am }
+          a'     = a { material = am }
           b      = last (aShapes w)
-          bm     = (ashapeMaterial b)
+          bm     = (material b)
                    { transparency    = 1.0,
                      refractiveIndex = 1.5 }
-          b'     = b { ashapeMaterial = bm }
+          b'     = b { material = bm }
           r      = makeRay (point 0 0 0.1) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-0.9899) a'
                    , Shapes.Intersection (-0.4899) b'
@@ -256,15 +256,15 @@ worldReflection =
          Then color = color(0.93642, 0.68642, 0.68642) -}
     describe "shade_hit() with a transparent material" $ do
       let w      = SUT.defaultWorld
-          floor  = APlane { Shapes.id       = 3
-                          , ashapeTransform = translation 0 (-1) 0
-                          , ashapeMaterial  =
+          floor  = APlane { Shapes.id        = 3
+                          , Shapes.transform = translation 0 (-1) 0
+                          , material         =
                               defaultMaterial { transparency    = 0.5
                                               , refractiveIndex = 1.5} }
-          ball   = ASphere { Shapes.id       = 4
-                           , radius          = 1.0
-                           , ashapeTransform = translation 0 (-3.5) (-0.5)
-                           , ashapeMaterial  =
+          ball   = ASphere { Shapes.id        = 4
+                           , radius           = 1.0
+                           , Shapes.transform = translation 0 (-3.5) (-0.5)
+                           , material         =
                                defaultMaterial
                                { color   = Color (Red 1) (Green 0) (Blue 0)
                                , ambient = 0.5}}
@@ -295,16 +295,16 @@ worldReflection =
          Then color = color(0.93391, 0.69643, 0.69243) -}
     describe "shade_hit() with a reflective, transparent material" $ do
       let w      = SUT.defaultWorld
-          floor  = APlane { Shapes.id       = 3
-                          , ashapeTransform = translation 0 (-1) 0
-                          , ashapeMaterial  =
+          floor  = APlane { Shapes.id        = 3
+                          , Shapes.transform = translation 0 (-1) 0
+                          , material         =
                               defaultMaterial { transparency    = 0.5
                                               , reflective      = 0.5
                                               , refractiveIndex = 1.5} }
-          ball   = ASphere { Shapes.id       = 4
-                           , radius          = 1.0
-                           , ashapeTransform = translation 0 (-3.5) (-0.5)
-                           , ashapeMaterial  =
+          ball   = ASphere { Shapes.id        = 4
+                           , radius           = 1.0
+                           , Shapes.transform = translation 0 (-3.5) (-0.5)
+                           , material         =
                                defaultMaterial
                                { color   = Color (Red 1) (Green 0) (Blue 0)
                                , ambient = 0.5}}
@@ -448,7 +448,7 @@ worldShading =
            And c ← shade_hit(w, comps)
          Then c = color(0.1, 0.1, 0.1) -}
     describe "shade_hit() is given an intersection in shadow" $ do
-      let s1 = (defaultSphere 1) { ashapeTransform = translation 0 0 10 }
+      let s1 = (defaultSphere 1) { Shapes.transform = translation 0 0 10 }
           s2 = defaultSphere 2
           w = World { light   = pointLight
                                 (point 0 0 (-10))
@@ -520,17 +520,17 @@ worldBasics =
            And w contains s2 -}
     describe "The default world" $ do
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s1    = ASphere { Shapes.id       = 1
-                          , radius          = 1.0
-                          , ashapeTransform = identity
-                          , ashapeMaterial  = defaultMaterial
+          s1    = ASphere { Shapes.id        = 1
+                          , radius           = 1.0
+                          , Shapes.transform = identity
+                          , material         = defaultMaterial
                             { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                             , diffuse   = 0.7
                             , specular  = 0.2}}
-          s2    = ASphere { Shapes.id       = 2
-                          , radius          = 1.0
-                          , ashapeTransform = scaling 0.5 0.5 0.5
-                          , ashapeMaterial  = defaultMaterial}
+          s2    = ASphere { Shapes.id        = 2
+                          , radius           = 1.0
+                          , Shapes.transform = scaling 0.5 0.5 0.5
+                          , material         = defaultMaterial}
           w     = defaultWorld
       it "contains Sphere S1" $ do
         head (aShapes w) `shouldBe` s1

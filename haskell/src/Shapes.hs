@@ -11,13 +11,13 @@ import Patterns
 -- Sum Type shapes
 ----------------------------------------
 
-data AShape = ASphere { id               :: Int
+data AShape = ASphere { id        :: Int
                       , radius    :: Double
-                      , ashapeTransform :: Matrix
-                      , ashapeMaterial  :: Material }
-            | APlane { id              :: Int
-                     , ashapeTransform :: Matrix
-                     , ashapeMaterial  :: Material }
+                      , transform :: Matrix
+                      , material  :: Material }
+            | APlane { id        :: Int
+                     , transform :: Matrix
+                     , material  :: Material }
             deriving (Show, Eq, Ord)
 
 ----------------------------------------
@@ -71,13 +71,13 @@ localIntersect p@APlane {} r =
 
 intersectShapes :: [AShape] -> Ray -> [Intersection]
 intersectShapes objects r
-  = sort $ concatMap (\s -> localIntersect s (R.transform r (inverse (ashapeTransform s)))) objects
+  = sort $ concatMap (\s -> localIntersect s (R.transform r (inverse (Shapes.transform s)))) objects
 
 objectNormalAt :: AShape -> Tuple -> Tuple
 objectNormalAt s worldPoint =
-  let objectPoint  = inverse (ashapeTransform s) `mulT` worldPoint
+  let objectPoint  = inverse (Shapes.transform s) `mulT` worldPoint
       objectNormal = localNormalAt s objectPoint
-      worldNormal  = transpose (inverse (ashapeTransform s)) `mulT` objectNormal
+      worldNormal  = transpose (inverse (Shapes.transform s)) `mulT` objectNormal
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'
 
@@ -90,7 +90,7 @@ refractiveIndexValue :: [AShape] -> Double
 refractiveIndexValue shapes =
   if null shapes
   then 1.0
-  else refractiveIndex (ashapeMaterial (last shapes))
+  else refractiveIndex (Shapes.material (last shapes))
 
 refractive :: [Intersection] -> [AShape] -> Intersection -> (Double, Double) -> (Double, Double)
 refractive [] shapes hit (n1, n2)     = (n1, n2)
@@ -136,7 +136,7 @@ hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
 patternAtShape :: Pattern -> AShape -> Tuple -> Color
 patternAtShape p shape worldPoint =
-  let objectPoint  = inverse (ashapeTransform shape) `mulT` worldPoint
+  let objectPoint  = inverse (Shapes.transform shape) `mulT` worldPoint
       patternPoint = inverse (patternTransform p) `mulT` objectPoint
   in patternAt p patternPoint
 

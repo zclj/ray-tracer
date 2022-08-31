@@ -15,7 +15,7 @@ data TestShape = TestShape { id :: Int
 
 testShape :: TestShape
 testShape = TestShape
-  { ShapesSpec.id = 1, ShapesSpec.transform = identity, material = defaultMaterial }
+  { ShapesSpec.id = 1, ShapesSpec.transform = identity, ShapesSpec.material = defaultMaterial }
 
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [
@@ -31,4 +31,4 @@ shapeBasics =
     describe "The default transformation" $ do
       let s = testShape
       it "s.transform = identity_matrix" $ do
-        transform s `shouldBe` identity
+        ShapesSpec.transform s `shouldBe` identity

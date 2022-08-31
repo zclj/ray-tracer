@@ -10,7 +10,7 @@ import Lights
 import Camera as C
 import Matrices
 import Patterns
-import Shapes
+import Shapes as S
 
 ----------------------------------------
 -- The Camera
@@ -50,133 +50,133 @@ wallMaterial = defaultMaterial
 -- the checkered floor
 
 floorPlane =
-  APlane { Shapes.id = 1
-         , ashapeTransform = rotationY 0.31415
-         , ashapeMaterial  =
-           defaultMaterial
-           { materialPattern = Just (checkersPattern
-                                      (Color (Red 0.35) (Green 0.35) (Blue 0.35))
-                                      (Color (Red 0.65) (Green 0.65) (Blue 0.65)))
+  APlane { S.id        = 1
+         , S.transform = rotationY 0.31415
+         , S.material  =
+             defaultMaterial
+             { materialPattern = Just (checkersPattern
+                                       (Color (Red 0.35) (Green 0.35) (Blue 0.35))
+                                       (Color (Red 0.65) (Green 0.65) (Blue 0.65)))
            , specular        = 0
            , reflective      = 0.4 }}
 
 ceilingPlane =
-  APlane { Shapes.id = 2
-         , ashapeTransform = translation 0 5 0
-         , ashapeMaterial  = defaultMaterial
-                             { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
-                             , ambient    = 0.3
-                             , specular   = 0 }}
+  APlane { S.id        = 2
+         , S.transform = translation 0 5 0
+         , S.material  = defaultMaterial
+                         { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
+                         , ambient    = 0.3
+                         , specular   = 0 }}
 
-westWall =  APlane { Shapes.id = 3
-                   , ashapeTransform = T.transform
-                                       [ rotationY (pi/2)
-                                       , rotationZ (pi/2)
-                                       , translation (-5) 0 0]
-                   , ashapeMaterial  = wallMaterial }
+westWall =  APlane { S.id        = 3
+                   , S.transform = T.transform
+                                   [ rotationY (pi/2)
+                                   , rotationZ (pi/2)
+                                   , translation (-5) 0 0]
+                   , S.material  = wallMaterial }
 
-eastWall =  APlane { Shapes.id = 4
-                   , ashapeTransform = T.transform [ rotationY (pi/2)
-                                                   , rotationZ (pi/2)
-                                                   , translation 5 0 0]
-                   , ashapeMaterial  = wallMaterial }
+eastWall =  APlane { S.id        = 4
+                   , S.transform = T.transform [ rotationY (pi/2)
+                                               , rotationZ (pi/2)
+                                               , translation 5 0 0]
+                   , S.material  = wallMaterial }
 
-northWall =  APlane { Shapes.id = 5
-                    , ashapeTransform = T.transform
-                                        [ rotationX (pi/2)
-                                        , translation 0 0 5]
-                    , ashapeMaterial  = wallMaterial }
+northWall =  APlane { S.id = 5
+                    , S.transform = T.transform
+                                    [ rotationX (pi/2)
+                                    , translation 0 0 5]
+                    , S.material  = wallMaterial }
 
-southWall =  APlane { Shapes.id = 6
-                    , ashapeTransform = T.transform
-                                        [ rotationX (pi/2)
-                                        , translation 0 0 (-5)]
-                    , ashapeMaterial  = wallMaterial }
+southWall =  APlane { S.id = 6
+                    , S.transform = T.transform
+                                    [ rotationX (pi/2)
+                                    , translation 0 0 (-5)]
+                    , S.material  = wallMaterial }
 
 ----------------------------------------
 -- Background balls
 ----------------------------------------
 
-ball1 = ASphere { Shapes.id        = 7
-                , radius           = 1.0
-                , ashapeTransform  = T.transform
-                                     [ scaling 0.4 0.4 0.4
-                                     , translation 4.6 0.4 1]
-                , ashapeMaterial   = defaultMaterial
-                                     { color     = Color (Red 0.8) (Green 0.5) (Blue 0.3)
-                                     , shininess = 50 }}
+ball1 = ASphere { S.id         = 7
+                , radius       = 1.0
+                , S.transform  = T.transform
+                                 [ scaling 0.4 0.4 0.4
+                                 , translation 4.6 0.4 1]
+                , S.material   = defaultMaterial
+                                 { color     = Color (Red 0.8) (Green 0.5) (Blue 0.3)
+                                 , shininess = 50 }}
 
-ball2 = ASphere { Shapes.id       = 8
-                , radius          = 1.0
-                , ashapeTransform = T.transform
-                                    [ scaling 0.3 0.3 0.3
-                                    , translation 4.7 0.3 0.4]
-                , ashapeMaterial  = defaultMaterial
-                                    { color     = Color (Red 0.9) (Green 0.4) (Blue 0.5)
-                                    , shininess = 50 }}
+ball2 = ASphere { S.id        = 8
+                , radius      = 1.0
+                , S.transform = T.transform
+                                [ scaling 0.3 0.3 0.3
+                                , translation 4.7 0.3 0.4]
+                , S.material  = defaultMaterial
+                                { color     = Color (Red 0.9) (Green 0.4) (Blue 0.5)
+                                , shininess = 50 }}
 
-ball3 = ASphere { Shapes.id       = 9
-                , radius          = 1.0
-                , ashapeTransform = T.transform
-                                    [ scaling 0.5 0.5 0.5
-                                    , translation (-1) 0.5 4.5]
-                , ashapeMaterial  = defaultMaterial
-                                    { color     = Color (Red 0.4) (Green 0.9) (Blue 0.6)
-                                    , shininess = 50 }}
+ball3 = ASphere { S.id        = 9
+                , radius      = 1.0
+                , S.transform = T.transform
+                                [ scaling 0.5 0.5 0.5
+                                , translation (-1) 0.5 4.5]
+                , S.material  = defaultMaterial
+                                { color     = Color (Red 0.4) (Green 0.9) (Blue 0.6)
+                                , shininess = 50 }}
 
-ball4 = ASphere { Shapes.id       = 10
-                , radius          = 1.0
-                , ashapeTransform = T.transform
-                                    [ scaling 0.3 0.3 0.3
-                                    , translation (-1.7) 0.3 4.7]
-                , ashapeMaterial  = defaultMaterial
-                                    { color     = Color (Red 0.4) (Green 0.6) (Blue 0.9)
-                                    , shininess = 50 }}
+ball4 = ASphere { S.id        = 10
+                , radius      = 1.0
+                , S.transform = T.transform
+                                [ scaling 0.3 0.3 0.3
+                                , translation (-1.7) 0.3 4.7]
+                , S.material  = defaultMaterial
+                                { color     = Color (Red 0.4) (Green 0.6) (Blue 0.9)
+                                , shininess = 50 }}
 
 ----------------------------------------
 -- Foreground balls
 ----------------------------------------
 
 redSphere =
-  ASphere { Shapes.id       = 11
-          , radius          = 1.0
-          , ashapeTransform = translation (-0.6) 1 0.6
-          , ashapeMaterial  = defaultMaterial
-                               { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
-                               , specular  = 0.4
-                               , shininess = 5 }}
+  ASphere { S.id        = 11
+          , radius      = 1.0
+          , S.transform = translation (-0.6) 1 0.6
+          , S.material  = defaultMaterial
+                          { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
+                          , specular  = 0.4
+                          , shininess = 5 }}
 
 blueGlassSphere =
-  ASphere { Shapes.id       = 12
-          , radius          = 1.0
-          , ashapeTransform = T.transform
-                              [ scaling 0.7 0.7 0.7
-                              , translation 0.6 0.7 (-0.6)]
-          , ashapeMaterial  = defaultMaterial
-                              { color           = Color (Red 0) (Green 0) (Blue 0.2)
-                              , ambient         = 0
-                              , diffuse         = 0.4
-                              , specular        = 0.9
-                              , shininess       = 300
-                              , reflective      = 0.9
-                              , transparency    = 0.9
-                              , refractiveIndex = 1.5 }}
+  ASphere { S.id        = 12
+          , radius      = 1.0
+          , S.transform = T.transform
+                          [ scaling 0.7 0.7 0.7
+                          , translation 0.6 0.7 (-0.6)]
+          , S.material  = defaultMaterial
+                          { color           = Color (Red 0) (Green 0) (Blue 0.2)
+                          , ambient         = 0
+                          , diffuse         = 0.4
+                          , specular        = 0.9
+                          , shininess       = 300
+                          , reflective      = 0.9
+                          , transparency    = 0.9
+                          , refractiveIndex = 1.5 }}
 
 greenGlassSphere =
-  ASphere { Shapes.id       = 13
-          , radius          = 1.0
-          , ashapeTransform = T.transform
-                              [ scaling 0.5 0.5 0.5
-                              , translation (-0.7) 0.5 (-0.8)]
-          , ashapeMaterial  = defaultMaterial
-                              { color           = Color (Red 0) (Green 0.2) (Blue 0)
-                              , ambient         = 0
-                              , diffuse         = 0.4
-                              , specular        = 0.9
-                              , shininess       = 300
-                              , reflective      = 0.9
-                              , transparency    = 0.9
-                              , refractiveIndex = 1.5 }}
+  ASphere { S.id        = 13
+          , radius      = 1.0
+          , S.transform = T.transform
+                          [ scaling 0.5 0.5 0.5
+                          , translation (-0.7) 0.5 (-0.8)]
+          , S.material  = defaultMaterial
+                          { color           = Color (Red 0) (Green 0.2) (Blue 0)
+                          , ambient         = 0
+                          , diffuse         = 0.4
+                          , specular        = 0.9
+                          , shininess       = 300
+                          , reflective      = 0.9
+                          , transparency    = 0.9
+                          , refractiveIndex = 1.5 }}
 
 ----------------------------------------
 renderSceneChapter11 =
