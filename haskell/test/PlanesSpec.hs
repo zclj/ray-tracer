@@ -8,7 +8,6 @@ import Test.Tasty.Hspec as HS
 import Shapes
 import Tuples
 import Rays
-import Planes as SUT
 
 planesTests :: TestTree
 planesTests = testGroup "Planes Tests" [
@@ -25,7 +24,7 @@ planeIntersections =
          When xs ← local_intersect(p, r)
          Then xs is empty -}
     describe "Intersect with a ray parallel to the plane" $ do
-      let p  = SUT.makePlane 1
+      let p  = defaultPlane 1
           r  = makeRay (point 0 10 0) (vector 0 0 1)
           xs = localIntersect p r
       it "intersections are empty" $ do
@@ -36,7 +35,7 @@ planeIntersections =
          When xs ← local_intersect(p, r)
          Then xs is empty -}
     describe "Intersect with a coplanar ray" $ do
-      let p  = SUT.makePlane 1
+      let p  = defaultPlane 1
           r  = makeRay (point 0 0 0) (vector 0 0 1)
           xs = localIntersect p r
       it "intersections are empty" $ do
@@ -49,7 +48,7 @@ planeIntersections =
            And xs[0].t = 1
            And xs[0].object = p -}
     describe "A ray intersecting a plane from above" $ do
-      let p  = SUT.makePlane 1
+      let p  = defaultPlane 1
           r  = makeRay (point 0 1 0) (vector 0 (-1) 0)
           xs = localIntersect p r
       it "one intersection" $ do
@@ -66,7 +65,7 @@ planeIntersections =
            And xs[0].t = 1
            And xs[0].object = p -}
     describe "A ray intersecting a plane from below" $ do
-      let p  = SUT.makePlane 1
+      let p  = defaultPlane 1
           r  = makeRay (point 0 (-1) 0) (vector 0 1 0)
           xs = localIntersect p r
       it "one intersection" $ do
@@ -88,7 +87,7 @@ planeNormal =
            And n2 = vector(0, 1, 0)
            And n3 = vector(0, 1, 0) -}
     describe "The normal of a plane is constant everywhere" $ do
-      let p  = SUT.makePlane 1
+      let p  = defaultPlane 1
           n1 = localNormalAt p (point 0 0 0)
           n2 = localNormalAt p (point 10 0 (-10))
           n3 = localNormalAt p (point (-5) 0 150)

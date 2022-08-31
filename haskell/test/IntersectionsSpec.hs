@@ -4,8 +4,6 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Test.Tasty
 import Test.Tasty.Hspec as HS
-
-import Planes
 import Rays
 import Tuples
 import Transformations
@@ -128,7 +126,7 @@ precompute =
          When comps ← prepare_computations(i, r)
          Then comps.reflectv = vector(0, √2/2, √2/2) -}
     describe "Precomputing the reflection vector" $ do
-      let p = makePlane 1
+      let p = defaultPlane 1
           r = makeRay (point 0 1 (-1)) (vector 0 (-(sqrt 2)) (sqrt 2))
           i = Intersection (sqrt 2) p
           comps = SUT.prepareComputations i r [i]

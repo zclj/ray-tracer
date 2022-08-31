@@ -17,7 +17,6 @@ import Tuples
 import Rays as R
 import Lights
 import Shapes
-import Planes
 
 data World = World { aShapes       :: [AShape]
                    , light         :: Light}

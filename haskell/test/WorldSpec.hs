@@ -6,7 +6,6 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Lights
-import Planes
 import Materials
 import Matrices
 import Transformations

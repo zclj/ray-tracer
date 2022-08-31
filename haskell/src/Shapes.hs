@@ -31,6 +31,9 @@ makeGlassSphere :: Int -> AShape
 makeGlassSphere id =
   ASphere id 1.0 identity (defaultMaterial { transparency = 1.0, refractiveIndex = 1.5 })
 
+defaultPlane :: Int -> AShape
+defaultPlane id = APlane id identity defaultMaterial
+
 ----------------------------------------
 localNormalAt :: AShape -> Tuple -> Tuple
 localNormalAt ASphere {} objectPoint = objectPoint `sub` point 0 0 0
