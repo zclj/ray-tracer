@@ -12,14 +12,14 @@ import Camera as C
 import Matrices
 
 floor = ASphere { Shapes.id       = 1
-                , asphereRadius   = 1.0
+                , radius          = 1.0
                 , ashapeTransform = scaling 10 0.01 10
                 , ashapeMaterial  = defaultMaterial
                                     { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
                                     , specular = 0 }}
 
-leftWall = ASphere { Shapes.id = 2
-                   , asphereRadius = 1.0
+leftWall = ASphere { Shapes.id       = 2
+                   , radius          = 1.0
                    , ashapeTransform = translation 0 0 5
                                        `Matrices.mul` rotationY (-pi/4)
                                        `Matrices.mul` rotationX (pi/2)
@@ -28,8 +28,8 @@ leftWall = ASphere { Shapes.id = 2
                                       { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
                                       , specular = 0 }}
 
-rightWall = ASphere { Shapes.id = 3
-                    , asphereRadius = 1.0
+rightWall = ASphere { Shapes.id       = 3
+                    , radius          = 1.0
                     , ashapeTransform = translation 0 0 5
                                         `Matrices.mul` rotationY (pi/4)
                                         `Matrices.mul` rotationX (pi/2)
@@ -38,16 +38,16 @@ rightWall = ASphere { Shapes.id = 3
                                        { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
                                        , specular = 0 }}
 
-middle = ASphere { Shapes.id = 4
-                 , asphereRadius = 1.0
+middle = ASphere { Shapes.id       = 4
+                 , radius          = 1.0
                  , ashapeTransform = translation (-0.5) 1 0.5
                  , ashapeMaterial  = defaultMaterial
                                      { color    = Color (Red 0.1) (Green 1) (Blue 0.5)
                                      , diffuse  = 0.7
                                      , specular = 0.3 }}
 
-right = ASphere { Shapes.id = 5
-                , asphereRadius = 1.0
+right = ASphere { Shapes.id       = 5
+                , radius          = 1.0
                 , ashapeTransform = translation 1.5 0.5 (-0.5)
                                     `Matrices.mul` scaling 0.5 0.5 0.5
                 , ashapeMaterial  = defaultMaterial
@@ -55,8 +55,8 @@ right = ASphere { Shapes.id = 5
                                     , diffuse  = 0.7
                                     , specular = 0.3 }}
 
-left = ASphere { Shapes.id = 6
-               , asphereRadius = 1.0
+left = ASphere { Shapes.id       = 6
+               , radius          = 1.0
                , ashapeTransform = translation (-1.5) 0.33 (-0.75)
                                    `Matrices.mul` scaling 0.33 0.33 0.33
                , ashapeMaterial = defaultMaterial

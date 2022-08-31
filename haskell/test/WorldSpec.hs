@@ -261,8 +261,8 @@ worldReflection =
                           , ashapeMaterial  =
                               defaultMaterial { transparency    = 0.5
                                               , refractiveIndex = 1.5} }
-          ball   = ASphere { Shapes.id        = 4
-                           , asphereRadius    = 1.0
+          ball   = ASphere { Shapes.id       = 4
+                           , radius          = 1.0
                            , ashapeTransform = translation 0 (-3.5) (-0.5)
                            , ashapeMaterial  =
                                defaultMaterial
@@ -301,8 +301,8 @@ worldReflection =
                               defaultMaterial { transparency    = 0.5
                                               , reflective      = 0.5
                                               , refractiveIndex = 1.5} }
-          ball   = ASphere { Shapes.id        = 4
-                           , asphereRadius    = 1.0
+          ball   = ASphere { Shapes.id       = 4
+                           , radius          = 1.0
                            , ashapeTransform = translation 0 (-3.5) (-0.5)
                            , ashapeMaterial  =
                                defaultMaterial
@@ -520,15 +520,15 @@ worldBasics =
            And w contains s2 -}
     describe "The default world" $ do
       let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
-          s1    = ASphere { Shapes.id        = 1
-                          , asphereRadius    = 1.0
+          s1    = ASphere { Shapes.id       = 1
+                          , radius          = 1.0
                           , ashapeTransform = identity
                           , ashapeMaterial  = defaultMaterial
                             { color     = Color (Red 0.8) (Green 1) (Blue 0.6)
                             , diffuse   = 0.7
                             , specular  = 0.2}}
-          s2    = ASphere { Shapes.id        = 2
-                          , asphereRadius    = 1.0
+          s2    = ASphere { Shapes.id       = 2
+                          , radius          = 1.0
                           , ashapeTransform = scaling 0.5 0.5 0.5
                           , ashapeMaterial  = defaultMaterial}
           w     = defaultWorld

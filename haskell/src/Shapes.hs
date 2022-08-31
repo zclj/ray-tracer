@@ -12,7 +12,7 @@ import Patterns
 ----------------------------------------
 
 data AShape = ASphere { id               :: Int
-                      , asphereRadius    :: Double
+                      , radius    :: Double
                       , ashapeTransform :: Matrix
                       , ashapeMaterial  :: Material }
             | APlane { id              :: Int

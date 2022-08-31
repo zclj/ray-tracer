@@ -98,7 +98,7 @@ southWall =  APlane { Shapes.id = 6
 ----------------------------------------
 
 ball1 = ASphere { Shapes.id        = 7
-                , asphereRadius    = 1.0
+                , radius           = 1.0
                 , ashapeTransform  = T.transform
                                      [ scaling 0.4 0.4 0.4
                                      , translation 4.6 0.4 1]
@@ -107,7 +107,7 @@ ball1 = ASphere { Shapes.id        = 7
                                      , shininess = 50 }}
 
 ball2 = ASphere { Shapes.id       = 8
-                , asphereRadius   = 1.0
+                , radius          = 1.0
                 , ashapeTransform = T.transform
                                     [ scaling 0.3 0.3 0.3
                                     , translation 4.7 0.3 0.4]
@@ -116,7 +116,7 @@ ball2 = ASphere { Shapes.id       = 8
                                     , shininess = 50 }}
 
 ball3 = ASphere { Shapes.id       = 9
-                , asphereRadius   = 1.0
+                , radius          = 1.0
                 , ashapeTransform = T.transform
                                     [ scaling 0.5 0.5 0.5
                                     , translation (-1) 0.5 4.5]
@@ -125,7 +125,7 @@ ball3 = ASphere { Shapes.id       = 9
                                     , shininess = 50 }}
 
 ball4 = ASphere { Shapes.id       = 10
-                , asphereRadius   = 1.0
+                , radius          = 1.0
                 , ashapeTransform = T.transform
                                     [ scaling 0.3 0.3 0.3
                                     , translation (-1.7) 0.3 4.7]
@@ -138,8 +138,8 @@ ball4 = ASphere { Shapes.id       = 10
 ----------------------------------------
 
 redSphere =
-  ASphere { Shapes.id        = 11
-          , asphereRadius    = 1.0
+  ASphere { Shapes.id       = 11
+          , radius          = 1.0
           , ashapeTransform = translation (-0.6) 1 0.6
           , ashapeMaterial  = defaultMaterial
                                { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
@@ -148,7 +148,7 @@ redSphere =
 
 blueGlassSphere =
   ASphere { Shapes.id       = 12
-          , asphereRadius   = 1.0
+          , radius          = 1.0
           , ashapeTransform = T.transform
                               [ scaling 0.7 0.7 0.7
                               , translation 0.6 0.7 (-0.6)]
@@ -164,7 +164,7 @@ blueGlassSphere =
 
 greenGlassSphere =
   ASphere { Shapes.id       = 13
-          , asphereRadius   = 1.0
+          , radius          = 1.0
           , ashapeTransform = T.transform
                               [ scaling 0.5 0.5 0.5
                               , translation (-0.7) 0.5 (-0.8)]

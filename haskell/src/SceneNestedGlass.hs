@@ -44,9 +44,9 @@ wall =
            , diffuse  = 0.2 }}
 
 -- glass ball
-glassBall = ASphere { Shapes.id        = 2
+glassBall = ASphere { Shapes.id       = 2
                     , ashapeTransform = identity
-                    , asphereRadius    = 1.0
+                    , radius          = 1.0
                     , ashapeMaterial  =
                       defaultMaterial
                       { color     = Color (Red 1) (Green 1) (Blue 1)
@@ -61,7 +61,7 @@ glassBall = ASphere { Shapes.id        = 2
 -- hollow center
 hollowBall = ASphere { Shapes.id       = 3
                      , ashapeTransform = scaling 0.5 0.5 0.5
-                     , asphereRadius   = 1.0
+                     , radius          = 1.0
                      , ashapeMaterial  =
                       defaultMaterial
                       { color     = Color (Red 1) (Green 1) (Blue 1)

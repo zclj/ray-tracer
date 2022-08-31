@@ -67,8 +67,8 @@ grad = gradientPattern
 grad' = grad { patternTransform = translation 1.5 1 1 `Matrices.mul` scaling 3.5 1 1 }
 
 middle = ASphere
-         { Shapes.id = 4
-         , asphereRadius = 1.0
+         { Shapes.id       = 4
+         , radius          = 1.0
          , ashapeTransform = translation (-0.5) 1 0.5
          , ashapeMaterial  = defaultMaterial
                              { color    = Color (Red 0.1) (Green 1) (Blue 0.5)
@@ -83,8 +83,8 @@ ring = ringPattern
 ring' = ring { patternTransform = rotationZ (pi/6) `Matrices.mul` rotationX (pi/2) `Matrices.mul` scaling 0.2 1 0.2 }
 
 right = ASphere
-        { Shapes.id = 5
-        , asphereRadius = 1.0
+        { Shapes.id       = 5
+        , radius          = 1.0
         , ashapeTransform = translation 1.5 0.5 (-0.5) `Matrices.mul` scaling 0.5 0.5 0.5
         , ashapeMaterial  = defaultMaterial
                             { color    = Color (Red 0.5) (Green 1) (Blue 0.1)
@@ -98,8 +98,8 @@ p1  = stripePattern
 p1' = p1 { patternTransform = rotationZ (pi/4) `Matrices.mul` scaling 0.2 0.2 0.2 }
 
 left = ASphere
-       { Shapes.id = 6
-       , asphereRadius   = 1.0
+       { Shapes.id       = 6
+       , radius          = 1.0
        , ashapeTransform =
          translation (-1.5) 0.33 (-0.75) `Matrices.mul` scaling 0.33 0.33 0.33
        , ashapeMaterial  = defaultMaterial
