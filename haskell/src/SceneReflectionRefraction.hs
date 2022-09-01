@@ -19,7 +19,7 @@ checkers = checkersPattern
 
 checkers' = checkers { patternTransform = scaling 0.1 0.1 0.1 }
 
-floorPlane = APlane
+floorPlane = Plane
              { S.id        = 1
              , S.transform = scaling 10 0.01 10
              , S.material  = defaultMaterial
@@ -33,7 +33,7 @@ wallGrad = gradientPattern
            (Color (Red 0.9) (Green 0.1) (Blue 0.4))
 wallGrad' = wallGrad { patternTransform = translation 3.5 1 1 `Matrices.mul` scaling 10 1 1 }
 
-backdrop = APlane
+backdrop = Plane
            { S.id        = 1
            , S.transform = translation 0 0 1.5 `Matrices.mul` rotationX (pi/2)
            , S.material  = defaultMaterial
@@ -47,7 +47,7 @@ p = stripePattern
     (Color (Red 0.5) (Green 0.5) (Blue 1))
 p' = p { patternTransform = rotationY (pi/4) `Matrices.mul` scaling 0.1 0.1 0.1 }
 
-wall = APlane
+wall = Plane
         { S.id = 3
         , S.transform =
             rotationY (pi/2) `Matrices.mul` rotationX (pi/2) `Matrices.mul` translation 1.5 1.5 0
@@ -66,7 +66,7 @@ grad = gradientPattern
        (Color (Red 0.9) (Green 0.1) (Blue 0.1))
 grad' = grad { patternTransform = translation 1.5 1 1 `Matrices.mul` scaling 3.5 1 1 }
 
-middle = ASphere
+middle = Sphere
          { S.id        = 4
          , radius      = 1.0
          , S.transform = translation (-0.5) 1 0.5
@@ -82,7 +82,7 @@ ring = ringPattern
        (Color (Red 0.3) (Green 0.4) (Blue 0.8))
 ring' = ring { patternTransform = rotationZ (pi/6) `Matrices.mul` rotationX (pi/2) `Matrices.mul` scaling 0.2 1 0.2 }
 
-right = ASphere
+right = Sphere
         { S.id        = 5
         , radius      = 1.0
         , S.transform = translation 1.5 0.5 (-0.5) `Matrices.mul` scaling 0.5 0.5 0.5
@@ -97,7 +97,7 @@ p1  = stripePattern
       (Color (Red 1) (Green 0.5) (Blue 0.5))
 p1' = p1 { patternTransform = rotationZ (pi/4) `Matrices.mul` scaling 0.2 0.2 0.2 }
 
-left = ASphere
+left = Sphere
        { S.id       = 6
        , radius          = 1.0
        , S.transform =
@@ -133,7 +133,7 @@ world = defaultWorld { light = lightSource }
 -- AShape test
 ---
 
-fooShape = ASphere 8 1.0 identity (defaultMaterial
+fooShape = Sphere 8 1.0 identity (defaultMaterial
                                    { transparency = 1.0,
                                      diffuse = 0.1,
                                      ambient = 0.1,
@@ -154,6 +154,6 @@ fooShape' = fooShape { S.transform = translation (-0.5) 1 (-1.9)
 renderSceneReflectionRefraction
   = render
     camera
-    (world { aShapes = [fooShape', middle, right, left, floorPlane, backdrop, wall]})
+    (world { shapes = [fooShape', middle, right, left, floorPlane, backdrop, wall]})
 
 

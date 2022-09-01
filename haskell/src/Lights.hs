@@ -16,7 +16,7 @@ data Light = Light { position  :: Tuple
 pointLight :: Tuple -> Color -> Light
 pointLight = Light
 
-lighting :: Material -> AShape -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
+lighting :: Material -> Shape -> Light -> Tuple -> Tuple -> Tuple -> Bool -> Color
 lighting material object light point eyev normalv inShadow =
       -- combine the surface color with the light's color/intensity
   let materialColor  = case materialPattern material of

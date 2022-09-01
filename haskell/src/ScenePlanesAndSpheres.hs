@@ -19,19 +19,19 @@ checkers = checkersPattern
 
 checkers' = checkers { patternTransform = scaling 0.1 0.1 0.1 }
 
-floorPlane = APlane { S.id        = 1
-                    , S.transform = scaling 10 0.01 10
-                    , S.material  = defaultMaterial
-                                    { materialPattern  = Just checkers'
-                                    , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
-                                    , specular = 0.5 }}
+floorPlane = Plane { S.id        = 1
+                   , S.transform = scaling 10 0.01 10
+                   , S.material  = defaultMaterial
+                                   { materialPattern  = Just checkers'
+                                   , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
+                                   , specular = 0.5 }}
 
 wallGrad = gradientPattern
            (Color (Red 0.9) (Green 0.4) (Blue 0.9))
            (Color (Red 0.9) (Green 0.1) (Blue 0.4))
 wallGrad' = wallGrad { patternTransform = translation 3.5 1 1 `Matrices.mul` scaling 10 1 1 }
 
-backdrop = APlane
+backdrop = Plane
   { S.id = 2
   , S.transform = translation 0 0 1.5 `Matrices.mul` rotationX (pi/2)
   , S.material  = defaultMaterial
@@ -44,7 +44,7 @@ p = stripePattern
     (Color (Red 0.5) (Green 0.5) (Blue 1))
 p' = p { patternTransform = rotationY (pi/4) `Matrices.mul` scaling 0.1 0.1 0.1 }
 
-wall = APlane
+wall = Plane
   { S.id = 3
   , S.transform =
       rotationY (pi/2) `Matrices.mul` rotationX (pi/2) `Matrices.mul` translation 1.5 1.5 0
@@ -59,29 +59,29 @@ grad = gradientPattern
        (Color (Red 0.9) (Green 0.1) (Blue 0.1))
 grad' = grad { patternTransform = translation 1.5 1 1 `Matrices.mul` scaling 3.5 1 1 }
 
-middle = ASphere { S.id        = 4
-                 , radius      = 1.0
-                 , S.transform = translation (-0.5) 1 0.5
-                 , S.material  = defaultMaterial
-                                 { color    = Color (Red 0.1) (Green 1) (Blue 0.5)
-                                 , diffuse  = 0.7
-                                 , specular = 0.3
-                                 , materialPattern = Just grad'}}
+middle = Sphere { S.id        = 4
+                , radius      = 1.0
+                , S.transform = translation (-0.5) 1 0.5
+                , S.material  = defaultMaterial
+                                { color    = Color (Red 0.1) (Green 1) (Blue 0.5)
+                                , diffuse  = 0.7
+                                , specular = 0.3
+                                , materialPattern = Just grad'}}
 
 ring = ringPattern
        (Color (Red 0.8) (Green 0.4) (Blue 0.3))
        (Color (Red 0.3) (Green 0.4) (Blue 0.8))
 ring' = ring { patternTransform = rotationZ (pi/6) `Matrices.mul` rotationX (pi/2) `Matrices.mul` scaling 0.2 1 0.2 }
 
-right = ASphere
-  { S.id        = 5
-  , radius      = 1.0
-  , S.transform = translation 1.5 0.5 (-0.5) `Matrices.mul` scaling 0.5 0.5 0.5
-  , S.material  = defaultMaterial
-                  { color           = Color (Red 0.5) (Green 1) (Blue 0.1)
-                  , diffuse         = 0.7
-                  , materialPattern = Just ring'
-                  , specular        = 0.3 }}
+right = Sphere
+        { S.id        = 5
+        , radius      = 1.0
+        , S.transform = translation 1.5 0.5 (-0.5) `Matrices.mul` scaling 0.5 0.5 0.5
+        , S.material  = defaultMaterial
+                        { color           = Color (Red 0.5) (Green 1) (Blue 0.1)
+                        , diffuse         = 0.7
+                        , materialPattern = Just ring'
+                        , specular        = 0.3 }}
 
 p1  = stripePattern
       (Color (Red 0.9) (Green 0.9) (Blue 0.5))
@@ -107,5 +107,5 @@ camera = (makeCamera 1000 500 (pi/3)) { C.transform = viewTransform
 
 renderScenePlanes = render
                     camera
-                    (world { aShapes = [middle, right, left, floorPlane, backdrop, wall] })
+                    (world { shapes = [middle, right, left, floorPlane, backdrop, wall] })
 

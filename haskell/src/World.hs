@@ -18,7 +18,7 @@ import Rays as R
 import Lights
 import Shapes
 
-data World = World { aShapes       :: [AShape]
+data World = World { shapes       :: [Shape]
                    , light         :: Light}
                deriving(Show)
 
@@ -70,16 +70,16 @@ colorizeShape w r remaining (Just s) is =
 
 colorAt :: World -> Ray -> Int -> Color
 colorAt w r remaining
-  = let xx = intersectShapes (aShapes w) r
-        yy = hit xx
-    in colorizeShape w r remaining yy xx
+  = let intersections = intersectShapes (shapes w) r
+        theHit        = hit intersections
+    in colorizeShape w r remaining theHit intersections
 
 isShadowed :: World -> Tuple -> Bool
 isShadowed w p = let v              = Lights.position (light w) `sub` p
                      distance       = mag v
                      direction      = norm v
                      r              = makeRay p direction
-                     intersections  = intersectShapes (aShapes w) r
+                     intersections  = intersectShapes (shapes w) r
                      h              = hit intersections
                  in case h of
                       Just i  -> intersectionT i < distance

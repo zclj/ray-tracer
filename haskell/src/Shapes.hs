@@ -11,36 +11,36 @@ import Patterns
 -- Sum Type shapes
 ----------------------------------------
 
-data AShape = ASphere { id        :: Int
-                      , radius    :: Double
-                      , transform :: Matrix
-                      , material  :: Material }
-            | APlane { id        :: Int
-                     , transform :: Matrix
-                     , material  :: Material }
+data Shape = Sphere { id        :: Int
+                    , radius    :: Double
+                    , transform :: Matrix
+                    , material  :: Material }
+           | Plane { id        :: Int
+                   , transform :: Matrix
+                   , material  :: Material }
             deriving (Show, Eq, Ord)
 
 ----------------------------------------
 -- Defauls
 ----------------------------------------
 
-defaultSphere :: Int -> AShape
-defaultSphere id = ASphere id 1.0 identity defaultMaterial
+defaultSphere :: Int -> Shape
+defaultSphere id = Sphere id 1.0 identity defaultMaterial
 
-makeGlassSphere :: Int -> AShape
+makeGlassSphere :: Int -> Shape
 makeGlassSphere id =
-  ASphere id 1.0 identity (defaultMaterial { transparency = 1.0, refractiveIndex = 1.5 })
+  Sphere id 1.0 identity (defaultMaterial { transparency = 1.0, refractiveIndex = 1.5 })
 
-defaultPlane :: Int -> AShape
-defaultPlane id = APlane id identity defaultMaterial
+defaultPlane :: Int -> Shape
+defaultPlane id = Plane id identity defaultMaterial
 
 ----------------------------------------
-localNormalAt :: AShape -> Tuple -> Tuple
-localNormalAt ASphere {} objectPoint = objectPoint `sub` point 0 0 0
-localNormalAt APlane {} _ = vector 0 1 0
+localNormalAt :: Shape -> Tuple -> Tuple
+localNormalAt Sphere {} objectPoint = objectPoint `sub` point 0 0 0
+localNormalAt Plane {} _ = vector 0 1 0
 
 data Computation = Computation { cT          :: Double
-                               , cObject     :: AShape
+                               , cObject     :: Shape
                                , cPoint      :: Tuple
                                , cEyev       :: Tuple
                                , cNormalv    :: Tuple
@@ -52,8 +52,8 @@ data Computation = Computation { cT          :: Double
                                , cN2         :: Double}
                  deriving(Show)
 
-localIntersect :: AShape -> Ray -> [Intersection]
-localIntersect s@ASphere {} r =
+localIntersect :: Shape -> Ray -> [Intersection]
+localIntersect s@Sphere {} r =
   let sphereToRay  = origin r `sub` Tuples.point 0 0 0
       a            = direction r `dot` direction r
       b            = 2 * (direction r `dot` sphereToRay)
@@ -63,17 +63,17 @@ localIntersect s@ASphere {} r =
      then []
      else [ Shapes.Intersection (((-b) - sqrt discriminant) / (2 * a)) s
           , Shapes.Intersection (((-b) + sqrt discriminant) / (2 * a)) s]
-localIntersect p@APlane {} r =
+localIntersect p@Plane {} r =
   if abs(y (direction r)) < epsilon
   then []
   else let t = -y (origin r) / y (direction r)
        in [Intersection t p]
 
-intersectShapes :: [AShape] -> Ray -> [Intersection]
+intersectShapes :: [Shape] -> Ray -> [Intersection]
 intersectShapes objects r
   = sort $ concatMap (\s -> localIntersect s (R.transform r (inverse (Shapes.transform s)))) objects
 
-objectNormalAt :: AShape -> Tuple -> Tuple
+objectNormalAt :: Shape -> Tuple -> Tuple
 objectNormalAt s worldPoint =
   let objectPoint  = inverse (Shapes.transform s) `mulT` worldPoint
       objectNormal = localNormalAt s objectPoint
@@ -81,18 +81,18 @@ objectNormalAt s worldPoint =
       worldNormal' = worldNormal {w=0}
   in norm worldNormal'
 
-removeOrAppend :: [AShape] -> AShape -> [AShape]
+removeOrAppend :: [Shape] -> Shape -> [Shape]
 removeOrAppend xs i = if (Shapes.id i) `elem` (map Shapes.id xs)
                       then filter (\x -> (Shapes.id x) /= (Shapes.id i)) xs
                       else xs ++ [i]
 
-refractiveIndexValue :: [AShape] -> Double
+refractiveIndexValue :: [Shape] -> Double
 refractiveIndexValue shapes =
   if null shapes
   then 1.0
   else refractiveIndex (Shapes.material (last shapes))
 
-refractive :: [Intersection] -> [AShape] -> Intersection -> (Double, Double) -> (Double, Double)
+refractive :: [Intersection] -> [Shape] -> Intersection -> (Double, Double) -> (Double, Double)
 refractive [] shapes hit (n1, n2)     = (n1, n2)
 refractive (i:is) shapes hit (n1, n2) =
   let shapes' = removeOrAppend shapes (intersectionObject i)
@@ -126,7 +126,7 @@ prepareComputations i r xs =
 
 data Intersection = Intersection
                     { intersectionT      :: Double
-                    , intersectionObject :: AShape}
+                    , intersectionObject :: Shape}
                   deriving (Show, Eq, Ord)
 
 -- |The `hit` function returns the first non-negative intersection.
@@ -134,7 +134,7 @@ data Intersection = Intersection
 hit :: [Intersection] -> Maybe (Intersection)
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
-patternAtShape :: Pattern -> AShape -> Tuple -> Color
+patternAtShape :: Pattern -> Shape -> Tuple -> Color
 patternAtShape p shape worldPoint =
   let objectPoint  = inverse (Shapes.transform shape) `mulT` worldPoint
       patternPoint = inverse (patternTransform p) `mulT` objectPoint

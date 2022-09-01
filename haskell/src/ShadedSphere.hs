@@ -26,7 +26,7 @@ toWorldX x = (-half) + (pixelSize * fromIntegral x)
 toWorldY :: Int -> Double
 toWorldY y = half - (pixelSize * fromIntegral y)
 
-processPixel :: Int -> Int -> AShape -> (Maybe Intersection, Ray)
+processPixel :: Int -> Int -> Shape -> (Maybe Intersection, Ray)
 processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
                              position = point worldX worldY wallZ
@@ -34,7 +34,7 @@ processPixel x y shape = let worldX   = toWorldX x
                              xs       = localIntersect shape ray
                          in (hit xs, ray)
 
-castOnPixel :: Int -> Int -> AShape -> Color -> Light -> Color
+castOnPixel :: Int -> Int -> Shape -> Color -> Light -> Color
 castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                         in case hit of
                              Just n -> let p      = Rays.position ray (intersectionT n)
@@ -43,7 +43,7 @@ castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                                        in lighting (material (intersectionObject n)) (defaultSphere 1) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)
 
-castRow :: Int -> AShape -> Color -> Light -> [Color]
+castRow :: Int -> Shape -> Color -> Light -> [Color]
 castRow y s c l = map (\x -> castOnPixel x y s c l) [0..(canvasPixels - 1)]
 
 render :: Canvas
