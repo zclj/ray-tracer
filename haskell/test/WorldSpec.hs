@@ -10,7 +10,7 @@ import Materials
 import Matrices
 import Transformations
 import Shapes
-import Tuples
+import Tuples as T
 import Rays
 import World as SUT
 import Patterns
@@ -37,7 +37,7 @@ worldReflection =
          Then color = color(0, 0, 0) -}
     describe "The reflected color for a nonreflective material" $ do
       let w      = SUT.defaultWorld
-          r      = makeRay (point 0 0 0) (vector 0 0 1)
+          r      = makeRay (T.point 0 0 0) (vector 0 0 1)
           shape  = last (SUT.shapes w)
           mat    = material shape
           mat'   = mat { ambient = 1 }
@@ -63,7 +63,7 @@ worldReflection =
           mat    = defaultMaterial { reflective = 0.5 }
           shape  = Plane 1 (translation 0 (-1) 0) mat
           w'     = w { shapes = [shape] }
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
+          r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 1
@@ -85,7 +85,7 @@ worldReflection =
           mat    = defaultMaterial { reflective = 0.5 }
           shape  = Plane 1 (translation 0 (-1) 0) mat
           w'     = w { shapes = [shape] }
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
+          r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
           color  = SUT.shadeHit w comps 1
@@ -105,12 +105,12 @@ worldReflection =
            And r ← ray(point(0, 0, 0), vector(0, 1, 0))
          Then color_at(w, r) should terminate successfully -}
     describe "color_at() with mutually reflective surfaces" $ do
-      let light = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
+      let light = pointLight (T.point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
           mat   = defaultMaterial { reflective = 1 }
           lower = Plane 1 (translation 0 (-1) 0) mat
           upper = Plane 2 (translation 0 1 0) mat
           w     = World [lower, upper] light
-          r     = makeRay (point 0 0 0) (vector 0 1 0)
+          r     = makeRay (T.point 0 0 0) (vector 0 1 0)
           c     = colorAt w r 1
       it "terminates" $ do
         c `shouldBe` Color (Red 3.8) (Green 3.8) (Blue 3.8)
@@ -130,7 +130,7 @@ worldReflection =
           mat    = defaultMaterial { reflective = 0.5 }
           shape  = Plane 1 (translation 0 (-1) 0) mat
           w'     = w { shapes = [shape] }
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
+          r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Shapes.Intersection (sqrt 2) shape
           comps  = prepareComputations i r [i]
           color  = SUT.reflectedColor w comps 0
@@ -147,7 +147,7 @@ worldReflection =
     describe "The refracted color with an opaque surface" $ do
       let w     = SUT.defaultWorld
           shape = head (shapes w)
-          r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           xs    = [Shapes.Intersection 4 shape, Shapes.Intersection 6 shape]
           comps = prepareComputations (head xs) r xs
           color = SUT.refractedColor w comps 5
@@ -169,7 +169,7 @@ worldReflection =
           shape  = head (shapes w)
           m      = (material shape) { transparency = 1.0, refractiveIndex = 1.5 }
           shape' = shape { material = m }
-          r      = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          r      = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           xs     = [Shapes.Intersection 4 shape', Shapes.Intersection 6 shape']
           comps  = prepareComputations (head xs) r xs
           color  = SUT.refractedColor w comps 0
@@ -193,7 +193,7 @@ worldReflection =
           shape  = head (shapes w)
           m      = (material shape) { transparency = 1.0, refractiveIndex = 1.5 }
           shape' = shape { material = m }
-          r      = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
+          r      = makeRay (T.point 0 0 (sqrt 2/2)) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-sqrt 2/2) shape'
                    , Shapes.Intersection (sqrt 2/2) shape']
           comps  = prepareComputations (xs !! 1) r xs
@@ -227,7 +227,7 @@ worldReflection =
                    { transparency    = 1.0,
                      refractiveIndex = 1.5 }
           b'     = b { material = bm }
-          r      = makeRay (point 0 0 0.1) (vector 0 1 0)
+          r      = makeRay (T.point 0 0 0.1) (vector 0 1 0)
           xs     = [ Shapes.Intersection (-0.9899) a'
                    , Shapes.Intersection (-0.4899) b'
                    , Shapes.Intersection 0.4899 b'
@@ -268,7 +268,7 @@ worldReflection =
                               defaultMaterial
                               { color   = Color (Red 1) (Green 0) (Blue 0)
                               , ambient = 0.5}}
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
+          r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Shapes.Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
           w'     = w { shapes = [floor, ball] }
@@ -308,7 +308,7 @@ worldReflection =
                               defaultMaterial
                               { color   = Color (Red 1) (Green 0) (Blue 0)
                               , ambient = 0.5}}
-          r      = makeRay (point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
+          r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Shapes.Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
           w'     = w { shapes = shapes w ++ [floor, ball] }
@@ -329,7 +329,7 @@ worldShading =
          Then c = color(0.38066, 0.47583, 0.2855) -}
     describe "Shading an intersection" $ do
       let w     = SUT.defaultWorld
-          r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s     = head (shapes w)
           i     = Shapes.Intersection 4 s
           comps = prepareComputations i r [i]
@@ -347,9 +347,9 @@ worldShading =
          Then c = color(0.90498, 0.90498, 0.90498) -}
     describe "Shading an intersection from the inside" $ do
       let w     = SUT.defaultWorld
-          w'    = w { light = pointLight (point 0 0.25 0)
+          w'    = w { light = pointLight (T.point 0 0.25 0)
                               (Color (Red 1) (Green 1) (Blue 1)) }
-          r     = makeRay (point 0 0 0) (vector 0 0 1)
+          r     = makeRay (T.point 0 0 0) (vector 0 0 1)
           s     = last (shapes w')
           i     = Intersection 0.5 s
           comps = prepareComputations i r [i]
@@ -363,7 +363,7 @@ worldShading =
          Then c = color(0, 0, 0) -}
     describe "The color when a ray misses" $ do
       let w = SUT.defaultWorld
-          r = makeRay (point 0 0 (-5)) (vector 0 1 0)
+          r = makeRay (T.point 0 0 (-5)) (vector 0 1 0)
           c = SUT.colorAt w r 1
       it "c = color(0, 0, 0)" $ do
         c `shouldBe` Color (Red 0) (Green 0) (Blue 0)
@@ -374,7 +374,7 @@ worldShading =
          Then c = color(0.38066, 0.47583, 0.2855) -}
     describe "The color when a ray hits" $ do
       let w = SUT.defaultWorld
-          r = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          r = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           c = SUT.colorAt w r 1
       it "c = color(0.38066, 0.47583, 0.2855)" $ do
         c `shouldBe` Color (Red 0.38066) (Green 0.47583) (Blue 0.2855)
@@ -394,7 +394,7 @@ worldShading =
           outer' = Sphere oid or ot (om { ambient = 1 })
           inner' = Sphere lid lr lt (lm { ambient = 1 })
           w'     = w { shapes = [inner', outer'] }
-          r      = makeRay (point 0 0 0.75) (vector 0 0 (-1))
+          r      = makeRay (T.point 0 0 0.75) (vector 0 0 (-1))
           c      = SUT.colorAt w' r 1
       it "c = inner.material.color" $ do
         c `shouldBe` color lm
@@ -404,7 +404,7 @@ worldShading =
          Then is_shadowed(w, p) is false -}
     describe "There is no shadow when nothing is collinear with point and light" $ do
       let w = SUT.defaultWorld
-          p = point 0 10 0
+          p = T.point 0 10 0
       it "is_shadowed(w, p) is false" $ do
         isShadowed w p `shouldBe` False
     {- Scenario: The shadow when an object is between the point and the light
@@ -413,7 +413,7 @@ worldShading =
          Then is_shadowed(w, p) is true -}
     describe "The shadow when an object is between the point and the light" $ do
       let w = SUT.defaultWorld
-          p = point 10 (-10) 10
+          p = T.point 10 (-10) 10
       it "is_shadowed(w, p) is true" $ do
         isShadowed w p `shouldBe` True
     {- Scenario: There is no shadow when an object is behind the light
@@ -422,7 +422,7 @@ worldShading =
          Then is_shadowed(w, p) is false -}
     describe "There is no shadow when an object is behind the light" $ do
       let w = SUT.defaultWorld
-          p = point (-20) 20 (-20)
+          p = T.point (-20) 20 (-20)
       it "is_shadowed(w, p) is false" $ do
         isShadowed w p `shouldBe` False
     {- Scenario: There is no shadow when an object is behind the point
@@ -431,7 +431,7 @@ worldShading =
          Then is_shadowed(w, p) is false -}
     describe "There is no shadow when an object is behind the point" $ do
       let w = SUT.defaultWorld
-          p = point (-2) 2 (-2)
+          p = T.point (-2) 2 (-2)
       it "is_shadowed(w, p) is false" $ do
         isShadowed w p `shouldBe` False
     {- Scenario: shade_hit() is given an intersection in shadow
@@ -451,10 +451,10 @@ worldShading =
       let s1 = (defaultSphere 1) { Shapes.transform = translation 0 0 10 }
           s2 = defaultSphere 2
           w = World { light  = pointLight
-                               (point 0 0 (-10))
+                               (T.point 0 0 (-10))
                                (Color (Red 1) (Green 1) (Blue 1))
                     , shapes = [ s1, s2]}
-          r = makeRay (point 0 0 5) (vector 0 0 1)
+          r = makeRay (T.point 0 0 5) (vector 0 0 1)
           i = Intersection 4 s2
           comps = prepareComputations i r [i]
           c = SUT.shadeHit w comps 1
@@ -475,7 +475,7 @@ worldIntersections =
            And xs[3].t = 6 -}
     describe "Intersect a world with a ray" $ do
       let w  = SUT.defaultWorld
-          r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
+          r  = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           xs = intersectShapes (shapes w) r
           [x1, x2, x3, x4] = xs
       it "contains 4 intersections" $ do
@@ -497,7 +497,7 @@ worldBasics =
          Then w contains no objects
            And w has no light source -}
     describe "Creating a world" $ do
-      let l   = pointLight (point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
+      let l   = pointLight (T.point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
           w   = SUT.World { shapes = []
                           , light  = l}
           obj = shapes w
@@ -519,7 +519,7 @@ worldBasics =
            And w contains s1
            And w contains s2 -}
     describe "The default world" $ do
-      let light = pointLight (point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+      let light = pointLight (T.point (-10) 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s1    = Sphere { Shapes.id        = 1
                          , radius           = 1.0
                          , Shapes.transform = identity

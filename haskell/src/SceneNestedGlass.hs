@@ -4,7 +4,7 @@ module SceneNestedGlass
 
 import Transformations as T
 import Materials as M
-import Tuples
+import Tuples as T
 import World
 import Lights
 import Camera as C
@@ -17,15 +17,15 @@ import Shapes as S
 ----------------------------------------
 camera = (makeCamera 600 600 0.45)
          { C.transform = viewTransform
-                         (point 0 0 (-5))
-                         (point 0 0 0)
-                         (point 0 1 0) }
+                         (T.point 0 0 (-5))
+                         (T.point 0 0 0)
+                         (T.point 0 1 0) }
 
 ----------------------------------------
 -- light sources
 ----------------------------------------
 lightSource = pointLight
-              (point 2 10 (-5))
+              (T.point 2 10 (-5))
               (Color (Red 0.9) (Green 0.9) (Blue 0.9))
 
 

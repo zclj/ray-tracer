@@ -4,7 +4,7 @@ module SceneReflectionRefraction
 
 import Transformations
 import Materials as M
-import Tuples
+import Tuples as T
 import World
 import Lights
 import Camera as C
@@ -98,8 +98,8 @@ p1  = stripePattern
 p1' = p1 { patternTransform = rotationZ (pi/4) `Matrices.mul` scaling 0.2 0.2 0.2 }
 
 left = Sphere
-       { S.id       = 6
-       , radius          = 1.0
+       { S.id        = 6
+       , radius      = 1.0
        , S.transform =
            translation (-1.5) 0.33 (-0.75) `Matrices.mul` scaling 0.33 0.33 0.33
        , S.material  = defaultMaterial
@@ -113,16 +113,16 @@ left = Sphere
 ----
 
 lightSource = pointLight
-              (point (-4.9) 4.9 (-1))
+              (T.point (-4.9) 4.9 (-1))
               (Color (Red 1) (Green 1) (Blue 1))
 
 ----
 -- Camera
 ---
 camera = (makeCamera 1200 1200 1.152) { C.transform = viewTransform
-                                                     (point 0 1.5 (-5))
-                                                     (point 0 1 0)
-                                                     (point 0 1 0) }
+                                                     (T.point 0 1.5 (-5))
+                                                     (T.point 0 1 0)
+                                                     (T.point 0 1 0) }
 
 ----
 -- World

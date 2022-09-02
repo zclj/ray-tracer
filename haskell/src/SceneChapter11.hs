@@ -4,7 +4,7 @@ module SceneChapter11
 
 import Transformations as T
 import Materials as M
-import Tuples
+import Tuples as T
 import World
 import Lights
 import Camera as C
@@ -17,15 +17,15 @@ import Shapes as S
 ----------------------------------------
 camera = (makeCamera 1200 600 1.152)
          { C.transform = viewTransform
-                         (point (-2.6) 1.5 (-3.9))
-                         (point (-0.6) 1 (-0.8))
-                         (point 0 1 0) }
+                         (T.point (-2.6) 1.5 (-3.9))
+                         (T.point (-0.6) 1 (-0.8))
+                         (T.point 0 1 0) }
 
 ----------------------------------------
 -- light sources
 ----------------------------------------
 lightSource = pointLight
-              (point (-4.9) 4.9 (-1))
+              (T.point (-4.9) 4.9 (-1))
               (Color (Red 1) (Green 1) (Blue 1))
 
 ----------------------------------------

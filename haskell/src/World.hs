@@ -13,7 +13,7 @@ import Data.List as DL
 import Materials
 import Matrices
 import Transformations
-import Tuples
+import Tuples as T
 import Rays as R
 import Lights
 import Shapes
@@ -37,7 +37,7 @@ defaultWorld = let defaultSphere1 = (defaultSphere 1)
                    defaultSphere2 = (defaultSphere 2)
                                     { Shapes.transform = scaling 0.5 0.5 0.5 }
                    defaultLight   = pointLight
-                                    (point (-10) 10 (-10))
+                                    (T.point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))
                in World
                   [defaultSphere1, defaultSphere2]
@@ -46,16 +46,16 @@ defaultWorld = let defaultSphere1 = (defaultSphere 1)
 shadeHit :: World -> Computation -> Int -> Color
 shadeHit world c remaining
   = let surface   = Lights.lighting
-                    (material (cObject c))
-                    (cObject c)
+                    (material (object c))
+                    (object c)
                     (light world)
-                    (cOverPoint c)
-                    (cEyev c)
-                    (cNormalv c)
-                    (isShadowed world (cOverPoint c))
+                    (overPoint c)
+                    (eyev c)
+                    (normalv c)
+                    (isShadowed world (overPoint c))
         reflected = reflectedColor world c remaining
         refracted = refractedColor world c remaining
-        m         = material (cObject c)
+        m         = material (object c)
     in if reflective m > 0 && transparency m > 0
        then let reflectance = schlick c
             in surface                         `addC`
@@ -87,24 +87,24 @@ isShadowed w p = let v              = Lights.position (light w) `sub` p
 
 reflectedColor :: World -> Computation -> Int -> Color
 reflectedColor w pc remaining
-  = let m = material (cObject pc)
+  = let m = material (object pc)
     in if reflective m == 0 || remaining == 0
        then Color (Red 0) (Green 0) (Blue 0)
-       else let reflectRay = makeRay (cOverPoint pc) (cReflectv pc)
+       else let reflectRay = makeRay (overPoint pc) (reflectv pc)
                 color      = colorAt w reflectRay (remaining - 1)
             in color `mulCS` reflective m
 
 refractedColor :: World -> Computation -> Int -> Color
 refractedColor w pc remaining =
-  let m       = material (cObject pc)
-      n_ratio = cN1 pc / cN2 pc
-      cos_i   = cEyev pc `dot` cNormalv pc
+  let m       = material (object pc)
+      n_ratio = n1 pc / n2 pc
+      cos_i   = eyev pc `dot` normalv pc
       sin2_t  = n_ratio^2 * (1 - cos_i^2)
   in if transparency m == 0 || remaining == 0 || sin2_t > 1.0
      then Color (Red 0) (Green 0) (Blue 0)
      else let cos_t      = sqrt (1 - sin2_t)
-              direction  = cNormalv pc `Tuples.mul` (n_ratio * cos_i - cos_t)
-                          `sub` (cEyev pc `Tuples.mul` n_ratio)
-              refractRay = makeRay (cUnderPoint pc) direction
+              direction  = normalv pc `T.mul` (n_ratio * cos_i - cos_t)
+                          `sub` (eyev pc `T.mul` n_ratio)
+              refractRay = makeRay (underPoint pc) direction
           in colorAt w refractRay (remaining - 1) `mulCS`
-             transparency (material (cObject pc))
+             transparency (material (object pc))

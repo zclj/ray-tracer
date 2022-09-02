@@ -2,7 +2,7 @@ module Shapes where
 
 import Matrices
 import Materials
-import Tuples
+import Tuples as T
 import Rays as R
 import Data.List (sort, find)
 import Patterns
@@ -36,25 +36,25 @@ defaultPlane id = Plane id identity defaultMaterial
 
 ----------------------------------------
 localNormalAt :: Shape -> Tuple -> Tuple
-localNormalAt Sphere {} objectPoint = objectPoint `sub` point 0 0 0
+localNormalAt Sphere {} objectPoint = objectPoint `sub` T.point 0 0 0
 localNormalAt Plane {} _ = vector 0 1 0
 
-data Computation = Computation { cT          :: Double
-                               , cObject     :: Shape
-                               , cPoint      :: Tuple
-                               , cEyev       :: Tuple
-                               , cNormalv    :: Tuple
-                               , cInside     :: Bool
-                               , cOverPoint  :: Tuple
-                               , cUnderPoint :: Tuple
-                               , cReflectv   :: Tuple
-                               , cN1         :: Double
-                               , cN2         :: Double}
+data Computation = Computation { t          :: Double
+                               , object     :: Shape
+                               , point      :: Tuple
+                               , eyev       :: Tuple
+                               , normalv    :: Tuple
+                               , inside     :: Bool
+                               , overPoint  :: Tuple
+                               , underPoint :: Tuple
+                               , reflectv   :: Tuple
+                               , n1         :: Double
+                               , n2         :: Double}
                  deriving(Show)
 
 localIntersect :: Shape -> Ray -> [Intersection]
 localIntersect s@Sphere {} r =
-  let sphereToRay  = origin r `sub` Tuples.point 0 0 0
+  let sphereToRay  = origin r `sub` T.point 0 0 0
       a            = direction r `dot` direction r
       b            = 2 * (direction r `dot` sphereToRay)
       c            = (sphereToRay `dot` sphereToRay) - 1
@@ -111,17 +111,17 @@ prepareComputations i r xs =
                          then (True, neg normalv)
                          else (False, normalv)
       (n1, n2)         = refractive xs [] i (0.0, 0.0)
-  in Computation { cT          = it
-                 , cObject     = obj
-                 , cPoint      = po
-                 , cEyev       = eyev
-                 , cNormalv    = normal
-                 , cInside     = inside
-                 , cOverPoint  = po `add` (normal `Tuples.mul` epsilon)
-                 , cUnderPoint = po `sub` (normal `Tuples.mul` epsilon)
-                 , cReflectv   = reflect (direction r) normal
-                 , cN1         = n1
-                 , cN2         = n2 }
+  in Computation { t          = it
+                 , object     = obj
+                 , Shapes.point = po
+                 , eyev       = eyev
+                 , normalv    = normal
+                 , inside     = inside
+                 , overPoint  = po `add` (normal `T.mul` epsilon)
+                 , underPoint = po `sub` (normal `T.mul` epsilon)
+                 , reflectv   = reflect (direction r) normal
+                 , n1         = n1
+                 , n2         = n2 }
 
 
 data Intersection = Intersection
@@ -142,12 +142,12 @@ patternAtShape p shape worldPoint =
 
 schlick :: Computation -> Double
 schlick c =
-  let n      = cN1 c / cN2 c
-      cos    = cEyev c `dot` cNormalv c
+  let n      = n1 c / n2 c
+      cos    = eyev c `dot` normalv c
       sin2_t = n**2 * (1.0 - cos**2)
       cos_t  = sqrt (1.0 - sin2_t)
-      r0     = ((cN1 c - cN2 c) / (cN1 c + cN2 c))**2
-  in if cN1 c > cN2 c
+      r0     = ((n1 c - n2 c) / (n1 c + n2 c))**2
+  in if n1 c > n2 c
      then if sin2_t > 1.0
           then 1.0
           else r0 + (1.0 - r0) * ((1 - cos_t)**5)

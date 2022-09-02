@@ -1,12 +1,12 @@
 module Silhouette where
 
-import Tuples
+import Tuples as T
 import Canvas
 import Rays
 import Shapes
 {- Cast rays on a sphere to make out its silhouette -}
 
-rayOrigin = point 0 0 (-5)
+rayOrigin = T.point 0 0 (-5)
 
 wallZ = 10
 
@@ -27,7 +27,7 @@ toWorldY y = half - (pixelSize * fromIntegral y)
 processPixel :: Int -> Int -> Shape -> Maybe Intersection
 processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
-                             position = point worldX worldY wallZ
+                             position = T.point worldX worldY wallZ
                              ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
                              xs       = localIntersect shape ray
                          in hit xs

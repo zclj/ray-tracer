@@ -5,7 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 
-import Tuples
+import Tuples as T
 import Rays
 import Matrices
 import Transformations
@@ -68,7 +68,7 @@ sphereNormals =
          Then n = vector(1, 0, 0) -}
     describe "The normal on a sphere at a point on the x axis" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (point 1 0 0)
+          n = localNormalAt s (T.point 1 0 0)
       it "is the vector(1, 0, 0)" $ do
         n `shouldBe` vector 1 0 0
     {- Scenario: The normal on a sphere at a point on the y axis
@@ -77,7 +77,7 @@ sphereNormals =
          Then n = vector(0, 1, 0) -}
     describe "The normal on a sphere at a point on the y axis" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (point 0 1 0)
+          n = localNormalAt s (T.point 0 1 0)
       it "is the vector(0, 1, 0)" $ do
         n `shouldBe` vector 0 1 0
     {- Scenario: The normal on a sphere at a point on the z axis
@@ -86,7 +86,7 @@ sphereNormals =
          Then n = vector(0, 0, 1) -}
     describe "The normal on a sphere at a point on the z axis" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (point 0 0 1)
+          n = localNormalAt s (T.point 0 0 1)
       it "is the vector(0, 0, 1)" $ do
         n `shouldBe` vector 0 0 1
     {- Scenario: The normal on a sphere at a nonaxial point
@@ -95,7 +95,7 @@ sphereNormals =
          Then n = vector(√3/3, √3/3, √3/3) -}
     describe "The normal on a sphere at a nonaxial point" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = localNormalAt s (T.point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)
     {- Scenario: The normal is a normalized vector
@@ -104,7 +104,7 @@ sphereNormals =
          Then n = normalize(n) -}
     describe "The normal is a normalized vector" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = localNormalAt s (T.point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` norm n
     {- Scenario: Computing the normal on a translated sphere
@@ -115,7 +115,7 @@ sphereNormals =
     describe "Computing the normal on a translated sphere" $ do
       let s  = defaultSphere 1
           s' = s { Shapes.transform = (translation 0 1 0) }
-          n  = objectNormalAt s' (point 0 1.70711 (-0.70711))
+          n  = objectNormalAt s' (T.point 0 1.70711 (-0.70711))
       it "is the vector(0, 0.70711, -0.70711)" $ do
         n `shouldBe` vector 0 0.70711 (-0.70711)
     {- Scenario: Computing the normal on a transformed sphere
@@ -128,7 +128,7 @@ sphereNormals =
       let s = defaultSphere 1
           m = scaling 1 0.5 1 `Matrices.mul` rotationZ(pi/5)
           s' = s { Shapes.transform = m }
-          n = objectNormalAt s' (point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
+          n = objectNormalAt s' (T.point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
       it "is the vector(0, 0.97014, -0.24254)" $ do
         n `shouldBe` vector 0 0.97014 (-0.24254)
 
@@ -165,7 +165,7 @@ sphereIntersections =
            And xs[0] = 4.0
            And xs[1] = 6.0 -}
     describe "A ray intersects a sphere at two points" $ do
-      let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r          = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s          = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
@@ -182,7 +182,7 @@ sphereIntersections =
            And xs[0] = 5.0
            And xs[1] = 5.0 -}
     describe "A ray intersects a sphere at a tangent" $ do
-      let r          = makeRay (point 0 1 (-5)) (vector 0 0 1)
+      let r          = makeRay (T.point 0 1 (-5)) (vector 0 0 1)
           s          = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
@@ -197,7 +197,7 @@ sphereIntersections =
          When xs ← intersect(s, r)
          Then xs.count = 0 -}
     describe "A ray misses a sphere" $ do
-      let r  = makeRay (point 0 2 (-5)) (vector 0 0 1)
+      let r  = makeRay (T.point 0 2 (-5)) (vector 0 0 1)
           s  = defaultSphere 1
           xs = s `localIntersect` r
       it "there are no intersections" $ do
@@ -210,7 +210,7 @@ sphereIntersections =
            And xs[0] = -1.0
            And xs[1] = 1.0 -}
     describe "A ray originates inside a sphere" $ do
-      let r = makeRay (point 0 0 0) (vector 0 0 1)
+      let r = makeRay (T.point 0 0 0) (vector 0 0 1)
           s = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
@@ -227,7 +227,7 @@ sphereIntersections =
            And xs[0] = -6.0
            And xs[1] = -4.0 -}
     describe "A sphere is behind a ray" $ do
-      let r = makeRay (point 0 0 5) (vector 0 0 1)
+      let r = makeRay (T.point 0 0 5) (vector 0 0 1)
           s = defaultSphere 1
           xs@(x:y:_) = s `localIntersect` r
       it "there are two intersections" $ do
@@ -244,7 +244,7 @@ sphereIntersections =
            And xs[0].object = s
            And xs[1].object = s -}
     describe "Intersect sets the object on the intersection" $ do
-      let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r          = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s          = defaultSphere 1
           xs@(x:y:_) = [s] `intersectShapes` r
       it "there are two intersections" $ do
@@ -262,7 +262,7 @@ sphereIntersections =
            And xs[0].t = 3
            And xs[1].t = 7 -}
     describe "Intersecting a scaled sphere with a ray" $ do
-      let r          = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r          = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s          = defaultSphere 1
           m          = scaling 2 2 2
           s'         = s { Shapes.transform = m }
@@ -280,7 +280,7 @@ sphereIntersections =
            And xs ← intersect(s, r)
          Then xs.count = 0 -}
     describe "Intersecting a translated sphere with a ray" $ do
-      let r  = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r  = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s  = defaultSphere 1
           m  = translation 5 0 0
           s' = s { Shapes.transform = m }

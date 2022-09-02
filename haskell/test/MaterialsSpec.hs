@@ -5,7 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 
-import Tuples
+import Tuples as T
 import Lights
 import Materials as SUT
 import Patterns
@@ -49,11 +49,11 @@ materialLighting =
          When result ← lighting(m, light, position, eyev, normalv)
          Then result = color(1.9, 1.9, 1.9) -}
     describe "Lighting with the eye between the light and the surface" $ do
-      let position = point 0 0 0
+      let position = T.point 0 0 0
           m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(1.9, 1.9, 1.9)" $ do
@@ -65,11 +65,11 @@ materialLighting =
          When result ← lighting(m, light, position, eyev, normalv)
          Then result = color(1.0, 1.0, 1.0) -}
     describe "Lighting with the eye between light and surface, eye offset 45°" $ do
-      let position = point 0 0 0
+      let position = T.point 0 0 0
           m        = defaultMaterial
           eyev     = vector 0 (sqrt 2/2) (sqrt 2/2)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(1.0, 1.0, 1.0)" $ do
@@ -81,11 +81,11 @@ materialLighting =
          When result ← lighting(m, light, position, eyev, normalv)
          Then result = color(0.7364, 0.7364, 0.7364) -}
     describe "Lighting with eye opposite surface, light offset 45°" $ do
-      let position = point 0 0 0
+      let position = T.point 0 0 0
           m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(0.7364, 0.7364, 0.7364)" $ do
@@ -97,11 +97,11 @@ materialLighting =
          When result ← lighting(m, light, position, eyev, normalv)
          Then result = color(1.6364, 1.6364, 1.6364) -}
     describe "Lighting with eye in the path of the reflection vector" $ do
-      let position = point 0 0 0
+      let position = T.point 0 0 0
           m        = defaultMaterial
           eyev     = vector 0 (- (sqrt 2/2)) (- (sqrt 2/2))
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 10 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(1.6364, 1.6364, 1.6364)" $ do
@@ -113,11 +113,11 @@ materialLighting =
          When result ← lighting(m, light, position, eyev, normalv)
          Then result = color(0.1, 0.1, 0.1) -}
     describe "Lighting with the light behind the surface" $ do
-      let position = point 0 0 0
+      let position = T.point 0 0 0
           m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 0 10) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 0 10) (Color (Red 1) (Green 1) (Blue 1))
           s        = defaultSphere 1
           result   = lighting m s light position eyev normalv False
       it "result in color(0.1, 0.1, 0.1)" $ do
@@ -130,11 +130,11 @@ materialLighting =
          When result ← lighting(m, light, position, eyev, normalv, in_shadow)
          Then result = color(0.1, 0.1, 0.1) -}
     describe "Lighting with the surface in shadow" $ do
-      let position = point 0 0 0
+      let position = T.point 0 0 0
           m        = defaultMaterial
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           inShadow = True
           s        = defaultSphere 1
           result   = lighting m s light position eyev normalv inShadow
@@ -167,11 +167,11 @@ materialLighting =
                                        (Color (Red 0) (Green 0) (Blue 0)))}
           eyev     = vector 0 0 (-1)
           normalv  = vector 0 0 (-1)
-          light    = pointLight (point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
+          light    = pointLight (T.point 0 0 (-10)) (Color (Red 1) (Green 1) (Blue 1))
           inShadow = False
           s        = defaultSphere 1
-          result1  = lighting m s light (point 0.9 0 0) eyev normalv inShadow
-          result2  = lighting m s light (point 1.1 0 0) eyev normalv inShadow
+          result1  = lighting m s light (T.point 0.9 0 0) eyev normalv inShadow
+          result2  = lighting m s light (T.point 1.1 0 0) eyev normalv inShadow
       it "lighting(m, light, point(0.9, 0, 0), eyev, normalv, false) -> color(1, 1, 1)" $ do
         result1 `shouldBe` Color (Red 1) (Green 1) (Blue 1)
       it "lighting(m, light, point(1.1, 0, 0), eyev, normalv, false) -> color(0, 0, 0)" $ do

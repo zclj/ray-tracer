@@ -6,7 +6,7 @@ import Test.Tasty
 import Test.Tasty.Hspec as HS
 
 import Patterns as SUT
-import Tuples
+import Tuples as T
 import Shapes
 import Transformations
 
@@ -31,10 +31,10 @@ patterns =
            And pattern_at(pattern, point(0.75, 0, 0)) = color(0.25, 0.25, 0.25) -}
     describe "A gradient linearly interpolates between colors" $ do
       let p  = SUT.gradientPattern white black
-          c1 = SUT.patternAt p (point 0 0 0)
-          c2 = SUT.patternAt p (point 0.25 0 0)
-          c3 = SUT.patternAt p (point 0.5 0 0)
-          c4 = SUT.patternAt p (point 0.75 0 0)
+          c1 = SUT.patternAt p (T.point 0 0 0)
+          c2 = SUT.patternAt p (T.point 0.25 0 0)
+          c3 = SUT.patternAt p (T.point 0.5 0 0)
+          c4 = SUT.patternAt p (T.point 0.75 0 0)
       it "color at (0, 0, 0) = white" $ do
         c1 `shouldBe` white
       it "color at (0.25, 0, 0) = color(0.75, 0.75, 0.75)" $ do
@@ -52,10 +52,10 @@ patterns =
            And pattern_at(pattern, point(0.708, 0, 0.708)) = black -}
     describe "A ring should extend in both x and z" $ do
       let p  = SUT.ringPattern white black
-          c1 = SUT.patternAt p (point 0 0 0)
-          c2 = SUT.patternAt p (point 1 0 0)
-          c3 = SUT.patternAt p (point 0 0 1)
-          c4 = SUT.patternAt p (point 0.708 0 0.708)
+          c1 = SUT.patternAt p (T.point 0 0 0)
+          c2 = SUT.patternAt p (T.point 1 0 0)
+          c3 = SUT.patternAt p (T.point 0 0 1)
+          c4 = SUT.patternAt p (T.point 0.708 0 0.708)
       it "color at (0, 0, 0) = white" $ do
         c1 `shouldBe` white
       it "color at (1, 0, 0) = black" $ do
@@ -71,9 +71,9 @@ patterns =
            And pattern_at(pattern, point(1.01, 0, 0)) = black -}
     describe "Checkers should repeat in x" $ do
       let p  = SUT.checkersPattern white black
-          c1 = SUT.patternAt p (point 0 0 0)
-          c2 = SUT.patternAt p (point 0.99 0 0)
-          c3 = SUT.patternAt p (point 1.01 0 0)
+          c1 = SUT.patternAt p (T.point 0 0 0)
+          c2 = SUT.patternAt p (T.point 0.99 0 0)
+          c3 = SUT.patternAt p (T.point 1.01 0 0)
       it "color at (0, 0, 0) = white" $ do
         c1 `shouldBe` white
       it "color at (0.99, 0, 0) = white" $ do
@@ -87,9 +87,9 @@ patterns =
            And pattern_at(pattern, point(0, 1.01, 0)) = black -}
     describe "Checkers should repeat in y" $ do
       let p  = SUT.checkersPattern white black
-          c1 = SUT.patternAt p (point 0 0 0)
-          c2 = SUT.patternAt p (point 0 0.99 0)
-          c3 = SUT.patternAt p (point 0 1.01 0)
+          c1 = SUT.patternAt p (T.point 0 0 0)
+          c2 = SUT.patternAt p (T.point 0 0.99 0)
+          c3 = SUT.patternAt p (T.point 0 1.01 0)
       it "color at (0, 0, 0) = white" $ do
         c1 `shouldBe` white
       it "color at (0, 0.99, 0) = white" $ do
@@ -103,9 +103,9 @@ patterns =
            And pattern_at(pattern, point(0, 0, 1.01)) = black -}
     describe "Checkers should repeat in z" $ do
       let p  = SUT.checkersPattern white black
-          c1 = SUT.patternAt p (point 0 0 0)
-          c2 = SUT.patternAt p (point 0 0 0.99)
-          c3 = SUT.patternAt p (point 0 0 1.01)
+          c1 = SUT.patternAt p (T.point 0 0 0)
+          c2 = SUT.patternAt p (T.point 0 0 0.99)
+          c3 = SUT.patternAt p (T.point 0 0 1.01)
       it "color at (0, 0, 0) = white" $ do
         c1 `shouldBe` white
       it "color at (0, 0, 0.99) = white" $ do
@@ -126,7 +126,7 @@ patternTransformations =
       let s  = defaultSphere 1
           s' = s { Shapes.transform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
-          c  = patternAtShape p s' (point 1.5 0 0)
+          c  = patternAtShape p s' (T.point 1.5 0 0)
       it "color at point is white" $ do
         c `shouldBe` white
     {- Scenario: Stripes with a pattern transformation
@@ -139,7 +139,7 @@ patternTransformations =
       let s  = defaultSphere 1
           p  = SUT.stripePattern white black
           p' = p { patternTransform = scaling 2 2 2 }
-          c  = patternAtShape p' s (point 1.5 0 0)
+          c  = patternAtShape p' s (T.point 1.5 0 0)
       it "color at point is white" $ do
         c `shouldBe` white
     {- Scenario: Stripes with both an object and a pattern transformation
@@ -154,7 +154,7 @@ patternTransformations =
           s' = s { Shapes.transform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           p' = p { patternTransform = translation 0.5 2 2 }
-          c  = patternAtShape p' s' (point 2.5 0 0)
+          c  = patternAtShape p' s' (T.point 2.5 0 0)
       it "color at point is white" $ do
         c `shouldBe` white
 
@@ -179,11 +179,11 @@ patternBasics =
     describe "A stripe pattern is constant in y" $ do
       let p = SUT.stripePattern white black
       it "stripe_at(pattern, point(0, 0, 0)) = white" $ do
-        stripeAt p (point 0 0 0) `shouldBe` white
+        stripeAt p (T.point 0 0 0) `shouldBe` white
       it "stripe_at(pattern, point(0, 1, 0)) = white" $ do
-        stripeAt p (point 0 1 0) `shouldBe` white
+        stripeAt p (T.point 0 1 0) `shouldBe` white
       it "stripe_at(pattern, point(0, 2, 0)) = white" $ do
-        stripeAt p (point 0 2 0) `shouldBe` white
+        stripeAt p (T.point 0 2 0) `shouldBe` white
     {- Scenario: A stripe pattern is constant in z
          Given pattern ← stripe_pattern(white, black)
          Then stripe_at(pattern, point(0, 0, 0)) = white
@@ -192,11 +192,11 @@ patternBasics =
     describe "A stripe pattern is constant in z" $ do
       let p = SUT.stripePattern white black
       it "stripe_at(pattern, point(0, 0, 0)) = white" $ do
-        stripeAt p (point 0 0 0) `shouldBe` white
+        stripeAt p (T.point 0 0 0) `shouldBe` white
       it "stripe_at(pattern, point(0, 0, 1)) = white" $ do
-        stripeAt p (point 0 0 1) `shouldBe` white
+        stripeAt p (T.point 0 0 1) `shouldBe` white
       it "stripe_at(pattern, point(0, 0, 2)) = white" $ do
-        stripeAt p (point 0 0 2) `shouldBe` white
+        stripeAt p (T.point 0 0 2) `shouldBe` white
     {- Scenario: A stripe pattern alternates in x
          Given pattern ← stripe_pattern(white, black)
          Then stripe_at(pattern, point(0, 0, 0)) = white
@@ -208,14 +208,14 @@ patternBasics =
     describe "A stripe pattern alternates in x" $ do
       let p = SUT.stripePattern white black
       it "stripe_at(pattern, point(0, 0, 0)) = white" $ do
-        stripeAt p (point 0 0 0) `shouldBe` white
+        stripeAt p (T.point 0 0 0) `shouldBe` white
       it "stripe_at(pattern, point(0.9, 0, 0)) = white" $ do
-        stripeAt p (point 0.9 0 0) `shouldBe` white
+        stripeAt p (T.point 0.9 0 0) `shouldBe` white
       it "stripe_at(pattern, point(1, 0, 0)) = black" $ do
-        stripeAt p (point 1 0 0) `shouldBe` black
+        stripeAt p (T.point 1 0 0) `shouldBe` black
       it "stripe_at(pattern, point(-0.1, 0, 0)) = black" $ do
-        stripeAt p (point (-0.1) 0 0) `shouldBe` black
+        stripeAt p (T.point (-0.1) 0 0) `shouldBe` black
       it "stripe_at(pattern, point(-1, 0, 0)) = black" $ do
-        stripeAt p (point (-1) 0 0) `shouldBe` black
+        stripeAt p (T.point (-1) 0 0) `shouldBe` black
       it "stripe_at(pattern, point(-1.1, 0, 0)) = white" $ do
-        stripeAt p (point (-1.1) 0 0) `shouldBe` white
+        stripeAt p (T.point (-1.1) 0 0) `shouldBe` white

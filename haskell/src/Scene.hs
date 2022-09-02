@@ -5,7 +5,7 @@ module Scene
 import Shapes as S
 import Transformations
 import Materials as M
-import Tuples
+import Tuples as T
 import World
 import Lights
 import Camera as C
@@ -64,13 +64,13 @@ left = Sphere { S.id        = 6
                               , diffuse  = 0.7
                               , specular = 0.3 }}
 
-world = defaultWorld { light = pointLight (point (-10) 10 (-10))
+world = defaultWorld { light = pointLight (T.point (-10) 10 (-10))
                                (Color (Red 1) (Green 1) (Blue 1)) }
 
 camera = (makeCamera 1000 500 (pi/3)) { C.transform = viewTransform
-                                                      (point 0 1.5 (-5))
-                                                      (point 0 1 0)
-                                                      (point 0 1 0) }
+                                                      (T.point 0 1.5 (-5))
+                                                      (T.point 0 1 0)
+                                                      (T.point 0 1 0) }
 
 renderScene = render
               camera

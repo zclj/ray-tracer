@@ -1,6 +1,6 @@
 module ShadedSphere where
 
-import Tuples
+import Tuples as T
 import Canvas
 import Rays
 import Shapes
@@ -8,7 +8,7 @@ import Materials as Mat
 import Lights
 {- Cast rays on a sphere with shading -}
 
-rayOrigin = point 0 0 (-5)
+rayOrigin = T.point 0 0 (-5)
 
 wallZ = 10
 
@@ -29,7 +29,7 @@ toWorldY y = half - (pixelSize * fromIntegral y)
 processPixel :: Int -> Int -> Shape -> (Maybe Intersection, Ray)
 processPixel x y shape = let worldX   = toWorldX x
                              worldY   = toWorldY y
-                             position = point worldX worldY wallZ
+                             position = T.point worldX worldY wallZ
                              ray      = makeRay rayOrigin (norm (position `sub` rayOrigin))
                              xs       = localIntersect shape ray
                          in (hit xs, ray)
@@ -52,7 +52,7 @@ render = let emptyCanvas = makeCanvas (Width canvasPixels) (Height canvasPixels)
              sphere = (defaultSphere 1)
                       { material =
                           defaultMaterial { color = Color (Red 1) (Green 0.2) (Blue 1)}}
-             lightPos = point (-10) 10 (-10)
+             lightPos = T.point (-10) 10 (-10)
              lightColor = Color (Red 1) (Green 1) (Blue 1)
              light = pointLight lightPos lightColor
              pixels

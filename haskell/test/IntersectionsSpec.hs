@@ -5,7 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 import Rays
-import Tuples
+import Tuples as T
 import Transformations
 import Shapes as SUT
 import Materials
@@ -31,20 +31,20 @@ precompute =
            And comps.eyev = vector(0, 0, -1)
            And comps.normalv = vector(0, 0, -1) -}
     describe "Precomputing the state of an intersection" $ do
-      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           shape = defaultSphere 1
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r [i]
       it "computation t = i.t" $ do
-        cT comps `shouldBe` intersectionT i
+        t comps `shouldBe` intersectionT i
       it "computation object = i.object" $ do
-        cObject comps `shouldBe` intersectionObject i
+        object comps `shouldBe` intersectionObject i
       it "computation point = point(0, 0, -1)" $ do
-        cPoint comps `shouldBe` point 0 0 (-1)
+        SUT.point comps `shouldBe` T.point 0 0 (-1)
       it "computation eyev = vector(0, 0, -1)" $ do
-        cEyev comps `shouldBe` vector 0 0 (-1)
+        eyev comps `shouldBe` vector 0 0 (-1)
       it "computation normalv = vector(0, 0, -1)" $ do
-        cNormalv comps `shouldBe` vector 0 0 (-1)
+        normalv comps `shouldBe` vector 0 0 (-1)
     {- Scenario: The hit, when an intersection occurs on the outside
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And shape ← sphere()
@@ -52,12 +52,12 @@ precompute =
          When comps ← prepare_computations(i, r)
          Then comps.inside = false -}
     describe "The hit, when an intersection occurs on the outside" $ do
-      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           shape = defaultSphere 1
           i     = SUT.Intersection 4 shape
           comps = SUT.prepareComputations i r [i]
       it "comps.inside = false" $ do
-        cInside comps `shouldBe` False
+        inside comps `shouldBe` False
     {- Scenario: The hit, when an intersection occurs on the inside
          Given r ← ray(point(0, 0, 0), vector(0, 0, 1))
            And shape ← sphere()
@@ -69,18 +69,18 @@ precompute =
            # normal would have been (0, 0, 1), but is inverted!
            And comps.normalv = vector(0, 0, -1) -}
     describe "The hit, when an intersection occurs on the inside" $ do
-      let r     = makeRay (point 0 0 0) (vector 0 0 1)
+      let r     = makeRay (T.point 0 0 0) (vector 0 0 1)
           shape = defaultSphere 1
           i     = SUT.Intersection 1 shape
           comps = SUT.prepareComputations i r [i]
       it "computation point = point(0, 0, 1)" $ do
-        cPoint comps `shouldBe` point 0 0 1
+        SUT.point comps `shouldBe` T.point 0 0 1
       it "computation eyev = vector(0, 0, -1)" $ do
-        cEyev comps `shouldBe` vector 0 0 (-1)
+        eyev comps `shouldBe` vector 0 0 (-1)
       it "comps.inside = true" $ do
-        cInside comps `shouldBe` True
+        inside comps `shouldBe` True
       it "computation normalv = vector(0, 0, -1)" $ do
-        cNormalv comps `shouldBe` vector 0 0 (-1)
+        normalv comps `shouldBe` vector 0 0 (-1)
     {- Scenario: The hit should offset the point
          Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
            And shape ← sphere() with:
@@ -90,12 +90,12 @@ precompute =
          Then comps.over_point.z < -EPSILON/2
            And comps.point.z > comps.over_point.z -}
     describe "The hit should offset the point" $ do
-      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           shape = (defaultSphere 1) { SUT.transform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           comps = SUT.prepareComputations i r [i]
-          ze    = z (cOverPoint comps) < (-Tuples.epsilon/2)
-          pc    = z (cPoint comps) > z (cOverPoint comps)
+          ze    = z (overPoint comps) < (-T.epsilon/2)
+          pc    = z (SUT.point comps) > z (overPoint comps)
       it "comps.over_point.z < -EPSILON/2" $ do
         ze `shouldBe` True
       it "comps.point.z > comps.over_point.z" $ do
@@ -110,15 +110,15 @@ precompute =
          Then comps.under_point.z > EPSILON/2
            And comps.point.z < comps.under_point.z -}
     describe "The under point is offset below the surface" $ do
-      let r     = makeRay (point 0 0 (-5)) (vector 0 0 1)
+      let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           shape = (makeGlassSphere 1) { SUT.transform = translation 0 0 1 }
           i     = SUT.Intersection 5 shape
           xs    = [i]
           comps = SUT.prepareComputations i r xs
       it "comps.under_point.z > EPSILON/2" $ do
-        z (cUnderPoint comps) > (Tuples.epsilon/2) `shouldBe` True
+        z (underPoint comps) > (T.epsilon/2) `shouldBe` True
       it "comps.point.z < comps.under_point.z" $ do
-        z (cPoint comps) < z (cUnderPoint comps) `shouldBe` True
+        z (SUT.point comps) < z (underPoint comps) `shouldBe` True
     {- Scenario: Precomputing the reflection vector
          Given shape ← plane()
            And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))
@@ -127,11 +127,11 @@ precompute =
          Then comps.reflectv = vector(0, √2/2, √2/2) -}
     describe "Precomputing the reflection vector" $ do
       let p = defaultPlane 1
-          r = makeRay (point 0 1 (-1)) (vector 0 (-(sqrt 2)) (sqrt 2))
+          r = makeRay (T.point 0 1 (-1)) (vector 0 (-(sqrt 2)) (sqrt 2))
           i = Intersection (sqrt 2) p
           comps = SUT.prepareComputations i r [i]
       it "the reflection vector is computed" $ do
-        cReflectv comps `shouldBe` vector 0 (sqrt 2) (sqrt 2)
+        reflectv comps `shouldBe` vector 0 (sqrt 2) (sqrt 2)
     {- Scenario Outline: Finding n1 and n2 at various intersections
          Given A ← glass_sphere() with:
              | transform                 | scaling(2, 2, 2) |
@@ -167,7 +167,7 @@ precompute =
                    SUT.material  = m { refractiveIndex = 2.0 }}
           c' = c { SUT.transform = scaling 0 0 0.25,
                    SUT.material  = m { refractiveIndex = 2.5 }}
-          r  = makeRay (point 0 0 (-4)) (vector 0 0 1)
+          r  = makeRay (T.point 0 0 (-4)) (vector 0 0 1)
           xs = [ SUT.Intersection 2 a'   , SUT.Intersection 2.75 b'
                , SUT.Intersection 3.25 c', SUT.Intersection 4.75 b'
                , SUT.Intersection 5.25 c', SUT.Intersection 6 a']
@@ -178,17 +178,17 @@ precompute =
           c4 = SUT.prepareComputations (xs !! 4) r xs
           c5 = SUT.prepareComputations (xs !! 5) r xs
       it "Index 0, n1 1.0, n2 1.5" $ do
-        [cN1 c0, cN2 c0] `shouldBe` [1.0, 1.5]
+        [n1 c0, n2 c0] `shouldBe` [1.0, 1.5]
       it "Index 1, n1 1.5, n2 2.0" $ do
-        [cN1 c1, cN2 c1] `shouldBe` [1.5, 2.0]
+        [n1 c1, n2 c1] `shouldBe` [1.5, 2.0]
       it "Index 2, n1 2.0, n2 2.5" $ do
-        [cN1 c2, cN2 c2] `shouldBe` [2.0, 2.5]
+        [n1 c2, n2 c2] `shouldBe` [2.0, 2.5]
       it "Index 3, n1 2.5, n2 2.5" $ do
-        [cN1 c3, cN2 c3] `shouldBe` [2.5, 2.5]
+        [n1 c3, n2 c3] `shouldBe` [2.5, 2.5]
       it "Index 4, n1 2.5, n2 1.5" $ do
-        [cN1 c4, cN2 c4] `shouldBe` [2.5, 1.5]
+        [n1 c4, n2 c4] `shouldBe` [2.5, 1.5]
       it "Index 5, n1 1.5, n2 1.0" $ do
-        [cN1 c5, cN2 c5] `shouldBe` [1.5, 1.0]
+        [n1 c5, n2 c5] `shouldBe` [1.5, 1.0]
     {- Scenario: The Schlick approximation under total internal reflection
          Given shape ← glass_sphere()
            And r ← ray(point(0, 0, √2/2), vector(0, 1, 0))
@@ -198,7 +198,7 @@ precompute =
          Then reflectance = 1.0 -}
     describe "The Schlick approximation under total internal reflection" $ do
       let shape = makeGlassSphere 1
-          r     = makeRay (point 0 0 (sqrt 2/2)) (vector 0 1 0)
+          r     = makeRay (T.point 0 0 (sqrt 2/2)) (vector 0 1 0)
           xs    = [SUT.Intersection (-sqrt 2/2) shape, SUT.Intersection (sqrt 2/2) shape]
           comps = SUT.prepareComputations (xs !! 1) r xs
           reflectance = SUT.schlick comps
@@ -213,7 +213,7 @@ precompute =
          Then reflectance = 0.04 -}
     describe "The Schlick approximation with a perpendicular viewing angle" $ do
       let shape = makeGlassSphere 1
-          r     = makeRay (point 0 0 0) (vector 0 1 0)
+          r     = makeRay (T.point 0 0 0) (vector 0 1 0)
           xs    = [SUT.Intersection (-1) shape, SUT.Intersection 1 shape]
           comps = SUT.prepareComputations (xs !! 1) r xs
           reflectance = SUT.schlick comps
@@ -229,7 +229,7 @@ precompute =
            Then reflectance = 0.48873 -}
     describe "The Schlick approximation with small angle and n2 > n1" $ do
       let shape = makeGlassSphere 1
-          r     = makeRay (point 0 0.99 (-2)) (vector 0 0 1)
+          r     = makeRay (T.point 0 0.99 (-2)) (vector 0 0 1)
           xs    = [SUT.Intersection 1.8589 shape]
           comps = SUT.prepareComputations (head xs) r xs
           reflectance = SUT.schlick comps
