@@ -6,6 +6,8 @@ import Rays
 import Shapes
 import Materials as Mat
 import Lights
+import Types
+import Intersection
 {- Cast rays on a sphere with shading -}
 
 rayOrigin = T.point 0 0 (-5)

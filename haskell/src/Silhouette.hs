@@ -4,6 +4,8 @@ import Tuples as T
 import Canvas
 import Rays
 import Shapes
+import Types
+import Intersection
 {- Cast rays on a sphere to make out its silhouette -}
 
 rayOrigin = T.point 0 0 (-5)

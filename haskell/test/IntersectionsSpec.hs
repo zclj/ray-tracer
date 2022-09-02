@@ -7,8 +7,10 @@ import Test.Tasty.Hspec as HS
 import Rays
 import Tuples as T
 import Transformations
-import Shapes as SUT
+import Intersection as SUT
+import Types
 import Materials
+import Shapes
 
 intersectionsTests :: TestTree
 intersectionsTests = testGroup "Intersections Tests" [
@@ -33,14 +35,14 @@ precompute =
     describe "Precomputing the state of an intersection" $ do
       let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           shape = defaultSphere 1
-          i     = SUT.Intersection 4 shape
+          i     = Intersection 4 shape
           comps = SUT.prepareComputations i r [i]
       it "computation t = i.t" $ do
         t comps `shouldBe` intersectionT i
       it "computation object = i.object" $ do
         object comps `shouldBe` intersectionObject i
       it "computation point = point(0, 0, -1)" $ do
-        SUT.point comps `shouldBe` T.point 0 0 (-1)
+        Types.point comps `shouldBe` T.point 0 0 (-1)
       it "computation eyev = vector(0, 0, -1)" $ do
         eyev comps `shouldBe` vector 0 0 (-1)
       it "computation normalv = vector(0, 0, -1)" $ do
@@ -54,7 +56,7 @@ precompute =
     describe "The hit, when an intersection occurs on the outside" $ do
       let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           shape = defaultSphere 1
-          i     = SUT.Intersection 4 shape
+          i     = Intersection 4 shape
           comps = SUT.prepareComputations i r [i]
       it "comps.inside = false" $ do
         inside comps `shouldBe` False
@@ -71,10 +73,10 @@ precompute =
     describe "The hit, when an intersection occurs on the inside" $ do
       let r     = makeRay (T.point 0 0 0) (vector 0 0 1)
           shape = defaultSphere 1
-          i     = SUT.Intersection 1 shape
+          i     = Intersection 1 shape
           comps = SUT.prepareComputations i r [i]
       it "computation point = point(0, 0, 1)" $ do
-        SUT.point comps `shouldBe` T.point 0 0 1
+        Types.point comps `shouldBe` T.point 0 0 1
       it "computation eyev = vector(0, 0, -1)" $ do
         eyev comps `shouldBe` vector 0 0 (-1)
       it "comps.inside = true" $ do
@@ -91,11 +93,11 @@ precompute =
            And comps.point.z > comps.over_point.z -}
     describe "The hit should offset the point" $ do
       let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
-          shape = (defaultSphere 1) { SUT.transform = translation 0 0 1 }
-          i     = SUT.Intersection 5 shape
+          shape = (defaultSphere 1) { Types.transform = translation 0 0 1 }
+          i     = Intersection 5 shape
           comps = SUT.prepareComputations i r [i]
           ze    = z (overPoint comps) < (-T.epsilon/2)
-          pc    = z (SUT.point comps) > z (overPoint comps)
+          pc    = z (Types.point comps) > z (overPoint comps)
       it "comps.over_point.z < -EPSILON/2" $ do
         ze `shouldBe` True
       it "comps.point.z > comps.over_point.z" $ do
@@ -111,14 +113,14 @@ precompute =
            And comps.point.z < comps.under_point.z -}
     describe "The under point is offset below the surface" $ do
       let r     = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
-          shape = (makeGlassSphere 1) { SUT.transform = translation 0 0 1 }
-          i     = SUT.Intersection 5 shape
+          shape = (makeGlassSphere 1) { Types.transform = translation 0 0 1 }
+          i     = Intersection 5 shape
           xs    = [i]
           comps = SUT.prepareComputations i r xs
       it "comps.under_point.z > EPSILON/2" $ do
         z (underPoint comps) > (T.epsilon/2) `shouldBe` True
       it "comps.point.z < comps.under_point.z" $ do
-        z (SUT.point comps) < z (underPoint comps) `shouldBe` True
+        z (Types.point comps) < z (underPoint comps) `shouldBe` True
     {- Scenario: Precomputing the reflection vector
          Given shape ← plane()
            And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))
@@ -160,17 +162,17 @@ precompute =
       let a  = makeGlassSphere 1
           b  = makeGlassSphere 2
           c  = makeGlassSphere 3
-          m  = SUT.material a
-          a' = a { SUT.transform = scaling 2 2 2,
-                   SUT.material  = m { refractiveIndex = 1.5 }}
-          b' = b { SUT.transform = scaling 0 0 (-0.25),
-                   SUT.material  = m { refractiveIndex = 2.0 }}
-          c' = c { SUT.transform = scaling 0 0 0.25,
-                   SUT.material  = m { refractiveIndex = 2.5 }}
+          m  = Types.material a
+          a' = a { Types.transform = scaling 2 2 2,
+                   Types.material  = m { refractiveIndex = 1.5 }}
+          b' = b { Types.transform = scaling 0 0 (-0.25),
+                   Types.material  = m { refractiveIndex = 2.0 }}
+          c' = c { Types.transform = scaling 0 0 0.25,
+                   Types.material  = m { refractiveIndex = 2.5 }}
           r  = makeRay (T.point 0 0 (-4)) (vector 0 0 1)
-          xs = [ SUT.Intersection 2 a'   , SUT.Intersection 2.75 b'
-               , SUT.Intersection 3.25 c', SUT.Intersection 4.75 b'
-               , SUT.Intersection 5.25 c', SUT.Intersection 6 a']
+          xs = [ Intersection 2 a'   , Intersection 2.75 b'
+               , Intersection 3.25 c', Intersection 4.75 b'
+               , Intersection 5.25 c', Intersection 6 a']
           c0 = SUT.prepareComputations (head xs) r xs
           c1 = SUT.prepareComputations (xs !! 1) r xs
           c2 = SUT.prepareComputations (xs !! 2) r xs
@@ -199,7 +201,7 @@ precompute =
     describe "The Schlick approximation under total internal reflection" $ do
       let shape = makeGlassSphere 1
           r     = makeRay (T.point 0 0 (sqrt 2/2)) (vector 0 1 0)
-          xs    = [SUT.Intersection (-sqrt 2/2) shape, SUT.Intersection (sqrt 2/2) shape]
+          xs    = [Intersection (-sqrt 2/2) shape, Intersection (sqrt 2/2) shape]
           comps = SUT.prepareComputations (xs !! 1) r xs
           reflectance = SUT.schlick comps
       it "schlick reflectance is 1.0" $ do
@@ -214,7 +216,7 @@ precompute =
     describe "The Schlick approximation with a perpendicular viewing angle" $ do
       let shape = makeGlassSphere 1
           r     = makeRay (T.point 0 0 0) (vector 0 1 0)
-          xs    = [SUT.Intersection (-1) shape, SUT.Intersection 1 shape]
+          xs    = [Intersection (-1) shape, Intersection 1 shape]
           comps = SUT.prepareComputations (xs !! 1) r xs
           reflectance = SUT.schlick comps
       it "schlick reflectance is 0.04" $ do
@@ -230,7 +232,7 @@ precompute =
     describe "The Schlick approximation with small angle and n2 > n1" $ do
       let shape = makeGlassSphere 1
           r     = makeRay (T.point 0 0.99 (-2)) (vector 0 0 1)
-          xs    = [SUT.Intersection 1.8589 shape]
+          xs    = [Intersection 1.8589 shape]
           comps = SUT.prepareComputations (head xs) r xs
           reflectance = SUT.schlick comps
       it "schlick reflectance is 0.48873" $ do
@@ -247,7 +249,7 @@ intersections =
            And i.object = s -}
     describe "An intersection encapsulates t and object" $ do
       let s = defaultSphere 1
-          i = SUT.Intersection 3.5 s
+          i = Intersection 3.5 s
       it "t of intersection is 3.5" $ do
         intersectionT i `shouldBe` 3.5
       it "object is the sphere" $ do
@@ -262,8 +264,8 @@ intersections =
            And xs[1].t = 2 -}
     describe "Aggregating intersections" $ do
       let s = defaultSphere 1
-          i1 = SUT.Intersection 1 s
-          i2 = SUT.Intersection 2 s
+          i1 = Intersection 1 s
+          i2 = Intersection 2 s
           -- Feature says to use a type 'Intersections' but it seems to be just a
           -- list for now. Change if needed
           xs = [i1, i2]
@@ -286,8 +288,8 @@ hits =
          Then i = i1 -}
     describe "The hit, when all intersections have positive t" $ do
       let s  = defaultSphere 1
-          i1 = SUT.Intersection 1 s
-          i2 = SUT.Intersection 2 s
+          i1 = Intersection 1 s
+          i2 = Intersection 2 s
           xs = [i1, i2]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
@@ -301,8 +303,8 @@ hits =
          Then i = i2 -}
     describe "The hit, when some intersections have negative t" $ do
       let s  = defaultSphere 1
-          i1 = SUT.Intersection (-1) s
-          i2 = SUT.Intersection 1 s
+          i1 = Intersection (-1) s
+          i2 = Intersection 1 s
           xs = [i2, i1]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
@@ -316,8 +318,8 @@ hits =
          Then i is nothing -}
     describe "The hit, when all intersections have negative t" $ do
       let s  = defaultSphere 1
-          i1 = SUT.Intersection (-2) s
-          i2 = SUT.Intersection (-1) s
+          i1 = Intersection (-2) s
+          i2 = Intersection (-1) s
           xs = [i2, i1]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
@@ -333,10 +335,10 @@ hits =
          Then i = i4 -}
     describe "The hit is always the lowest nonnegative intersection" $ do
       let s  = defaultSphere 1
-          i1 = SUT.Intersection 5 s
-          i2 = SUT.Intersection 7 s
-          i3 = SUT.Intersection (-3) s
-          i4 = SUT.Intersection 2 s
+          i1 = Intersection 5 s
+          i2 = Intersection 7 s
+          i3 = Intersection (-3) s
+          i4 = Intersection 2 s
           xs = [i1, i2, i3, i4]
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do

@@ -8,6 +8,7 @@ import Tuples
 import Materials
 import Patterns
 import Shapes
+import Types
 
 data Light = Light { position  :: Tuple
                    , intensity :: Color}

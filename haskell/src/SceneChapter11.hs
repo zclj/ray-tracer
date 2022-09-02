@@ -11,6 +11,7 @@ import Camera as C
 import Matrices
 import Patterns
 import Shapes as S
+import Types
 
 ----------------------------------------
 -- The Camera
@@ -50,9 +51,9 @@ wallMaterial = defaultMaterial
 -- the checkered floor
 
 floorPlane =
-  Plane { S.id        = 1
-        , S.transform = rotationY 0.31415
-        , S.material  =
+  Plane { Types.id        = 1
+        , Types.transform = rotationY 0.31415
+        , Types.material  =
             defaultMaterial
             { materialPattern = Just (checkersPattern
                                        (Color (Red 0.35) (Green 0.35) (Blue 0.35))
@@ -61,122 +62,122 @@ floorPlane =
             , reflective      = 0.4 }}
 
 ceilingPlane =
-  Plane { S.id        = 2
-        , S.transform = translation 0 5 0
-        , S.material  = defaultMaterial
-                        { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
-                        , ambient    = 0.3
-                        , specular   = 0 }}
+  Plane { Types.id        = 2
+        , Types.transform = translation 0 5 0
+        , Types.material  = defaultMaterial
+                            { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
+                            , ambient    = 0.3
+                            , specular   = 0 }}
 
-westWall =  Plane { S.id        = 3
-                  , S.transform = T.transform
-                                  [ rotationY (pi/2)
-                                  , rotationZ (pi/2)
-                                  , translation (-5) 0 0]
-                  , S.material  = wallMaterial }
+westWall =  Plane { Types.id        = 3
+                  , Types.transform = T.transform
+                                      [ rotationY (pi/2)
+                                      , rotationZ (pi/2)
+                                      , translation (-5) 0 0]
+                  , Types.material  = wallMaterial }
 
-eastWall =  Plane { S.id        = 4
-                  , S.transform = T.transform [ rotationY (pi/2)
-                                              , rotationZ (pi/2)
-                                              , translation 5 0 0]
-                  , S.material  = wallMaterial }
+eastWall =  Plane { Types.id        = 4
+                  , Types.transform = T.transform [ rotationY (pi/2)
+                                                  , rotationZ (pi/2)
+                                                  , translation 5 0 0]
+                  , Types.material  = wallMaterial }
 
-northWall =  Plane { S.id = 5
-                   , S.transform = T.transform
-                                   [ rotationX (pi/2)
-                                   , translation 0 0 5]
-                   , S.material  = wallMaterial }
+northWall =  Plane { Types.id = 5
+                   , Types.transform = T.transform
+                                       [ rotationX (pi/2)
+                                       , translation 0 0 5]
+                   , Types.material  = wallMaterial }
 
-southWall =  Plane { S.id = 6
-                   , S.transform = T.transform
-                                   [ rotationX (pi/2)
-                                   , translation 0 0 (-5)]
-                   , S.material  = wallMaterial }
+southWall =  Plane { Types.id = 6
+                   , Types.transform = T.transform
+                                       [ rotationX (pi/2)
+                                       , translation 0 0 (-5)]
+                   , Types.material  = wallMaterial }
 
 ----------------------------------------
 -- Background balls
 ----------------------------------------
 
-ball1 = Sphere { S.id         = 7
-               , radius       = 1.0
-               , S.transform  = T.transform
-                                [ scaling 0.4 0.4 0.4
-                                , translation 4.6 0.4 1]
-               , S.material   = defaultMaterial
-                                { color     = Color (Red 0.8) (Green 0.5) (Blue 0.3)
-                                , shininess = 50 }}
+ball1 = Sphere { Types.id         = 7
+               , radius           = 1.0
+               , Types.transform  = T.transform
+                                    [ scaling 0.4 0.4 0.4
+                                    , translation 4.6 0.4 1]
+               , Types.material   = defaultMaterial
+                                    { color     = Color (Red 0.8) (Green 0.5) (Blue 0.3)
+                                    , shininess = 50 }}
 
-ball2 = Sphere { S.id        = 8
-               , radius      = 1.0
-               , S.transform = T.transform
-                               [ scaling 0.3 0.3 0.3
-                               , translation 4.7 0.3 0.4]
-               , S.material  = defaultMaterial
-                               { color     = Color (Red 0.9) (Green 0.4) (Blue 0.5)
-                               , shininess = 50 }}
+ball2 = Sphere { Types.id        = 8
+               , radius          = 1.0
+               , Types.transform = T.transform
+                                   [ scaling 0.3 0.3 0.3
+                                   , translation 4.7 0.3 0.4]
+               , Types.material  = defaultMaterial
+                                   { color     = Color (Red 0.9) (Green 0.4) (Blue 0.5)
+                                   , shininess = 50 }}
 
-ball3 = Sphere { S.id        = 9
-               , radius      = 1.0
-               , S.transform = T.transform
-                               [ scaling 0.5 0.5 0.5
-                               , translation (-1) 0.5 4.5]
-               , S.material  = defaultMaterial
-                               { color     = Color (Red 0.4) (Green 0.9) (Blue 0.6)
-                               , shininess = 50 }}
+ball3 = Sphere { Types.id        = 9
+               , radius          = 1.0
+               , Types.transform = T.transform
+                                   [ scaling 0.5 0.5 0.5
+                                   , translation (-1) 0.5 4.5]
+               , Types.material  = defaultMaterial
+                                   { color     = Color (Red 0.4) (Green 0.9) (Blue 0.6)
+                                   , shininess = 50 }}
 
-ball4 = Sphere { S.id        = 10
-               , radius      = 1.0
-               , S.transform = T.transform
-                               [ scaling 0.3 0.3 0.3
-                               , translation (-1.7) 0.3 4.7]
-               , S.material  = defaultMaterial
-                               { color     = Color (Red 0.4) (Green 0.6) (Blue 0.9)
-                               , shininess = 50 }}
+ball4 = Sphere { Types.id        = 10
+               , radius          = 1.0
+               , Types.transform = T.transform
+                                   [ scaling 0.3 0.3 0.3
+                                   , translation (-1.7) 0.3 4.7]
+               , Types.material  = defaultMaterial
+                                   { color     = Color (Red 0.4) (Green 0.6) (Blue 0.9)
+                                   , shininess = 50 }}
 
 ----------------------------------------
 -- Foreground balls
 ----------------------------------------
 
 redSphere =
-  Sphere { S.id        = 11
-         , radius      = 1.0
-         , S.transform = translation (-0.6) 1 0.6
-         , S.material  = defaultMaterial
-                         { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
-                         , specular  = 0.4
-                         , shininess = 5 }}
+  Sphere { Types.id        = 11
+         , radius          = 1.0
+         , Types.transform = translation (-0.6) 1 0.6
+         , Types.material  = defaultMaterial
+                             { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
+                             , specular  = 0.4
+                             , shininess = 5 }}
 
 blueGlassSphere =
-  Sphere { S.id        = 12
-         , radius      = 1.0
-         , S.transform = T.transform
-                         [ scaling 0.7 0.7 0.7
-                         , translation 0.6 0.7 (-0.6)]
-         , S.material  = defaultMaterial
-                         { color           = Color (Red 0) (Green 0) (Blue 0.2)
-                         , ambient         = 0
-                         , diffuse         = 0.4
-                         , specular        = 0.9
-                         , shininess       = 300
-                         , reflective      = 0.9
-                         , transparency    = 0.9
-                         , refractiveIndex = 1.5 }}
+  Sphere { Types.id        = 12
+         , radius          = 1.0
+         , Types.transform = T.transform
+                             [ scaling 0.7 0.7 0.7
+                             , translation 0.6 0.7 (-0.6)]
+         , Types.material  = defaultMaterial
+                             { color           = Color (Red 0) (Green 0) (Blue 0.2)
+                             , ambient         = 0
+                             , diffuse         = 0.4
+                             , specular        = 0.9
+                             , shininess       = 300
+                             , reflective      = 0.9
+                             , transparency    = 0.9
+                             , refractiveIndex = 1.5 }}
 
 greenGlassSphere =
-  Sphere { S.id        = 13
-         , radius      = 1.0
-         , S.transform = T.transform
-                         [ scaling 0.5 0.5 0.5
-                         , translation (-0.7) 0.5 (-0.8)]
-         , S.material  = defaultMaterial
-                         { color           = Color (Red 0) (Green 0.2) (Blue 0)
-                         , ambient         = 0
-                         , diffuse         = 0.4
-                         , specular        = 0.9
-                         , shininess       = 300
-                         , reflective      = 0.9
-                         , transparency    = 0.9
-                         , refractiveIndex = 1.5 }}
+  Sphere { Types.id        = 13
+         , radius          = 1.0
+         , Types.transform = T.transform
+                             [ scaling 0.5 0.5 0.5
+                             , translation (-0.7) 0.5 (-0.8)]
+         , Types.material  = defaultMaterial
+                             { color           = Color (Red 0) (Green 0.2) (Blue 0)
+                             , ambient         = 0
+                             , diffuse         = 0.4
+                             , specular        = 0.9
+                             , shininess       = 300
+                             , reflective      = 0.9
+                             , transparency    = 0.9
+                             , refractiveIndex = 1.5 }}
 
 ----------------------------------------
 renderSceneChapter11 =

@@ -17,9 +17,11 @@ import Tuples as T
 import Rays as R
 import Lights
 import Shapes
+import Types
+import Intersection
 
-data World = World { shapes       :: [Shape]
-                   , light         :: Light}
+data World = World { shapes :: [Shape]
+                   , light  :: Light}
                deriving(Show)
 
 defaultWorld :: World
@@ -35,7 +37,7 @@ defaultWorld = let defaultSphere1 = (defaultSphere 1)
                                       , refractiveIndex = 1.0
                                       , materialPattern   = Nothing}}
                    defaultSphere2 = (defaultSphere 2)
-                                    { Shapes.transform = scaling 0.5 0.5 0.5 }
+                                    { Types.transform = scaling 0.5 0.5 0.5 }
                    defaultLight   = pointLight
                                     (T.point (-10) 10 (-10))
                                     (Color (Red 1) (Green 1) (Blue 1))

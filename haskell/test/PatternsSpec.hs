@@ -9,6 +9,7 @@ import Patterns as SUT
 import Tuples as T
 import Shapes
 import Transformations
+import Types
 
 patternTests :: TestTree
 patternTests = testGroup "Pattern Tests" [
@@ -124,7 +125,7 @@ patternTransformations =
          Then c = white -}
     describe "Stripes with an object transformation" $ do
       let s  = defaultSphere 1
-          s' = s { Shapes.transform = scaling 2 2 2 }
+          s' = s { Types.transform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           c  = patternAtShape p s' (T.point 1.5 0 0)
       it "color at point is white" $ do
@@ -151,7 +152,7 @@ patternTransformations =
          Then c = white -}
     describe "Stripes with both an object and a pattern transformation" $ do
       let s  = defaultSphere 1
-          s' = s { Shapes.transform = scaling 2 2 2 }
+          s' = s { Types.transform = scaling 2 2 2 }
           p  = SUT.stripePattern white black
           p' = p { patternTransform = translation 0.5 2 2 }
           c  = patternAtShape p' s' (T.point 2.5 0 0)

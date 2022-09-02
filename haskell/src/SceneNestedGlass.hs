@@ -11,6 +11,7 @@ import Camera as C
 import Matrices
 import Patterns
 import Shapes as S
+import Types
 
 ----------------------------------------
 -- The Camera
@@ -31,10 +32,10 @@ lightSource = pointLight
 
 -- wall
 wall =
-  Plane { S.id = 1
-        , S.transform = T.transform [ rotationX (pi/2)
-                                    , translation 0 0 10]
-        , S.material  =
+  Plane { Types.id        = 1
+        , Types.transform = T.transform [ rotationX (pi/2)
+                                        , translation 0 0 10]
+        , Types.material  =
             defaultMaterial
             { materialPattern = Just (checkersPattern
                                        (Color (Red 0.15) (Green 0.15) (Blue 0.15))
@@ -44,10 +45,10 @@ wall =
             , diffuse  = 0.2 }}
 
 -- glass ball
-glassBall = Sphere { S.id        = 2
-                   , S.transform = identity
-                   , radius      = 1.0
-                   , S.material  =
+glassBall = Sphere { Types.id        = 2
+                   , Types.transform = identity
+                   , radius          = 1.0
+                   , Types.material  =
                        defaultMaterial
                        { color           = Color (Red 1) (Green 1) (Blue 1)
                        , ambient         = 0
@@ -59,19 +60,19 @@ glassBall = Sphere { S.id        = 2
                        , refractiveIndex = 1.5 }}
 
 -- hollow center
-hollowBall = Sphere { S.id        = 3
-                    , S.transform = scaling 0.5 0.5 0.5
-                    , radius      = 1.0
-                    , S.material  =
-                      defaultMaterial
-                      { color     = Color (Red 1) (Green 1) (Blue 1)
-                      , ambient         = 0
-                      , diffuse         = 0
-                      , specular        = 0.9
-                      , shininess       = 300
-                      , reflective      = 0.9
-                      , transparency    = 0.9
-                      , refractiveIndex = 1.0000034 }}
+hollowBall = Sphere { Types.id        = 3
+                    , Types.transform = scaling 0.5 0.5 0.5
+                    , radius          = 1.0
+                    , Types.material  =
+                        defaultMaterial
+                        { color     = Color (Red 1) (Green 1) (Blue 1)
+                        , ambient         = 0
+                        , diffuse         = 0
+                        , specular        = 0.9
+                        , shininess       = 300
+                        , reflective      = 0.9
+                        , transparency    = 0.9
+                        , refractiveIndex = 1.0000034 }}
 
 ----------------------------------------
 renderNestedGlass =

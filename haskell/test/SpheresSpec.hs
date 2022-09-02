@@ -11,6 +11,7 @@ import Matrices
 import Transformations
 import Materials as M
 import Shapes
+import Types
 
 spheresTests :: TestTree
 spheresTests = testGroup "Spheres Tests" [
@@ -53,7 +54,7 @@ sphereMaterials =
     describe "A helper for producing a sphere with a glassy material" $ do
       let s = makeGlassSphere 1
       it "transform is identity matrix" $ do
-        Shapes.transform s `shouldBe` identity
+        Types.transform s `shouldBe` identity
       it "material is transparent (1.0)" $ do
         transparency (material s) `shouldBe` 1.0
       it "refractive indes is 1.5" $ do
@@ -114,7 +115,7 @@ sphereNormals =
          Then n = vector(0, 0.70711, -0.70711) -}
     describe "Computing the normal on a translated sphere" $ do
       let s  = defaultSphere 1
-          s' = s { Shapes.transform = (translation 0 1 0) }
+          s' = s { Types.transform = (translation 0 1 0) }
           n  = objectNormalAt s' (T.point 0 1.70711 (-0.70711))
       it "is the vector(0, 0.70711, -0.70711)" $ do
         n `shouldBe` vector 0 0.70711 (-0.70711)
@@ -127,7 +128,7 @@ sphereNormals =
     describe "Computing the normal on a transformed sphere" $ do
       let s = defaultSphere 1
           m = scaling 1 0.5 1 `Matrices.mul` rotationZ(pi/5)
-          s' = s { Shapes.transform = m }
+          s' = s { Types.transform = m }
           n = objectNormalAt s' (T.point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
       it "is the vector(0, 0.97014, -0.24254)" $ do
         n `shouldBe` vector 0 0.97014 (-0.24254)
@@ -141,7 +142,7 @@ sphereTransformation =
     describe "A sphere's default transformation" $ do
       let s = defaultSphere 1
       it "is the identity matrix" $ do
-        Shapes.transform s `shouldBe` identity
+        Types.transform s `shouldBe` identity
     {- Scenario: Changing a sphere's transformation
          Given s ← sphere()
            And t ← translation(2, 3, 4)
@@ -150,9 +151,9 @@ sphereTransformation =
     describe "Changing a sphere's transformation" $ do
       let s  = defaultSphere 1
           t  = translation 2 3 4
-          s' = s { Shapes.transform = t }
+          s' = s { Types.transform = t }
       it "result in a new sphere with the new transformation" $ do
-        Shapes.transform s' `shouldBe` t
+        Types.transform s' `shouldBe` t
 
 sphereIntersections :: Spec
 sphereIntersections =
@@ -265,7 +266,7 @@ sphereIntersections =
       let r          = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s          = defaultSphere 1
           m          = scaling 2 2 2
-          s'         = s { Shapes.transform = m }
+          s'         = s { Types.transform = m }
           xs@(x:y:_) = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 2
@@ -283,7 +284,7 @@ sphereIntersections =
       let r  = makeRay (T.point 0 0 (-5)) (vector 0 0 1)
           s  = defaultSphere 1
           m  = translation 5 0 0
-          s' = s { Shapes.transform = m }
+          s' = s { Types.transform = m }
           xs = [s'] `intersectShapes` r
       it "there are two intersections" $ do
         length xs `shouldBe` 0

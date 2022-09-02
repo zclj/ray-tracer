@@ -11,19 +11,7 @@ module Patterns
 
 import Tuples
 import Matrices
-
-data PatternShape = Stripes
-                  | Gradient
-                  | Ring
-                  | Checkers
-                  | Point
-                  deriving(Eq, Show, Ord)
-
-data Pattern = Pattern { a :: Color
-                       , b :: Color
-                       , patternTransform :: Matrix
-                       , patternShape :: PatternShape}
-               deriving(Eq, Show, Ord)
+import Types
 
 pointPattern :: Pattern
 pointPattern = Pattern (Color (Red 0) (Green 0) (Blue 0)) (Color (Red 0) (Green 0) (Blue 0)) identity Point

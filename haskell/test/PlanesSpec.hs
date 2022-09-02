@@ -8,6 +8,7 @@ import Test.Tasty.Hspec as HS
 import Shapes
 import Tuples as T
 import Rays
+import Types
 
 planesTests :: TestTree
 planesTests = testGroup "Planes Tests" [

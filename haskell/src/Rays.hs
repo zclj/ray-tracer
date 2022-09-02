@@ -2,15 +2,12 @@ module Rays
   ( makeRay
   , Ray(origin, direction)
   , position
-  , transform
+  , Rays.transform
   ) where
 
 import Tuples
 import Matrices (Matrix (..), mulT)
-
-data Ray = Ray { origin :: Tuple
-               , direction :: Tuple }
-           deriving (Eq, Show)
+import Types
 
 makeRay :: Tuple -> Tuple -> Ray
 makeRay p v

@@ -5,17 +5,7 @@ module Materials
 
 import Tuples
 import Patterns
-
-data Material = Material { color           :: Color
-                         , ambient         :: Double
-                         , diffuse         :: Double
-                         , specular        :: Double
-                         , shininess       :: Double
-                         , reflective      :: Double
-                         , transparency    :: Double
-                         , refractiveIndex :: Double
-                         , materialPattern :: Maybe Pattern}
-                deriving (Show, Eq, Ord)
+import Types
 
 defaultMaterial :: Material
 defaultMaterial =

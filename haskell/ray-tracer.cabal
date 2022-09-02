@@ -28,6 +28,7 @@ library
       Camera
       Canvas
       Clock
+      Intersection
       Lib
       Lights
       Materials
@@ -46,6 +47,7 @@ library
       Silhouette
       Transformations
       Tuples
+      Types
       Utils
       Vector
       World
