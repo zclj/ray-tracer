@@ -166,8 +166,15 @@ impl Vector {
         Vector::new(self.x / m, self.y / m, self.z / m)
     }
 
-    fn dot(&self, rhs: Vector) -> f32 {
+    fn dot(&self, rhs: &Vector) -> f32 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    }
+
+    fn cross(&self, rhs: &Vector) -> Vector {
+        Vector::new(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x)
     }
 }
 
@@ -491,6 +498,20 @@ mod tests {
         let a = Vector::new(1.0, 2.0, 3.0);
         let b = Vector::new(2.0, 3.0, 4.0);
 
-        assert_eq!(a.dot(b), 20.0);
+        assert_eq!(a.dot(&b), 20.0);
+    }
+
+    // Scenario: The cross product of two vectors
+    // Given a ← vector(1, 2, 3)
+    //   And b ← vector(2, 3, 4)
+    // Then cross(a, b) = vector(-1, 2, -1)
+    //   And cross(b, a) = vector(1, -2, 1)
+    #[test]
+    fn the_cross_product_of_two_vectors() {
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(2.0, 3.0, 4.0);
+
+        assert_eq!(a.cross(&b), Vector::new(-1.0, 2.0, -1.0));
+        assert_eq!(b.cross(&a), Vector::new(1.0, -2.0, 1.0));
     }
 }
