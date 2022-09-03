@@ -174,7 +174,8 @@ impl Vector {
         Vector::new(
             self.y * rhs.z - self.z * rhs.y,
             self.z * rhs.x - self.x * rhs.z,
-            self.x * rhs.y - self.y * rhs.x)
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 }
 
