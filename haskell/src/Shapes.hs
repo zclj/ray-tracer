@@ -5,7 +5,6 @@ import Materials
 import Tuples as T
 import Rays as R
 import Data.List (sort, find)
-import Patterns
 import Types
 
 ----------------------------------------
@@ -74,37 +73,6 @@ refractive (i:is) shapes hit (n1, n2) =
   in if hit == i
      then (refractiveIndexValue shapes, refractiveIndexValue shapes')
      else refractive is shapes' hit (n1, n2)
-
--- prepareComputations :: Intersection -> Ray -> [Intersection] -> Computation
--- prepareComputations i r xs =
---   let it               = intersectionT i
---       po               = position r it
---       obj              = intersectionObject i
---       normalv          = objectNormalAt obj po
---       eyev             = neg (direction r)
---       (inside, normal) = if (normalv `dot` eyev) < 0
---                          then (True, neg normalv)
---                          else (False, normalv)
---       (n1, n2)         = refractive xs [] i (0.0, 0.0)
---   in Computation { t          = it
---                  , object     = obj
---                  , Types.point = po
---                  , eyev       = eyev
---                  , normalv    = normal
---                  , inside     = inside
---                  , overPoint  = po `add` (normal `T.mul` epsilon)
---                  , underPoint = po `sub` (normal `T.mul` epsilon)
---                  , reflectv   = reflect (direction r) normal
---                  , n1         = n1
---                  , n2         = n2 }
-
-
--- data Intersection = Intersection
---                     { intersectionT      :: Double
---                     , intersectionObject :: Shape}
---                   deriving (Show, Eq, Ord)
-
-
 
 patternAtShape :: Pattern -> Shape -> Tuple -> Color
 patternAtShape p shape worldPoint =

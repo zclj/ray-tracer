@@ -10,7 +10,6 @@ import World
 import Lights
 import Camera as C
 import Matrices
-import Patterns
 import Types
 
 -- Planes

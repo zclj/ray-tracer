@@ -13,7 +13,6 @@ import Shapes
 import Tuples as T
 import Rays
 import World as SUT
-import Patterns
 import Types
 import Intersection
 

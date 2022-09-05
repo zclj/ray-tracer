@@ -5,7 +5,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Test.Tasty
 import Test.Tasty.Hspec as HS
 
-import Patterns as SUT
+import Materials as SUT
 import Tuples as T
 import Shapes
 import Transformations

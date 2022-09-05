@@ -8,6 +8,7 @@ import Test.Tasty.Hspec as HS
 import Matrices
 import Materials as M
 import Shapes as SUT
+import Types
 
 data TestShape = TestShape { id :: Int
                            , transform :: Matrix

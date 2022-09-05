@@ -6,7 +6,6 @@ module Lights
 
 import Tuples
 import Materials
-import Patterns
 import Shapes
 import Types
 

@@ -8,8 +8,8 @@ import Test.Tasty.Hspec as HS
 import Tuples as T
 import Lights
 import Materials as SUT
-import Patterns
 import Shapes
+import Types
 
 materialTests :: TestTree
 materialTests = testGroup "Material Tests" [

@@ -9,7 +9,6 @@ import World
 import Lights
 import Camera as C
 import Matrices
-import Patterns
 import Shapes as S
 import Types
 
