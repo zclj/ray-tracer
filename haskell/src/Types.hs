@@ -11,6 +11,9 @@ data Shape = Sphere { id        :: Int
            | Plane { id        :: Int
                    , transform :: Matrix
                    , material  :: Material }
+           | Cube { id        :: Int
+                  , transform :: Matrix
+                  , material  :: Material }
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

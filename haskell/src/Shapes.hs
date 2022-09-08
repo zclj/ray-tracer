@@ -21,6 +21,9 @@ makeGlassSphere id =
 defaultPlane :: Int -> Shape
 defaultPlane id = Plane id identity defaultMaterial
 
+defaultCube :: Int -> Shape
+defaultCube id = Cube id identity defaultMaterial
+
 ----------------------------------------
 localNormalAt :: Shape -> Tuple -> Tuple
 localNormalAt Sphere {} objectPoint = objectPoint `sub` T.point 0 0 0
@@ -42,6 +45,21 @@ localIntersect p@Plane {} r =
   then []
   else let t = -y (origin r) / y (direction r)
        in [Intersection t p]
+localIntersect c@Cube {} r =
+  let (xtmin, xtmax) = checkAxis (x (origin r)) (x (direction r))
+      (ytmin, ytmax) = checkAxis (y (origin r)) (y (direction r))
+      (ztmin, ztmax) = checkAxis (z (origin r)) (z (direction r))
+      tmin = maximum [xtmin, ytmin, ztmin]
+      tmax = minimum [xtmax, ytmax, ztmax]
+  in [Intersection tmin c, Intersection tmax c]
+
+checkAxis :: Double -> Double -> (Double, Double)
+checkAxis origin direction =
+  let tmin = ((-1) - origin) / direction
+      tmax = (1 - origin) / direction
+  in if tmin > tmax
+     then (tmax, tmin)
+     else (tmin, tmax)
 
 intersectShapes :: [Shape] -> Ray -> [Intersection]
 intersectShapes objects r
