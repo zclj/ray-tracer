@@ -51,7 +51,9 @@ localIntersect c@Cube {} r =
       (ztmin, ztmax) = checkAxis (z (origin r)) (z (direction r))
       tmin = maximum [xtmin, ytmin, ztmin]
       tmax = minimum [xtmax, ytmax, ztmax]
-  in [Intersection tmin c, Intersection tmax c]
+  in if tmin > tmax
+     then []
+     else [Intersection tmin c, Intersection tmax c]
 
 checkAxis :: Double -> Double -> (Double, Double)
 checkAxis origin direction =

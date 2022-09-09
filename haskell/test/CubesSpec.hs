@@ -59,3 +59,36 @@ cubeIntersections =
        map (\[(Intersection t _), _] -> t) xs `shouldBe` t1s
       it "t2s intersect" $ do
        map (\[_, (Intersection t _)] -> t) xs `shouldBe` t2s
+    {- Scenario Outline: A ray misses a cube
+         Given c ← cube()
+           And r ← ray(<origin>, <direction>)
+         When xs ← local_intersect(c, r)
+         Then xs.count = 0
+         Examples:
+           | origin           | direction                      |
+           | point(-2, 0, 0)  | vector(0.2673, 0.5345, 0.8018) |
+           | point(0, -2, 0)  | vector(0.8018, 0.2673, 0.5345) |
+           | point(0, 0, -2)  | vector(0.5345, 0.8018, 0.2673) |
+           | point(2, 0, 2)   | vector(0, 0, -1)               |
+           | point(0, 2, 2)   | vector(0, -1, 0)               |
+           | point(2, 2, 0)   | vector(-1, 0, 0)               | -}
+    describe "Outline: A ray misses a cube" $ do
+      let c = defaultCube 1
+          origins = [ T.point (-2) 0 0
+                    , T.point 0 (-2) 0
+                    , T.point 0 0 (-2)
+                    , T.point 2 0 2
+                    , T.point 0 2 2
+                    , T.point 2 2 0]
+          direction = [ T.vector 0.2673 0.5345 0.8018
+                      , T.vector 0.8018 0.2673 0.5345
+                      , T.vector 0.5345 0.8018 0.2673
+                      , T.vector 0 0 (-1)
+                      , T.vector 0 (-1) 0
+                      , T.vector (-1) 0 0]
+          -- t1s = [4, 4, 4, 4, 4, 4, (-1)]
+          -- t2s = [6, 6, 6, 6, 6, 6, 1]
+          rays = zipWith makeRay origins direction
+          xs = map (localIntersect c) rays
+      it "no intersections" $ do
+       map (\is -> length is) xs `shouldBe` [0, 0, 0, 0, 0, 0]
