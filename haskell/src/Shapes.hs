@@ -25,9 +25,18 @@ defaultCube :: Int -> Shape
 defaultCube id = Cube id identity defaultMaterial
 
 ----------------------------------------
+cubeNormal :: Double -> Double -> Double -> Double -> Tuple
+cubeNormal m x y z
+  | m == abs x = vector x 0 0
+  | m == abs y = vector 0 y 0
+  | m == abs z = vector 0 0 z
+
 localNormalAt :: Shape -> Tuple -> Tuple
 localNormalAt Sphere {} objectPoint = objectPoint `sub` T.point 0 0 0
 localNormalAt Plane {} _ = vector 0 1 0
+localNormalAt Cube {} objectPoint@(Tuple x y z _) =
+  let maxc = maximum [abs x, abs y, abs z]
+  in cubeNormal maxc x y z
 
 localIntersect :: Shape -> Ray -> [Intersection]
 localIntersect s@Sphere {} r =

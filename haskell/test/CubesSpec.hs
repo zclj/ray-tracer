@@ -86,9 +86,44 @@ cubeIntersections =
                       , T.vector 0 0 (-1)
                       , T.vector 0 (-1) 0
                       , T.vector (-1) 0 0]
-          -- t1s = [4, 4, 4, 4, 4, 4, (-1)]
-          -- t2s = [6, 6, 6, 6, 6, 6, 1]
           rays = zipWith makeRay origins direction
           xs = map (localIntersect c) rays
       it "no intersections" $ do
        map (\is -> length is) xs `shouldBe` [0, 0, 0, 0, 0, 0]
+    {- Scenario Outline: The normal on the surface of a cube
+         Given c ← cube()
+           And p ← <point>
+         When normal ← local_normal_at(c, p)
+         Then normal = <normal>
+
+         Examples:
+           | point                | normal           |
+           | point(1, 0.5, -0.8)  | vector(1, 0, 0)  |
+           | point(-1, -0.2, 0.9) | vector(-1, 0, 0) |
+           | point(-0.4, 1, -0.1) | vector(0, 1, 0)  |
+           | point(0.3, -1, -0.7) | vector(0, -1, 0) |
+           | point(-0.6, 0.3, 1)  | vector(0, 0, 1)  |
+           | point(0.4, 0.4, -1)  | vector(0, 0, -1) |
+           | point(1, 1, 1)       | vector(1, 0, 0)  |
+           | point(-1, -1, -1)    | vector(-1, 0, 0) | -}
+    describe "The normal on the surface of a cube" $ do
+      let c = defaultCube 1
+          points = [ T.point 1 0.5 (-0.8)
+                   , T.point (-1) (-0.2) 0.9
+                   , T.point (-0.4) 1 (-0.1)
+                   , T.point (0.3) (-1) (-0.7)
+                   , T.point (-0.6) 0.3 1
+                   , T.point 0.4 0.4 (-1)
+                   , T.point 1 1 1
+                   , T.point (-1) (-1) (-1)]
+          normals = [ T.vector 1 0 0
+                    , T.vector (-1) 0 0
+                    , T.vector 0 1 0
+                    , T.vector 0 (-1) 0
+                    , T.vector 0 0 1
+                    , T.vector 0 0 (-1)
+                    , T.vector 1 0 0
+                    , T.vector (-1) 0 0]
+          ns = map (localNormalAt c) points
+      it "is correct" $ do
+        ns `shouldBe` normals
