@@ -115,7 +115,7 @@ sphereNormals =
          Then n = vector(0, 0.70711, -0.70711) -}
     describe "Computing the normal on a translated sphere" $ do
       let s  = defaultSphere 1
-          s' = s { Types.transform = (translation 0 1 0) }
+          s' = s { Types.transform = translation 0 1 0 }
           n  = objectNormalAt s' (T.point 0 1.70711 (-0.70711))
       it "is the vector(0, 0.70711, -0.70711)" $ do
         n `shouldBe` vector 0 0.70711 (-0.70711)

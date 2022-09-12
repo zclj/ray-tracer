@@ -31,7 +31,7 @@ prepareComputations i r xs =
 
 -- |The `hit` function returns the first non-negative intersection.
 -- Intersections with a negative value are 'behind', positive 'infront'
-hit :: [Intersection] -> Maybe (Intersection)
+hit :: [Intersection] -> Maybe Intersection
 hit xs = find (\(Intersection t _) -> t >= 0) $ sort xs
 
 schlick :: Computation -> Double

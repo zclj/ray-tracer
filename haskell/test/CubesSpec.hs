@@ -51,14 +51,14 @@ cubeIntersections =
                       , T.vector 0 0 (-1)
                       , T.vector 0 0 1
                       , T.vector 0 0 1]
-          t1s = [4, 4, 4, 4, 4, 4, (-1)]
+          t1s = [4, 4, 4, 4, 4, 4, - 1]
           t2s = [6, 6, 6, 6, 6, 6, 1]
           rays = zipWith makeRay origins direction
           xs = map (localIntersect c) rays
       it "t1s intersect" $ do
-       map (\[(Intersection t _), _] -> t) xs `shouldBe` t1s
+       map (\[Intersection t _, _] -> t) xs `shouldBe` t1s
       it "t2s intersect" $ do
-       map (\[_, (Intersection t _)] -> t) xs `shouldBe` t2s
+       map (\[_, Intersection t _] -> t) xs `shouldBe` t2s
     {- Scenario Outline: A ray misses a cube
          Given c ← cube()
            And r ← ray(<origin>, <direction>)
@@ -89,7 +89,7 @@ cubeIntersections =
           rays = zipWith makeRay origins direction
           xs = map (localIntersect c) rays
       it "no intersections" $ do
-       map (\is -> length is) xs `shouldBe` [0, 0, 0, 0, 0, 0]
+       map length xs `shouldBe` [0, 0, 0, 0, 0, 0]
     {- Scenario Outline: The normal on the surface of a cube
          Given c ← cube()
            And p ← <point>
@@ -111,7 +111,7 @@ cubeIntersections =
           points = [ T.point 1 0.5 (-0.8)
                    , T.point (-1) (-0.2) 0.9
                    , T.point (-0.4) 1 (-0.1)
-                   , T.point (0.3) (-1) (-0.7)
+                   , T.point 0.3 (-1) (-0.7)
                    , T.point (-0.6) 0.3 1
                    , T.point 0.4 0.4 (-1)
                    , T.point 1 1 1

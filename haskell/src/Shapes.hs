@@ -85,8 +85,8 @@ objectNormalAt s worldPoint =
   in norm worldNormal'
 
 removeOrAppend :: [Shape] -> Shape -> [Shape]
-removeOrAppend xs i = if (Types.id i) `elem` (map Types.id xs)
-                      then filter (\x -> (Types.id x) /= (Types.id i)) xs
+removeOrAppend xs i = if Types.id i `elem` map Types.id xs
+                      then filter (\x -> Types.id x /= Types.id i) xs
                       else xs ++ [i]
 
 refractiveIndexValue :: [Shape] -> Double
