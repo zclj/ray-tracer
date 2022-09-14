@@ -33,6 +33,18 @@ impl std::ops::Add<Color> for Color {
     }
 }
 
+impl std::ops::Sub<Color> for Color {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self {
+        Color::new(
+            self.red - rhs.red,
+            self.green - rhs.green,
+            self.blue - rhs.blue,
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -68,6 +80,13 @@ mod tests {
     //   Given c1 ← color(0.9, 0.6, 0.75)
     //     And c2 ← color(0.7, 0.1, 0.25)
     //    Then c1 - c2 = color(0.2, 0.5, 0.5)
+    #[test]
+    fn subtracting_colors() {
+        let c1 = Color::new(0.9, 0.6, 0.75);
+        let c2 = Color::new(0.7, 0.1, 0.25);
+
+        assert_eq!(c1 - c2, Color::new(0.2, 0.5, 0.5))
+    }
 
     // Scenario: Multiplying a color by a scalar
     //   Given c ← color(0.2, 0.3, 0.4)
