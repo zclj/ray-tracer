@@ -90,11 +90,7 @@
 //     Vector4D::new(x, y, z, 1.0)
 // }
 
-const EPSILON: f32 = 0.00001;
-
-fn epsilon_eq(lhs: f32, rhs: f32) -> bool {
-    (lhs - rhs).abs() < EPSILON
-}
+use crate::utils::epsilon_eq;
 
 #[derive(Debug)]
 pub struct Point {
