@@ -53,6 +53,18 @@ impl std::ops::Mul<f32> for Color {
     }
 }
 
+impl std::ops::Mul<Color> for Color {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        Color::new(
+            self.red * rhs.red,
+            self.green * rhs.green,
+            self.blue * rhs.blue,
+        )
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -110,4 +122,11 @@ mod tests {
     //   Given c1 ← color(1, 0.2, 0.4)
     //     And c2 ← color(0.9, 1, 0.1)
     //    Then c1 * c2 = color(0.9, 0.2, 0.04)
+    #[test]
+    fn multiplying_colors() {
+        let c1 = Color::new(1.0, 0.2, 0.4);
+        let c2 = Color::new(0.9, 1.0, 0.1);
+
+        assert_eq!(c1 * c2, Color::new(0.9, 0.2, 0.04))
+    }
 }
