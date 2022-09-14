@@ -45,6 +45,14 @@ impl std::ops::Sub<Color> for Color {
     }
 }
 
+impl std::ops::Mul<f32> for Color {
+    type Output = Self;
+
+    fn mul(self, rhs: f32) -> Self {
+        Color::new(self.red * rhs, self.green * rhs, self.blue * rhs)
+    }
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -91,6 +99,12 @@ mod tests {
     // Scenario: Multiplying a color by a scalar
     //   Given c ← color(0.2, 0.3, 0.4)
     //   Then c * 2 = color(0.4, 0.6, 0.8)
+    #[test]
+    fn multiplying_a_color_by_a_scalar() {
+        let c = Color::new(0.2, 0.3, 0.4);
+
+        assert_eq!(c * 2.0, Color::new(0.4, 0.6, 0.8))
+    }
 
     // Scenario: Multiplying colors
     //   Given c1 ← color(1, 0.2, 0.4)
