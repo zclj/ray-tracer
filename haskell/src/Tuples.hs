@@ -6,7 +6,14 @@ data Tuple = Tuple { x :: Double
                    , w :: Double}
              deriving (Show)
 
+{- Epsilon-based float operators -}
+
+-- TODO: Make Tuples into more specific types and move to Types module
+
 epsilon = 0.0001
+
+(~=) :: Double -> Double -> Bool
+x ~= y = abs (x - y) < epsilon
 
 -- Implement Eq based on Epsilon comparison of floats
 -- this avoids two floats that are "equal" being evaluated as not equal
@@ -61,9 +68,6 @@ cross (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
   = vector (y1 * z2 - z1 * y2) (z1 * x2 - x1 * z2) (x1 * y2 - y1 * x2) 
 
 {- Colors -}
-
-(~=) :: Double -> Double -> Bool
-(~=) x y = abs (x - y) < epsilon
 
 newtype Red = Red Double
   deriving (Show, Ord)
