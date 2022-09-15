@@ -5,6 +5,8 @@ module Camera
   , render
   ) where
 
+import Control.Monad.Par
+
 import Matrices
 import Tuples
 import World
@@ -48,5 +50,6 @@ renderRow :: Int -> Camera -> World -> [Color]
 renderRow y c w = map (\x -> renderPixel x y c w) [0..hsize c - 1]
 
 render :: Camera -> World -> Canvas
-render c w = let pixels = map (\y -> renderRow y c w) [0..vsize c - 1]
-             in fromColors pixels
+render c w = runPar $ do
+  pixels <- parMap (\y -> renderRow y c w) [0..vsize c - 1]
+  return $ fromColors pixels

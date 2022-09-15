@@ -1,4 +1,9 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Tuples where
+
+import Control.DeepSeq
+import GHC.Generics
 
 data Tuple = Tuple { x :: Double
                    , y :: Double
@@ -70,19 +75,22 @@ cross (Tuple x1 y1 z1 w1) (Tuple x2 y2 z2 w2)
 {- Colors -}
 
 newtype Red = Red Double
-  deriving (Show, Ord)
+  deriving (Show, Ord, Generic)
+instance NFData Red
 
 instance Eq Red where
   (Red r1) == (Red r2) =  r1 ~= r2
 
 newtype Green = Green Double
-  deriving (Show, Ord)
+  deriving (Show, Ord, Generic)
+instance NFData Green
 
 instance Eq Green where
   (Green g1) == (Green g2) =  g1 ~= g2
 
 newtype Blue = Blue Double
-  deriving (Show, Ord)
+  deriving (Show, Ord, Generic)
+instance NFData Blue
 
 instance Eq Blue where
   (Blue b1) == (Blue b2) =  b1 ~= b2
@@ -90,7 +98,8 @@ instance Eq Blue where
 data Color = Color { red :: Red
                    , green :: Green
                    , blue :: Blue }
-             deriving (Show, Eq, Ord)
+             deriving (Show, Eq, Ord, Generic)
+instance NFData Color
 
 addC :: Color -> Color -> Color
 addC (Color (Red r1) (Green g1) (Blue b1)) (Color (Red r2) (Green g2) (Blue b2)) =
