@@ -27,9 +27,9 @@ defaultCube id = Cube id identity defaultMaterial
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
 cubeNormal m x y z
-  | m == abs x = vector x 0 0
-  | m == abs y = vector 0 y 0
-  | m == abs z = vector 0 0 z
+  | m ~= abs x = vector x 0 0
+  | m ~= abs y = vector 0 y 0
+  | m ~= abs z = vector 0 0 z
 
 localNormalAt :: Shape -> Tuple -> Tuple
 localNormalAt Sphere {} objectPoint = objectPoint `sub` T.point 0 0 0
