@@ -73,7 +73,7 @@ localIntersect cy@Cylinder {} r =
      else let b = ((2 * (x (origin r))) * (x (direction r))) +
                   ((2 * (z (origin r))) * (z (direction r)))
               c = ((x (origin r))**2) + ((z (origin r))**2) - 1
-              disc = (b**2) - (4 * a * b)
+              disc = (b**2) - (4 * a * c)
           in if disc < 0
              then []
              else let t0 = ((-b) - (sqrt disc)) / (2 * a)
