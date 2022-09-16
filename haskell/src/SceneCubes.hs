@@ -145,7 +145,7 @@ blueGlassCube =
   Cube { Types.id        = 12
        , Types.transform = T.transform
                            [ scaling 0.7 0.7 0.7
-                           , translation 0.6 0.7001 (-0.6)]
+                           , translation 0.6001 0.7001 (-0.6001)]
        , Types.material  = defaultMaterial
                            { color           = Color (Red 0) (Green 0) (Blue 0.2)
                            , ambient         = 0
@@ -160,7 +160,7 @@ greenGlassCube =
   Cube { Types.id        = 13
        , Types.transform = T.transform
                            [ scaling 0.5 0.5 0.5
-                           , translation (-0.7) 0.5 (-0.8)]
+                           , translation (-0.7001) 0.5001 (-0.8001)]
        , Types.material  = defaultMaterial
                            { color           = Color (Red 0) (Green 0.2) (Blue 0)
                            , ambient         = 0
