@@ -24,6 +24,9 @@ defaultPlane id = Plane id identity defaultMaterial
 defaultCube :: Int -> Shape
 defaultCube id = Cube id identity defaultMaterial
 
+defaultCylinder :: Int -> Shape
+defaultCylinder id = Cylinder id identity defaultMaterial
+
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
 cubeNormal m x y z
@@ -63,6 +66,19 @@ localIntersect c@Cube {} r =
   in if tmin > tmax
      then []
      else [Intersection tmin c, Intersection tmax c]
+localIntersect cy@Cylinder {} r =
+  let a = ((x (direction r))**2) + ((z (direction r))**2)
+  in if a ~= 0
+     then []
+     else let b = ((2 * (x (origin r))) * (x (direction r))) +
+                  ((2 * (z (origin r))) * (z (direction r)))
+              c = ((x (origin r))**2) + ((z (origin r))**2) - 1
+              disc = (b**2) - (4 * a * b)
+          in if disc < 0
+             then []
+             else let t0 = ((-b) - (sqrt disc)) / (2 * a)
+                      t1 = ((-b) + (sqrt disc)) / (2 * a)
+                  in [Intersection t0 cy, Intersection t1 cy]
 
 checkAxis :: Double -> Double -> (Double, Double)
 checkAxis origin direction =

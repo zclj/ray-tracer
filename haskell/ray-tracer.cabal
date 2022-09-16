@@ -84,6 +84,7 @@ test-suite ray-tracer-test
       CameraSpec
       CanvasSpec
       CubesSpec
+      CylindersSpec
       IntersectionsSpec
       LightsSpec
       MaterialsSpec
