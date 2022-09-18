@@ -1,14 +1,14 @@
 use crate::utils::epsilon_eq;
 
-#[derive(Debug)]
-struct Color {
+#[derive(Debug, Clone)]
+pub struct Color {
     red: f32,
     green: f32,
     blue: f32,
 }
 
 impl Color {
-    fn new(red: f32, green: f32, blue: f32) -> Color {
+    pub fn new(red: f32, green: f32, blue: f32) -> Color {
         Color { red, green, blue }
     }
 }
