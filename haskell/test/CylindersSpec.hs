@@ -13,7 +13,36 @@ import Rays
 cylinderTests :: TestTree
 cylinderTests = testGroup "Cylinder Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Cylinders" cylinderIntersections)]]
+  [ unsafePerformIO (testSpec "Cylinders" cylinderIntersections)
+  , unsafePerformIO (testSpec "Cylinders" cylinderNormal)]]
+
+cylinderNormal :: Spec
+cylinderNormal =
+  describe "Cylinders" $ do
+    {- Scenario Outline: Normal vector on a cylinder
+         Given cyl ← cylinder()
+         When n ← local_normal_at(cyl, <point>)
+         Then n = <normal>
+
+         Examples:
+           | point           | normal           |
+           | point(1, 0, 0)  | vector(1, 0, 0)  |
+           | point(0, 5, -1) | vector(0, 0, -1) |
+           | point(0, -2, 1) | vector(0, 0, 1)  |
+           | point(-1, 1, 0) | vector(-1, 0, 0) | -}
+    describe "Normal vector on a cylinder" $ do
+      let cyl  = defaultCylinder 1
+          points = [ T.point 1 0 0
+                    , T.point 0 5 (-1)
+                    , T.point 0 (-2) 1
+                    , T.point (-1) 1 0]
+          normals = [ T.vector 1 0 0
+                     , T.vector 0 0 (-1)
+                     , T.vector 0 0 1
+                     , T.vector (-1) 0 0]
+          ns   = map (localNormalAt cyl) points
+      it "all normals are calculated" $ do
+        ns `shouldBe` normals
 
 cylinderIntersections :: Spec
 cylinderIntersections =

@@ -40,6 +40,8 @@ localNormalAt Plane {} _ = vector 0 1 0
 localNormalAt Cube {} objectPoint@(Tuple x y z _) =
   let maxc = maximum [abs x, abs y, abs z]
   in cubeNormal maxc x y z
+localNormalAt Cylinder {} objectPoint@(Tuple x _ z _) =
+  vector x 0 z
 
 localIntersect :: Shape -> Ray -> [Intersection]
 localIntersect s@Sphere {} r =
