@@ -113,3 +113,13 @@ cylinderIntersections =
         getT1 (xs !! 1) `shouldBe` t1s !! 1
       it "t1 - 3 intersect" $ do
         getT1 (xs !! 2) ~= (t1s !! 2) `shouldBe` True
+    {- Scenario: The default minimum and maximum for a cylinder
+         Given cyl ← cylinder()
+         Then cyl.minimum = -infinity
+         And cyl.maximum = infinity -}
+    describe "The default minimum and maximum for a cylinder" $ do
+      let cyl = defaultCylinder 1
+      it "default minimum is -infinity" $ do
+        minY cyl `shouldBe` -1/0
+      it "default maximum is infinity" $ do
+        maxY cyl `shouldBe` 1/0
