@@ -14,11 +14,12 @@ data Shape = Sphere { id        :: Int
            | Cube { id        :: Int
                   , transform :: Matrix
                   , material  :: Material }
-           | Cylinder { id         :: Int
-                       , transform :: Matrix
-                       , material  :: Material
-                       , minY       :: Double
-                       , maxY       :: Double}
+           | Cylinder { id        :: Int
+                      , transform :: Matrix
+                      , material  :: Material
+                      , minY      :: Double
+                      , maxY      :: Double
+                      , closed    :: Bool}
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

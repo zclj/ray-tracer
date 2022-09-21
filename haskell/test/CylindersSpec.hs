@@ -159,3 +159,11 @@ cylinderIntersections =
           rays       = zipWith makeRay origins directions
       it "intersects" $ do
         map length xs `shouldBe` cs
+    {- Scenario: The default closed value for a cylinder
+         Given cyl ← cylinder()
+         Then cyl.closed = false -}
+    describe "The default closed value for a cylinder" $ do
+      let cyl = defaultCylinder 1
+      it "is false" $ do
+        closed cyl `shouldBe` False
+
