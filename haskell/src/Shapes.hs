@@ -76,11 +76,14 @@ localIntersect cy@Cylinder {} r =
                   ((2 * (z (origin r))) * (z (direction r)))
               c = ((x (origin r))**2) + ((z (origin r))**2) - 1
               disc = (b**2) - (4 * a * c)
-          in if disc < 0
-             then []
-             else let t0 = ((-b) - (sqrt disc)) / (2 * a)
-                      t1 = ((-b) + (sqrt disc)) / (2 * a)
-                  in [Intersection t0 cy, Intersection t1 cy]
+              t0   = ((-b) - (sqrt disc)) / (2 * a)
+              t1   = ((-b) + (sqrt disc)) / (2 * a)
+              (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
+              y0 = (y (origin r)) + t0' * (y (direction r))
+              y1 = (y (origin r)) + t1' * (y (direction r))
+              i0 = [Intersection t0' cy | (minY cy) < y0 && y0 < (maxY cy)]
+              i1 = [Intersection t1' cy | (minY cy) < y1 && y1 < (maxY cy)]
+          in i0 ++ i1
 
 checkAxis :: Double -> Double -> (Double, Double)
 checkAxis origin direction =

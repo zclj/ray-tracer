@@ -123,3 +123,39 @@ cylinderIntersections =
         minY cyl `shouldBe` -1/0
       it "default maximum is infinity" $ do
         maxY cyl `shouldBe` 1/0
+    {- Scenario Outline: Intersecting a constrained cylinder
+         Given cyl ← cylinder()
+           And cyl.minimum ← 1
+           And cyl.maximum ← 2
+           And direction ← normalize(<direction>)
+           And r ← ray(<point>, direction)
+         When xs ← local_intersect(cyl, r)
+         Then xs.count = <count>
+
+         Examples:
+           |   | point             | direction         | count |
+           | 1 | point(0, 1.5, 0)  | vector(0.1, 1, 0) | 0     |
+           | 2 | point(0, 3, -5)   | vector(0, 0, 1)   | 0     |
+           | 3 | point(0, 0, -5)   | vector(0, 0, 1)   | 0     |
+           | 4 | point(0, 2, -5)   | vector(0, 0, 1)   | 0     |
+           | 5 | point(0, 1, -5)   | vector(0, 0, 1)   | 0     |
+           | 6 | point(0, 1.5, -2) | vector(0, 0, 1)   | 2     | -}
+    describe "Intersecting a constrained cylinder" $ do
+      let cyl = (defaultCylinder 1) {minY = 1, maxY = 2}
+          origins    = [ T.point 0 1.5 0
+                        , T.point 0 3 (-5)
+                        , T.point 0 0 (-5)
+                        , T.point 0 2 (-5)
+                        , T.point 0 1 (-5)
+                        , T.point 0 1.5 (-2)]
+          directions = map T.norm [ T.vector 0.1 1 0
+                                    , T.vector 0 0 1
+                                    , T.vector 0 0 1
+                                    , T.vector 0 0 1
+                                    , T.vector 0 0 1
+                                    , T.vector 0 0 1]
+          cs         = [0, 0, 0, 0, 0, 2]
+          xs         = map (localIntersect cyl) rays
+          rays       = zipWith makeRay origins directions
+      it "intersects" $ do
+        map length xs `shouldBe` cs
