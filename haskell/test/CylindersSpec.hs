@@ -166,4 +166,37 @@ cylinderIntersections =
       let cyl = defaultCylinder 1
       it "is false" $ do
         closed cyl `shouldBe` False
+    {- Scenario Outline: Intersecting the caps of a closed cylinder
+         Given cyl ← cylinder()
+           And cyl.minimum ← 1
+           And cyl.maximum ← 2
+           And cyl.closed ← true
+           And direction ← normalize(<direction>)
+           And r ← ray(<point>, direction)
+         When xs ← local_intersect(cyl, r)
+         Then xs.count = <count>
 
+         Examples:
+           |   | point            | direction        | count |
+           | 1 | point(0, 3, 0)   | vector(0, -1, 0) | 2     |
+           | 2 | point(0, 3, -2)  | vector(0, -1, 2) | 2     |
+           | 3 | point(0, 4, -2)  | vector(0, -1, 1) | 2     | # corner case
+           | 4 | point(0, 0, -2)  | vector(0, 1, 2)  | 2     |
+           | 5 | point(0, -1, -2) | vector(0, 1, 1)  | 2     | # corner case -}
+    describe "Intersecting the caps of a closed cylinder" $ do
+      let cyl = (defaultCylinder 1) {minY = 1, maxY = 2, closed = True}
+          origins    = [ T.point 0 3 0
+                       , T.point 0 3 (-2)
+                       , T.point 0 4 (-2)
+                       , T.point 0 0 (-2)
+                       , T.point 0 (-1) (-2)]
+          directions = map T.norm [ T.vector 0 (-1) 0
+                                  , T.vector 0 (-1) 2
+                                  , T.vector 0 (-1) 1
+                                  , T.vector 0 1 2
+                                  , T.vector 0 1 1]
+          cs         = [2, 2, 2, 2, 2]
+          xs         = map (localIntersect cyl) rays
+          rays       = zipWith makeRay origins directions
+      it "intersects" $ do
+        map length xs `shouldBe` cs

@@ -71,7 +71,7 @@ localIntersect c@Cube {} r =
 localIntersect cy@Cylinder {} r =
   let a = ((x (direction r))**2) + ((z (direction r))**2)
   in if a ~= 0
-     then []
+     then intersectCaps cy r
      else let b = ((2 * (x (origin r))) * (x (direction r))) +
                   ((2 * (z (origin r))) * (z (direction r)))
               c = ((x (origin r))**2) + ((z (origin r))**2) - 1
@@ -83,7 +83,22 @@ localIntersect cy@Cylinder {} r =
               y1 = (y (origin r)) + t1' * (y (direction r))
               i0 = [Intersection t0' cy | (minY cy) < y0 && y0 < (maxY cy)]
               i1 = [Intersection t1' cy | (minY cy) < y1 && y1 < (maxY cy)]
-          in i0 ++ i1
+          in i0 ++ i1 ++ (intersectCaps cy r)
+
+intersectCaps :: Shape -> Ray -> [Intersection]
+intersectCaps cy r
+  = if (not (closed cy)) || (y (direction r)) ~= 0
+    then []
+    else let tmin = ((minY cy) - (y (origin r))) / (y (direction r))
+             tmax = ((maxY cy) - (y (origin r))) / (y (direction r))
+             imin = [Intersection tmin cy | checkCap r tmin]
+             imax = [Intersection tmax cy | checkCap r tmax]
+         in imin ++ imax
+
+checkCap :: Ray -> Double -> Bool
+checkCap r t = let x'  = (x (origin r)) + (t * (x (direction r)))
+                   z'  = (z (origin r)) + (t * (z (direction r)))
+               in (sqrt x' + sqrt z') <= 1
 
 checkAxis :: Double -> Double -> (Double, Double)
 checkAxis origin direction =
