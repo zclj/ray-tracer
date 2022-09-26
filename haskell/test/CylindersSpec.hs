@@ -43,6 +43,39 @@ cylinderNormal =
           ns   = map (localNormalAt cyl) points
       it "all normals are calculated" $ do
         ns `shouldBe` normals
+    {- Scenario Outline: The normal vector on a cylinder's end caps
+         Given cyl ← cylinder()
+           And cyl.minimum ← 1
+           And cyl.maximum ← 2
+           And cyl.closed ← true
+         When n ← local_normal_at(cyl, <point>)
+         Then n = <normal>
+
+         Examples:
+           | point            | normal           |
+           | point(0, 1, 0)   | vector(0, -1, 0) |
+           | point(0.5, 1, 0) | vector(0, -1, 0) |
+           | point(0, 1, 0.5) | vector(0, -1, 0) |
+           | point(0, 2, 0)   | vector(0, 1, 0)  |
+           | point(0.5, 2, 0) | vector(0, 1, 0)  |
+           | point(0, 2, 0.5) | vector(0, 1, 0)  | -}
+    describe "The normal vector on a cylinder's end caps" $ do
+      let cyl  = (defaultCylinder 1) { minY = 1, maxY = 2 }
+          points = [ T.point 0 1 0
+                   , T.point 0.5 1 0
+                   , T.point 0 1 0.5
+                   , T.point 0 2 0
+                   , T.point 0.5 2 0
+                   , T.point 0 2 0.5]
+          normals = [ T.vector 0 (-1) 0
+                    , T.vector 0 (-1) 0
+                    , T.vector 0 (-1) 0
+                    , T.vector 0 1 0
+                    , T.vector 0 1 0
+                    , T.vector 0 1 0]
+          ns   = map (localNormalAt cyl) points
+      it "all normals are calculated" $ do
+        ns `shouldBe` normals
 
 cylinderIntersections :: Spec
 cylinderIntersections =
