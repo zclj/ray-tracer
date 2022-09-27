@@ -100,7 +100,7 @@ intersectCaps cy r
 checkCap :: Ray -> Double -> Bool
 checkCap r t = let x'  = (x (origin r)) + (t * (x (direction r)))
                    z'  = (z (origin r)) + (t * (z (direction r)))
-               in (sqrt x' + sqrt z') <= 1
+               in (x'^2 + z'^2) <= 1
 
 checkAxis :: Double -> Double -> (Double, Double)
 checkAxis origin direction =
