@@ -41,8 +41,8 @@ localNormalAt Cube {} objectPoint@(Tuple x y z _) =
   let maxc = maximum [abs x, abs y, abs z]
   in cubeNormal maxc x y z
 localNormalAt c@Cylinder {} objectPoint@(Tuple x y z _)
-  | (x**2 + z**2) < 1 && (y >= (maxY c) - epsilon) = vector 0 1 0
-  | (x**2 + z**2) < 1 && (y >= (minY c) - epsilon) = vector 0 (-1) 0
+  | (x**2 + z**2) < 1 && (y >= ((maxY c) - epsilon)) = vector 0 1 0
+  | (x**2 + z**2) < 1 && (y <= ((minY c) + epsilon)) = vector 0 (-1) 0
   | otherwise = vector x 0 z
 
 localIntersect :: Shape -> Ray -> [Intersection]
