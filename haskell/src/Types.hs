@@ -19,7 +19,13 @@ data Shape = Sphere { id        :: Int
                       , material  :: Material
                       , minY      :: Double
                       , maxY      :: Double
-                      , closed    :: Bool}
+                      , closed    :: Bool }
+           | Cone { id        :: Int
+                  , transform :: Matrix
+                  , material  :: Material
+                  , minY      :: Double
+                  , maxY      :: Double
+                  , closed    :: Bool}
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

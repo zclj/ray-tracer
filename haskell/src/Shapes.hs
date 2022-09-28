@@ -27,6 +27,9 @@ defaultCube id = Cube id identity defaultMaterial
 defaultCylinder :: Int -> Shape
 defaultCylinder id = Cylinder id identity defaultMaterial ((-1)/0) (1/0) False
 
+defaultCone :: Int -> Shape
+defaultCone id = Cone id identity defaultMaterial ((-1)/0) (1/0) False
+
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
 cubeNormal m x y z
