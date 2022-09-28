@@ -4,6 +4,10 @@ A Ray Tracer based on the book "The Ray Tracer Challange".
 
 Playing around with different language implementation. Should not be considered as ideomatic or production grade.
 
+## Resources
+
+- [Rendering Resources](https://benedikt-bitterli.me/resources/)
+
 ## License
 
 Copyright © 2019-2021 Stefan Karlsson
