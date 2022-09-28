@@ -38,6 +38,7 @@ library
       Rays
       Scene
       SceneChapter11
+      SceneChapter13
       SceneCubes
       SceneNestedGlass
       ScenePlanesAndSpheres
