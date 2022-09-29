@@ -39,9 +39,9 @@ coneIntersections =
           origins    = [ T.point 0 0 (-5)
                        , T.point 0 0 (-5)
                        , T.point 1 1 (-5)]
-          directions = [ T.vector 0 0 1
-                       , T.vector 1 1 1
-                       , T.vector (-0.5) (-1) 1]
+          directions = map T.norm [ T.vector 0 0 1
+                                  , T.vector 1 1 1
+                                  , T.vector (-0.5) (-1) 1]
           rays       = zipWith makeRay origins directions
           t0s        = [5, 8.66025, 4.55006]
           t1s        = [5, 8.66025, 49.44994]
@@ -50,7 +50,32 @@ coneIntersections =
           getT1 [_, (Intersection t _)] = t
       it "all ray hits" $ do
         map length xs `shouldBe` [2, 2, 2]
-      it "t0s intersect" $ do
-        map getT0 xs `shouldBe` t0s
-      it "t1s intersect" $ do
-        map getT1 xs `shouldBe` t1s
+      it "t0 - 1  intersect" $ do
+        getT0 (xs !! 0) ~= (t0s !! 0) `shouldBe` True
+      it "t0 - 2  intersect" $ do
+        getT0 (xs !! 1) ~= (t0s !! 1) `shouldBe` True
+      it "t0 - 3  intersect" $ do
+        getT0 (xs !! 2) ~= (t0s !! 2) `shouldBe` True
+      it "t1 - 1  intersect" $ do
+        getT1 (xs !! 0) ~= (t1s !! 0) `shouldBe` True
+      it "t1 - 2  intersect" $ do
+        getT1 (xs !! 1) ~= (t1s !! 1) `shouldBe` True
+      it "t1 - 3  intersect" $ do
+        getT1 (xs !! 2) ~= (t1s !! 2) `shouldBe` True
+    {- Scenario: Intersecting a cone with a ray parallel to one of its halves
+         Given shape ← cone()
+           And direction ← normalize(vector(0, 1, 1))
+           And r ← ray(point(0, 0, -1), direction)
+         When xs ← local_intersect(shape, r)
+         Then xs.count = 1
+           And xs[0].t = 0.35355 -}
+    describe "Intersecting a cone with a ray parallel to one of its halves" $ do
+      let s   = defaultCone 1
+          dir = T.norm (T.vector 0 1 1)
+          r   = makeRay (T.point 0 0 (-1)) dir
+          xs  = localIntersect s r
+          getT0 [(Intersection t _)] = t
+      it "one intersection" $ do
+        length xs `shouldBe` 1
+      it "correct value" $ do
+        getT0 xs ~= 0.35355 `shouldBe` True

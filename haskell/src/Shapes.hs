@@ -89,6 +89,25 @@ localIntersect cy@Cylinder {} r =
               i0 = [Intersection t0' cy | (minY cy) < y0 && y0 < (maxY cy)]
               i1 = [Intersection t1' cy | (minY cy) < y1 && y1 < (maxY cy)]
           in i0 ++ i1 ++ (intersectCaps cy r)
+localIntersect cone@Cone {} r =
+  let a = ((x (direction r))^2) - ((y (direction r))^2) + ((z (direction r))^2)
+      b = ((2 * (x (origin r))) * (x (direction r))) -
+          ((2 * (y (origin r))) * (y (direction r))) +
+          ((2 * (z (origin r))) * (z (direction r)))
+      c = ((x (origin r))^2) - ((y (origin r))^2) + ((z (origin r))^2)
+  in if a ~= 0 && b ~= 0
+     then []
+     else if a ~= 0
+          then [Intersection (- c /(2*b)) cone]
+          else let disc = (b**2) - (4 * a * c)
+                   t0   = ((-b) - (sqrt disc)) / (2 * a)
+                   t1   = ((-b) + (sqrt disc)) / (2 * a)
+                   (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
+                   y0 = (y (origin r)) + t0' * (y (direction r))
+                   y1 = (y (origin r)) + t1' * (y (direction r))
+                   i0 = [Intersection t0' cone | (minY cone) < y0 && y0 < (maxY cone)]
+                   i1 = [Intersection t1' cone | (minY cone) < y1 && y1 < (maxY cone)]
+               in i0 ++ i1
 
 intersectCaps :: Shape -> Ray -> [Intersection]
 intersectCaps cy r
