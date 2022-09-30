@@ -79,3 +79,31 @@ coneIntersections =
         length xs `shouldBe` 1
       it "correct value" $ do
         getT0 xs ~= 0.35355 `shouldBe` True
+    {- Scenario Outline: Intersecting a cone's end caps
+         Given shape ← cone()
+           And shape.minimum ← -0.5
+           And shape.maximum ← 0.5
+           And shape.closed ← true
+           And direction ← normalize(<direction>)
+           And r ← ray(<origin>, direction)
+         When xs ← local_intersect(shape, r)
+         Then xs.count = <count>
+
+         Examples:
+           | origin             | direction       | count |
+           | point(0, 0, -5)    | vector(0, 1, 0) | 0     |
+           | point(0, 0, -0.25) | vector(0, 1, 1) | 2     |
+           | point(0, 0, -0.25) | vector(0, 1, 0) | 4     | -}
+    describe "Intersecting a cone's end caps" $ do
+      let s          = (defaultCone 1) { minY = (-0.5), maxY = 0.5, closed = True }
+          origins    = [ T.point 0 0 (-5)
+                       , T.point 0 0 (-0.25)
+                       , T.point 0 0 (-0.25)]
+          directions = map T.norm [ T.vector 0 1 0
+                                  , T.vector 0 1 1
+                                  , T.vector 0 1 0]
+          rays       = zipWith makeRay origins directions
+          cs         = [0, 2, 4]
+          xs         = map (localIntersect s) rays
+      it "intersection counts" $ do
+        map length xs `shouldBe` cs

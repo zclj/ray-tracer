@@ -75,20 +75,13 @@ localIntersect c@Cube {} r =
      else [Intersection tmin c, Intersection tmax c]
 localIntersect cy@Cylinder {} r =
   let a = ((x (direction r))**2) + ((z (direction r))**2)
+      b = ((2 * (x (origin r))) * (x (direction r))) +
+          ((2 * (z (origin r))) * (z (direction r)))
+      c = ((x (origin r))**2) + ((z (origin r))**2) - 1
   in if a ~= 0
      then intersectCaps cy r
-     else let b = ((2 * (x (origin r))) * (x (direction r))) +
-                  ((2 * (z (origin r))) * (z (direction r)))
-              c = ((x (origin r))**2) + ((z (origin r))**2) - 1
-              disc = (b**2) - (4 * a * c)
-              t0   = ((-b) - (sqrt disc)) / (2 * a)
-              t1   = ((-b) + (sqrt disc)) / (2 * a)
-              (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
-              y0 = (y (origin r)) + t0' * (y (direction r))
-              y1 = (y (origin r)) + t1' * (y (direction r))
-              i0 = [Intersection t0' cy | (minY cy) < y0 && y0 < (maxY cy)]
-              i1 = [Intersection t1' cy | (minY cy) < y1 && y1 < (maxY cy)]
-          in i0 ++ i1 ++ (intersectCaps cy r)
+     else let bi = intersectBody cy a b c r
+          in bi ++ (intersectCaps cy r)
 localIntersect cone@Cone {} r =
   let a = ((x (direction r))^2) - ((y (direction r))^2) + ((z (direction r))^2)
       b = ((2 * (x (origin r))) * (x (direction r))) -
@@ -98,31 +91,39 @@ localIntersect cone@Cone {} r =
   in if a ~= 0 && b ~= 0
      then []
      else if a ~= 0
-          then [Intersection (- c /(2*b)) cone]
-          else let disc = (b**2) - (4 * a * c)
-                   t0   = ((-b) - (sqrt disc)) / (2 * a)
-                   t1   = ((-b) + (sqrt disc)) / (2 * a)
-                   (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
-                   y0 = (y (origin r)) + t0' * (y (direction r))
-                   y1 = (y (origin r)) + t1' * (y (direction r))
-                   i0 = [Intersection t0' cone | (minY cone) < y0 && y0 < (maxY cone)]
-                   i1 = [Intersection t1' cone | (minY cone) < y1 && y1 < (maxY cone)]
-               in i0 ++ i1
+          then [Intersection (- c /(2*b)) cone] ++ (intersectCaps cone r)
+          else let bi = intersectBody cone a b c r
+               in bi ++ (intersectCaps cone r)
+
+intersectBody :: Shape -> Double -> Double -> Double -> Ray -> [Intersection]
+intersectBody s a b c r
+  = let disc = (b**2) - (4 * a * c)
+        t0   = ((-b) - (sqrt disc)) / (2 * a)
+        t1   = ((-b) + (sqrt disc)) / (2 * a)
+        (t0', t1') = if t0 > t1 then (t1, t0) else (t0, t1)
+        y0 = (y (origin r)) + t0' * (y (direction r))
+        y1 = (y (origin r)) + t1' * (y (direction r))
+        i0 = [Intersection t0' s | (minY s) < y0 && y0 < (maxY s)]
+        i1 = [Intersection t1' s | (minY s) < y1 && y1 < (maxY s)]
+    in i0 ++ i1
 
 intersectCaps :: Shape -> Ray -> [Intersection]
-intersectCaps cy r
-  = if (not (closed cy)) || (y (direction r)) ~= 0
+intersectCaps s r
+  = if (not (closed s)) || (y (direction r)) ~= 0
     then []
-    else let tmin = ((minY cy) - (y (origin r))) / (y (direction r))
-             tmax = ((maxY cy) - (y (origin r))) / (y (direction r))
-             imin = [Intersection tmin cy | checkCap r tmin]
-             imax = [Intersection tmax cy | checkCap r tmax]
+    else let tmin = ((minY s) - (y (origin r))) / (y (direction r))
+             tmax = ((maxY s) - (y (origin r))) / (y (direction r))
+             (rmin, rmax) = case s of
+                              Cylinder {} -> (1,1)
+                              Cone {}     -> ((minY s), (maxY s))
+             imin = [Intersection tmin s | checkCap r tmin rmin]
+             imax = [Intersection tmax s | checkCap r tmax rmax]
          in imin ++ imax
 
-checkCap :: Ray -> Double -> Bool
-checkCap r t = let x'  = (x (origin r)) + (t * (x (direction r)))
-                   z'  = (z (origin r)) + (t * (z (direction r)))
-               in (x'^2 + z'^2) <= 1
+checkCap :: Ray -> Double -> Double -> Bool
+checkCap r t y = let x'  = (x (origin r)) + (t * (x (direction r)))
+                     z'  = (z (origin r)) + (t * (z (direction r)))
+                 in (x'^2 + z'^2) <= y^2
 
 checkAxis :: Double -> Double -> (Double, Double)
 checkAxis origin direction =
