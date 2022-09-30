@@ -47,6 +47,12 @@ localNormalAt c@Cylinder {} objectPoint@(Tuple x y z _)
   | (x**2 + z**2) < 1 && (y >= ((maxY c) - epsilon)) = vector 0 1 0
   | (x**2 + z**2) < 1 && (y <= ((minY c) + epsilon)) = vector 0 (-1) 0
   | otherwise = vector x 0 z
+localNormalAt c@Cone {} objectPoint@(Tuple x y z _)
+  | (x**2 + z**2) < 1 && (y >= ((maxY c) - epsilon)) = vector 0 1 0
+  | (x**2 + z**2) < 1 && (y <= ((minY c) + epsilon)) = vector 0 (-1) 0
+  | otherwise = let yn  = sqrt(x^2 + z^2)
+                    yn' = if y > 0 then -yn else yn
+                in vector x yn' z
 
 localIntersect :: Shape -> Ray -> [Intersection]
 localIntersect s@Sphere {} r =

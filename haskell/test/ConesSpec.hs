@@ -14,8 +14,32 @@ coneTests :: TestTree
 coneTests = testGroup "Cone Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Cones" coneIntersections)
-  --, unsafePerformIO (testSpec "Cones" coneNormal)
-  ]]
+  , unsafePerformIO (testSpec "Cones" coneNormal)]]
+
+coneNormal :: Spec
+coneNormal =
+  describe "Cones" $ do
+    {- Scenario Outline: Computing the normal vector on a cone
+         Given shape ← cone()
+         When n ← local_normal_at(shape, <point>)
+         Then n = <normal>
+
+         Examples:
+           | point             | normal                 |
+           | point(0, 0, 0)    | vector(0, 0, 0)        |
+           | point(1, 1, 1)    | vector(1, -√2, 1)      |
+           | point(-1, -1, 0)  | vector(-1, 1, 0)       | -}
+    describe "Computing the normal vector on a cone" $ do
+      let s      = defaultCone 1
+          points = [ T.point 0 0 0
+                   , T.point 1 1 1
+                   , T.point (-1) (-1) 0]
+          normals = [ T.vector 0 0 0
+                    , T.vector 1 (-sqrt 2) 1
+                    , T.vector (-1) 1 0]
+          ns   = map (localNormalAt s) points
+      it "all normals are calculated" $ do
+        ns `shouldBe` normals
 
 coneIntersections :: Spec
 coneIntersections =
