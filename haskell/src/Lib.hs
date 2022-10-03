@@ -10,6 +10,7 @@ module Lib
     , runDemoSceneReflectionRefraction
     , runDemoSceneChapter11
     , runDemoSceneChapter13
+    , runDemoSceneChapter13Cones
     , runDemoSceneNestedGlass
     , runDemoSceneCubes
     ) where
@@ -26,6 +27,7 @@ import ScenePlanesAndSpheres
 import SceneReflectionRefraction
 import SceneChapter11
 import SceneChapter13
+import SceneChapter13Cones
 import SceneNestedGlass
 import SceneCubes
 
@@ -46,6 +48,8 @@ runDemoSceneReflectionRefraction fname = writeCanvas fname sceneReflectionRefrac
 runDemoSceneChapter11 fname = writeCanvas fname sceneChapter11Canvas
 
 runDemoSceneChapter13 fname = writeCanvas fname sceneChapter13Canvas
+
+runDemoSceneChapter13Cones fname = writeCanvas fname sceneChapter13ConesCanvas
 
 runDemoSceneNestedGlass fname = writeCanvas fname sceneNestedGlassCanvas
 
@@ -97,6 +101,9 @@ sceneChapter11Canvas = PPM.canvasToPPMString renderSceneChapter11
 
 sceneChapter13Canvas :: String
 sceneChapter13Canvas = PPM.canvasToPPMString renderSceneChapter13
+
+sceneChapter13ConesCanvas :: String
+sceneChapter13ConesCanvas = PPM.canvasToPPMString renderSceneChapter13Cones
 
 sceneNestedGlassCanvas :: String
 sceneNestedGlassCanvas = PPM.canvasToPPMString renderNestedGlass
