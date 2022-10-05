@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Shapes where
 
 import Matrices
@@ -12,23 +14,26 @@ import Types
 ----------------------------------------
 
 defaultSphere :: Int -> Shape
-defaultSphere id = Sphere id 1.0 identity defaultMaterial
+defaultSphere id = Sphere id 1.0 identity defaultMaterial Nothing
 
 makeGlassSphere :: Int -> Shape
 makeGlassSphere id =
-  Sphere id 1.0 identity (defaultMaterial { transparency = 1.0, refractiveIndex = 1.5 })
+  Sphere id 1.0 identity (defaultMaterial { transparency = 1.0, refractiveIndex = 1.5 }) Nothing
 
 defaultPlane :: Int -> Shape
-defaultPlane id = Plane id identity defaultMaterial
+defaultPlane id = Plane id identity defaultMaterial Nothing
 
 defaultCube :: Int -> Shape
-defaultCube id = Cube id identity defaultMaterial
+defaultCube id = Cube id identity defaultMaterial Nothing
 
 defaultCylinder :: Int -> Shape
-defaultCylinder id = Cylinder id identity defaultMaterial ((-1)/0) (1/0) False
+defaultCylinder id = Cylinder id identity defaultMaterial Nothing ((-1)/0) (1/0) False
 
 defaultCone :: Int -> Shape
-defaultCone id = Cone id identity defaultMaterial ((-1)/0) (1/0) False
+defaultCone id = Cone id identity defaultMaterial Nothing ((-1)/0) (1/0) False
+
+defaultGroup :: Int -> Shape
+defaultGroup id = Group id identity Nothing []
 
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
@@ -176,3 +181,9 @@ patternAtShape p shape worldPoint =
       patternPoint = inverse (patternTransform p) `mulT` objectPoint
   in patternAt p patternPoint
 
+{- Group -}
+addChild :: Shape -> Shape -> (Shape, Shape)
+addChild group@Group {children} child =
+  let newShape = child { parent = Just group }
+      newGroup = group { children = newShape : children }
+  in (newGroup, newShape)

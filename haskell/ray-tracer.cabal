@@ -88,6 +88,7 @@ test-suite ray-tracer-test
       ConesSpec
       CubesSpec
       CylindersSpec
+      GroupsSpec
       IntersectionsSpec
       LightsSpec
       MaterialsSpec
