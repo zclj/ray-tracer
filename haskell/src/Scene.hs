@@ -17,7 +17,8 @@ floor = Sphere { Types.id        = 1
                , Types.transform = scaling 10 0.01 10
                , material        = defaultMaterial
                                    { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
-                                   , specular = 0 }}
+                                   , specular = 0 }
+               , Types.parent    = Nothing }
 
 leftWall = Sphere { Types.id        = 2
                   , radius          = 1.0
@@ -27,7 +28,8 @@ leftWall = Sphere { Types.id        = 2
                                       `Matrices.mul` scaling 10 0.01 10
                   , Types.material = defaultMaterial
                                      { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
-                                     , specular = 0 }}
+                                     , specular = 0 }
+                  , Types.parent    = Nothing }
 
 rightWall = Sphere { Types.id        = 3
                    , radius          = 1.0
@@ -37,7 +39,8 @@ rightWall = Sphere { Types.id        = 3
                                        `Matrices.mul` scaling 10 0.01 10
                    , Types.material = defaultMaterial
                                       { color    = Color (Red 1) (Green 0.9) (Blue 0.9)
-                                      , specular = 0 }}
+                                      , specular = 0 }
+                   , Types.parent    = Nothing }
 
 middle = Sphere { Types.id        = 4
                 , radius          = 1.0
@@ -45,7 +48,8 @@ middle = Sphere { Types.id        = 4
                 , Types.material  = defaultMaterial
                                     { color    = Color (Red 0.1) (Green 1) (Blue 0.5)
                                     , diffuse  = 0.7
-                                    , specular = 0.3 }}
+                                    , specular = 0.3 }
+                , Types.parent    = Nothing }
 
 right = Sphere { Types.id        = 5
                , radius          = 1.0
@@ -54,7 +58,8 @@ right = Sphere { Types.id        = 5
                , Types.material  = defaultMaterial
                                    { color    = Color (Red 0.5) (Green 1) (Blue 0.1)
                                    , diffuse  = 0.7
-                                   , specular = 0.3 }}
+                                   , specular = 0.3 }
+               , Types.parent    = Nothing }
 
 left = Sphere { Types.id        = 6
               , radius          = 1.0
@@ -63,7 +68,8 @@ left = Sphere { Types.id        = 6
               , Types.material  = defaultMaterial
                                   { color    = Color (Red 1) (Green 0.8) (Blue 0.1)
                                   , diffuse  = 0.7
-                                  , specular = 0.3 }}
+                                  , specular = 0.3 }
+              , Types.parent    = Nothing}
 
 world = defaultWorld { light = pointLight (T.point (-10) 10 (-10))
                                (Color (Red 1) (Green 1) (Blue 1)) }

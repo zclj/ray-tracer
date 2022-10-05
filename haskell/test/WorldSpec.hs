@@ -62,7 +62,7 @@ worldReflection =
     describe "The reflected color for a reflective material" $ do
       let w      = SUT.defaultWorld
           mat    = defaultMaterial { reflective = 0.5 }
-          shape  = Plane 1 (translation 0 (-1) 0) mat
+          shape  = Plane 1 (translation 0 (-1) 0) mat Nothing
           w'     = w { shapes = [shape] }
           r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Intersection (sqrt 2) shape
@@ -84,7 +84,7 @@ worldReflection =
     describe "shade_hit() with a reflective material" $ do
       let w      = SUT.defaultWorld
           mat    = defaultMaterial { reflective = 0.5 }
-          shape  = Plane 1 (translation 0 (-1) 0) mat
+          shape  = Plane 1 (translation 0 (-1) 0) mat Nothing
           w'     = w { shapes = [shape] }
           r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Intersection (sqrt 2) shape
@@ -108,8 +108,8 @@ worldReflection =
     describe "color_at() with mutually reflective surfaces" $ do
       let light = pointLight (T.point 0 0 0) (Color (Red 1) (Green 1) (Blue 1))
           mat   = defaultMaterial { reflective = 1 }
-          lower = Plane 1 (translation 0 (-1) 0) mat
-          upper = Plane 2 (translation 0 1 0) mat
+          lower = Plane 1 (translation 0 (-1) 0) mat Nothing
+          upper = Plane 2 (translation 0 1 0) mat Nothing
           w     = World [lower, upper] light
           r     = makeRay (T.point 0 0 0) (vector 0 1 0)
           c     = colorAt w r 1
@@ -129,7 +129,7 @@ worldReflection =
     describe "The reflected color at the maximum recursive depth" $ do
       let w      = SUT.defaultWorld
           mat    = defaultMaterial { reflective = 0.5 }
-          shape  = Plane 1 (translation 0 (-1) 0) mat
+          shape  = Plane 1 (translation 0 (-1) 0) mat Nothing
           w'     = w { shapes = [shape] }
           r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           i      = Intersection (sqrt 2) shape
@@ -261,14 +261,16 @@ worldReflection =
                          , Types.transform  = translation 0 (-1) 0
                          , material         =
                              defaultMaterial { transparency    = 0.5
-                                             , refractiveIndex = 1.5} }
+                                             , refractiveIndex = 1.5}
+                         , Types.parent    = Nothing }
           ball   = Sphere { Types.id         = 4
                           , radius           = 1.0
                           , Types.transform  = translation 0 (-3.5) (-0.5)
                           , material         =
                               defaultMaterial
                               { color   = Color (Red 1) (Green 0) (Blue 0)
-                              , ambient = 0.5}}
+                              , ambient = 0.5}
+                          , Types.parent    = Nothing}
           r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
@@ -301,14 +303,16 @@ worldReflection =
                          , material         =
                              defaultMaterial { transparency    = 0.5
                                              , reflective      = 0.5
-                                             , refractiveIndex = 1.5} }
+                                             , refractiveIndex = 1.5}
+                         , Types.parent    = Nothing }
           ball   = Sphere { Types.id        = 4
                           , radius          = 1.0
                           , Types.transform = translation 0 (-3.5) (-0.5)
                           , material        =
                               defaultMaterial
                               { color   = Color (Red 1) (Green 0) (Blue 0)
-                              , ambient = 0.5}}
+                              , ambient = 0.5}
+                          , Types.parent    = Nothing }
           r      = makeRay (T.point 0 0 (-3)) (vector 0 (-sqrt 2/2) (sqrt 2/2))
           xs     = [ Intersection (sqrt 2) floor]
           comps  = prepareComputations (head xs) r xs
@@ -390,10 +394,10 @@ worldShading =
          Then c = inner.material.color -}
     describe "The color with an intersection behind the ray" $ do
       let w      = SUT.defaultWorld
-          (Sphere oid or ot om)  = head (shapes w)
-          (Sphere lid lr lt lm)  = last (shapes w)
-          outer' = Sphere oid or ot (om { ambient = 1 })
-          inner' = Sphere lid lr lt (lm { ambient = 1 })
+          (Sphere oid or ot om _)  = head (shapes w)
+          (Sphere lid lr lt lm _)  = last (shapes w)
+          outer' = Sphere oid or ot (om { ambient = 1 }) Nothing
+          inner' = Sphere lid lr lt (lm { ambient = 1 }) Nothing
           w'     = w { shapes = [inner', outer'] }
           r      = makeRay (T.point 0 0 0.75) (vector 0 0 (-1))
           c      = SUT.colorAt w' r 1
@@ -528,11 +532,13 @@ worldBasics =
                                               { color =
                                                 Color (Red 0.8) (Green 1) (Blue 0.6)
                                               , diffuse   = 0.7
-                                              , specular  = 0.2}}
+                                              , specular  = 0.2}
+                         , parent          = Nothing }
           s2    = Sphere { Types.id        = 2
                          , radius          = 1.0
                          , Types.transform = scaling 0.5 0.5 0.5
-                         , material        = defaultMaterial}
+                         , material        = defaultMaterial
+                         , parent          = Nothing }
           w     = defaultWorld
       it "contains Sphere S1" $ do
         head (shapes w) `shouldBe` s1

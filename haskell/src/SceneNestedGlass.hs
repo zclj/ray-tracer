@@ -41,7 +41,8 @@ wall =
                                        (Color (Red 0.85) (Green 0.85) (Blue 0.85)))
             , ambient  = 0.8
             , specular = 0
-            , diffuse  = 0.2 }}
+            , diffuse  = 0.2 }
+        , Types.parent    = Nothing}
 
 -- glass ball
 glassBall = Sphere { Types.id        = 2
@@ -56,7 +57,8 @@ glassBall = Sphere { Types.id        = 2
                        , shininess       = 300
                        , reflective      = 0.9
                        , transparency    = 0.9
-                       , refractiveIndex = 1.5 }}
+                       , refractiveIndex = 1.5 }
+                   , Types.parent    = Nothing}
 
 -- hollow center
 hollowBall = Sphere { Types.id        = 3
@@ -71,7 +73,8 @@ hollowBall = Sphere { Types.id        = 3
                         , shininess       = 300
                         , reflective      = 0.9
                         , transparency    = 0.9
-                        , refractiveIndex = 1.0000034 }}
+                        , refractiveIndex = 1.0000034 }
+                    , Types.parent    = Nothing}
 
 ----------------------------------------
 renderNestedGlass =

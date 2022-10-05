@@ -24,7 +24,8 @@ floorPlane = Plane { Types.id        = 1
                    , Types.material  = defaultMaterial
                                        { materialPattern  = Just checkers'
                                        , color    = Color (Red 0.9) (Green 0.9) (Blue 0.9)
-                                       , specular = 0.5 }}
+                                       , specular = 0.5 }
+                   , Types.parent    = Nothing}
 
 wallGrad = gradientPattern
            (Color (Red 0.9) (Green 0.4) (Blue 0.9))
@@ -37,7 +38,8 @@ backdrop = Plane
   , Types.material  = defaultMaterial
                       { color    = Color (Red 0.7) (Green 0.2) (Blue 0.2)
                       , specular = 0.5
-                      , materialPattern = Just wallGrad'}}
+                      , materialPattern = Just wallGrad'}
+  , Types.parent    = Nothing}
 
 p = stripePattern
     (Color (Red 0.5) (Green 0.5) (Blue 0.5))
@@ -51,7 +53,8 @@ wall = Plane
   , Types.material  = defaultMaterial
                       { materialPattern  = Just p'
                       , color    = Color (Red 0.2) (Green 0.7) (Blue 0.2)
-                      , specular = 0.2 }}
+                      , specular = 0.2 }
+  , Types.parent    = Nothing }
 
 -- Spheres
 grad = gradientPattern
@@ -66,7 +69,8 @@ middle = Sphere { Types.id        = 4
                                     { color    = Color (Red 0.1) (Green 1) (Blue 0.5)
                                     , diffuse  = 0.7
                                     , specular = 0.3
-                                    , materialPattern = Just grad'}}
+                                    , materialPattern = Just grad'}
+                , Types.parent    = Nothing }
 
 ring = ringPattern
        (Color (Red 0.8) (Green 0.4) (Blue 0.3))
@@ -81,7 +85,8 @@ right = Sphere
                             { color           = Color (Red 0.5) (Green 1) (Blue 0.1)
                             , diffuse         = 0.7
                             , materialPattern = Just ring'
-                            , specular        = 0.3 }}
+                            , specular        = 0.3 }
+        , Types.parent    = Nothing }
 
 p1  = stripePattern
       (Color (Red 0.9) (Green 0.9) (Blue 0.5))

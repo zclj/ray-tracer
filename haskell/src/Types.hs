@@ -7,25 +7,34 @@ import Tuples
 data Shape = Sphere { id        :: Int
                     , radius    :: Double
                     , transform :: Matrix
-                    , material  :: Material }
+                    , material  :: Material
+                    , parent    :: Maybe Shape }
            | Plane { id        :: Int
                    , transform :: Matrix
-                   , material  :: Material }
+                   , material  :: Material
+                   , parent    :: Maybe Shape }
            | Cube { id        :: Int
                   , transform :: Matrix
-                  , material  :: Material }
+                  , material  :: Material
+                  , parent    :: Maybe Shape }
            | Cylinder { id        :: Int
                       , transform :: Matrix
                       , material  :: Material
+                      , parent    :: Maybe Shape
                       , minY      :: Double
                       , maxY      :: Double
                       , closed    :: Bool }
            | Cone { id        :: Int
                   , transform :: Matrix
                   , material  :: Material
+                  , parent    :: Maybe Shape
                   , minY      :: Double
                   , maxY      :: Double
                   , closed    :: Bool}
+           | Group { id        :: Int
+                   , transform :: Matrix
+                   , parent    :: Maybe Shape
+                   , children  :: [Shape] }
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

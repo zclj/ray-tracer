@@ -58,7 +58,8 @@ floorPlane =
                                        (Color (Red 0.35) (Green 0.35) (Blue 0.35))
                                        (Color (Red 0.65) (Green 0.65) (Blue 0.65)))
             , specular        = 0
-            , reflective      = 0.4 }}
+            , reflective      = 0.4 }
+        , Types.parent    = Nothing }
 
 ceilingPlane =
   Plane { Types.id        = 2
@@ -66,32 +67,37 @@ ceilingPlane =
         , Types.material  = defaultMaterial
                             { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
                             , ambient    = 0.3
-                            , specular   = 0 }}
+                            , specular   = 0 }
+        , Types.parent    = Nothing }
 
 westWall =  Plane { Types.id        = 3
                   , Types.transform = T.transform
                                       [ rotationY (pi/2)
                                       , rotationZ (pi/2)
                                       , translation (-5) 0 0]
-                  , Types.material  = wallMaterial }
+                  , Types.material  = wallMaterial
+                  , Types.parent    = Nothing }
 
 eastWall =  Plane { Types.id        = 4
                   , Types.transform = T.transform [ rotationY (pi/2)
                                                   , rotationZ (pi/2)
                                                   , translation 5 0 0]
-                  , Types.material  = wallMaterial }
+                  , Types.material  = wallMaterial
+                  , Types.parent    = Nothing }
 
 northWall =  Plane { Types.id = 5
                    , Types.transform = T.transform
                                        [ rotationX (pi/2)
                                        , translation 0 0 5]
-                   , Types.material  = wallMaterial }
+                   , Types.material  = wallMaterial
+                   , Types.parent    = Nothing }
 
 southWall =  Plane { Types.id = 6
                    , Types.transform = T.transform
                                        [ rotationX (pi/2)
                                        , translation 0 0 (-5)]
-                   , Types.material  = wallMaterial }
+                   , Types.material  = wallMaterial
+                   , Types.parent    = Nothing }
 
 ----------------------------------------
 -- Background cones
@@ -107,7 +113,8 @@ cone1 = Cone { Types.id         = 7
              , Types.material   = defaultMaterial
                                   { color     =
                                       Color (Red 0.8) (Green 0.5) (Blue 0.3)
-                                  , shininess = 50 }}
+                                  , shininess = 50 }
+             , Types.parent    = Nothing }
 
 cone2 = Cone
         { Types.id        = 8
@@ -119,7 +126,8 @@ cone2 = Cone
                             , translation 4.7 0 0.4]
         , Types.material  = defaultMaterial
                             { color     = Color (Red 0.9) (Green 0.4) (Blue 0.5)
-                            , shininess = 50 }}
+                            , shininess = 50 }
+        , Types.parent    = Nothing }
 
 cone3 = Cone
         { Types.id        = 9
@@ -131,7 +139,8 @@ cone3 = Cone
                             , translation (-1) 0.5 4.5]
         , Types.material  = defaultMaterial
                             { color     = Color (Red 0.4) (Green 0.9) (Blue 0.6)
-                            , shininess = 50 }}
+                            , shininess = 50 }
+        , Types.parent    = Nothing }
 
 cone4 = Cone
         { Types.id        = 10
@@ -143,7 +152,8 @@ cone4 = Cone
                             , translation (-1.7) 0.3 4.7]
         , Types.material  = defaultMaterial
                             { color     = Color (Red 0.4) (Green 0.6) (Blue 0.9)
-                            , shininess = 50 }}
+                            , shininess = 50 }
+        , Types.parent    = Nothing }
 
 ----------------------------------------
 -- Foreground balls
@@ -158,7 +168,8 @@ redCone =
        , Types.material  = defaultMaterial
                            { color     = Color (Red 1) (Green 0.3) (Blue 0.2)
                            , specular  = 0.4
-                           , shininess = 5 }}
+                           , shininess = 5 }
+       , Types.parent    = Nothing }
 
 blueGlassCone =
   Cone { Types.id        = 12
@@ -176,7 +187,8 @@ blueGlassCone =
                            , shininess       = 300
                            , reflective      = 0.9
                            , transparency    = 0.9
-                           , refractiveIndex = 1.5 }}
+                           , refractiveIndex = 1.5 }
+       , Types.parent    = Nothing }
 
 greenGlassCone =
   Cone { Types.id        = 13
@@ -194,7 +206,8 @@ greenGlassCone =
                            , shininess       = 300
                            , reflective      = 0.9
                            , transparency    = 0.9
-                           , refractiveIndex = 1.5 }}
+                           , refractiveIndex = 1.5 }
+       , Types.parent    = Nothing }
 
 ----------------------------------------
 renderSceneChapter13Cones =

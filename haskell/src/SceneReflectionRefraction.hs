@@ -26,7 +26,8 @@ floorPlane = Plane
                                  { materialPattern = Just checkers'
                                  , color           = Color (Red 0.9) (Green 0.9) (Blue 0.9)
                                  , reflective      = 0.5
-                                 , specular        = 0.5 }}
+                                 , specular        = 0.5 }
+             , Types.parent    = Nothing}
 
 wallGrad = gradientPattern
            (Color (Red 0.9) (Green 0.4) (Blue 0.9))
@@ -40,7 +41,8 @@ backdrop = Plane
                                { color    = Color (Red 0.7) (Green 0.2) (Blue 0.2)
                                , specular = 0.5
                                , reflective = 0.2
-                               , materialPattern = Just wallGrad'}}
+                               , materialPattern = Just wallGrad'}
+           , Types.parent    = Nothing}
 
 p = stripePattern
     (Color (Red 0.5) (Green 0.5) (Blue 0.5))
@@ -58,7 +60,8 @@ wall = Plane
                             , ambient    = 0
                             , diffuse    = 0.4
                             , shininess  = 300
-                            , specular   = 0.9 }}
+                            , specular   = 0.9 }
+        , Types.parent    = Nothing}
 
 -- Spheres
 grad = gradientPattern
@@ -75,7 +78,8 @@ middle = Sphere
                              , diffuse  = 0.7
                              , specular = 0.3
                              , reflective = 0.1
-                             , materialPattern = Just grad'}}
+                             , materialPattern = Just grad'}
+         , Types.parent    = Nothing}
 
 ring = ringPattern
        (Color (Red 0.8) (Green 0.4) (Blue 0.3))
@@ -90,7 +94,8 @@ right = Sphere
                             { color    = Color (Red 0.5) (Green 1) (Blue 0.1)
                             , diffuse  = 0.7
                             , materialPattern = Just ring'
-                            , specular = 0.3 }}
+                            , specular = 0.3 }
+        , Types.parent    = Nothing}
 
 p1  = stripePattern
       (Color (Red 0.9) (Green 0.9) (Blue 0.5))
@@ -106,7 +111,8 @@ left = Sphere
                            { materialPattern  = Just p1'
                            , color    = Color (Red 1) (Green 0.8) (Blue 0.1)
                            , diffuse  = 0.7
-                           , specular = 0.3 }}
+                           , specular = 0.3 }
+       , Types.parent    = Nothing}
 
 ----
 -- Light source
@@ -142,6 +148,7 @@ fooShape = Sphere 8 1.0 identity (defaultMaterial
                                      shininess = 300,
                                      reflective = 1.0,
                                      refractiveIndex = 1.5 })
+           Nothing
 fooShape' = fooShape { Types.transform = translation (-0.5) 1 (-1.9)
                                          `Matrices.mul` scaling 0.4 0.4 0.4}
 -- fooShape = ASphere 5 2.0
