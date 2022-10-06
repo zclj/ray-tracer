@@ -105,6 +105,7 @@ localIntersect cone@Cone {} r =
           then [Intersection (- c /(2*b)) cone] ++ (intersectCaps cone r)
           else let bi = intersectBody cone a b c r
                in bi ++ (intersectCaps cone r)
+localIntersect group@Group {children} r = intersectShapes children r
 
 intersectBody :: Shape -> Double -> Double -> Double -> Ray -> [Intersection]
 intersectBody s a b c r
@@ -187,3 +188,9 @@ addChild group@Group {children} child =
   let newShape = child { parent = Just group }
       newGroup = group { children = newShape : children }
   in (newGroup, newShape)
+
+addChildren :: Shape -> [Shape] -> (Shape, [Shape])
+addChildren group children = foldr
+                             (\c (g, cs) -> let (g', c') = addChild g c in (g', c':cs))
+                             (group, []) children
+
