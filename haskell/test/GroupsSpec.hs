@@ -63,6 +63,23 @@ groupIntersections =
         length xs `shouldBe` 4
       it "with correct shapes" $ do
         map intersectionObject xs `shouldBe` [s2', s2', s1', s1']
+    {- Scenario: Intersecting a transformed group
+         Given g ← group()
+           And set_transform(g, scaling(2, 2, 2))
+           And s ← sphere()
+           And set_transform(s, translation(5, 0, 0))
+           And add_child(g, s)
+         When r ← ray(point(10, 0, -10), vector(0, 0, 1))
+           And xs ← intersect(g, r)
+         Then xs.count = 2 -}
+    describe "Intersecting a transformed group" $ do
+      let g = (defaultGroup 1) { Types.transform = scaling 2 2 2 }
+          s = (defaultSphere 2) { Types.transform = translation 5 0 0 }
+          (g', _) = addChild g s
+          r = makeRay (T.point 10 0 (-10)) (vector 0 0 1)
+          xs = intersectShapes [g'] r
+      it "intersect twice" $ do
+        length xs `shouldBe` 2
 
 groupBasics :: Spec
 groupBasics =
