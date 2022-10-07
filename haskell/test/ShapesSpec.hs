@@ -55,3 +55,23 @@ shapeBasics =
           p = SUT.worldToObject s' (Tuples.point (-2) 0 (-10))
       it "p = point(0, 0, -1)" $ do
         p `shouldBe` Tuples.point 0 0 (-1)
+    {- Scenario: Converting a normal from object to world space
+         Given g1 ← group()
+           And set_transform(g1, rotation_y(π/2))
+           And g2 ← group()
+           And set_transform(g2, scaling(1, 2, 3))
+           And add_child(g1, g2)
+           And s ← sphere()
+           And set_transform(s, translation(5, 0, 0))
+           And add_child(g2, s)
+         When n ← normal_to_world(s, vector(√3/3, √3/3, √3/3))
+         Then n = vector(0.2857, 0.4286, -0.8571) -}
+    describe "Converting a normal from object to world space" $ do
+      let g1 = (defaultGroup 1) { Types.transform = rotationY (pi/2) }
+          g2 = (defaultGroup 2) { Types.transform = scaling 1 2 3 }
+          (g1', g2') = addChild g1 g2
+          s = (defaultSphere 3) { Types.transform = translation 5 0 0 }
+          (g2'', s') = addChild g2' s
+          p = SUT.normalToWorld s' (Tuples.vector (sqrt 3/3) (sqrt 3/3) (sqrt 3/3))
+      it "n = vector(0.2857, 0.4286, -0.8571)" $ do
+        p `shouldBe` Tuples.vector 0.2857 0.4286 (-0.8571)

@@ -201,3 +201,10 @@ worldToObject s point =
     Just p  -> let objPoint = worldToObject p point
                in inverse (Types.transform s) `mulT` objPoint
 
+normalToWorld :: Shape -> Tuple -> Tuple
+normalToWorld s objectNormal =
+  let normal     = (transpose (inverse (Types.transform s)) `mulT` objectNormal) { w = 0 }
+      normalized = norm normal
+  in case (parent s) of
+       Nothing -> normalized
+       Just p  -> normalToWorld p normalized
