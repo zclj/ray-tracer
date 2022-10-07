@@ -194,3 +194,10 @@ addChildren group children = foldr
                              (\c (g, cs) -> let (g', c') = addChild g c in (g', c':cs))
                              (group, []) children
 
+worldToObject :: Shape -> Tuple -> Tuple
+worldToObject s point =
+  case (parent s) of
+    Nothing -> inverse (Types.transform s) `mulT` point
+    Just p  -> let objPoint = worldToObject p point
+               in inverse (Types.transform s) `mulT` objPoint
+
