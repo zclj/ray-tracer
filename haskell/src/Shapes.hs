@@ -177,7 +177,7 @@ refractive (i:is) shapes hit (n1, n2) =
 
 patternAtShape :: Pattern -> Shape -> Tuple -> Color
 patternAtShape p shape worldPoint =
-  let objectPoint  = inverse (Types.transform shape) `mulT` worldPoint
+  let objectPoint  = worldToObject shape worldPoint
       patternPoint = inverse (patternTransform p) `mulT` objectPoint
   in patternAt p patternPoint
 
