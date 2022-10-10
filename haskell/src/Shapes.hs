@@ -151,11 +151,10 @@ intersectShapes objects r
 
 objectNormalAt :: Shape -> Tuple -> Tuple
 objectNormalAt s worldPoint =
-  let objectPoint  = inverse (Types.transform s) `mulT` worldPoint
-      objectNormal = localNormalAt s objectPoint
-      worldNormal  = transpose (inverse (Types.transform s)) `mulT` objectNormal
-      worldNormal' = worldNormal {w=0}
-  in norm worldNormal'
+  let localPoint  = worldToObject s worldPoint
+      localNormal = localNormalAt s localPoint
+      worldNormal = normalToWorld s localNormal
+  in worldNormal
 
 removeOrAppend :: [Shape] -> Shape -> [Shape]
 removeOrAppend xs i = if Types.id i `elem` map Types.id xs

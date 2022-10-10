@@ -75,3 +75,24 @@ shapeBasics =
           p = SUT.normalToWorld s' (Tuples.vector (sqrt 3/3) (sqrt 3/3) (sqrt 3/3))
       it "n = vector(0.2857, 0.4286, -0.8571)" $ do
         p `shouldBe` Tuples.vector 0.2857 0.4286 (-0.8571)
+    {- Scenario: Finding the normal on a child object
+         Given g1 ← group()
+           And set_transform(g1, rotation_y(π/2))
+           And g2 ← group()
+           And set_transform(g2, scaling(1, 2, 3))
+           And add_child(g1, g2)
+           And s ← sphere()
+           And set_transform(s, translation(5, 0, 0))
+           And add_child(g2, s)
+         When n ← normal_at(s, point(1.7321, 1.1547, -5.5774))
+         Then n = vector(0.2857, 0.4286, -0.8571) -}
+    describe "Finding the normal on a child object" $ do
+      let g1 = (defaultGroup 1) { Types.transform = rotationY (pi/2) }
+          g2 = (defaultGroup 2) { Types.transform = scaling 1 2 3 }
+          (g1', g2') = addChild g1 g2
+          s = (defaultSphere 3) { Types.transform = translation 5 0 0 }
+          (g2'', s') = addChild g2' s
+          n = objectNormalAt s' (Tuples.point 1.7321 1.1547 (-5.5774))
+      it "n = vector(0.2857, 0.4286, -0.8571)" $ do
+        n `shouldBe` vector 0.2857 0.4286 (-0.8571)
+
