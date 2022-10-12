@@ -217,3 +217,13 @@ bounds shape@Group { children } = undefined
 
 defaultBoundingBox :: BoundingBox
 defaultBoundingBox = BoundingBox (T.point (1/0) (1/0) (1/0)) (T.point (-1/0) (-1/0) (-1/0))
+
+addBoundingBoxPoint :: BoundingBox -> Tuple -> BoundingBox
+addBoundingBoxPoint (BoundingBox boundMin boundMax) point =
+  let minX = if (x point) < (x boundMin) then (x point) else (x boundMin)
+      minY = if (y point) < (y boundMin) then (y point) else (y boundMin)
+      minZ = if (z point) < (z boundMin) then (z point) else (z boundMin)
+      maxX = if (x point) > (x boundMax) then (x point) else (x boundMax)
+      maxY = if (y point) > (y boundMax) then (y point) else (y boundMax)
+      maxZ = if (z point) > (z boundMax) then (z point) else (z boundMax)
+  in BoundingBox (T.point minX minY minZ) (T.point maxX maxY maxZ)

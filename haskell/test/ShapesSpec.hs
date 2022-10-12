@@ -52,6 +52,24 @@ shapeBounds =
         boundMin box `shouldBe` (Tuples.point (-1) (-2) (-3))
       it "box.max = point(3, 2, 1)" $ do
         boundMax box `shouldBe` (Tuples.point 3 2 1)
+    {- Scenario: Adding points to an empty bounding box
+         Given box ← bounding_box(empty)
+           And p1 ← point(-5, 2, 0)
+           And p2 ← point(7, 0, -3)
+         When p1 is added to box
+           And p2 is added to box
+         Then box.min = point(-5, 0, -3)
+           And box.max = point(7, 2, 0) -}
+    describe "Adding points to an empty bounding box" $ do
+      let box   = defaultBoundingBox
+          p1    = Tuples.point (-5) 2 0
+          p2    = Tuples.point 7 0 (-3)
+          box'  = addBoundingBoxPoint box p1
+          box'' = addBoundingBoxPoint box' p2
+      it "box.min = point(-5, 0, -3)" $ do
+        boundMin box'' `shouldBe` Tuples.point (-5) 0 (-3)
+      it "box.max = point(7, 2, 0)" $ do
+        boundMax box'' `shouldBe` Tuples.point 7 2 0
 
 shapeBasics :: Spec
 shapeBasics =
