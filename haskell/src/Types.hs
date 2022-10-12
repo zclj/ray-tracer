@@ -84,3 +84,7 @@ data Pattern = Pattern { a :: Color
 data Ray = Ray { origin :: Tuple
                , direction :: Tuple }
            deriving (Eq, Show)
+
+{- Bounds -}
+data BoundingBox = BoundingBox { boundMin :: Tuple
+                               , boundMax :: Tuple }

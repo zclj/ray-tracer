@@ -23,7 +23,35 @@ testShape = TestShape
 shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Shapes" shapeBasics)]]
+  [ unsafePerformIO (testSpec "Shapes" shapeBasics)
+  , unsafePerformIO (testSpec "Shapes" shapeBounds)]]
+
+-- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
+shapeBounds :: Spec
+shapeBounds =
+  describe "Bounding Boxes" $ do
+    {- Scenario: Creating an empty bounding box
+         Given box ← bounding_box(empty)
+         Then box.min = point(infinity, infinity, infinity)
+           And box.max = point(-infinity, -infinity, -infinity) -}
+    describe "Creating an empty bounding box" $ do
+      let box = defaultBoundingBox
+      -- compare with textual representation instead of impl. Ord on Inf
+      it "box.min = point(infinity, infinity, infinity)" $ do
+        show (boundMin box) `shouldBe` show (Tuples.point (1/0) (1/0) (1/0))
+      it "box.max = point(-infinity, -infinity, -infinity)" $ do
+        show (boundMax box) `shouldBe` show (Tuples.point (-1/0) (-1/0) (-1/0))
+    {- Scenario: Creating a bounding box with volume
+         Given box ← bounding_box(min=point(-1, -2, -3) max=point(3, 2, 1))
+         Then box.min = point(-1, -2, -3)
+           And box.max = point(3, 2, 1) -}
+    describe "Creating a bounding box with volume" $ do
+      let box = (defaultBoundingBox) { boundMin = (Tuples.point (-1) (-2) (-3))
+                                     , boundMax = (Tuples.point 3 2 1) }
+      it "box.min = point(-1, -2, -3)" $ do
+        boundMin box `shouldBe` (Tuples.point (-1) (-2) (-3))
+      it "box.max = point(3, 2, 1)" $ do
+        boundMax box `shouldBe` (Tuples.point 3 2 1)
 
 shapeBasics :: Spec
 shapeBasics =

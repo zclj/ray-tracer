@@ -207,3 +207,13 @@ normalToWorld s objectNormal =
   in case (parent s) of
        Nothing -> normalized
        Just p  -> normalToWorld p normalized
+
+{- Bounds -}
+
+bounds :: Shape -> BoundingBox
+bounds shape@Sphere {} = BoundingBox (T.point (-1) (-1) (-1)) (T.point 1 1 1)
+
+bounds shape@Group { children } = undefined
+
+defaultBoundingBox :: BoundingBox
+defaultBoundingBox = BoundingBox (T.point (1/0) (1/0) (1/0)) (T.point (-1/0) (-1/0) (-1/0))
