@@ -213,6 +213,19 @@ normalToWorld s objectNormal =
 bounds :: Shape -> BoundingBox
 bounds shape@Sphere {} = BoundingBox (T.point (-1) (-1) (-1)) (T.point 1 1 1)
 
+bounds shape@Plane {} = BoundingBox (T.point (-1/0) 0 (-1/0)) (T.point (1/0) 0 (1/0))
+
+bounds shape@Cube {} = BoundingBox (T.point (-1) (-1) (-1)) (T.point 1 1 1)
+
+bounds shape@Cylinder {minY, maxY}
+  = BoundingBox (T.point (-1) minY (-1)) (T.point 1 maxY 1)
+
+bounds shape@Cone {minY, maxY}
+  = let absMin = abs minY
+        absMax = abs maxY
+        limit  = max absMin absMax
+    in BoundingBox (T.point (-limit) minY (-limit)) (T.point limit maxY limit)
+
 bounds shape@Group { children } = undefined
 
 defaultBoundingBox :: BoundingBox

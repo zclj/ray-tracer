@@ -70,6 +70,94 @@ shapeBounds =
         boundMin box'' `shouldBe` Tuples.point (-5) 0 (-3)
       it "box.max = point(7, 2, 0)" $ do
         boundMax box'' `shouldBe` Tuples.point 7 2 0
+    {- Scenario: A sphere has a bounding box
+         Given shape ← sphere()
+         When box ← bounds_of(shape)
+         Then box.min = point(-1, -1, -1)
+           And box.max = point(1, 1, 1) -}
+    describe "A sphere has a bounding box" $ do
+      let shape = defaultSphere 1
+          box   = bounds shape
+      it "box.min = point(-1, -1, -1)" $ do
+        boundMin box `shouldBe` Tuples.point (-1) (-1) (-1)
+      it "box.max = point(1, 1, 1)" $ do
+        boundMax box `shouldBe` Tuples.point 1 1 1
+    {- Scenario: A plane has a bounding box
+         Given shape ← plane()
+         When box ← bounds_of(shape)
+         Then box.min = point(-infinity, 0, -infinity)
+           And box.max = point(infinity, 0, infinity) -}
+    describe "A plane has a bounding box" $ do
+      let shape = defaultPlane 1
+          box   = bounds shape
+      it "box.min = point(-infinity, 0, -infinity)" $ do
+        show (boundMin box) `shouldBe` show (Tuples.point (-1/0) 0 (-1/0))
+      it "box.max = point(infinity, 0, infinity)" $ do
+        show (boundMax box) `shouldBe` show (Tuples.point (1/0) 0 (1/0))
+    {- Scenario: A cube has a bounding box
+         Given shape ← cube()
+         When box ← bounds_of(shape)
+         Then box.min = point(-1, -1, -1)
+           And box.max = point(1, 1, 1) -}
+    describe "A cube has a bounding box" $ do
+      let shape = defaultCube 1
+          box   = bounds shape
+      it "box.min = point(-1, -1, -1)" $ do
+        (boundMin box) `shouldBe` (Tuples.point (-1) (-1) (-1))
+      it "box.max = point(0, 0, 0)" $ do
+        (boundMax box) `shouldBe` (Tuples.point 1 1 1)
+    {- Scenario: An unbounded cylinder has a bounding box
+         Given shape ← cylinder()
+         When box ← bounds_of(shape)
+         Then box.min = point(-1, -infinity, -1)
+           And box.max = point(1, infinity, 1) -}
+    describe "An unbounded cylinder has a bounding box" $ do
+      let shape = defaultCylinder 1
+          box   = bounds shape
+      it "box.min = point(-1, -infinity, -1)" $ do
+        show (boundMin box) `shouldBe` show (Tuples.point (-1) (-1/0) (-1))
+      it "box.max = point(1, infinity, 1)" $ do
+        show (boundMax box) `shouldBe` show (Tuples.point 1 (1/0) 1)
+    {- Scenario: A bounded cylinder has a bounding box
+         Given shape ← cylinder()
+           And shape.minimum ← -5
+           And shape.maximum ← 3
+         When box ← bounds_of(shape)
+         Then box.min = point(-1, -5, -1)
+           And box.max = point(1, 3, 1) -}
+    describe "A bounded cylinder has a bounding box" $ do
+      let shape = (defaultCylinder 1) { minY = (-5), maxY = 3 }
+          box   = bounds shape
+      it "box.min = point(-1, -5, -1)" $ do
+        boundMin box `shouldBe` Tuples.point (-1) (-5) (-1)
+      it "box.max = point(1, 3, 1)" $ do
+        boundMax box `shouldBe` Tuples.point 1 3 1
+    {- Scenario: An unbounded cone has a bounding box
+         Given shape ← cone()
+         When box ← bounds_of(shape)
+         Then box.min = point(-infinity, -infinity, -infinity)
+           And box.max = point(infinity, infinity, infinity) -}
+    describe "An unbounded cone has a bounding box" $ do
+      let shape = defaultCone 1
+          box   = bounds shape
+      it "box.min = point(-infinity, -infinity, -infinity)" $ do
+        show (boundMin box) `shouldBe` show (Tuples.point (-1/0) (-1/0) (-1/0))
+      it "box.max = point(infinity, infinity, infinity)" $ do
+        show (boundMax box) `shouldBe` show (Tuples.point (1/0) (1/0) (1/0))
+    {- Scenario: A bounded cone has a bounding box
+         Given shape ← cone()
+           And shape.minimum ← -5
+           And shape.maximum ← 3
+         When box ← bounds_of(shape)
+         Then box.min = point(-5, -5, -5)
+           And box.max = point(5, 3, 5) -}
+    describe "A bounded cone has a bounding box" $ do
+      let shape = (defaultCone 1) { minY = (-5), maxY = 3 }
+          box   = bounds shape
+      it "box.min = point(-5, -5, -5)" $ do
+        boundMin box `shouldBe` Tuples.point (-5) (-5) (-5)
+      it "box.max = point(5, 3, 5)" $ do
+        boundMax box `shouldBe` Tuples.point 5 3 5
 
 shapeBasics :: Spec
 shapeBasics =
