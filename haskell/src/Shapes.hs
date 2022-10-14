@@ -240,3 +240,8 @@ addBoundingBoxPoint (BoundingBox boundMin boundMax) point =
       maxY = if (y point) > (y boundMax) then (y point) else (y boundMax)
       maxZ = if (z point) > (z boundMax) then (z point) else (z boundMax)
   in BoundingBox (T.point minX minY minZ) (T.point maxX maxY maxZ)
+
+addBoxes :: BoundingBox -> BoundingBox -> BoundingBox
+addBoxes a b = let newMin = (boundMin a) `T.add` (boundMin b)
+                   newMax = (boundMax a) `T.add` (boundMax b)
+               in BoundingBox newMin newMax

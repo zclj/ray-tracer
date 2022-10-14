@@ -159,6 +159,26 @@ shapeBounds =
       it "box.max = point(5, 3, 5)" $ do
         boundMax box `shouldBe` Tuples.point 5 3 5
 
+boundingBoxes :: Spec
+boundingBoxes =
+  describe "BoundingBoxes" $ do
+    {- Scenario: Adding one bounding box to another
+         Given box1 ← bounding_box(min=point(-5, -2, 0) max=point(7, 4, 4))
+           And box2 ← bounding_box(min=point(8, -7, -2) max=point(14, 2, 8))
+         When box2 is added to box1
+         Then box1.min = point(-5, -7, -2)
+           And box1.max = point(14, 4, 8) -}
+    describe "Adding one bounding box to another" $ do
+      let box1 = BoundingBox { boundMin = Tuples.point (-5) (-2) 0
+                             , boundMax = Tuples.point 7 4 4 }
+          box2 = BoundingBox { boundMin = Tuples.point 8 (-7) (-2)
+                             , boundMax = Tuples.point 14 2 8 }
+          box' = box1 `addBoxes` box2
+      it "box1.min = point(-5, -7, -2)" $ do
+        boundMin box' `shouldBe` Tuples.point (-5) (-7) (-2)
+      it "box1.max = point(14, 4, 8)" $ do
+        boundMax box' `shouldBe` Tuples.point 14 4 8
+
 shapeBasics :: Spec
 shapeBasics =
   describe "Basics" $ do
