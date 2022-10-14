@@ -24,7 +24,8 @@ shapesTests :: TestTree
 shapesTests = testGroup "Shapes Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Shapes" shapeBasics)
-  , unsafePerformIO (testSpec "Shapes" shapeBounds)]]
+  , unsafePerformIO (testSpec "Shapes" shapeBounds)
+  , unsafePerformIO (testSpec "Shapes" boundingBoxes)]]
 
 -- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 shapeBounds :: Spec

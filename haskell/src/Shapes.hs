@@ -242,6 +242,4 @@ addBoundingBoxPoint (BoundingBox boundMin boundMax) point =
   in BoundingBox (T.point minX minY minZ) (T.point maxX maxY maxZ)
 
 addBoxes :: BoundingBox -> BoundingBox -> BoundingBox
-addBoxes a b = let newMin = (boundMin a) `T.add` (boundMin b)
-                   newMax = (boundMax a) `T.add` (boundMax b)
-               in BoundingBox newMin newMax
+addBoxes a b = (a `addBoundingBoxPoint` (boundMin b)) `addBoundingBoxPoint` (boundMax b)
