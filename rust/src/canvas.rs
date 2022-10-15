@@ -142,4 +142,32 @@ mod test {
         let result = "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255";
         assert_eq!(ppm, result);
     }
+
+    // Scenario: Splitting long lines in PPM files
+    // Given c ← canvas(10, 2)
+    // When every pixel of c is set to color(1, 0.8, 0.6)
+    //   And ppm ← canvas_to_ppm(c)
+    // Then lines 4-7 of ppm are
+    //   """
+    //   255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+    //   153 255 204 153 255 204 153 255 204 153 255 204 153
+    //   255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+    //   153 255 204 153 255 204 153 255 204 153 255 204 153
+    //   """
+    #[test]
+    fn splitting_long_lines_in_ppm_files() {
+        let mut c = Canvas::new(10, 2);
+
+        for i in 0..10 {
+            for j in 0..2 {
+                c.write_pixel(i, j, Color::new(1., 0.8, 0.6))
+            }
+        }
+
+        let ppm = c.to_ppm().lines().skip(4).collect::<Vec<&str>>().join("\n");
+
+        let result = "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153";
+
+        assert_eq!(ppm, result);
+    }
 }
