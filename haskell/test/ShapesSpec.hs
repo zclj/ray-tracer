@@ -179,6 +179,37 @@ boundingBoxes =
         boundMin box' `shouldBe` Tuples.point (-5) (-7) (-2)
       it "box1.max = point(14, 4, 8)" $ do
         boundMax box' `shouldBe` Tuples.point 14 4 8
+    {- Scenario Outline: Checking to see if a box contains a given point
+         Given box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))
+           And p ← <point>
+         Then box_contains_point(box, p) is <result>
+
+         Examples:
+           | point           | result |
+           | point(5, -2, 0) | true   |
+           | point(11, 4, 7) | true   |
+           | point(8, 1, 3)  | true   |
+           | point(3, 0, 3)  | false  |
+           | point(8, -4, 3) | false  |
+           | point(8, 1, -1) | false  |
+           | point(13, 1, 3) | false  |
+           | point(8, 5, 3)  | false  |
+           | point(8, 1, 8)  | false  | -}
+    describe "Checking to see if a box contains a given point" $ do
+      let box = BoundingBox { boundMin = Tuples.point 5 (-2) 0
+                            , boundMax = Tuples.point 11 4 7 }
+          points = [ Tuples.point 5 (-2) 0
+                   , Tuples.point 11 4 7
+                   , Tuples.point 8 1 3
+                   , Tuples.point 3 0 3
+                   , Tuples.point 8 (-4) 3
+                   , Tuples.point 8 1 (-1)
+                   , Tuples.point 13 1 3
+                   , Tuples.point 8 5 3
+                   , Tuples.point 8 1 8]
+          bs = map (boxContainsPoint box) points
+      it "points are contained or not contained" $ do
+        bs `shouldBe` [True, True, True, False, False, False, False, False, False]
 
 shapeBasics :: Spec
 shapeBasics =

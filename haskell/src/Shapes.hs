@@ -243,3 +243,9 @@ addBoundingBoxPoint (BoundingBox boundMin boundMax) point =
 
 addBoxes :: BoundingBox -> BoundingBox -> BoundingBox
 addBoxes a b = (a `addBoundingBoxPoint` (boundMin b)) `addBoundingBoxPoint` (boundMax b)
+
+boxContainsPoint :: BoundingBox -> Tuple -> Bool
+boxContainsPoint (BoundingBox boundMin boundMax) point
+  = (x point) >= (x boundMin) && (x point) <= (x boundMax)
+    && (y point) >= (y boundMin) && (y point) <= (y boundMax)
+    && (z point) >= (z boundMin) && (z point) <= (z boundMax)
