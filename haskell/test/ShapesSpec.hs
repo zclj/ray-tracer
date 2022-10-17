@@ -27,7 +27,6 @@ shapesTests = testGroup "Shapes Tests" [
   , unsafePerformIO (testSpec "Shapes" shapeBounds)
   , unsafePerformIO (testSpec "Shapes" boundingBoxes)]]
 
--- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 shapeBounds :: Spec
 shapeBounds =
   describe "Bounding Boxes" $ do

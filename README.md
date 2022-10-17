@@ -8,9 +8,11 @@ Playing around with different language implementation. Should not be considered 
 
 - [Rendering Resources](https://benedikt-bitterli.me/resources/)
 
+- [Bonus Chapters - Bounding Boxes](http://www.raytracerchallenge.com/bonus/bounding-boxes.html)
+
 ## License
 
-Copyright © 2019-2021 Stefan Karlsson
+Copyright © 2019-2022 Stefan Karlsson
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
