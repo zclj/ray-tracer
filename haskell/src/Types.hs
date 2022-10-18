@@ -88,3 +88,4 @@ data Ray = Ray { origin :: Tuple
 {- Bounds -}
 data BoundingBox = BoundingBox { boundMin :: Tuple
                                , boundMax :: Tuple }
+                   deriving (Eq, Show)
