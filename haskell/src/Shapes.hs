@@ -253,3 +253,19 @@ boxContainsPoint (BoundingBox boundMin boundMax) point
 boxContainsBox :: BoundingBox -> BoundingBox -> Bool
 boxContainsBox a (BoundingBox boundMin boundMax)
   = boxContainsPoint a boundMin && boxContainsPoint a boundMax
+
+transformBox :: BoundingBox -> Matrix -> BoundingBox
+transformBox (BoundingBox boundMin boundMax) m =
+  let p1 = boundMin
+      p2 = T.point (x boundMin) (y boundMin) (z boundMax)
+      p3 = T.point (x boundMin) (y boundMax) (z boundMin)
+      p4 = T.point (x boundMin) (y boundMax) (z boundMax)
+      p5 = T.point (x boundMax) (y boundMin) (z boundMin)
+      p6 = T.point (x boundMax) (y boundMin) (z boundMax)
+      p7 = T.point (x boundMax) (y boundMax) (z boundMin)
+      p8 = boundMax
+  in foldr
+     (\p box -> addBoundingBoxPoint box (m `mulT` p))
+     defaultBoundingBox
+     [p1, p2, p3, p4, p5, p6, p7, p8]
+

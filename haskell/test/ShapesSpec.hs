@@ -235,6 +235,21 @@ boundingBoxes =
                points
       it "points are contained or not contained" $ do
         bs `shouldBe` [True, True, False, False]
+    {- Scenario: Transforming a bounding box
+         Given box ← bounding_box(min=point(-1, -1, -1) max=point(1, 1, 1))
+           And matrix ← rotation_x(π / 4) * rotation_y(π / 4)
+         When box2 ← transform(box, matrix)
+         Then box2.min = point(-1.4142, -1.7071, -1.7071)
+           And box2.max = point(1.4142, 1.7071, 1.7071) -}
+    describe "Transforming a bounding box" $ do
+      let box  = BoundingBox { boundMin = Tuples.point (-1) (-1) (-1)
+                             , boundMax = Tuples.point 1 1 1 }
+          matrix = (rotationX (pi/4)) `Matrices.mul` (rotationY (pi/4))
+          box2 = transformBox box matrix
+      it "box2.min = point(-1.4142, -1.7071, -1.7071)" $ do
+        boundMin box2 `shouldBe` Tuples.point (-1.4142) (-1.7071) (-1.7071)
+      it "box2.max = point(1.4142, 1.7071, 1.7071)" $ do
+        boundMax box2 `shouldBe` Tuples.point 1.4142 1.7071 1.7071
 
 shapeBasics :: Spec
 shapeBasics =
