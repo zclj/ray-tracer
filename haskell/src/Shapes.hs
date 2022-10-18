@@ -251,4 +251,5 @@ boxContainsPoint (BoundingBox boundMin boundMax) point
     && (z point) >= (z boundMin) && (z point) <= (z boundMax)
 
 boxContainsBox :: BoundingBox -> BoundingBox -> Bool
-boxContainsBox a b = False
+boxContainsBox a (BoundingBox boundMin boundMax)
+  = boxContainsPoint a boundMin && boxContainsPoint a boundMax
