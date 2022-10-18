@@ -6,8 +6,36 @@ struct Canvas {
     pixels: Vec<Color>,
 }
 
-fn to_ppm_sample_string_color(v: f32) -> String {
-    f32::max(f32::min(255.0, (v * 255.0).ceil()), 0.0).to_string()
+fn process_line(cs: &[Color]) -> String {
+    let mut count = 0;
+    let mut ppm_line: Vec<String> = vec![];
+
+    let to_ppm_sample_string =
+        |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0).to_string();
+
+    for c in cs {
+        let samples = [
+            to_ppm_sample_string(c.red),
+            to_ppm_sample_string(c.green),
+            to_ppm_sample_string(c.blue),
+        ];
+
+        for s in samples {
+            let size = s.len();
+
+            if count + size <= 70 {
+                ppm_line.push(" ".to_string() + &s);
+                count += 1;
+            } else {
+                ppm_line.push("\n".to_string() + &s);
+                count = 0;
+            }
+
+            count += size;
+        }
+    }
+
+    ppm_line.join("").trim().to_string()
 }
 
 impl Canvas {
@@ -32,23 +60,6 @@ impl Canvas {
     fn to_ppm(&self) -> String {
         let header = format!("P3\n{} {}\n255\n", self.width, self.height);
 
-        let to_ppm_sample_string = |c: &Color| {
-            to_ppm_sample_string_color(c.red)
-                + " "
-                + &to_ppm_sample_string_color(c.green)
-                + " "
-                + &to_ppm_sample_string_color(c.blue)
-                + " "
-        };
-
-        let process_line = |l: &[Color]| {
-            l.iter()
-                .map(to_ppm_sample_string)
-                .collect::<Vec<String>>()
-                .join("")
-                .trim()
-                .to_string()
-        };
         // need to process for each 'line' of pixels
         let pixel_strs = self
             .pixels
@@ -56,7 +67,7 @@ impl Canvas {
             .map(process_line)
             .collect::<Vec<String>>();
 
-        header + "\n" + &pixel_strs.join("\n")
+        header + &pixel_strs.join("\n")
     }
 }
 
@@ -106,9 +117,9 @@ mod test {
     #[test]
     fn constructing_the_ppm_header() {
         let c = Canvas::new(5, 3);
-        let ppm = c.to_ppm().lines().take(4).collect::<Vec<&str>>().join("\n");
+        let ppm = c.to_ppm().lines().take(3).collect::<Vec<&str>>().join("\n");
 
-        assert_eq!("P3\n5 3\n255\n", ppm)
+        assert_eq!("P3\n5 3\n255", ppm)
     }
 
     // Scenario: Constructing the PPM pixel data
@@ -137,7 +148,7 @@ mod test {
         c.write_pixel(2, 1, c2);
         c.write_pixel(4, 2, c3);
 
-        let ppm = c.to_ppm().lines().skip(4).collect::<Vec<&str>>().join("\n");
+        let ppm = c.to_ppm().lines().skip(3).collect::<Vec<&str>>().join("\n");
 
         let result = "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255";
         assert_eq!(ppm, result);
@@ -164,10 +175,16 @@ mod test {
             }
         }
 
-        let ppm = c.to_ppm().lines().skip(4).collect::<Vec<&str>>().join("\n");
+        let complete_ppm = c.to_ppm();
+        let ppm = &complete_ppm
+            .lines()
+            .skip(3)
+            .collect::<Vec<&str>>()
+            .join("\n");
 
         let result = "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153";
 
         assert_eq!(ppm, result);
+        assert_eq!(complete_ppm.lines().count(), 7);
     }
 }
