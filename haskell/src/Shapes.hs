@@ -269,3 +269,5 @@ transformBox (BoundingBox boundMin boundMax) m =
      defaultBoundingBox
      [p1, p2, p3, p4, p5, p6, p7, p8]
 
+parentSpaceBoundsOf :: Shape -> BoundingBox
+parentSpaceBoundsOf s = transformBox (bounds s) (Types.transform s)

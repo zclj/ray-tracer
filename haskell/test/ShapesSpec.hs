@@ -158,6 +158,21 @@ shapeBounds =
         boundMin box `shouldBe` Tuples.point (-5) (-5) (-5)
       it "box.max = point(5, 3, 5)" $ do
         boundMax box `shouldBe` Tuples.point 5 3 5
+    {- Scenario: Querying a shape's bounding box in its parent's space
+         Given shape ← sphere()
+           And set_transform(shape, translation(1, -3, 5) * scaling(0.5, 2, 4))
+         When box ← parent_space_bounds_of(shape)
+         Then box.min = point(0.5, -5, 1)
+           And box.max = point(1.5, -1, 9) -}
+    describe "Querying a shape's bounding box in its parent's space" $ do
+      let shape = (defaultSphere 1)
+                  { Types.transform =
+                    (translation 1 (-3) 5) `Matrices.mul` (scaling 0.5 2 4) }
+          box   = parentSpaceBoundsOf shape
+      it "box.min = point(0.5, -5, 1)" $ do
+        boundMin box `shouldBe` Tuples.point 0.5 (-5) 1
+      it "box.max = point(1.5, -1, 9)" $ do
+        boundMax box `shouldBe` Tuples.point 1.5 (-1) 9
 
 boundingBoxes :: Spec
 boundingBoxes =
