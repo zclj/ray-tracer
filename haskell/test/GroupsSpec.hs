@@ -16,7 +16,40 @@ groupTests :: TestTree
 groupTests = testGroup "Group Tests" [
   testGroup "Specs for"
   [ unsafePerformIO (testSpec "Groups" groupBasics)
-  , unsafePerformIO (testSpec "Groups" groupIntersections)]]
+  , unsafePerformIO (testSpec "Groups" groupIntersections)
+  , unsafePerformIO (testSpec "Groups" groupBounds)]]
+
+groupBounds :: Spec
+groupBounds =
+  describe "Groups" $ do
+    {- Scenario: A group has a bounding box that contains its children
+         Given s ← sphere()
+           And set_transform(s, translation(2, 5, -3) * scaling(2, 2, 2))
+           And c ← cylinder()
+           And c.minimum ← -2
+           And c.maximum ← 2
+           And set_transform(c, translation(-4, -1, 4) * scaling(0.5, 1, 0.5))
+           And shape ← group()
+           And add_child(shape, s)
+           And add_child(shape, c)
+         When box ← bounds_of(shape)
+         Then box.min = point(-4.5, -3, -5)
+           And box.max = point(4, 7, 4.5) -}
+    describe "A group has a bounding box that contains its children" $ do
+      let s      = (defaultSphere 1)
+                   { Types.transform =
+                     (translation 2 5 (-3)) `Matrices.mul` (scaling 2 2 2) }
+          c      = (defaultCylinder 2)
+                   { Types.transform =
+                     (translation (-4) (-1) 4) `Matrices.mul` (scaling 0.5 1 0.5)
+                   , minY = (-2)
+                   , maxY = 2 }
+          (g, _) = addChildren (defaultGroup 3) [s, c]
+          box    = bounds g
+      it "box.min = point(-4.5, -3, -5)" $ do
+        boundMin box `shouldBe` T.point (-4.5) (-3) (-5)
+      it "box.max = point(4, 7, 4.5)" $ do
+        boundMax box `shouldBe` T.point 4 7 4.5
 
 groupIntersections :: Spec
 groupIntersections =

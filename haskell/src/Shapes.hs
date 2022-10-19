@@ -226,7 +226,8 @@ bounds shape@Cone {minY, maxY}
         limit  = max absMin absMax
     in BoundingBox (T.point (-limit) minY (-limit)) (T.point limit maxY limit)
 
-bounds shape@Group { children } = undefined
+bounds shape@Group { children } =
+  foldr (\c b -> addBoxes b (parentSpaceBoundsOf c)) defaultBoundingBox children
 
 defaultBoundingBox :: BoundingBox
 defaultBoundingBox = BoundingBox (T.point (1/0) (1/0) (1/0)) (T.point (-1/0) (-1/0) (-1/0))
