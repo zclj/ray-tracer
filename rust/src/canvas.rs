@@ -67,7 +67,7 @@ impl Canvas {
             .map(process_line)
             .collect::<Vec<String>>();
 
-        header + &pixel_strs.join("\n")
+        header + &pixel_strs.join("\n") + "\n"
     }
 }
 
@@ -191,5 +191,17 @@ mod test {
 
         assert_eq!(ppm, result);
         assert_eq!(complete_ppm.lines().count(), 7);
+    }
+
+    // Scenario: PPM files are terminated by a newline character
+    // Given c ← canvas(5, 3)
+    // When ppm ← canvas_to_ppm(c)
+    // Then ppm ends with a newline character
+    #[test]
+    fn ppm_files_are_terminated_by_a_newline_character() {
+        let c = Canvas::new(5, 3);
+        let ppm_end = c.to_ppm().chars().last().unwrap();
+
+        assert_eq!(ppm_end, '\n');
     }
 }
