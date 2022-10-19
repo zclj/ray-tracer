@@ -35,7 +35,7 @@ fn process_line(cs: &[Color]) -> String {
         }
     }
 
-    ppm_line.join("").trim().to_string()
+    ppm_line.concat().trim().to_string()
 }
 
 impl Canvas {
