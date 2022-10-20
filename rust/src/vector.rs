@@ -172,7 +172,7 @@ impl Vector {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
-    fn norm(&self) -> Self {
+    pub fn norm(&self) -> Self {
         let m = self.mag();
 
         Vector::new(self.x / m, self.y / m, self.z / m)
