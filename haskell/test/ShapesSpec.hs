@@ -11,6 +11,7 @@ import Shapes as SUT
 import Types
 import Transformations
 import Tuples
+import Rays
 
 data TestShape = TestShape { id :: Int
                            , transform :: Matrix
@@ -173,6 +174,61 @@ shapeBounds =
         boundMin box `shouldBe` Tuples.point 0.5 (-5) 1
       it "box.max = point(1.5, -1, 9)" $ do
         boundMax box `shouldBe` Tuples.point 1.5 (-1) 9
+    {- Scenario Outline: Intersecting a ray with a bounding box at the origin
+         Given box ← bounding_box(min=point(-1, -1, -1) max=point(1, 1, 1))
+           And direction ← normalize(<direction>)
+           And r ← ray(<origin>, direction)
+         Then intersects(box, r) is <result>
+
+         Examples:
+           | origin            | direction        | result |
+           | point(5, 0.5, 0)  | vector(-1, 0, 0) | true   |
+           | point(-5, 0.5, 0) | vector(1, 0, 0)  | true   |
+           | point(0.5, 5, 0)  | vector(0, -1, 0) | true   |
+           | point(0.5, -5, 0) | vector(0, 1, 0)  | true   |
+           | point(0.5, 0, 5)  | vector(0, 0, -1) | true   |
+           | point(0.5, 0, -5) | vector(0, 0, 1)  | true   |
+           | point(0, 0.5, 0)  | vector(0, 0, 1)  | true   |
+           | point(-2, 0, 0)   | vector(2, 4, 6)  | false  |
+           | point(0, -2, 0)   | vector(6, 2, 4)  | false  |
+           | point(0, 0, -2)   | vector(4, 6, 2)  | false  |
+           | point(2, 0, 2)    | vector(0, 0, -1) | false  |
+           | point(0, 2, 2)    | vector(0, -1, 0) | false  |
+           | point(2, 2, 0)    | vector(-1, 0, 0) | false  | -}
+    describe "Intersecting a ray with a bounding box at the origin" $ do
+      let box = BoundingBox { boundMin = Tuples.point (-1) (-1) (-1)
+                            , boundMax = Tuples.point 1 1 1 }
+          intersect = (\(o, d) -> intersectBox box (makeRay o (norm d)))
+          origins = [ Tuples.point 5 0.5 0
+                    , Tuples.point (-5) 0.5 0
+                    , Tuples.point 0.5 5 0
+                    , Tuples.point 0.5 (-5) 0
+                    , Tuples.point 0.5 0 5
+                    , Tuples.point 0.5 0 (-5)
+                    , Tuples.point 0 0.5 0
+                    , Tuples.point (-2) 0 0
+                    , Tuples.point 0 (-2) 0
+                    , Tuples.point 0 0 (-2)
+                    , Tuples.point 2 0 2
+                    , Tuples.point 0 2 2
+                    , Tuples.point 2 2 0]
+          directions = [ Tuples.vector (-1) 0 0
+                       , Tuples.vector 1 0 0
+                       , Tuples.vector 0 (-1) 0
+                       , Tuples.vector 0 1 0
+                       , Tuples.vector 0 0 (-1)
+                       , Tuples.vector 0 0 1
+                       , Tuples.vector 0 0 1
+                       , Tuples.vector 2 4 6
+                       , Tuples.vector 6 2 4
+                       , Tuples.vector 4 6 2
+                       , Tuples.vector 0 0 (-1)
+                       , Tuples.vector 0 (-1) 0
+                       , Tuples.vector (-1) 0 0]
+          results = [True, True, True, True, True, True, True, False, False, False, False, False, False]
+          is = map intersect (zip origins directions)
+      it "intersections are correct" $ do
+        is `shouldBe` results
 
 boundingBoxes :: Spec
 boundingBoxes =

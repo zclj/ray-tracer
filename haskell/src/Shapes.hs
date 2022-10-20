@@ -272,3 +272,7 @@ transformBox (BoundingBox boundMin boundMax) m =
 
 parentSpaceBoundsOf :: Shape -> BoundingBox
 parentSpaceBoundsOf s = transformBox (bounds s) (Types.transform s)
+
+intersectBox :: BoundingBox -> Ray -> Bool
+-- test with the unit cube. No intersections == miss
+intersectBox box r = localIntersect (defaultCube 1) r /= []
