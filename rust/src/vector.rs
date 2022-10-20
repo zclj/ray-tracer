@@ -94,9 +94,9 @@ use crate::utils::epsilon_eq;
 
 #[derive(Debug)]
 pub struct Point {
-    x: f32,
-    y: f32,
-    z: f32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 impl Point {
@@ -156,9 +156,9 @@ impl std::ops::Sub<Vector> for Point {
 // ```
 #[derive(Debug)]
 pub struct Vector {
-    x: f32,
-    y: f32,
-    z: f32,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 impl Vector {
