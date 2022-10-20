@@ -111,6 +111,22 @@ impl std::cmp::PartialEq<Point> for Point {
     }
 }
 
+impl std::ops::Add<Vector> for Point {
+    type Output = Self;
+
+    fn add(self, rhs: Vector) -> Point {
+        Point::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl std::ops::Add<&Vector> for &Point {
+    type Output = Point;
+
+    fn add(self, rhs: &Vector) -> Point {
+        Point::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
 impl std::ops::Sub<Point> for Point {
     type Output = Vector;
 
@@ -180,6 +196,30 @@ impl std::ops::Add<Point> for Vector {
 
     fn add(self, rhs: Point) -> Point {
         Point::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl std::ops::Add<Vector> for Vector {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl std::ops::Add<&Vector> for &Vector {
+    type Output = Vector;
+
+    fn add(self, rhs: &Vector) -> Vector {
+        Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
+    }
+}
+
+impl std::ops::Add<&Vector> for Vector {
+    type Output = Vector;
+
+    fn add(self, rhs: &Vector) -> Vector {
+        Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
 }
 
@@ -308,13 +348,20 @@ mod tests {
     // Then a1 + a2 = tuple(1, 1, 6, 1)
     #[test]
     fn adding_two_vectors() {
-        //let a1 = vector(3.0, -2.0, 5.0);
         let a1 = Vector::new(3.0, -2.0, 5.0);
         let a2 = Point::new(-2.0, 3.0, 1.0);
-        //let a2 = point(-2.0, 3.0, 1.0);
 
         assert_eq!(a1 + a2, Point::new(1.0, 1.0, 6.0));
     }
+
+    #[test]
+    fn adding_a_point_and_a_vector() {
+        let a1 = Point::new(-2.0, 3.0, 1.0);
+        let a2 = Vector::new(3.0, -2.0, 5.0);
+
+        assert_eq!(a1 + a2, Point::new(1.0, 1.0, 6.0));
+    }
+
     // Scenario: Subtracting two points
     // Given p1 ← point(3, 2, 1)
     // And p2 ← point(5, 6, 7)
