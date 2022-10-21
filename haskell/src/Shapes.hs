@@ -105,7 +105,10 @@ localIntersect cone@Cone {} r =
           then [Intersection (- c /(2*b)) cone] ++ (intersectCaps cone r)
           else let bi = intersectBody cone a b c r
                in bi ++ (intersectCaps cone r)
-localIntersect group@Group {children} r = intersectShapes children r
+localIntersect group@Group {children} r =
+  if intersectBox (bounds group) r
+  then intersectShapes children r
+  else []
 
 intersectBody :: Shape -> Double -> Double -> Double -> Ray -> [Intersection]
 intersectBody s a b c r
