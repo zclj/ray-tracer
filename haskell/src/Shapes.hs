@@ -275,4 +275,12 @@ parentSpaceBoundsOf s = transformBox (bounds s) (Types.transform s)
 
 intersectBox :: BoundingBox -> Ray -> Bool
 -- test with the unit cube. No intersections == miss
-intersectBox box r = localIntersect (defaultCube 1) r /= []
+intersectBox (BoundingBox boundMin boundMax) r =
+  let (xtmin, xtmax) = checkAxis (x (origin r)) (x (direction r)) (x boundMin) (x boundMax)
+      (ytmin, ytmax) = checkAxis (y (origin r)) (y (direction r)) (y boundMin) (y boundMax)
+      (ztmin, ztmax) = checkAxis (z (origin r)) (z (direction r)) (z boundMin) (z boundMax)
+      tmin = maximum [xtmin, ytmin, ztmin]
+      tmax = minimum [xtmax, ytmax, ztmax]
+  in if tmin > tmax
+     then False
+     else True

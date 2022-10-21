@@ -229,6 +229,61 @@ shapeBounds =
           is = map intersect (zip origins directions)
       it "intersections are correct" $ do
         is `shouldBe` results
+    {- Scenario Outline: Intersecting a ray with a non-cubic bounding box
+         Given box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))
+           And direction ← normalize(<direction>)
+           And r ← ray(<origin>, direction)
+         Then intersects(box, r) is <result>
+
+         Examples:
+           | origin           | direction        | result |
+           | point(15, 1, 2)  | vector(-1, 0, 0) | true   |
+           | point(-5, -1, 4) | vector(1, 0, 0)  | true   |
+           | point(7, 6, 5)   | vector(0, -1, 0) | true   |
+           | point(9, -5, 6)  | vector(0, 1, 0)  | true   |
+           | point(8, 2, 12)  | vector(0, 0, -1) | true   |
+           | point(6, 0, -5)  | vector(0, 0, 1)  | true   |
+           | point(8, 1, 3.5) | vector(0, 0, 1)  | true   |
+           | point(9, -1, -8) | vector(2, 4, 6)  | false  |
+           | point(8, 3, -4)  | vector(6, 2, 4)  | false  |
+           | point(9, -1, -2) | vector(4, 6, 2)  | false  |
+           | point(4, 0, 9)   | vector(0, 0, -1) | false  |
+           | point(8, 6, -1)  | vector(0, -1, 0) | false  |
+           | point(12, 5, 4)  | vector(-1, 0, 0) | false  | -}
+    describe "Intersecting a ray with a non-cubic bounding box" $ do
+      let box = BoundingBox { boundMin = Tuples.point 5 (-2) 0
+                            , boundMax = Tuples.point 11 4 7 }
+          intersect = (\(o, d) -> intersectBox box (makeRay o (norm d)))
+          origins = [ Tuples.point 15 1 2
+                    , Tuples.point (-5) (-1) 4
+                    , Tuples.point 7 6 5
+                    , Tuples.point 9 (-5) 6
+                    , Tuples.point 8 2 12
+                    , Tuples.point 6 0 (-5)
+                    , Tuples.point 8 1 3.5
+                    , Tuples.point 9 (-1) (-8)
+                    , Tuples.point 8 3 (-4)
+                    , Tuples.point 9 (-1) (-2)
+                    , Tuples.point 4 0 9
+                    , Tuples.point 8 6 (-1)
+                    , Tuples.point 12 5 4]
+          directions = [ Tuples.vector (-1) 0 0
+                       , Tuples.vector 1 0 0
+                       , Tuples.vector 0 (-1) 0
+                       , Tuples.vector 0 1 0
+                       , Tuples.vector 0 0 (-1)
+                       , Tuples.vector 0 0 1
+                       , Tuples.vector 0 0 1
+                       , Tuples.vector 2 4 6
+                       , Tuples.vector 6 2 4
+                       , Tuples.vector 4 6 2
+                       , Tuples.vector 0 0 (-1)
+                       , Tuples.vector 0 (-1) 0
+                       , Tuples.vector (-1) 0 0]
+          results = [True, True, True, True, True, True, True, False, False, False, False, False, False]
+          is = map intersect (zip origins directions)
+      it "intersections are correct" $ do
+        is `shouldBe` results
 
 boundingBoxes :: Spec
 boundingBoxes =
