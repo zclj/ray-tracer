@@ -76,9 +76,9 @@ localIntersect p@Plane {} r =
   else let t = -y (origin r) / y (direction r)
        in [Intersection t p]
 localIntersect c@Cube {} r =
-  let (xtmin, xtmax) = checkAxis (x (origin r)) (x (direction r))
-      (ytmin, ytmax) = checkAxis (y (origin r)) (y (direction r))
-      (ztmin, ztmax) = checkAxis (z (origin r)) (z (direction r))
+  let (xtmin, xtmax) = checkAxis (x (origin r)) (x (direction r)) (-1) 1
+      (ytmin, ytmax) = checkAxis (y (origin r)) (y (direction r)) (-1) 1
+      (ztmin, ztmax) = checkAxis (z (origin r)) (z (direction r)) (-1) 1
       tmin = maximum [xtmin, ytmin, ztmin]
       tmax = minimum [xtmax, ytmax, ztmax]
   in if tmin > tmax
@@ -137,10 +137,10 @@ checkCap r t y = let x'  = (x (origin r)) + (t * (x (direction r)))
                      z'  = (z (origin r)) + (t * (z (direction r)))
                  in (x'^2 + z'^2) <= y^2
 
-checkAxis :: Double -> Double -> (Double, Double)
-checkAxis origin direction =
-  let tmin = ((-1) - origin) / direction
-      tmax = (1 - origin) / direction
+checkAxis :: Double -> Double -> Double -> Double -> (Double, Double)
+checkAxis origin direction min max =
+  let tmin = (min - origin) / direction
+      tmax = (max - origin) / direction
   in if tmin > tmax
      then (tmax, tmin)
      else (tmin, tmax)
