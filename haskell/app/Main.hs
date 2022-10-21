@@ -13,6 +13,7 @@ main = do runDemo
             -- >> runDemoSceneReflectionRefraction "./demos/canvasSceneReflectionRefraction.ppm"
             -- >> runDemoSceneChapter11 "./demos/canvasSceneChapter11.ppm"
             -- >> runDemoSceneChapter13 "./demos/canvasSceneChapter13.ppm"
-            >> runDemoSceneChapter13Cones "./demos/canvasSceneChapter13Cones.ppm"
+            -- >> runDemoSceneChapter13Cones "./demos/canvasSceneChapter13Cones.ppm"
+            >> runDemoSceneChapter14 "./demos/canvasSceneChapter14.ppm"
             -- >> runDemoSceneCubes "./demos/canvasSceneCubes.ppm"
             -- >> (runDemoSceneNestedGlass "./demos/canvasSceneNestedGlass.ppm")
