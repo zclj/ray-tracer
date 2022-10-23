@@ -59,7 +59,7 @@ fn projectile_into_canvas(ps: &Vec<Projectile>) -> Canvas {
         );
         canvas.write_pixel(
             position.x.floor() as usize,
-            (549. - position.y).floor() as usize,
+            (550. - position.y).floor() as usize,
             color.clone(),
         )
     }
