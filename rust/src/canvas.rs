@@ -23,7 +23,8 @@ fn process_line(cs: &[Color]) -> String {
         for s in samples {
             let size = s.len();
 
-            if count + size <= 70 {
+            // current length + new size + padding should not > 70
+            if count + size + 1 <= 70 {
                 ppm_line.push(" ".to_string() + &s);
                 count += 1;
             } else {
