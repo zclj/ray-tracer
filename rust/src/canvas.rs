@@ -1,6 +1,6 @@
 use crate::color::Color;
 
-struct Canvas {
+pub struct Canvas {
     width: usize,
     height: usize,
     pixels: Vec<Color>,
@@ -39,7 +39,7 @@ fn process_line(cs: &[Color]) -> String {
 }
 
 impl Canvas {
-    fn new(width: usize, height: usize) -> Self {
+    pub fn new(width: usize, height: usize) -> Self {
         Canvas {
             width,
             height,
@@ -47,7 +47,7 @@ impl Canvas {
         }
     }
 
-    fn write_pixel(&mut self, width: usize, height: usize, color: Color) {
+    pub fn write_pixel(&mut self, width: usize, height: usize, color: Color) {
         let idx = width + (self.width * height);
         self.pixels[idx] = color
     }
@@ -57,7 +57,7 @@ impl Canvas {
         &self.pixels[idx]
     }
 
-    fn to_ppm(&self) -> String {
+    pub fn to_ppm(&self) -> String {
         let header = format!("P3\n{} {}\n255\n", self.width, self.height);
 
         // need to process for each 'line' of pixels
