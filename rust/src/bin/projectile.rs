@@ -52,11 +52,6 @@ fn projectile_into_canvas(ps: &Vec<Projectile>) -> Canvas {
     let color = Color::new(1., 0.8, 0.6);
 
     for Projectile { position, .. } in ps {
-        println!(
-            "Wrote : {:?}-{:?}",
-            position.x.floor() as usize,
-            (550. - position.y).floor() as usize
-        );
         canvas.write_pixel(
             position.x.floor() as usize,
             (550. - position.y).floor() as usize,
@@ -68,13 +63,13 @@ fn projectile_into_canvas(ps: &Vec<Projectile>) -> Canvas {
 }
 
 fn main() {
-    let projectile_path = launch(-0.1, -0.01);
+    println!("Projectile demo starting..");
 
-    println!("{:?}", projectile_path);
+    let projectile_path = launch(-0.1, -0.01);
 
     let ppm = projectile_into_canvas(&projectile_path).to_ppm();
 
-    let path = Path::new("projectile.ppm");
+    let path = Path::new("demos/ppms/projectile.ppm");
 
     let mut file = match File::create(&path) {
         Err(why) => panic!("could not create file {}: {} ", path.display(), why),
