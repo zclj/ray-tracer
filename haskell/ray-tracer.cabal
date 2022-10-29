@@ -42,6 +42,7 @@ library
       SceneChapter13Cones
       SceneChapter14
       SceneCubes
+      SceneHexagon
       SceneNestedGlass
       ScenePlanesAndSpheres
       SceneReflectionRefraction

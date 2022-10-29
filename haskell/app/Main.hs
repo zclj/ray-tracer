@@ -14,6 +14,7 @@ main = do runDemo
             -- >> runDemoSceneChapter11 "./demos/canvasSceneChapter11.ppm"
             -- >> runDemoSceneChapter13 "./demos/canvasSceneChapter13.ppm"
             -- >> runDemoSceneChapter13Cones "./demos/canvasSceneChapter13Cones.ppm"
-            >> runDemoSceneChapter14 "./demos/canvasSceneChapter14.ppm"
+            -- >> runDemoSceneChapter14 "./demos/canvasSceneChapter14.ppm"
+            >> runDemoSceneHexagon "./demos/canvasSceneHexagon.ppm"
             -- >> runDemoSceneCubes "./demos/canvasSceneCubes.ppm"
             -- >> (runDemoSceneNestedGlass "./demos/canvasSceneNestedGlass.ppm")
