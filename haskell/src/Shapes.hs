@@ -196,6 +196,23 @@ addChildren group children = foldr
                              (\c (g, cs) -> let (g', c') = addChild g c in (g', c':cs))
                              (group, []) children
 
+updateGroupParents :: Shape -> (Shape -> Shape) -> Shape
+updateGroupParents group@Group{} update =
+  let updated = update group
+   in updated {children = map (`updateGroup` update) (children updated)}
+updateGroup primitive update =
+  case parent primitive of
+    Nothing -> primitive
+    Just p -> primitive {parent = Just (update p)}
+
+updateTransform :: Shape -> Matrix -> Shape
+updateTransform shape t =
+  updateGroupParents shape (\s -> s { Types.transform = t })
+
+updateMaterial :: Shape -> Material -> Shape
+updateMaterial shape m =
+  updateGroupParents shape (\s -> s { material = m })
+
 worldToObject :: Shape -> Tuple -> Tuple
 worldToObject s point =
   case (parent s) of
