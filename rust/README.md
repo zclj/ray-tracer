@@ -12,6 +12,12 @@ Coverage report, `cargo llvm-cov nextest --open` or `--html`. [Docs](https://lib
 
 Using [Cargo Flamegraph](https://github.com/flamegraph-rs/flamegraph).
 
+## Benchmarks
+
+Using [Criterion](https://github.com/bheisler/criterion.rs).
+
+Run with `cargo bench`
+
 ## To check out
 
 - https://nexte.st/
