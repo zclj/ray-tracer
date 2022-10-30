@@ -75,6 +75,42 @@ fn process_line2(cs: &[Color]) -> String {
     ppm_line_str.trim().to_string()
 }
 
+fn process_line3(cs: &[Color], line_str: &mut String) -> () {
+    let mut count = 0;
+
+    let to_ppm_sample_string =
+        |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0).to_string();
+
+    for c in cs {
+        let samples = [
+            to_ppm_sample_string(c.red),
+            to_ppm_sample_string(c.green),
+            to_ppm_sample_string(c.blue),
+        ];
+
+        for s in samples {
+            let size = s.len();
+
+            // current length + new size + padding should not > 70
+            if count + size + 1 <= 70 {
+                line_str.push_str(&s);
+                line_str.push(' ');
+                count += 1;
+            } else {
+                line_str.pop();
+                line_str.push('\n');
+                line_str.push_str(&s);
+                line_str.push(' ');
+                count = 0;
+            }
+
+            count += size;
+        }
+    }
+
+    line_str.pop();
+}
+
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Self {
         Canvas {
@@ -95,16 +131,19 @@ impl Canvas {
     }
 
     pub fn to_ppm(&self) -> String {
-        let header = format!("P3\n{} {}\n255\n", self.width, self.height);
+        let mut header = String::with_capacity(self.width * self.height * 12);
 
-        // need to process for each 'line' of pixels
-        let pixel_strs = self
-            .pixels
-            .chunks(self.width)
-            .map(process_line2)
-            .collect::<Vec<String>>();
+        //println!("Pre Capacity: {}", header.capacity());
+        header.push_str(&format!("P3\n{} {}\n255\n", self.width, self.height));
 
-        header + &pixel_strs.join("\n") + "\n"
+        for pxs in self.pixels.chunks(self.width) {
+            process_line3(pxs, &mut header);
+            header.push('\n');
+        }
+
+        //println!("Post Capacity: {}", header.capacity());
+        //println!("Length: {}", header.len());
+        header
     }
 }
 
