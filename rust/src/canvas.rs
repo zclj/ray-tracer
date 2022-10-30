@@ -39,6 +39,42 @@ fn process_line(cs: &[Color]) -> String {
     ppm_line.concat().trim().to_string()
 }
 
+fn process_line2(cs: &[Color]) -> String {
+    let mut count = 0;
+    let mut ppm_line_str = String::with_capacity(6000);
+
+    let to_ppm_sample_string =
+        |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0).to_string();
+
+    for c in cs {
+        let samples = [
+            to_ppm_sample_string(c.red),
+            to_ppm_sample_string(c.green),
+            to_ppm_sample_string(c.blue),
+        ];
+
+        for s in samples {
+            let size = s.len();
+
+            // current length + new size + padding should not > 70
+            if count + size + 1 <= 70 {
+                ppm_line_str.push(' ');
+                ppm_line_str.push_str(&s);
+                count += 1;
+            } else {
+                ppm_line_str.push('\n');
+                ppm_line_str.push_str(&s);
+                count = 0;
+            }
+
+            count += size;
+        }
+    }
+
+    //println!("Capacity: {}", ppm_line_str.capacity());
+    ppm_line_str.trim().to_string()
+}
+
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Self {
         Canvas {
@@ -65,7 +101,7 @@ impl Canvas {
         let pixel_strs = self
             .pixels
             .chunks(self.width)
-            .map(process_line)
+            .map(process_line2)
             .collect::<Vec<String>>();
 
         header + &pixel_strs.join("\n") + "\n"
