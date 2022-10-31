@@ -111,6 +111,70 @@ fn process_line3(cs: &[Color], line_str: &mut String) -> () {
     line_str.pop();
 }
 
+fn push_digits(d: u8, s: &mut String) -> () {
+    if d == 0 {
+        s.push('0');
+        return;
+    }
+
+    let mut num = d;
+    let mut digit = 0;
+    let mut is: [char; 3] = ['-'; 3];
+
+    while num != 0 {
+        is[digit] = char::from_digit((num % 10).into(), 10).unwrap();
+        num /= 10;
+        digit += 1;
+    }
+
+    for i in 0..3 {
+        if is[2 - i] != '-' {
+            s.push(is[2 - i]);
+        }
+    }
+}
+
+fn process_line4(cs: &[Color], line_str: &mut String) -> () {
+    let mut count = 0;
+
+    let to_ppm_sample = |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0);
+
+    for c in cs {
+        let samples = [
+            to_ppm_sample(c.red),
+            to_ppm_sample(c.green),
+            to_ppm_sample(c.blue),
+        ];
+
+        for s in samples {
+            let size = if s >= 100.0 {
+                3
+            } else if s >= 10.0 {
+                2
+            } else {
+                1
+            };
+
+            // current length + new size + padding should not > 70
+            if count + size + 1 <= 70 {
+                push_digits(s as u8, line_str);
+                line_str.push(' ');
+                count += 1;
+            } else {
+                line_str.pop();
+                line_str.push('\n');
+                push_digits(s as u8, line_str);
+                line_str.push(' ');
+                count = 0;
+            }
+
+            count += size;
+        }
+    }
+
+    line_str.pop();
+}
+
 impl Canvas {
     pub fn new(width: usize, height: usize) -> Self {
         Canvas {
@@ -137,7 +201,7 @@ impl Canvas {
         header.push_str(&format!("P3\n{} {}\n255\n", self.width, self.height));
 
         for pxs in self.pixels.chunks(self.width) {
-            process_line3(pxs, &mut header);
+            process_line4(pxs, &mut header);
             header.push('\n');
         }
 
