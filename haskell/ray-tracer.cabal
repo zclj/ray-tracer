@@ -101,6 +101,7 @@ test-suite ray-tracer-test
       ShapesSpec
       SpheresSpec
       TransformationsSpec
+      TrianglesSpec
       TuplesSpec
       UtilsSpec
       WorldSpec

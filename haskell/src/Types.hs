@@ -35,6 +35,13 @@ data Shape = Sphere { id        :: Int
                    , transform :: Matrix
                    , parent    :: Maybe Shape
                    , children  :: [Shape] }
+           | Triangle { id     :: Int
+                      , p1     :: Tuple
+                      , p2     :: Tuple
+                      , p3     :: Tuple
+                      , e1     :: Tuple
+                      , e2     :: Tuple
+                      , normal :: Tuple}
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

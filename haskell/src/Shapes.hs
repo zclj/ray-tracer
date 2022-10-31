@@ -35,6 +35,13 @@ defaultCone id = Cone id identity defaultMaterial Nothing ((-1)/0) (1/0) False
 defaultGroup :: Int -> Shape
 defaultGroup id = Group id identity Nothing []
 
+triangle :: Int -> Tuple -> Tuple -> Tuple -> Shape
+triangle id p1 p2 p3 =
+  let e1 = (p2 `sub` p1)
+      e2 = (p3 `sub` p1)
+      n  = norm (e2 `cross` e1)
+  in Triangle id p1 p2 p3 e1 e2 n
+
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
 cubeNormal m x y z

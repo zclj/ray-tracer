@@ -91,7 +91,8 @@ right = Sphere
 p1  = stripePattern
       (Color (Red 0.9) (Green 0.9) (Blue 0.5))
       (Color (Red 1) (Green 0.5) (Blue 0.5))
-p1' = p1 { patternTransform = rotationZ (pi/4) `Matrices.mul` scaling 0.2 0.2 0.2 }
+p1' = ScenePlanesAndSpheres.p1
+      { patternTransform = rotationZ (pi/4) `Matrices.mul` scaling 0.2 0.2 0.2 }
 
 left = (defaultSphere 6)
        { Types.transform =

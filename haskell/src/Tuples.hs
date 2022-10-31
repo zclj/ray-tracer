@@ -9,7 +9,7 @@ data Tuple = Tuple { x :: Double
                    , y :: Double
                    , z :: Double
                    , w :: Double}
-             deriving (Show)
+             deriving (Show, Ord)
 
 {- Epsilon-based float operators -}
 
