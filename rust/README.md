@@ -18,6 +18,12 @@ Using [Criterion](https://github.com/bheisler/criterion.rs).
 
 Run with `cargo bench`
 
+## Inspection
+
+Using [cargo-show-asm](https://github.com/pacak/cargo-show-asm).
+
+For example `cargo asm --lib "ray_tracer::canvas::Canvas::to_ppm" --rust`
+
 ## To check out
 
 - https://nexte.st/
