@@ -48,3 +48,31 @@ triangleBasics =
         Types.e2 t `shouldBe` vector 1 (-1) 0
       it "t.normal = vector(0, 0, -1)" $ do
         Types.normal t `shouldBe` vector 0 0 (-1)
+    {- Scenario: Finding the normal on a triangle
+         Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+         When n1 ← local_normal_at(t, point(0, 0.5, 0))
+           And n2 ← local_normal_at(t, point(-0.5, 0.75, 0))
+           And n3 ← local_normal_at(t, point(0.5, 0.25, 0))
+         Then n1 = t.normal
+           And n2 = t.normal
+           And n3 = t.normal -}
+    describe "Finding the normal on a triangle" $ do
+      let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+          n1 = localNormalAt t (T.point 0 0.5 0)
+          n2 = localNormalAt t (T.point (-0.5) 0.75 0)
+          n3 = localNormalAt t (T.point 0.5 0.25 0)
+      it "n1 = t.normal" $ do
+        normal t `shouldBe` n1
+      it "n2 = t.normal" $ do
+        normal t `shouldBe` n2
+      it "n3 = t.normal" $ do
+        normal t `shouldBe` n3
+    {- Scenario: Intersecting a ray parallel to the triangle
+         Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+           And r ← ray(point(0, -1, -2), vector(0, 1, 0))
+         When xs ← local_intersect(t, r)
+         Then xs is empty -}
+    -- describe "Intersecting a ray parallel to the triangle" $ do
+    --   let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+    --       r = makeRay (T.point 0 (-1) (-2)) (T.vector 0 1 0)
+    --       xs = localIntersect t r

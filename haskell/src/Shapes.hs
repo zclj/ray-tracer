@@ -65,6 +65,7 @@ localNormalAt c@Cone {} objectPoint@(Tuple x y z _)
   | otherwise = let yn  = sqrt(x^2 + z^2)
                     yn' = if y > 0 then -yn else yn
                 in vector x yn' z
+localNormalAt t@Triangle {} _ = normal t
 
 localIntersect :: Shape -> Ray -> [Intersection]
 localIntersect s@Sphere {} r =
