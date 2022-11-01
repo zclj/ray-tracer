@@ -117,6 +117,11 @@ fn push_digits(d: u8, s: &mut String) -> () {
         return;
     }
 
+    if d < 10 {
+        s.push(char::from_digit(d.into(), 10).unwrap());
+        return;
+    }
+
     let mut num = d;
     let mut digit = 0;
     let mut is: [char; 3] = ['-'; 3];
