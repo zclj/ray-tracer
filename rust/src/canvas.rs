@@ -6,112 +6,7 @@ pub struct Canvas {
     pixels: Vec<Color>,
 }
 
-fn process_line(cs: &[Color]) -> String {
-    let mut count = 0;
-    let mut ppm_line: Vec<String> = vec![];
-
-    let to_ppm_sample_string =
-        |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0).to_string();
-
-    for c in cs {
-        let samples = [
-            to_ppm_sample_string(c.red),
-            to_ppm_sample_string(c.green),
-            to_ppm_sample_string(c.blue),
-        ];
-
-        for s in samples {
-            let size = s.len();
-
-            // current length + new size + padding should not > 70
-            if count + size + 1 <= 70 {
-                ppm_line.push(" ".to_string() + &s);
-                count += 1;
-            } else {
-                ppm_line.push("\n".to_string() + &s);
-                count = 0;
-            }
-
-            count += size;
-        }
-    }
-
-    ppm_line.concat().trim().to_string()
-}
-
-fn process_line2(cs: &[Color]) -> String {
-    let mut count = 0;
-    let mut ppm_line_str = String::with_capacity(6000);
-
-    let to_ppm_sample_string =
-        |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0).to_string();
-
-    for c in cs {
-        let samples = [
-            to_ppm_sample_string(c.red),
-            to_ppm_sample_string(c.green),
-            to_ppm_sample_string(c.blue),
-        ];
-
-        for s in samples {
-            let size = s.len();
-
-            // current length + new size + padding should not > 70
-            if count + size + 1 <= 70 {
-                ppm_line_str.push(' ');
-                ppm_line_str.push_str(&s);
-                count += 1;
-            } else {
-                ppm_line_str.push('\n');
-                ppm_line_str.push_str(&s);
-                count = 0;
-            }
-
-            count += size;
-        }
-    }
-
-    //println!("Capacity: {}", ppm_line_str.capacity());
-    ppm_line_str.trim().to_string()
-}
-
-fn process_line3(cs: &[Color], line_str: &mut String) -> () {
-    let mut count = 0;
-
-    let to_ppm_sample_string =
-        |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0).to_string();
-
-    for c in cs {
-        let samples = [
-            to_ppm_sample_string(c.red),
-            to_ppm_sample_string(c.green),
-            to_ppm_sample_string(c.blue),
-        ];
-
-        for s in samples {
-            let size = s.len();
-
-            // current length + new size + padding should not > 70
-            if count + size + 1 <= 70 {
-                line_str.push_str(&s);
-                line_str.push(' ');
-                count += 1;
-            } else {
-                line_str.pop();
-                line_str.push('\n');
-                line_str.push_str(&s);
-                line_str.push(' ');
-                count = 0;
-            }
-
-            count += size;
-        }
-    }
-
-    line_str.pop();
-}
-
-fn push_digits(d: u8, s: &mut String) -> () {
+fn push_digits(d: u8, s: &mut String) {
     if d == 0 {
         s.push('0');
         return;
@@ -139,7 +34,7 @@ fn push_digits(d: u8, s: &mut String) -> () {
     }
 }
 
-fn process_line4(cs: &[Color], line_str: &mut String) -> () {
+fn process_line(cs: &[Color], line_str: &mut String) {
     let mut count = 0;
 
     let to_ppm_sample = |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0);
@@ -161,7 +56,7 @@ fn process_line4(cs: &[Color], line_str: &mut String) -> () {
             };
 
             // current length + new size + padding should not > 70
-            if count + size + 1 <= 70 {
+            if count + size < 70 {
                 push_digits(s as u8, line_str);
                 line_str.push(' ');
                 count += 1;
@@ -200,19 +95,16 @@ impl Canvas {
     }
 
     pub fn to_ppm(&self) -> String {
-        let mut header = String::with_capacity(self.width * self.height * 12);
+        let mut ppm = String::with_capacity(self.width * self.height * 12);
 
-        //println!("Pre Capacity: {}", header.capacity());
-        header.push_str(&format!("P3\n{} {}\n255\n", self.width, self.height));
+        ppm = format!("P3\n{} {}\n255\n", self.width, self.height);
 
         for pxs in self.pixels.chunks(self.width) {
-            process_line4(pxs, &mut header);
-            header.push('\n');
+            process_line(pxs, &mut ppm);
+            ppm.push('\n');
         }
 
-        //println!("Post Capacity: {}", header.capacity());
-        //println!("Length: {}", header.len());
-        header
+        ppm
     }
 }
 

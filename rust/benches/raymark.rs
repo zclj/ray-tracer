@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use ray_tracer::canvas::{Canvas};
+use ray_tracer::canvas::Canvas;
 use ray_tracer::color::Color;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
