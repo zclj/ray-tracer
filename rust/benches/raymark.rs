@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use ray_tracer::canvas::Canvas;
+use ray_tracer::canvas::{Canvas};
 use ray_tracer::color::Color;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
@@ -20,5 +20,25 @@ pub fn canvas_colored(c: &mut Criterion) {
     c.bench_function("colored canvas to ppm", |b| b.iter(|| canvas.to_ppm()));
 }
 
-criterion_group!(benches, criterion_benchmark, canvas_colored);
+// pub fn push_three_digits(c: &mut Criterion) {
+//     let mut s = "".to_string();
+//     c.bench_function("push_three_digits", |b| {
+//         b.iter(|| push_digits(black_box(123), black_box(&mut s)))
+//     });
+
+//     c.bench_function("push_two_digits", |b| {
+//         b.iter(|| push_digits(black_box(12), black_box(&mut s)))
+//     });
+
+//     c.bench_function("push_one_digits", |b| {
+//         b.iter(|| push_digits(black_box(1), black_box(&mut s)))
+//     });
+// }
+
+criterion_group!(
+    benches,
+    criterion_benchmark,
+    canvas_colored,
+    //push_three_digits
+);
 criterion_main!(benches);
