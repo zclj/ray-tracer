@@ -24,7 +24,7 @@ impl PartialEq<M4x4> for M4x4 {
             }
         }
 
-        return true;
+        true
     }
 }
 
