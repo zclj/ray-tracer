@@ -8,6 +8,7 @@ import Test.Tasty.Hspec as HS
 import Types
 import Shapes
 import ObjFileParser
+import Tuples as T
 
 objFileParserTests :: TestTree
 objFileParserTests = testGroup "OBJ File Parser Tests" [
@@ -37,3 +38,30 @@ objFileParserBasics =
           parser   = parseObjFile contents
       it "parser should have ignored 5 lines" $ do
         length (ignored parser) `shouldBe` 5
+    {- Scenario: Vertex records
+         Given file ← a file containing:
+         """
+         v -1 1 0
+         v -1.0000 0.5000 0.0000
+         v 1 0 0
+         v 1 1 0
+         """
+         When parser ← parse_obj_file(file)
+         Then parser.vertices[1] = point(-1, 1, 0)
+           And parser.vertices[2] = point(-1, 0.5, 0)
+           And parser.vertices[3] = point(1, 0, 0)
+           And parser.vertices[4] = point(1, 1, 0) -}
+    describe "Vertex records" $ do
+      let contents = "v -1 1 0\n\
+                     \v -1.0000 0.5000 0.0000\n\
+                     \v 1 0 0\n\
+                     \v 1 1 0"
+          parser   = parseObjFile contents
+      it "parser.vertices[1] = point(-1, 1, 0)" $ do
+        (vertices parser) !! 1 `shouldBe` T.point (-1) 1 0
+      it "parser.vertices[2] = point(-1, 0.5, 0)" $ do
+        (vertices parser) !! 2 `shouldBe` T.point (-1) 0.5 0
+      it "parser.vertices[3] = point(1, 0, 0)" $ do
+        (vertices parser) !! 3 `shouldBe` T.point 1 0 0
+      it "parser.vertices[4] = point(1, 1, 0)" $ do
+        (vertices parser) !! 4 `shouldBe` T.point 1 1 0
