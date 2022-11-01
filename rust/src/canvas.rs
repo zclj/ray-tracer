@@ -1,4 +1,5 @@
 use crate::color::Color;
+use std::fmt::Write;
 
 pub struct Canvas {
     width: usize,
@@ -97,7 +98,7 @@ impl Canvas {
     pub fn to_ppm(&self) -> String {
         let mut ppm = String::with_capacity(self.width * self.height * 12);
 
-        ppm = format!("P3\n{} {}\n255\n", self.width, self.height);
+        write!(&mut ppm, "P3\n{} {}\n255\n", self.width, self.height).unwrap();
 
         for pxs in self.pixels.chunks(self.width) {
             process_line(pxs, &mut ppm);
