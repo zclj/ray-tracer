@@ -33,8 +33,34 @@ impl Index<(usize, usize)> for M4x4 {
     }
 }
 
+struct M2x2([f32; 4]);
+
+impl M2x2 {
+    pub fn from_elements([x0, y0]: [f32; 2], [x1, y1]: [f32; 2]) -> M2x2 {
+        M2x2([x0, y0, x1, y1])
+    }
+}
+
+impl Index<usize> for M2x2 {
+    type Output = f32;
+
+    fn index(&self, idx: usize) -> &f32 {
+        &self.0[idx]
+    }
+}
+
+impl Index<(usize, usize)> for M2x2 {
+    type Output = f32;
+
+    fn index(&self, (idxi, idxj): (usize, usize)) -> &f32 {
+        assert!(idxi < 2 && idxj < 2, "Matrix index out of bounds.");
+
+        &self.0[idxj + (idxi * 2)]
+    }
+}
+
 mod test {
-    use crate::matrices::M4x4;
+    use crate::matrices::{M2x2, M4x4};
 
     // Scenario: Constructing and inspecting a 4x4 matrix
     // Given the following 4x4 matrix M:
@@ -65,5 +91,22 @@ mod test {
         assert_eq!(m[(2, 2)], 11.0);
         assert_eq!(m[(3, 0)], 13.5);
         assert_eq!(m[(3, 2)], 15.5);
+    }
+
+    // Scenario: A 2x2 matrix ought to be representable
+    // Given the following 2x2 matrix M:
+    //   | -3 |  5 |
+    //   |  1 | -2 |
+    // Then M[0,0] = -3
+    //   And M[0,1] = 5
+    //   And M[1,0] = 1
+    //   And M[1,1] = -2
+    fn constructing_and_inspecting_a_2x2_matrix() {
+        let m = M2x2::from_elements([-3.0, 5.0], [1.0, -2.0]);
+
+        assert_eq!(m[(0, 0)], -3.0);
+        assert_eq!(m[(0, 1)], 5.0);
+        assert_eq!(m[(1, 0)], 1.0);
+        assert_eq!(m[(1, 1)], -2.0);
     }
 }
