@@ -1,3 +1,4 @@
+use crate::utils::epsilon_eq;
 use std::ops::Index;
 
 struct M4x4([f32; 16]);
@@ -12,6 +13,18 @@ impl M4x4 {
         M4x4([
             x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3,
         ])
+    }
+}
+
+impl PartialEq<M4x4> for M4x4 {
+    fn eq(&self, rhs: &M4x4) -> bool {
+        for i in 0..16 {
+            if !epsilon_eq(self.0[i], rhs.0[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
@@ -131,6 +144,7 @@ mod test {
     //   And M[0,1] = 5
     //   And M[1,0] = 1
     //   And M[1,1] = -2
+    #[test]
     fn constructing_and_inspecting_a_2x2_matrix() {
         let m = M2x2::from_elements([-3.0, 5.0], [1.0, -2.0]);
 
@@ -148,11 +162,43 @@ mod test {
     // Then M[0,0] = -3
     //   And M[1,1] = -2
     //   And M[2,2] = 1
+    #[test]
     fn constructing_and_inspecting_a_3x3_matrix() {
         let m = M3x3::from_elements([-3.0, 5.0, 0.0], [1.0, -2.0, -7.0], [0.0, 1.0, 1.0]);
 
         assert_eq!(m[(0, 0)], -3.0);
         assert_eq!(m[(1, 1)], -2.0);
         assert_eq!(m[(2, 2)], 1.0);
+    }
+
+    // Scenario: Matrix equality with identical matrices
+    // Given the following matrix A:
+    //     | 1 | 2 | 3 | 4 |
+    //     | 5 | 6 | 7 | 8 |
+    //     | 9 | 8 | 7 | 6 |
+    //     | 5 | 4 | 3 | 2 |
+    //   And the following matrix B:
+    //     | 1 | 2 | 3 | 4 |
+    //     | 5 | 6 | 7 | 8 |
+    //     | 9 | 8 | 7 | 6 |
+    //     | 5 | 4 | 3 | 2 |
+    // Then A = B
+    #[test]
+    fn matrix_equality_with_identical_matrices() {
+        let a = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
+        );
+
+        let b = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
+        );
+
+        assert_eq!(a == b, true);
     }
 }
