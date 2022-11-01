@@ -22,6 +22,7 @@ import CylindersSpec
 import ConesSpec
 import GroupsSpec
 import TrianglesSpec
+import ObjFileParserSpec
 
 -- integrate HSpec with Tasty
 -- https://github.com/mitchellwrosen/tasty-hspec/issues/12
@@ -34,6 +35,6 @@ rayTracerTests = testGroup "Ray Tracer Specs"
   [tupleTests, canvasTests, utilsTests, matricesTests, transformationTests, raysTests,
    spheresTests, intersectionsTests, lightTests, materialTests, worldTests, cameraTests
   , shapesTests, planesTests, patternTests, cubeTests, cylinderTests, coneTests, groupTests
-  , triangleTests]
+  , triangleTests, objFileParserTests]
 -- main :: IO ()
 -- main = putStrLn "Test suite not yet implemented"

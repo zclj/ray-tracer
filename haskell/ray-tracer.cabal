@@ -33,6 +33,7 @@ library
       Lights
       Materials
       Matrices
+      ObjFileParser
       PPMCanvas
       Projectile
       Rays
@@ -95,6 +96,7 @@ test-suite ray-tracer-test
       LightsSpec
       MaterialsSpec
       MatricesSpec
+      ObjFileParserSpec
       PatternsSpec
       PlanesSpec
       RaysSpec
