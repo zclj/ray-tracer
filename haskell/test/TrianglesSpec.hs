@@ -72,7 +72,56 @@ triangleBasics =
            And r ← ray(point(0, -1, -2), vector(0, 1, 0))
          When xs ← local_intersect(t, r)
          Then xs is empty -}
-    -- describe "Intersecting a ray parallel to the triangle" $ do
-    --   let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
-    --       r = makeRay (T.point 0 (-1) (-2)) (T.vector 0 1 0)
-    --       xs = localIntersect t r
+    describe "Intersecting a ray parallel to the triangle" $ do
+      let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+          r = makeRay (T.point 0 (-1) (-2)) (T.vector 0 1 0)
+          xs = localIntersect t r
+      it "xs is empty" $ do
+        xs `shouldBe` []
+    {- Scenario: A ray misses the p1-p3 edge
+         Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+           And r ← ray(point(1, 1, -2), vector(0, 0, 1))
+         When xs ← local_intersect(t, r)
+         Then xs is empty -}
+    describe "A ray misses the p1-p3 edge" $ do
+      let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+          r = makeRay (T.point 1 1 (-2)) (T.vector 0 0 1)
+          xs = localIntersect t r
+      it "xs is empty" $ do
+        xs `shouldBe` []
+    {- Scenario: A ray misses the p1-p2 edge
+         Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+           And r ← ray(point(-1, 1, -2), vector(0, 0, 1))
+         When xs ← local_intersect(t, r)
+         Then xs is empty -}
+    describe "A ray misses the p1-p2 edge" $ do
+      let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+          r = makeRay (T.point (-1) 1 (-2)) (T.vector 0 0 1)
+          xs = localIntersect t r
+      it "xs is empty" $ do
+        xs `shouldBe` []
+    {- Scenario: A ray misses the p2-p3 edge
+         Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+           And r ← ray(point(0, -1, -2), vector(0, 0, 1))
+         When xs ← local_intersect(t, r)
+         Then xs is empty -}
+    describe "A ray misses the p2-p3 edge" $ do
+      let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+          r = makeRay (T.point 0 (-1) (-2)) (T.vector 0 0 1)
+          xs = localIntersect t r
+      it "xs is empty" $ do
+        xs `shouldBe` []
+    {- Scenario: A ray strikes a triangle
+         Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+           And r ← ray(point(0, 0.5, -2), vector(0, 0, 1))
+         When xs ← local_intersect(t, r)
+         Then xs.count = 1
+           And xs[0].t = 2 -}
+    describe "A ray strikes a triangle" $ do
+      let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
+          r = makeRay (T.point 0 0.5 (-2)) (T.vector 0 0 1)
+          xs = localIntersect t r
+      it "xs count is 1" $ do
+        length xs `shouldBe` 1
+      it "xs[0].t = 2" $ do
+        intersectionT (xs !! 0) `shouldBe` 2

@@ -117,6 +117,22 @@ localIntersect group@Group {children} r =
   if intersectBox (bounds group) r
   then intersectShapes children r
   else []
+localIntersect t@Triangle {} r =
+  let dirCrossE2 = (direction r) `cross` (e2 t)
+      det        = (e1 t) `dot` dirCrossE2
+  in if (abs det) < epsilon
+     then []
+     else let f = 1.0 / det
+              p1ToOrigin = (origin r) `sub` (p1 t)
+              u = f * (p1ToOrigin `dot` dirCrossE2)
+          in if u < 0 || u > 1
+             then []
+             else let originCrossE1 = p1ToOrigin `cross` (e1 t)
+                      v = f * ((direction r) `dot` originCrossE1)
+                  in if v < 0 || (u + v) > 1
+                     then []
+                     else let tt = f * (e2 t) `dot` originCrossE1
+                          in [Intersection tt t]
 
 intersectBody :: Shape -> Double -> Double -> Double -> Ray -> [Intersection]
 intersectBody s a b c r
