@@ -13,3 +13,6 @@ criterion = "0.3"
 [[bench]]
 name = "raymark"
 harness = false
+
+[profile.release]
+debug = true
