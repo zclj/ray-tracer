@@ -59,8 +59,38 @@ impl Index<(usize, usize)> for M2x2 {
     }
 }
 
+struct M3x3([f32; 9]);
+
+impl M3x3 {
+    pub fn from_elements(
+        [x0, y0, z0]: [f32; 3],
+        [x1, y1, z1]: [f32; 3],
+        [x2, y2, z2]: [f32; 3],
+    ) -> M3x3 {
+        M3x3([x0, y0, z0, x1, y1, z1, x2, y2, z2])
+    }
+}
+
+impl Index<usize> for M3x3 {
+    type Output = f32;
+
+    fn index(&self, idx: usize) -> &f32 {
+        &self.0[idx]
+    }
+}
+
+impl Index<(usize, usize)> for M3x3 {
+    type Output = f32;
+
+    fn index(&self, (idxi, idxj): (usize, usize)) -> &f32 {
+        assert!(idxi < 3 && idxj < 3, "Matrix index out of bounds.");
+
+        &self.0[idxj + (idxi * 3)]
+    }
+}
+
 mod test {
-    use crate::matrices::{M2x2, M4x4};
+    use crate::matrices::{M2x2, M3x3, M4x4};
 
     // Scenario: Constructing and inspecting a 4x4 matrix
     // Given the following 4x4 matrix M:
@@ -108,5 +138,21 @@ mod test {
         assert_eq!(m[(0, 1)], 5.0);
         assert_eq!(m[(1, 0)], 1.0);
         assert_eq!(m[(1, 1)], -2.0);
+    }
+
+    // Scenario: A 3x3 matrix ought to be representable
+    // Given the following 3x3 matrix M:
+    //   | -3 |  5 |  0 |
+    //   |  1 | -2 | -7 |
+    //   |  0 |  1 |  1 |
+    // Then M[0,0] = -3
+    //   And M[1,1] = -2
+    //   And M[2,2] = 1
+    fn constructing_and_inspecting_a_3x3_matrix() {
+        let m = M3x3::from_elements([-3.0, 5.0, 0.0], [1.0, -2.0, -7.0], [0.0, 1.0, 1.0]);
+
+        assert_eq!(m[(0, 0)], -3.0);
+        assert_eq!(m[(1, 1)], -2.0);
+        assert_eq!(m[(2, 2)], 1.0);
     }
 }
