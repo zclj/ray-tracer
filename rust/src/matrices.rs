@@ -201,4 +201,35 @@ mod test {
 
         assert_eq!(a == b, true);
     }
+
+    // Scenario: Matrix equality with different matrices
+    // Given the following matrix A:
+    //     | 1 | 2 | 3 | 4 |
+    //     | 5 | 6 | 7 | 8 |
+    //     | 9 | 8 | 7 | 6 |
+    //     | 5 | 4 | 3 | 2 |
+    //   And the following matrix B:
+    //     | 2 | 3 | 4 | 5 |
+    //     | 6 | 7 | 8 | 9 |
+    //     | 8 | 7 | 6 | 5 |
+    //     | 4 | 3 | 2 | 1 |
+    // Then A != B
+    #[test]
+    fn matrix_equality_with_different_matrices() {
+        let a = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
+        );
+
+        let b = M4x4::from_elements(
+            [2.0, 3.0, 4.0, 5.0],
+            [6.0, 7.0, 8.0, 9.0],
+            [8.0, 7.0, 6.0, 5.0],
+            [4.0, 3.0, 2.0, 1.0],
+        );
+
+        assert_eq!(a == b, false);
+    }
 }
