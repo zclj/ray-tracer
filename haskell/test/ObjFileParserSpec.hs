@@ -58,10 +58,10 @@ objFileParserBasics =
                      \v 1 1 0"
           parser   = parseObjFile contents
       it "parser.vertices[1] = point(-1, 1, 0)" $ do
-        (vertices parser) !! 1 `shouldBe` T.point (-1) 1 0
+        getVertex parser 1 `shouldBe` T.point (-1) 1 0
       it "parser.vertices[2] = point(-1, 0.5, 0)" $ do
-        (vertices parser) !! 2 `shouldBe` T.point (-1) 0.5 0
+        getVertex parser 2 `shouldBe` T.point (-1) 0.5 0
       it "parser.vertices[3] = point(1, 0, 0)" $ do
-        (vertices parser) !! 3 `shouldBe` T.point 1 0 0
+        getVertex parser 3 `shouldBe` T.point 1 0 0
       it "parser.vertices[4] = point(1, 1, 0)" $ do
-        (vertices parser) !! 4 `shouldBe` T.point 1 1 0
+        getVertex parser 4 `shouldBe` T.point 1 1 0
