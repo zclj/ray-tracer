@@ -24,6 +24,10 @@ Using [cargo-show-asm](https://github.com/pacak/cargo-show-asm).
 
 For example `cargo asm --lib "ray_tracer::canvas::Canvas::to_ppm" --rust`
 
+## Matrices
+
+https://www.rustsim.org/blog/2020/03/23/simd-aosoa-in-nalgebra/
+
 ## To check out
 
 - https://nexte.st/
