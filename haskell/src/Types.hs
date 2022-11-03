@@ -41,7 +41,8 @@ data Shape = Sphere { id        :: Int
                       , p3     :: Tuple
                       , e1     :: Tuple
                       , e2     :: Tuple
-                      , normal :: Tuple}
+                      , normal :: Tuple
+                      , parent :: Maybe Shape}
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

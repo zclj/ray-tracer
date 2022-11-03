@@ -65,3 +65,51 @@ objFileParserBasics =
         getVertex parser 3 `shouldBe` T.point 1 0 0
       it "parser.vertices[4] = point(1, 1, 0)" $ do
         getVertex parser 4 `shouldBe` T.point 1 1 0
+    {- Scenario: Parsing triangle faces
+         Given file ← a file containing:
+         """
+         v -1 1 0
+         v -1 0 0
+         v 1 0 0
+         v 1 1 0
+
+         f 1 2 3
+         f 1 3 4
+         """
+         When parser ← parse_obj_file(file)
+           And g ← parser.default_group
+           And t1 ← first child of g
+           And t2 ← second child of g
+         Then t1.p1 = parser.vertices[1]
+           And t1.p2 = parser.vertices[2]
+           And t1.p3 = parser.vertices[3]
+           And t2.p1 = parser.vertices[1]
+           And t2.p2 = parser.vertices[3]
+           And t2.p3 = parser.vertices[4] -}
+    describe "Parsing triangle faces" $ do
+      let contents = "v -1 1 0\n\
+                     \v -1 0 0\n\
+                     \v 1 0 0\n\
+                     \v 1 1 0\n\
+                     \\n\
+                     \f 1 2 3\n\
+                     \f 1 3 4"
+          parser   = parseObjFile contents
+          g = group parser
+          c = reverse (children g)
+          t1 = head c
+          t2 = c !! 1
+      it "has children" $ do
+        length (children g) `shouldBe` 2
+      it "t1.p1 = parser.vertices[1]" $ do
+        p1 t1 `shouldBe` getVertex parser 1
+      it "t1.p2 = parser.vertices[2]" $ do
+        p2 t1 `shouldBe` getVertex parser 2
+      it "t1.p3 = parser.vertices[3]" $ do
+        p3 t1 `shouldBe` getVertex parser 3
+      it "t2.p1 = parser.vertices[1]" $ do
+        p1 t2 `shouldBe` getVertex parser 1
+      it "t2.p2 = parser.vertices[3]" $ do
+        p2 t2 `shouldBe` getVertex parser 3
+      it "t2.p3 = parser.vertices[4]" $ do
+        p3 t2 `shouldBe` getVertex parser 4

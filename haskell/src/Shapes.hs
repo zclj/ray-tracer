@@ -40,7 +40,7 @@ triangle id p1 p2 p3 =
   let e1 = (p2 `sub` p1)
       e2 = (p3 `sub` p1)
       n  = norm (e2 `cross` e1)
-  in Triangle id p1 p2 p3 e1 e2 n
+  in Triangle id p1 p2 p3 e1 e2 n Nothing
 
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
