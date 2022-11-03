@@ -69,7 +69,7 @@ impl Mul<&M4x4> for &M4x4 {
 
 impl MulAssign<&M4x4> for M4x4 {
     fn mul_assign(&mut self, rhs: &M4x4) {
-        *self = &*self * &rhs
+        *self = &*self * rhs
     }
 }
 
