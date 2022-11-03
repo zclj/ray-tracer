@@ -1,7 +1,11 @@
 use crate::utils::epsilon_eq;
-use std::ops::Index;
+use std::ops::{Index, Mul, MulAssign};
 
-struct M4x4([f32; 16]);
+////////////////////////////////////////
+// M4x4
+
+#[derive(Debug)]
+pub struct M4x4([f32; 16]);
 
 impl M4x4 {
     pub fn from_elements(
@@ -46,7 +50,33 @@ impl Index<(usize, usize)> for M4x4 {
     }
 }
 
-struct M2x2([f32; 4]);
+impl Mul<&M4x4> for &M4x4 {
+    type Output = M4x4;
+
+    fn mul(self, rhs: &M4x4) -> M4x4 {
+        let mut m: [f32; 16] = [0.0; 16];
+
+        for i in 0..4 {
+            for j in 0..4 {
+                for k in 0..4 {
+                    m[j + (i * 4)] += self[(i, k)] * rhs[(k, j)]
+                }
+            }
+        }
+        M4x4(m)
+    }
+}
+
+impl MulAssign<&M4x4> for M4x4 {
+    fn mul_assign(&mut self, rhs: &M4x4) {
+        *self = &*self * &rhs
+    }
+}
+
+////////////////////////////////////////
+// M2x2
+
+pub struct M2x2([f32; 4]);
 
 impl M2x2 {
     pub fn from_elements([x0, y0]: [f32; 2], [x1, y1]: [f32; 2]) -> M2x2 {
@@ -72,7 +102,7 @@ impl Index<(usize, usize)> for M2x2 {
     }
 }
 
-struct M3x3([f32; 9]);
+pub struct M3x3([f32; 9]);
 
 impl M3x3 {
     pub fn from_elements(
@@ -231,5 +261,75 @@ mod test {
         );
 
         assert_eq!(a == b, false);
+    }
+
+    // Scenario: Multiplying two matrices
+    // Given the following matrix A:
+    //     | 1 | 2 | 3 | 4 |
+    //     | 5 | 6 | 7 | 8 |
+    //     | 9 | 8 | 7 | 6 |
+    //     | 5 | 4 | 3 | 2 |
+    //   And the following matrix B:
+    //     | -2 | 1 | 2 |  3 |
+    //     |  3 | 2 | 1 | -1 |
+    //     |  4 | 3 | 6 |  5 |
+    //     |  1 | 2 | 7 |  8 |
+    // Then A * B is the following 4x4 matrix:
+    //     | 20|  22 |  50 |  48 |
+    //     | 44|  54 | 114 | 108 |
+    //     | 40|  58 | 110 | 102 |
+    //     | 16|  26 |  46 |  42 |
+    #[test]
+    fn multiplying_two_matrices() {
+        let a = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
+        );
+
+        let b = M4x4::from_elements(
+            [-2.0, 1.0, 2.0, 3.0],
+            [3.0, 2.0, 1.0, -1.0],
+            [4.0, 3.0, 6.0, 5.0],
+            [1.0, 2.0, 7.0, 8.0],
+        );
+
+        let c = M4x4::from_elements(
+            [20.0, 22.0, 50.0, 48.0],
+            [44.0, 54.0, 114.0, 108.0],
+            [40.0, 58.0, 110.0, 102.0],
+            [16.0, 26.0, 46.0, 42.0],
+        );
+
+        assert_eq!(&a * &b, c);
+    }
+
+    #[test]
+    fn multiplying_assign_matrices() {
+        let mut a = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [5.0, 6.0, 7.0, 8.0],
+            [9.0, 8.0, 7.0, 6.0],
+            [5.0, 4.0, 3.0, 2.0],
+        );
+
+        let b = M4x4::from_elements(
+            [-2.0, 1.0, 2.0, 3.0],
+            [3.0, 2.0, 1.0, -1.0],
+            [4.0, 3.0, 6.0, 5.0],
+            [1.0, 2.0, 7.0, 8.0],
+        );
+
+        let c = M4x4::from_elements(
+            [20.0, 22.0, 50.0, 48.0],
+            [44.0, 54.0, 114.0, 108.0],
+            [40.0, 58.0, 110.0, 102.0],
+            [16.0, 26.0, 46.0, 42.0],
+        );
+
+        a *= &b;
+
+        assert_eq!(a, c);
     }
 }
