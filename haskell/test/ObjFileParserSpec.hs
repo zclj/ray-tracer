@@ -113,3 +113,62 @@ objFileParserBasics =
         p2 t2 `shouldBe` getVertex parser 3
       it "t2.p3 = parser.vertices[4]" $ do
         p3 t2 `shouldBe` getVertex parser 4
+    {- Scenario: Triangulating polygons
+         Given file ← a file containing:
+         """
+         v -1 1 0
+         v -1 0 0
+         v 1 0 0
+         v 1 1 0
+         v 0 2 0
+
+         f 1 2 3 4 5
+         """
+         When parser ← parse_obj_file(file)
+           And g ← parser.default_group
+           And t1 ← first child of g
+           And t2 ← second child of g
+           And t3 ← third child of g
+         Then t1.p1 = parser.vertices[1]
+           And t1.p2 = parser.vertices[2]
+           And t1.p3 = parser.vertices[3]
+           And t2.p1 = parser.vertices[1]
+           And t2.p2 = parser.vertices[3]
+           And t2.p3 = parser.vertices[4]
+           And t3.p1 = parser.vertices[1]
+           And t3.p2 = parser.vertices[4]
+           And t3.p3 = parser.vertices[5] -}
+    describe "Triangulating polygons" $ do
+      let contents = "v -1 1 0\n\
+                     \v -1 0 0\n\
+                     \v 1 0 0\n\
+                     \v 1 1 0\n\
+                     \v 0 2 0\n\
+                     \\n\
+                     \f 1 2 3 4 5"
+          parser   = parseObjFile contents
+          g = group parser
+          c = reverse (children g)
+          t1 = head c
+          t2 = c !! 1
+          t3 = c !! 2
+      it "has children" $ do
+        length (children g) `shouldBe` 3
+      it "t1.p1 = parser.vertices[1]" $ do
+        p1 t1 `shouldBe` getVertex parser 1
+      it "t1.p2 = parser.vertices[2]" $ do
+        p2 t1 `shouldBe` getVertex parser 2
+      it "t1.p3 = parser.vertices[3]" $ do
+        p3 t1 `shouldBe` getVertex parser 3
+      it "t2.p1 = parser.vertices[1]" $ do
+        p1 t2 `shouldBe` getVertex parser 1
+      it "t2.p2 = parser.vertices[3]" $ do
+        p2 t2 `shouldBe` getVertex parser 3
+      it "t2.p3 = parser.vertices[4]" $ do
+        p3 t2 `shouldBe` getVertex parser 4
+      it "t3.p1 = parser.vertices[1]" $ do
+        p1 t3 `shouldBe` getVertex parser 1
+      it "t3.p2 = parser.vertices[4]" $ do
+        p2 t3 `shouldBe` getVertex parser 4
+      it "t3.p3 = parser.vertices[5]" $ do
+        p3 t3 `shouldBe` getVertex parser 5
