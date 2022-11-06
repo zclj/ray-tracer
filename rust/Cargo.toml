@@ -6,6 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# only used to bench and test against
+glam = "0.22.0"
 
 [dev-dependencies]
 criterion = "0.3"

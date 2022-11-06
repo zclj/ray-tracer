@@ -56,6 +56,28 @@ pub fn matrix_multiplication(c: &mut Criterion) {
     });
 }
 
+use glam::Mat4;
+
+pub fn glam_matrix_multiplication(c: &mut Criterion) {
+    let x = Mat4::from_cols_array_2d(&[
+        [1.0, 5.0, 9.0, 5.0],
+        [2.0, 6.0, 8.0, 4.0],
+        [3.0, 7.0, 7.0, 3.0],
+        [4.0, 8.0, 6.0, 2.0],
+    ]);
+
+    let y = Mat4::from_cols_array_2d(&[
+        [-2.0, 3.0, 4.0, 1.0],
+        [1.0, 2.0, 3.0, 2.0],
+        [2.0, 1.0, 6.0, 7.0],
+        [3.0, -1.0, 5.0, 8.0],
+    ]);
+
+    c.bench_function("glam Matrix 4x4 multiplication", |b| {
+        b.iter(|| black_box(x * y))
+    });
+}
+
 pub fn matrix_assign_multiplication(c: &mut Criterion) {
     let mut x = M4x4::from_elements(
         [1.0, 2.0, 3.0, 4.0],
@@ -81,6 +103,7 @@ criterion_group!(
     criterion_benchmark,
     canvas_colored,
     matrix_multiplication,
+    glam_matrix_multiplication,
     matrix_assign_multiplication //push_three_digits
 );
 criterion_main!(benches);
