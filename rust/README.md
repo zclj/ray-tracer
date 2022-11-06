@@ -28,6 +28,10 @@ For example `cargo asm --lib "ray_tracer::canvas::Canvas::to_ppm" --rust`
 
 https://www.rustsim.org/blog/2020/03/23/simd-aosoa-in-nalgebra/
 
+https://stackoverflow.com/questions/18499971/efficient-4x4-matrix-multiplication-c-vs-assembly
+
+https://github.com/bitshifter/glam-rs
+
 ## To check out
 
 - https://nexte.st/
