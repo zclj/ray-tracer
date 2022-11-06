@@ -1,4 +1,5 @@
 use crate::utils::epsilon_eq;
+use crate::vector::{Point, Vector};
 use std::ops::{Index, Mul, MulAssign};
 
 ////////////////////////////////////////
@@ -8,7 +9,14 @@ use std::ops::{Index, Mul, MulAssign};
 pub struct M4x4([f32; 16]);
 
 impl M4x4 {
-    pub fn from_elements(
+    pub const IDENTITY: Self = Self::from_elements(
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    );
+
+    pub const fn from_elements(
         [x0, y0, z0, w0]: [f32; 4],
         [x1, y1, z1, w1]: [f32; 4],
         [x2, y2, z2, w2]: [f32; 4],
@@ -64,6 +72,18 @@ impl Mul<&M4x4> for &M4x4 {
             }
         }
         M4x4(m)
+    }
+}
+
+impl Mul<&Point> for &M4x4 {
+    type Output = Point;
+
+    fn mul(self, rhs: &Point) -> Point {
+        Point::new(
+            self[(0, 0)] * rhs.x + self[(0, 1)] * rhs.y + self[(0, 2)] * rhs.z + self[(0, 3)],
+            self[(1, 0)] * rhs.x + self[(1, 1)] * rhs.y + self[(1, 2)] * rhs.z + self[(1, 3)],
+            self[(2, 0)] * rhs.x + self[(2, 1)] * rhs.y + self[(2, 2)] * rhs.z + self[(2, 3)],
+        )
     }
 }
 
@@ -134,6 +154,7 @@ impl Index<(usize, usize)> for M3x3 {
 
 mod test {
     use crate::matrices::{M2x2, M3x3, M4x4};
+    use crate::vector::{Point, Vector};
 
     // Scenario: Constructing and inspecting a 4x4 matrix
     // Given the following 4x4 matrix M:
@@ -379,5 +400,46 @@ mod test {
         ]);
 
         assert_eq!(a * b, c);
+    }
+
+    // Scenario: A matrix multiplied by a tuple
+    // Given the following matrix A:
+    //     | 1 | 2 | 3 | 4 |
+    //     | 2 | 4 | 4 | 2 |
+    //     | 8 | 6 | 4 | 1 |
+    //     | 0 | 0 | 0 | 1 |
+    //   And b ← tuple(1, 2, 3, 1)
+    // Then A * b = tuple(18, 24, 33, 1)
+    #[test]
+    fn a_matrix_multiplied_by_a_tuple() {
+        let a = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [2.0, 4.0, 4.0, 2.0],
+            [8.0, 6.0, 4.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
+        );
+
+        let b = Point::new(1.0, 2.0, 3.0);
+
+        assert_eq!(&a * &b, Point::new(18.0, 24.0, 33.0));
+    }
+
+    // Scenario: Multiplying a matrix by the identity matrix
+    // Given the following matrix A:
+    //   | 0 | 1 |  2 |  4 |
+    //   | 1 | 2 |  4 |  8 |
+    //   | 2 | 4 |  8 | 16 |
+    //   | 4 | 8 | 16 | 32 |
+    // Then A * identity_matrix = A
+    #[test]
+    fn multiplying_a_matrix_by_the_identity_matrix() {
+        let a = M4x4::from_elements(
+            [0.0, 1.0, 2.0, 4.0],
+            [1.0, 2.0, 4.0, 8.0],
+            [2.0, 4.0, 8.0, 16.0],
+            [4.0, 8.0, 16.0, 32.0],
+        );
+
+        assert_eq!(&a * &M4x4::IDENTITY, a);
     }
 }
