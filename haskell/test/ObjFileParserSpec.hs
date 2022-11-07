@@ -213,3 +213,38 @@ objFileParserBasics =
         p2 t2 `shouldBe` getVertex parser 3
       it "t2.p3 = parser.vertices[4]" $ do
         p3 t2 `shouldBe` getVertex parser 4
+    {- Scenario: Converting an OBJ file to a group
+         Given file ← the file "triangles.obj"
+           And parser ← parse_obj_file(file)
+         When g ← obj_to_group(parser)
+         Then g includes "FirstGroup" from parser
+           And g includes "SecondGroup" from parser -}
+    describe "Converting an OBJ file to a group" $ do
+      let contents = "v -1 1 0\n\
+                     \v -1 0 0\n\
+                     \v 1 0 0\n\
+                     \v 1 1 0\n\
+                     \\n\
+                     \g FirstGroup\n\
+                     \f 1 2 3\n\
+                     \g SecondGroup\n\
+                     \f 1 3 4"
+          parser = parseObjFile contents
+          g      = objToGroup parser
+          [g1, g2] = reverse (children g)
+          c1 = reverse (children g1)
+          c2 = reverse (children g2)
+          t1 = head c1
+          t2 = head c2
+      it "t1.p1 = parser.vertices[1]" $ do
+        p1 t1 `shouldBe` getVertex parser 1
+      it "t1.p2 = parser.vertices[2]" $ do
+        p2 t1 `shouldBe` getVertex parser 2
+      it "t1.p3 = parser.vertices[3]" $ do
+        p3 t1 `shouldBe` getVertex parser 3
+      it "t2.p1 = parser.vertices[1]" $ do
+        p1 t2 `shouldBe` getVertex parser 1
+      it "t2.p2 = parser.vertices[3]" $ do
+        p2 t2 `shouldBe` getVertex parser 3
+      it "t2.p3 = parser.vertices[4]" $ do
+        p3 t2 `shouldBe` getVertex parser 4

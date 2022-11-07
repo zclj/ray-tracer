@@ -66,6 +66,11 @@ parseObjFileEntry s p@(Parser i v g) =
 parseObjFile :: String -> Parser
 parseObjFile s = foldr parseObjFileEntry (Parser [] [] [(defaultGroup 1)]) (reverse (lines s))
 
+objToGroup :: Parser -> Shape
+objToGroup (Parser _ _ gs) =
+  let defaultG = last gs
+  in fst (addChildren defaultG (init gs))
+
 contents = "v -1 1 0\n\
            \v -1.0000 0.5000 0.0000\n\
            \v 1 0 0\n\
