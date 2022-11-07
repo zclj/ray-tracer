@@ -9,7 +9,7 @@ import Debug.Trace
 
 data Parser = Parser { ignored  :: [String]
                      , vertices :: [Tuple]
-                     , group    :: Shape}
+                     , groups   :: [Shape]}
               deriving(Show)
 
 getVertex :: Parser -> Int -> Tuple
@@ -22,13 +22,15 @@ parseVertex s p@(Parser i v g) =
   in Parser i (v ++ [(T.point (read v1) (read v2) (read v3))]) g
 
 parseTriangle :: String -> Parser -> Parser
-parseTriangle s p@(Parser i v g) =
+parseTriangle s p@(Parser i v groups) =
   let parts        = words s
+      g:gs         = groups
       [v1, v2, v3] = tail parts
       vx1 = (getVertex p ((read v1)::Int))
       vx2 = (getVertex p ((read v2)::Int))
       vx3 = (getVertex p ((read v3)::Int))
-  in Parser i v (fst (addChild g (triangle 1 vx1 vx2 vx3)))
+      g'  = (fst (addChild g (triangle 1 vx1 vx2 vx3)))
+  in Parser i v (g':gs)
 
 parsePolygon :: String -> Parser -> Parser
 parsePolygon s p@(Parser i v g) =
@@ -45,6 +47,11 @@ parseFace s p@(Parser i v g) =
      then parseTriangle s p
      else parsePolygon s p
 
+parseGroup :: String -> Parser -> Parser
+parseGroup s p@(Parser i v gs) =
+  let parts = words s
+  in Parser i v ((defaultGroup ((length gs) + 1)):gs)
+
 parseObjFileEntry :: String -> Parser -> Parser
 parseObjFileEntry s p@(Parser i v g) =
   let parts = (words s)
@@ -53,10 +60,11 @@ parseObjFileEntry s p@(Parser i v g) =
      else case head parts of
             "v" -> parseVertex s p
             "f" -> parseFace s p
+            "g" -> parseGroup s p
             _   -> Parser (i ++ [s]) v g
 
 parseObjFile :: String -> Parser
-parseObjFile s = foldr parseObjFileEntry (Parser [] [] (defaultGroup 1)) (reverse (lines s))
+parseObjFile s = foldr parseObjFileEntry (Parser [] [] [(defaultGroup 1)]) (reverse (lines s))
 
 contents = "v -1 1 0\n\
            \v -1.0000 0.5000 0.0000\n\
@@ -83,7 +91,18 @@ contents3 = "v -1 1 0\n\
             \\n\
             \f 1 3 4 4 5"
 
+contents4 = "v -1 1 0\n\
+            \v -1 0 0\n\
+            \v 1 0 0\n\
+            \v 1 1 0\n\
+            \\n\
+            \g FirstGroup\n\
+            \f 1 2 3\n\
+            \g SecondGroup\n\
+            \f 1 3 4"
+
 parsed = parseObjFile contents
 parsed2 = parseObjFile contents2
 parsed3 = parseObjFile contents3
+parsed4 = parseObjFile contents4
 
