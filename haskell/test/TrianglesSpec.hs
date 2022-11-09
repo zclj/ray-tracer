@@ -125,3 +125,18 @@ triangleBasics =
         length xs `shouldBe` 1
       it "xs[0].t = 2" $ do
         intersectionT (xs !! 0) `shouldBe` 2
+    {- Scenario: A triangle has a bounding box
+         Given p1 ← point(-3, 7, 2)
+           And p2 ← point(6, 2, -4)
+           And p3 ← point(2, -1, -1)
+           And shape ← triangle(p1, p2, p3)
+         When box ← bounds_of(shape)
+         Then box.min = point(-3, -1, -4)
+           And box.max = point(6, 7, 2) -}
+    describe "A triangle has a bounding box" $ do
+      let t = triangle 1 (T.point (-3) 7 2) (T.point 6 2 (-4)) (T.point 2 (-1) (-1))
+          box = bounds t
+      it "box min  = point(-3, -1, -4)" $ do
+        boundMin box `shouldBe` T.point (-3) (-1) (-4)
+      it "box max = point(6, 7, 2)" $ do
+        boundMax box `shouldBe` T.point 6 7 2

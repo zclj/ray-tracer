@@ -273,6 +273,9 @@ bounds shape@Cone {minY, maxY}
 bounds shape@Group { children } =
   foldr (\c b -> addBoxes b (parentSpaceBoundsOf c)) defaultBoundingBox children
 
+bounds shape@Triangle { p1, p2, p3 } =
+  foldr (flip addBoundingBoxPoint) defaultBoundingBox [p1, p2, p3]
+
 defaultBoundingBox :: BoundingBox
 defaultBoundingBox = BoundingBox (T.point (1/0) (1/0) (1/0)) (T.point (-1/0) (-1/0) (-1/0))
 
