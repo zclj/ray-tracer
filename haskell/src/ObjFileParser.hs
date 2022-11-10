@@ -40,6 +40,7 @@ parsePolygon s p@(Parser i v g) =
                            , (unwords ["f", v1, v3, v4])
                            , (unwords ["f", v1, v2, v3])]
 
+-- \f 1/1/1 2/2/2 3/3/3 4/4/4"
 parseFace :: String -> Parser -> Parser
 parseFace s p@(Parser i v g) =
   let parts = words s
@@ -77,3 +78,11 @@ parseObjFile path =
   do contents <- readFile path
      return (parseObjFileContent contents)
 
+content = "v  7.0000 0.0000 12.0000\n\
+          \v  4.9700 -4.9700 12.0000\n\
+          \v  4.9811 -4.9811 12.4922\n\
+          \v  7.0156 0.0000 12.4922\n\
+          \g Teapot001\n\
+          \f 1/1/1 2/2/2 3/3/3 4/4/4"
+
+parser = parseObjFileContent content
