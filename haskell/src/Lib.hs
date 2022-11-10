@@ -12,6 +12,7 @@ module Lib
     , runDemoSceneChapter13
     , runDemoSceneChapter13Cones
     , runDemoSceneChapter14
+    , runDemoSceneChapter15
     , runDemoSceneNestedGlass
     , runDemoSceneCubes
     , runDemoSceneHexagon
@@ -31,6 +32,7 @@ import SceneChapter11
 import SceneChapter13
 import SceneChapter13Cones
 import SceneChapter14
+import SceneChapter15
 import SceneNestedGlass
 import SceneCubes
 import SceneHexagon
@@ -56,6 +58,8 @@ runDemoSceneChapter13 fname = writeCanvas fname sceneChapter13Canvas
 runDemoSceneChapter13Cones fname = writeCanvas fname sceneChapter13ConesCanvas
 
 runDemoSceneChapter14 fname = writeCanvas fname sceneChapter14Canvas
+
+runDemoSceneChapter15 = sceneChapter15
 
 runDemoSceneHexagon fname = writeCanvas fname sceneHexagonCanvas
 
@@ -115,6 +119,9 @@ sceneChapter13ConesCanvas = PPM.canvasToPPMString renderSceneChapter13Cones
 
 sceneChapter14Canvas :: String
 sceneChapter14Canvas = PPM.canvasToPPMString renderSceneChapter14
+
+sceneChapter15 :: IO ()
+sceneChapter15 = writeSceneChapter15
 
 sceneHexagonCanvas :: String
 sceneHexagonCanvas = PPM.canvasToPPMString renderSceneHexagon
