@@ -22,8 +22,13 @@ First, build with profiling `stack build --profile`. Then run with profiling `st
 
 ## Resources
 
+- [Book page](http://www.raytracerchallenge.com/)
 - [Arrays](https://wiki.haskell.org/Arrays)
 - [Vectors](https://wiki.haskell.org/Numeric_Haskell:_A_Vector_Tutorial)
 - [RTC Haskell](https://github.com/micahcantor/haskell-raytracer)
 - [Forum - Reflection](https://forum.raytracerchallenge.com/thread/4/reflection-refraction-scene-description)
 
+## 3D models
+
+- [MIT Graphics Course](https://groups.csail.mit.edu/graphics/classes/6.837/F03/models/)
+- [Utah Graphics Course](https://graphics.cs.utah.edu/courses/cs6620/fall2013/?prj=5)
