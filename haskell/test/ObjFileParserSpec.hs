@@ -35,7 +35,7 @@ objFileParserBasics =
                       \She set out one day\n\
                       \in a relative way,\n\
                       \and came back the previous night."
-          parser   = parseObjFile contents
+          parser   = parseObjFileContent contents
       it "parser should have ignored 5 lines" $ do
         length (ignored parser) `shouldBe` 5
     {- Scenario: Vertex records
@@ -56,7 +56,7 @@ objFileParserBasics =
                      \v -1.0000 0.5000 0.0000\n\
                      \v 1 0 0\n\
                      \v 1 1 0"
-          parser   = parseObjFile contents
+          parser   = parseObjFileContent contents
       it "parser.vertices[1] = point(-1, 1, 0)" $ do
         getVertex parser 1 `shouldBe` T.point (-1) 1 0
       it "parser.vertices[2] = point(-1, 0.5, 0)" $ do
@@ -94,7 +94,7 @@ objFileParserBasics =
                      \\n\
                      \f 1 2 3\n\
                      \f 1 3 4"
-          parser   = parseObjFile contents
+          parser   = parseObjFileContent contents
           g = groups parser
           c = reverse (children (head g))
           t1 = head c
@@ -146,7 +146,7 @@ objFileParserBasics =
                      \v 0 2 0\n\
                      \\n\
                      \f 1 2 3 4 5"
-          parser   = parseObjFile contents
+          parser   = parseObjFileContent contents
           g = groups parser
           c = reverse (children (head g))
           t1 = head c
@@ -195,7 +195,7 @@ objFileParserBasics =
                      \f 1 2 3\n\
                      \g SecondGroup\n\
                      \f 1 3 4"
-          parser   = parseObjFile contents
+          parser   = parseObjFileContent contents
           [_, g1, g2] = reverse (groups parser)
           c1 = reverse (children g1)
           c2 = reverse (children g2)
@@ -229,7 +229,7 @@ objFileParserBasics =
                      \f 1 2 3\n\
                      \g SecondGroup\n\
                      \f 1 3 4"
-          parser = parseObjFile contents
+          parser = parseObjFileContent contents
           g      = objToGroup parser
           [g1, g2] = reverse (children g)
           c1 = reverse (children g1)

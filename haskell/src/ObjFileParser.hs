@@ -63,11 +63,17 @@ parseObjFileEntry s p@(Parser i v g) =
             "g" -> parseGroup s p
             _   -> Parser (i ++ [s]) v g
 
-parseObjFile :: String -> Parser
-parseObjFile s = foldr parseObjFileEntry (Parser [] [] [(defaultGroup 1)]) (reverse (lines s))
+parseObjFileContent :: String -> Parser
+parseObjFileContent s =
+  foldr parseObjFileEntry (Parser [] [] [(defaultGroup 1)]) (reverse (lines s))
 
 objToGroup :: Parser -> Shape
 objToGroup (Parser _ _ gs) =
   let defaultG = last gs
   in fst (addChildren defaultG (init gs))
+
+parseObjFile :: String -> IO Parser
+parseObjFile path =
+  do contents <- readFile path
+     return (parseObjFileContent contents)
 
