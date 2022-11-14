@@ -32,3 +32,4 @@ First, build with profiling `stack build --profile`. Then run with profiling `st
 
 - [MIT Graphics Course](https://groups.csail.mit.edu/graphics/classes/6.837/F03/models/)
 - [Utah Graphics Course](https://graphics.cs.utah.edu/courses/cs6620/fall2013/?prj=5)
+- [Triangle mesh normalization](https://forum.raytracerchallenge.com/thread/27/triangle-mesh-normalization)
