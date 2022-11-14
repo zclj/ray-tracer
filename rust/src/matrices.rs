@@ -442,4 +442,14 @@ mod test {
 
         assert_eq!(&a * &M4x4::IDENTITY, a);
     }
+
+    // Scenario: Multiplying the identity matrix by a tuple
+    // Given a ← tuple(1, 2, 3, 4)
+    // Then identity_matrix * a = a
+    #[test]
+    fn multiplying_the_identity_matrix_by_a_tuple() {
+        let a = Point::new(1.0, 2.0, 3.0);
+
+        assert_eq!(&M4x4::IDENTITY * &a, a);
+    }
 }
