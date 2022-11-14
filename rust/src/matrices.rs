@@ -26,6 +26,10 @@ impl M4x4 {
             x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3,
         ])
     }
+
+    pub fn transpose(&self) -> Self {
+        M4x4::IDENTITY
+    }
 }
 
 impl PartialEq<M4x4> for M4x4 {
@@ -451,5 +455,35 @@ mod test {
         let a = Point::new(1.0, 2.0, 3.0);
 
         assert_eq!(&M4x4::IDENTITY * &a, a);
+    }
+
+    // Scenario: Transposing a matrix
+    // Given the following matrix A:
+    //   | 0 | 9 | 3 | 0 |
+    //   | 9 | 8 | 0 | 8 |
+    //   | 1 | 8 | 5 | 3 |
+    //   | 0 | 0 | 5 | 8 |
+    // Then transpose(A) is the following matrix:
+    //   | 0 | 9 | 1 | 0 |
+    //   | 9 | 8 | 8 | 0 |
+    //   | 3 | 0 | 5 | 5 |
+    //   | 0 | 8 | 3 | 8 |
+    #[test]
+    fn transposing_a_matrix() {
+        let a = M4x4::from_elements(
+            [0.0, 9.0, 3.0, 0.0],
+            [9.0, 8.0, 0.0, 8.0],
+            [1.0, 8.0, 5.0, 3.0],
+            [0.0, 0.0, 5.0, 8.0],
+        );
+
+        let b = M4x4::from_elements(
+            [0.0, 9.0, 1.0, 0.0],
+            [9.0, 8.0, 8.0, 0.0],
+            [3.0, 0.0, 5.0, 5.0],
+            [0.0, 8.0, 3.0, 8.0],
+        );
+
+        assert_eq!(a.transpose(), b)
     }
 }
