@@ -112,6 +112,10 @@ impl M2x2 {
     pub fn from_elements([x0, y0]: [f32; 2], [x1, y1]: [f32; 2]) -> M2x2 {
         M2x2([x0, y0, x1, y1])
     }
+
+    fn determinant(&self) -> f32 {
+        self[(0,0)] * self[(1,1)] - self[(0,1)] * self[(1,0)]
+    }
 }
 
 impl Index<usize> for M2x2 {
@@ -499,5 +503,17 @@ mod test {
     #[test]
     fn transposing_the_identity_matrix() {
         assert_eq!(M4x4::IDENTITY.transpose(), M4x4::IDENTITY)
+    }
+
+    // Scenario: Calculating the determinant of a 2x2 matrix
+    // Given the following 2x2 matrix A:
+    //   |  1 | 5 |
+    //   | -3 | 2 |
+    // Then determinant(A) = 17
+    #[test]
+    fn calculating_the_determinant_of_a_2x2_matrix() {
+        let a = M2x2::from_elements([1.0, 5.0], [-3.0, 2.0]);
+
+        assert_eq!(a.determinant(), 17.0)
     }
 }
