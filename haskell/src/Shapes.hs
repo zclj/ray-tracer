@@ -332,5 +332,23 @@ intersectBox (BoundingBox boundMin boundMax) r =
      then False
      else True
 
+-- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 splitBounds :: BoundingBox -> (BoundingBox, BoundingBox)
-splitBounds b = undefined
+splitBounds b@(BoundingBox boundMin boundMax) =
+  -- find largest dimension
+  let dx = abs ((x boundMax) - (x boundMin))
+      dy = abs ((y boundMax) - (y boundMin))
+      dz = abs ((z boundMax) - (z boundMin))
+      greatest = maximum [dx, dy, dz]
+      (x0, y0, z0) = ((x boundMin), (y boundMin), (z boundMin))
+      (x1, y1, z1) = ((x boundMax), (y boundMax), (z boundMax))
+      (x2, y2, z2, x3, y3, z3) = if greatest == dx
+                                 then (((x boundMin) + dx / 2), y0, z0, ((x boundMin) + dx / 2), y1, z1)
+                                 else if greatest == dy
+                                      then (x0, ((y boundMin) + dy / 2), z0, x1, ((y boundMin) + dy / 2), z1)
+                                      else (x0, y0, ((z boundMin) + dz / 2), x1, y1, ((z boundMin) + dz / 2))
+      midMin = T.point x2 y2 z2
+      midMax = T.point x3 y3 z3
+      left   = BoundingBox boundMin midMax
+      right  = BoundingBox midMin boundMax
+  in (left, right)
