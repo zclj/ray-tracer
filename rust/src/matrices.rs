@@ -492,4 +492,12 @@ mod test {
 
         assert_eq!(a.transpose(), b)
     }
+
+    // Scenario: Transposing the identity matrix
+    // Given A ← transpose(identity_matrix)
+    // Then A = identity_matrix
+    #[test]
+    fn transposing_the_identity_matrix() {
+        assert_eq!(M4x4::IDENTITY.transpose(), M4x4::IDENTITY)
+    }
 }
