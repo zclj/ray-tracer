@@ -52,24 +52,20 @@ wallMaterial = defaultMaterial
 ----------------------------------------
 
 writeSceneChapter15 = do
-  parser <- parseObjFile "obj-files/teddy.obj"--"test.obj"
+  parser <- parseObjFile "obj-files/teddy.obj"
   let group = objToGroup parser
       g     = updateTransform group (T.transform
                                      [ scaling 0.05 0.05 0.05
-                                     , rotationY (pi/6)
+                                     , rotationY (pi)
                                      , (translation (-0.6) 1 0.6)])
-  writeFile "foo.ppm" (PPM.canvasToPPMString (render camera (World [g] lightSource)))
-
--- writeSceneChapter15 =
---   writeFile
---   "foo.ppm"
---   (PPM.canvasToPPMString
---     (render camera (World [triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)] lightSource)))
+  writeFile
+    "demo/teddy.ppm"
+    (PPM.canvasToPPMString (render camera (World [g] lightSource)))
 
 ----------------------------------------
-renderSceneChapter15 =
-  render
-  camera
-  (World
-   [triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)]
-   lightSource)
+-- renderSceneChapter15 =
+--   render
+--   camera
+--   (World
+--    [triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)]
+--    lightSource)
