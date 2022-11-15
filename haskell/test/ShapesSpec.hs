@@ -376,6 +376,84 @@ boundingBoxes =
         boundMin box2 `shouldBe` Tuples.point (-1.4142) (-1.7071) (-1.7071)
       it "box2.max = point(1.4142, 1.7071, 1.7071)" $ do
         boundMax box2 `shouldBe` Tuples.point 1.4142 1.7071 1.7071
+    {- Scenario: Splitting a perfect cube
+         Given box ← bounding_box(min=point(-1, -4, -5) max=point(9, 6, 5))
+         When (left, right) ← split_bounds(box)
+         Then left.min = point(-1, -4, -5)
+           And left.max = point(4, 6, 5)
+           And right.min = point(4, -4, -5)
+           And right.max = point(9, 6, 5) -}
+    describe "Splitting a perfect cube" $ do
+      let box = BoundingBox { boundMin = Tuples.point (-1) (-4) (-5)
+                            , boundMax = Tuples.point 9 6 5 }
+          (left, right) = splitBounds box
+      it "left.min = point(-1, -4, -5)" $ do
+        boundMin left `shouldBe` Tuples.point (-1) (-4) (-5)
+      it "left.max = point(4, 6, 5)" $ do
+        boundMax left `shouldBe` Tuples.point 4 6 5
+      it "right.min = point(4, -4, -5)" $ do
+        boundMin right `shouldBe` Tuples.point 4 (-4) (-5)
+      it "right.max = point(9, 6, 5)" $ do
+        boundMax right `shouldBe` Tuples.point 9 6 5
+    {- Scenario: Splitting an x-wide box
+         Given box ← bounding_box(min=point(-1, -2, -3) max=point(9, 5.5, 3))
+         When (left, right) ← split_bounds(box)
+         Then left.min = point(-1, -2, -3)
+           And left.max = point(4, 5.5, 3)
+           And right.min = point(4, -2, -3)
+           And right.max = point(9, 5.5, 3) -}
+    describe "Splitting an x-wide box" $ do
+      let box = BoundingBox { boundMin = Tuples.point (-1) (-2) (-3)
+                            , boundMax = Tuples.point 9 5.5 3 }
+          (left, right) = splitBounds box
+      it "left.min = point(-1, -2, -3)" $ do
+        boundMin left `shouldBe` Tuples.point (-1) (-2) (-3)
+      it "left.max = point(4, 5.5, 3)" $ do
+        boundMax left `shouldBe` Tuples.point 4 5.5 3
+      it "right.min = point(4, -2, -3)" $ do
+        boundMin right `shouldBe` Tuples.point 4 (-2) (-3)
+      it "right.max = point(9, 5.5, 3)" $ do
+        boundMax right `shouldBe` Tuples.point 9 5.5 3
+
+    {- Scenario: Splitting a y-wide box
+         Given box ← bounding_box(min=point(-1, -2, -3) max=point(5, 8, 3))
+         When (left, right) ← split_bounds(box)
+         Then left.min = point(-1, -2, -3)
+           And left.max = point(5, 3, 3)
+           And right.min = point(-1, 3, -3)
+           And right.max = point(5, 8, 3) -}
+    describe "Splitting a y-wide box" $ do
+      let box = BoundingBox { boundMin = Tuples.point (-1) (-2) (-3)
+                            , boundMax = Tuples.point 5 8 3 }
+          (left, right) = splitBounds box
+      it "left.min = point(-1, -2, -3)" $ do
+        boundMin left `shouldBe` Tuples.point (-1) (-2) (-3)
+      it "left.max = point(5, 3, 3)" $ do
+        boundMax left `shouldBe` Tuples.point 5 3 3
+      it "right.min = point(-1, 3, -3)" $ do
+        boundMin right `shouldBe` Tuples.point (-1) 3 (-3)
+      it "right.max = point(5, 8, 3)" $ do
+        boundMax right `shouldBe` Tuples.point 5 8 3
+
+    {- Scenario: Splitting a z-wide box
+         Given box ← bounding_box(min=point(-1, -2, -3) max=point(5, 3, 7))
+         When (left, right) ← split_bounds(box)
+         Then left.min = point(-1, -2, -3)
+           And left.max = point(5, 3, 2)
+           And right.min = point(-1, -2, 2)
+           And right.max = point(5, 3, 7) -}
+    describe "Splitting a z-wide box" $ do
+      let box = BoundingBox { boundMin = Tuples.point (-1) (-2) (-3)
+                            , boundMax = Tuples.point 5 3 7 }
+          (left, right) = splitBounds box
+      it "left.min = point(-1, -2, -3)" $ do
+        boundMin left `shouldBe` Tuples.point (-1) (-2) (-3)
+      it "left.max = point(5, 3, 2)" $ do
+        boundMax left `shouldBe` Tuples.point 5 3 2
+      it "right.min = point(-1, -2, 2)" $ do
+        boundMin right `shouldBe` Tuples.point (-1) (-2) 2
+      it "right.max = point(5, 3, 7)" $ do
+        boundMax right `shouldBe` Tuples.point 5 3 7
 
 shapeBasics :: Spec
 shapeBasics =

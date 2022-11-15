@@ -331,3 +331,6 @@ intersectBox (BoundingBox boundMin boundMax) r =
   in if tmin > tmax
      then False
      else True
+
+splitBounds :: BoundingBox -> (BoundingBox, BoundingBox)
+splitBounds b = undefined
