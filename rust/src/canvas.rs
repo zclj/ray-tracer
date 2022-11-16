@@ -109,6 +109,7 @@ impl Canvas {
     }
 }
 
+#[cfg(test)]
 mod test {
     use crate::canvas::Canvas;
     use crate::color::Color;

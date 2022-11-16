@@ -166,6 +166,7 @@ impl Index<(usize, usize)> for M3x3 {
     }
 }
 
+#[cfg(test)]
 mod test {
     use crate::matrices::{M2x2, M3x3, M4x4};
     use crate::vector::{Point, Vector};
