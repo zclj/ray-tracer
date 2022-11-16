@@ -1,5 +1,5 @@
 use crate::utils::epsilon_eq;
-use crate::vector::{Point};
+use crate::vector::Point;
 use std::ops::{Index, Mul, MulAssign};
 
 ////////////////////////////////////////
@@ -115,7 +115,19 @@ impl M2x2 {
     }
 
     fn determinant(&self) -> f32 {
-        self[(0,0)] * self[(1,1)] - self[(0,1)] * self[(1,0)]
+        self[(0, 0)] * self[(1, 1)] - self[(0, 1)] * self[(1, 0)]
+    }
+}
+
+impl PartialEq<M2x2> for M2x2 {
+    fn eq(&self, rhs: &M2x2) -> bool {
+        for i in 0..4 {
+            if !epsilon_eq(self.0[i], rhs.0[i]) {
+                return false;
+            }
+        }
+
+        true
     }
 }
 
@@ -147,6 +159,40 @@ impl M3x3 {
         [x2, y2, z2]: [f32; 3],
     ) -> M3x3 {
         M3x3([x0, y0, z0, x1, y1, z1, x2, y2, z2])
+    }
+
+    fn sub_matrix(&self, row: u8, column: u8) -> M2x2 {
+        let [x0, y0, z0, x1, y1, z1, x2, y2, z2] = self.0;
+
+        let a = match row {
+            0 => [x1, y1, z1, x2, y2, z2],
+            1 => [x0, y0, z0, x2, y2, z2],
+            2 => [x0, y0, z0, x1, y1, z1],
+            _ => panic!("row out of bounds"),
+        };
+
+        let [x0, y0, z0, x1, y1, z1] = a;
+
+        let b = match column {
+            0 => [y0, z0, y1, z1],
+            1 => [x0, z0, x1, z1],
+            2 => [x0, y0, x1, y1],
+            _ => panic!("column out of bounds"),
+        };
+
+        M2x2(b)
+    }
+}
+
+impl PartialEq<M3x3> for M3x3 {
+    fn eq(&self, rhs: &M3x3) -> bool {
+        for i in 0..9 {
+            if !epsilon_eq(self.0[i], rhs.0[i]) {
+                return false;
+            }
+        }
+
+        true
     }
 }
 
@@ -518,5 +564,22 @@ mod test {
         let a = M2x2::from_elements([1.0, 5.0], [-3.0, 2.0]);
 
         assert_eq!(a.determinant(), 17.0)
+    }
+
+    // Scenario: A submatrix of a 3x3 matrix is a 2x2 matrix
+    // Given the following 3x3 matrix A:
+    //   |  1 | 5 |  0 |
+    //   | -3 | 2 |  7 |
+    //   |  0 | 6 | -3 |
+    // Then submatrix(A, 0, 2) is the following 2x2 matrix:
+    //   | -3 | 2 |
+    //   |  0 | 6 |
+    #[test]
+    fn a_submatrix_of_a_3x3_matrix_is_a_2x2_matrix() {
+        let a = M3x3::from_elements([1.0, 5.0, 0.0], [-3.0, 2.0, 7.0], [0.0, 6.0, -3.0]);
+
+        let b = M2x2::from_elements([-3.0, 2.0], [0.0, 6.0]);
+
+        assert_eq!(a.sub_matrix(0, 2), b)
     }
 }
