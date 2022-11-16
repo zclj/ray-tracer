@@ -50,6 +50,44 @@ groupBounds =
         boundMin box `shouldBe` T.point (-4.5) (-3) (-5)
       it "box.max = point(4, 7, 4.5)" $ do
         boundMax box `shouldBe` T.point 4 7 4.5
+    {- Scenario: Partitioning a group's children
+         Given s1 ← sphere() with:
+             | transform | translation(-2, 0, 0) |
+           And s2 ← sphere() with:
+             | transform | translation(2, 0, 0) |
+           And s3 ← sphere()
+           And g ← group() of [s1, s2, s3]
+         When (left, right) ← partition_children(g)
+         Then g is a group of [s3]
+           And left = [s1]
+           And right = [s2] -}
+    describe "Partitioning a group's children" $ do
+      let s1 = (defaultSphere 1) { Types.transform = (translation (-2) 0 0)}
+          s2 = (defaultSphere 2) { Types.transform = (translation 2 0 0)}
+          s3 = (defaultSphere 3)
+          (g, _) = addChildren (defaultGroup 4) [s1, s2, s3]
+          (left, right) = partitionChildren g
+      it "g is a group of [s3]" $ do
+        (children g) `shouldBe` [s3]
+      it "left = [s1]" $ do
+        left `shouldBe` [s1]
+      it "right = [s2]" $ do
+        right `shouldBe` [s2]
+    {- Scenario: Creating a sub-group from a list of children
+         Given s1 ← sphere()
+           And s2 ← sphere()
+           And g ← group()
+         When make_subgroup(g, [s1, s2])
+         Then g.count = 1
+           And g[0] is a group of [s1, s2] -}
+    describe "Creating a sub-group from a list of children" $ do
+      let s1 = (defaultSphere 1)
+          s2 = (defaultSphere 2)
+          g  = makeSubgroup (defaultGroup 3) [s1, s2]
+      it "g.count = 1" $ do
+        length (children g) `shouldBe` 1
+      -- it "g[0] is a group of [s1, s2]" $ do
+      --   head (children g) `shouldBe` [s1, s2]
 
 groupIntersections :: Spec
 groupIntersections =

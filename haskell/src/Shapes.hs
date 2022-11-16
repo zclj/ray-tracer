@@ -220,6 +220,12 @@ addChildren group children = foldr
                              (\c (g, cs) -> let (g', c') = addChild g c in (g', c':cs))
                              (group, []) children
 
+partitionChildren :: Shape -> ([Shape], [Shape])
+partitionChildren group = undefined
+
+makeSubgroup :: Shape -> [Shape] -> Shape
+makeSubgroup group xs = undefined
+
 updateGroupParents :: Shape -> (Shape -> Shape) -> Shape
 updateGroupParents group@Group{} update =
   let updated = update group
