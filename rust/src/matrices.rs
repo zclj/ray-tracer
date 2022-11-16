@@ -36,6 +36,30 @@ impl M4x4 {
             self[(0,3)], self[(1,3)], self[(2,3)], self[(3,3)],
         ])
     }
+
+    fn sub_matrix(&self, row: u8, column: u8) -> M3x3 {
+        let [x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3] = self.0;
+
+        let a = match row {
+            0 => [x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3],
+            1 => [x0, y0, z0, w0, x2, y2, z2, w2, x3, y3, z3, w3],
+            2 => [x0, y0, z0, w0, x1, y1, z1, w1, x3, y3, z3, w3],
+            3 => [x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2],
+            _ => panic!("row out of bounds"),
+        };
+
+        let [x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2] = a;
+
+        let b = match column {
+            0 => [y0, z0, w0, y1, z1, w1, x2, z2, w2],
+            1 => [x0, z0, w0, x1, z1, w1, x2, z2, w2],
+            2 => [x0, y0, w0, x1, y1, w1, x2, y2, w2],
+            3 => [x0, y0, z0, x1, y1, z1, x2, y2, z2],
+            _ => panic!("column out of bounds"),
+        };
+
+        M3x3(b)
+    }
 }
 
 impl PartialEq<M4x4> for M4x4 {
@@ -581,5 +605,29 @@ mod test {
         let b = M2x2::from_elements([-3.0, 2.0], [0.0, 6.0]);
 
         assert_eq!(a.sub_matrix(0, 2), b)
+    }
+
+    // Scenario: A submatrix of a 4x4 matrix is a 3x3 matrix
+    // Given the following 4x4 matrix A:
+    //   | -6 |  1 |  1 |  6 |
+    //   | -8 |  5 |  8 |  6 |
+    //   | -1 |  0 |  8 |  2 |
+    //   | -7 |  1 | -1 |  1 |
+    // Then submatrix(A, 2, 1) is the following 3x3 matrix:
+    //   | -6 |  1 | 6 |
+    //   | -8 |  8 | 6 |
+    //   | -7 | -1 | 1 |
+    #[test]
+    fn a_submatrix_of_a_4x4_matrix_is_a_3x3_matrix() {
+        let a = M4x4::from_elements(
+            [-6.0, 1.0, 1.0, 6.0],
+            [-8.0, 5.0, 8.0, 6.0],
+            [-1.0, 0.0, 8.0, 2.0],
+            [-7.0, 1.0, -1.0, 1.0],
+        );
+
+        let b = M3x3::from_elements([-6.0, 1.0, 6.0], [-8.0, 8.0, 6.0], [-7.0, -1.0, 1.0]);
+
+        assert_eq!(a.sub_matrix(2, 1), b)
     }
 }
