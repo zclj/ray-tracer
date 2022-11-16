@@ -1,5 +1,5 @@
 use crate::utils::epsilon_eq;
-use crate::vector::{Point, Vector};
+use crate::vector::{Point};
 use std::ops::{Index, Mul, MulAssign};
 
 ////////////////////////////////////////
