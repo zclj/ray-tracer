@@ -106,6 +106,7 @@ impl MulAssign<&M4x4> for M4x4 {
 ////////////////////////////////////////
 // M2x2
 
+#[derive(Debug)]
 pub struct M2x2([f32; 4]);
 
 impl M2x2 {
@@ -136,6 +137,7 @@ impl Index<(usize, usize)> for M2x2 {
     }
 }
 
+#[derive(Debug)]
 pub struct M3x3([f32; 9]);
 
 impl M3x3 {
