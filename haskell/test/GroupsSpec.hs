@@ -66,13 +66,15 @@ groupBounds =
           s2 = (defaultSphere 2) { Types.transform = (translation 2 0 0)}
           s3 = (defaultSphere 3)
           (g, _) = addChildren (defaultGroup 4) [s1, s2, s3]
-          (left, right) = partitionChildren g
+          (g', left, right) = partitionChildren g
+          -- children is updated with parent etc, so assert on those not the shape
+          [c1, c2, c3] = children g
       it "g is a group of [s3]" $ do
-        (children g) `shouldBe` [s3]
+        (children g') `shouldBe` [c3]
       it "left = [s1]" $ do
-        left `shouldBe` [s1]
+        left `shouldBe` [c1]
       it "right = [s2]" $ do
-        right `shouldBe` [s2]
+        right `shouldBe` [c2]
     {- Scenario: Creating a sub-group from a list of children
          Given s1 ← sphere()
            And s2 ← sphere()

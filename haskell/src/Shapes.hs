@@ -220,8 +220,25 @@ addChildren group children = foldr
                              (\c (g, cs) -> let (g', c') = addChild g c in (g', c':cs))
                              (group, []) children
 
-partitionChildren :: Shape -> ([Shape], [Shape])
-partitionChildren group = undefined
+partitionChild :: BoundingBox -> BoundingBox -> ([Shape], [Shape], [Shape]) -> Shape
+  -> ([Shape], [Shape], [Shape])
+partitionChild leftBound rightBound (outsidePart, leftPart, rightPart) child =
+  let bounds = parentSpaceBoundsOf child
+  in if (boxContainsBox leftBound bounds)
+     then (outsidePart, child:leftPart, rightPart)
+     else if (boxContainsBox rightBound bounds)
+          then (outsidePart, leftPart, child:rightPart)
+          else (child:outsidePart, leftPart, rightPart)
+
+partitionChildren :: Shape -> (Shape, [Shape], [Shape])
+partitionChildren group =
+  -- split the groups bounding box
+  let groupBounds = bounds group
+      (left, right) = splitBounds groupBounds
+      partitionWith = partitionChild left right
+  -- make a group for the shapes that fit in the 'left' or 'right' group
+      (out, l, r) = foldr(\c acc -> partitionWith acc c) ([],[],[]) (children group)
+  in (group { children = out }, l, r)
 
 makeSubgroup :: Shape -> [Shape] -> Shape
 makeSubgroup group xs = undefined
