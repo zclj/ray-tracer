@@ -90,6 +90,37 @@ groupBounds =
         length (children g) `shouldBe` 1
       it "g[0] is a group of [s1, s2]" $ do
         map Types.id (children (head (children g))) `shouldBe` [101, 201]
+    {- Scenario: Subdividing a group partitions its children
+         Given s1 ← sphere() with:
+             | transform | translation(-2, -2, 0) |
+           And s2 ← sphere() with:
+             | transform | translation(-2, 2, 0) |
+           And s3 ← sphere() with:
+             | transform | scaling(4, 4, 4) |
+           And g ← group() of [s1, s2, s3]
+         When divide(g, 1)
+         Then g[0] = s3
+           And subgroup ← g[1]
+           And subgroup is a group
+           And subgroup.count = 2
+           And subgroup[0] is a group of [s1]
+           And subgroup[1] is a group of [s2] -}
+    describe "Subdividing a group partitions its children" $ do
+      let s1    = (defaultSphere 1) { Types.transform = (translation (-2) (-2) 0)}
+          s2    = (defaultSphere 2) { Types.transform = (translation (-2) 2 0)}
+          s3    = (defaultSphere 3) { Types.transform = (scaling 4 4 4)}
+          (g,[s1', s2', s3']) = addChildren (defaultGroup 4) [s1, s2, s3]
+          g'    = divide g 1
+      it "g[0] = s3" $ do
+        head (children g') `shouldBe` s1'
+        -- And subgroup ← g[1]
+        --    And subgroup is a group
+        --    And subgroup.count = 2
+        --    And subgroup[0] is a group of [s1]
+        --    And subgroup[1] is a group of [s2]
+
+-- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
+-- https://forum.raytracerchallenge.com/thread/189/solved-bonus-chapter-bvh
 
 groupIntersections :: Spec
 groupIntersections =

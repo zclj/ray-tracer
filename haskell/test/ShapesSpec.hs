@@ -454,6 +454,15 @@ boundingBoxes =
         boundMin right `shouldBe` Tuples.point (-1) (-2) 2
       it "right.max = point(5, 3, 7)" $ do
         boundMax right `shouldBe` Tuples.point 5 3 7
+    {- Scenario: Subdividing a primitive does nothing
+         Given shape ← sphere()
+         When divide(shape, 1)
+         Then shape is a sphere -}
+    describe "Subdividing a primitive does nothing" $ do
+      let s = defaultSphere 1
+          x = divide s 1
+      it "shape is a sphere" $ do
+        x `shouldBe` s
 
 shapeBasics :: Spec
 shapeBasics =

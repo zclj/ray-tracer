@@ -360,7 +360,6 @@ intersectBox (BoundingBox boundMin boundMax) r =
      then False
      else True
 
--- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 splitBounds :: BoundingBox -> (BoundingBox, BoundingBox)
 splitBounds b@(BoundingBox boundMin boundMax) =
   -- find largest dimension
@@ -380,3 +379,11 @@ splitBounds b@(BoundingBox boundMin boundMax) =
       left   = BoundingBox boundMin midMax
       right  = BoundingBox midMin boundMax
   in (left, right)
+
+divide :: Shape -> Integer -> Shape
+divide s@Sphere {} t = s
+divide s@Cube {} t = s
+divide s@Cone {} t = s
+divide s@Cylinder {} t = s
+divide s@Triangle {} t = s
+divide s@Group {} t = s
