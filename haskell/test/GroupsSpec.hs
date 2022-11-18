@@ -83,13 +83,13 @@ groupBounds =
          Then g.count = 1
            And g[0] is a group of [s1, s2] -}
     describe "Creating a sub-group from a list of children" $ do
-      let s1 = (defaultSphere 1)
-          s2 = (defaultSphere 2)
+      let s1 = (defaultSphere 101)
+          s2 = (defaultSphere 201)
           g  = makeSubgroup (defaultGroup 3) [s1, s2]
       it "g.count = 1" $ do
         length (children g) `shouldBe` 1
-      -- it "g[0] is a group of [s1, s2]" $ do
-      --   head (children g) `shouldBe` [s1, s2]
+      it "g[0] is a group of [s1, s2]" $ do
+        map Types.id (children (head (children g))) `shouldBe` [101, 201]
 
 groupIntersections :: Spec
 groupIntersections =

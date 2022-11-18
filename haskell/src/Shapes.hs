@@ -241,7 +241,12 @@ partitionChildren group =
   in (group { children = out }, l, r)
 
 makeSubgroup :: Shape -> [Shape] -> Shape
-makeSubgroup group xs = undefined
+-- make a new group and add the group with the children to that group
+makeSubgroup group children =
+  let subgroup        = (defaultGroup ((Types.id group) + 1))
+      (subgroup', cs) = addChildren subgroup children
+      (group', _)     = addChildren group [subgroup']
+  in group'
 
 updateGroupParents :: Shape -> (Shape -> Shape) -> Shape
 updateGroupParents group@Group{} update =
