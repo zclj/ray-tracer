@@ -206,6 +206,10 @@ impl M3x3 {
 
         M2x2(b)
     }
+
+    fn minor(&self, row: u8, column: u8) -> f32 {
+        self.sub_matrix(row, column).determinant()
+    }
 }
 
 impl PartialEq<M3x3> for M3x3 {
@@ -629,5 +633,29 @@ mod test {
         let b = M3x3::from_elements([-6.0, 1.0, 6.0], [-8.0, 8.0, 6.0], [-7.0, -1.0, 1.0]);
 
         assert_eq!(a.sub_matrix(2, 1), b)
+    }
+
+    // Scenario: Calculating a minor of a 3x3 matrix
+    // Given the following 3x3 matrix A:
+    //     |  3 |  5 |  0 |
+    //     |  2 | -1 | -7 |
+    //     |  6 | -1 |  5 |
+    //   And B ← submatrix(A, 1, 0)
+    // Then determinant(B) = 25
+    //   And minor(A, 1, 0) = 25
+    #[test]
+    #[rustfmt::skip]
+    fn calculating_a_minor_of_a_3x3_matrix() {
+        let a = M3x3::from_elements([3.0, 5.0, 0.0],
+                                    [2.0, -1.0, -7.0],
+                                    [6.0, -1.0, 5.0]);
+
+        let b = a.sub_matrix(1,0);
+
+        let det = b.determinant();
+        let min = a.minor(1,0);
+
+        assert_eq!(det, 25.0);
+        assert_eq!(min, 25.0)
     }
 }
