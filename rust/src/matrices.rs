@@ -215,12 +215,17 @@ impl M3x3 {
         let minor = self.minor(row, column);
 
         // negate if the sum if odd
-        if (row + column) % 2 != 0; {
+        if (row + column) % 2 != 0 {
             -minor
-        }
-        else {
+        } else {
             minor
         }
+    }
+
+    fn determinant(&self) -> f32 {
+        (self[(0, 0)] * self.cofactor(0, 0))
+            + (self[(0, 1)] * self.cofactor(0, 1))
+            + (self[(0, 2)] * self.cofactor(0, 2))
     }
 }
 
@@ -696,5 +701,32 @@ mod test {
         assert_eq!(min2, 25.0);
         assert_eq!(cof1, -12.0);
         assert_eq!(cof2, -25.0);
+    }
+
+    // Scenario: Calculating the determinant of a 3x3 matrix
+    // Given the following 3x3 matrix A:
+    //   |  1 |  2 |  6 |
+    //   | -5 |  8 | -4 |
+    //   |  2 |  6 |  4 |
+    // Then cofactor(A, 0, 0) = 56
+    //   And cofactor(A, 0, 1) = 12
+    //   And cofactor(A, 0, 2) = -46
+    //   And determinant(A) = -196
+    #[test]
+    #[rustfmt::skip]
+    fn calculating_the_determinant_of_a_3x3_matrix() {
+        let a = M3x3::from_elements([1.0, 2.0, 6.0],
+                                    [-5.0, 8.0, -4.0],
+                                    [2.0, 6.0, 4.0]);
+
+        let cof1 = a.cofactor(0,0);
+        let cof2 = a.cofactor(0,1);
+        let cof3 = a.cofactor(0,2);
+        let det = a.determinant();
+
+        assert_eq!(cof1, 56.0);
+        assert_eq!(cof2, 12.0);
+        assert_eq!(cof3, -46.0);
+        assert_eq!(det, -196.0);
     }
 }
