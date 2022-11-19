@@ -210,6 +210,18 @@ impl M3x3 {
     fn minor(&self, row: u8, column: u8) -> f32 {
         self.sub_matrix(row, column).determinant()
     }
+
+    fn cofactor(&self, row: u8, column: u8) -> f32 {
+        let minor = self.minor(row, column);
+
+        // negate if the sum if odd
+        if (row + column) % 2 != 0; {
+            -minor
+        }
+        else {
+            minor
+        }
+    }
 }
 
 impl PartialEq<M3x3> for M3x3 {
@@ -657,5 +669,32 @@ mod test {
 
         assert_eq!(det, 25.0);
         assert_eq!(min, 25.0)
+    }
+
+    // Scenario: Calculating a cofactor of a 3x3 matrix
+    // Given the following 3x3 matrix A:
+    //     |  3 |  5 |  0 |
+    //     |  2 | -1 | -7 |
+    //     |  6 | -1 |  5 |
+    // Then minor(A, 0, 0) = -12
+    //   And cofactor(A, 0, 0) = -12
+    //   And minor(A, 1, 0) = 25
+    //   And cofactor(A, 1, 0) = -25
+    #[test]
+    #[rustfmt::skip]
+    fn calculating_a_cofactor_of_a_3x3_matrix() {
+        let a = M3x3::from_elements([3.0, 5.0, 0.0],
+                                    [2.0, -1.0, -7.0],
+                                    [6.0, -1.0, 5.0]);
+
+        let min1 = a.minor(0,0);
+        let cof1 = a.cofactor(0,0);
+        let min2 = a.minor(1,0);
+        let cof2 = a.cofactor(1,0);
+
+        assert_eq!(min1, -12.0);
+        assert_eq!(min2, 25.0);
+        assert_eq!(cof1, -12.0);
+        assert_eq!(cof2, -25.0);
     }
 }
