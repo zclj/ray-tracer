@@ -111,11 +111,22 @@ groupBounds =
           s3    = (defaultSphere 3) { Types.transform = (scaling 4 4 4)}
           (g,[s1', s2', s3']) = addChildren (defaultGroup 4) [s1, s2, s3]
           g'    = divide g 1
+          cs    = (reverse (children g'))
+          g'0   = cs !! 0
+          g'1   = cs !! 1
       it "g[0] = s3" $ do
-        head (children g') `shouldBe` s1'
+        g'0 `shouldBe` s3'
+      -- it "g children.count = 3" $ do
+      --   length cs `shouldBe` 3
+      it "subgroup ← g[1] and subgroup is a group and subgroup.count = 2" $ do
+        length (children g'1) `shouldBe` 2
         -- And subgroup ← g[1]
         --    And subgroup is a group
         --    And subgroup.count = 2
+      it "subgroup[0] is a group of [s1]" $ do
+        head (children ((reverse (children g'1)) !! 0)) `shouldBe` s1'
+      it "subgroup[1] is a group of [s2]" $ do
+        head (children ((reverse (children g'1)) !! 1)) `shouldBe` s2'
         --    And subgroup[0] is a group of [s1]
         --    And subgroup[1] is a group of [s2]
 
