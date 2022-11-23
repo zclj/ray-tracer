@@ -392,17 +392,12 @@ divide g@Group {} t
   | otherwise =
   -- g' is a group with the children of the shapes that do not fit in
   --  the left/right partitions
-  -- (g' { c = s3 }, [s1,s2], [])
   let (g', left, right) = partitionChildren g
       -- subgroup (make a new group with the given children) and set that group
       --  as the child to the input group
-      -- the result should be = g' { c = s3, G( G(s1, s2) ) }
-      -- gLeft = sub g' { c = s3 } [s1,s2] -> g' { c = s3, G( G(s1,s2)) }
       gLeft             = if null left then g' else makeSubgroup g' left
-      gRight            = if null right then gLeft else makeSubgroup gLeft left
+      gRight            = if null right then gLeft else makeSubgroup gLeft right
   -- dived each child in the group
-      gLeft'            = gLeft { children = map (\c -> divide c t) (children gLeft)}
-      gRight'           = gRight { children = map (\c -> divide c t) (children gRight)}
-      children'         = map (\c -> divide c t) (children g')
-  in gLeft' --(defaultGroup 5) { children = left }
+      gRight'            = gRight { children = map (\c -> divide c t) (children gRight) }
+  in  gRight'
 

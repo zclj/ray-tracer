@@ -114,21 +114,16 @@ groupBounds =
           cs    = (reverse (children g'))
           g'0   = cs !! 0
           g'1   = cs !! 1
+          (sub1,_) = addChildren (defaultGroup 5) [s1]
+          (sub2,_) = addChildren (defaultGroup 6) [s2]
       it "g[0] = s3" $ do
         g'0 `shouldBe` s3'
-      -- it "g children.count = 3" $ do
-      --   length cs `shouldBe` 3
-      it "subgroup ← g[1] and subgroup is a group and subgroup.count = 2" $ do
+      it "subgroup ← g[1] is a group and subgroup.count = 2" $ do
         length (children g'1) `shouldBe` 2
-        -- And subgroup ← g[1]
-        --    And subgroup is a group
-        --    And subgroup.count = 2
       it "subgroup[0] is a group of [s1]" $ do
-        head (children ((reverse (children g'1)) !! 0)) `shouldBe` s1'
+        Types.id (head (children ((reverse (children g'1)) !! 0))) `shouldBe` Types.id s1
       it "subgroup[1] is a group of [s2]" $ do
-        head (children ((reverse (children g'1)) !! 1)) `shouldBe` s2'
-        --    And subgroup[0] is a group of [s1]
-        --    And subgroup[1] is a group of [s2]
+        Types.id (head (children ((reverse (children g'1)) !! 1))) `shouldBe` Types.id s2
 
 -- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
 -- https://forum.raytracerchallenge.com/thread/189/solved-bonus-chapter-bvh
