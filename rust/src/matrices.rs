@@ -60,6 +60,14 @@ impl M4x4 {
 
         M3x3(b)
     }
+
+    fn cofactor(&self, row: u8, column: u8) -> f32 {
+        0.0
+    }
+
+    fn determinant(&self) -> f32 {
+        0.0
+    }
 }
 
 impl PartialEq<M4x4> for M4x4 {
@@ -728,5 +736,39 @@ mod test {
         assert_eq!(cof2, 12.0);
         assert_eq!(cof3, -46.0);
         assert_eq!(det, -196.0);
+    }
+
+    // Scenario: Calculating the determinant of a 4x4 matrix
+    // Given the following 4x4 matrix A:
+    //   | -2 | -8 |  3 |  5 |
+    //   | -3 |  1 |  7 |  3 |
+    //   |  1 |  2 | -9 |  6 |
+    //   | -6 |  7 |  7 | -9 |
+    // Then cofactor(A, 0, 0) = 690
+    //   And cofactor(A, 0, 1) = 447
+    //   And cofactor(A, 0, 2) = 210
+    //   And cofactor(A, 0, 3) = 51
+    //   And determinant(A) = -4071
+    #[test]
+    #[rustfmt::skip]
+    fn calculating_the_determinant_of_a_4x4_matrix() {
+        let a = M4x4::from_elements(
+            [-2.0, -8.0, 3.0, 5.0],
+            [-3.0, 1.0, 7.0, 3.0],
+            [1.0, 2.0, -9.0, 6.0],
+            [-6.0, 7.0, 7.0, -9.0],
+        );
+
+        let cof1 = a.cofactor(0,0);
+        let cof2 = a.cofactor(0,1);
+        let cof3 = a.cofactor(0,2);
+        let cof4 = a.cofactor(0,3);
+        let det = a.determinant();
+
+        assert_eq!(cof1, 690.0);
+        assert_eq!(cof2, 447.0);
+        assert_eq!(cof3, 210.0);
+        assert_eq!(cof4, 51.0);
+        assert_eq!(det, -4071.0);
     }
 }
