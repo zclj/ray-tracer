@@ -121,9 +121,9 @@ groupBounds =
       it "subgroup ← g[1] is a group and subgroup.count = 2" $ do
         length (children g'1) `shouldBe` 2
       it "subgroup[0] is a group of [s1]" $ do
-        Types.id (head (children ((reverse (children g'1)) !! 0))) `shouldBe` Types.id s1
+        Types.id (head (children ((children g'1) !! 0))) `shouldBe` Types.id s1
       it "subgroup[1] is a group of [s2]" $ do
-        Types.id (head (children ((reverse (children g'1)) !! 1))) `shouldBe` Types.id s2
+        Types.id (head (children ((children g'1) !! 1))) `shouldBe` Types.id s2
     {- Scenario: Subdividing a group with too few children
          Given s1 ← sphere() with:
              | transform | translation(-2, 0, 0) |
@@ -144,13 +144,13 @@ groupBounds =
       let s1 = (defaultSphere 1) { Types.transform = (translation (-2) 0 0)}
           s2 = (defaultSphere 2) { Types.transform = (translation 2 1 0)}
           s3 = (defaultSphere 3) { Types.transform = (translation 2 (-1) 0)}
-          sg = makeSubgroup (defaultGroup 4) [s1, s2, s3]
+          (sg,_) = addChildren (defaultGroup 4) [s1, s2, s3]
           s4 = (defaultSphere 4)
           (g,_)  = addChildren (defaultGroup 5) [sg, s4]
           g' = divide g 3
           gc = children g'
           sg' = (gc !! 0)
-          sgc' = reverse (children sg')
+          sgc' = (children sg')
       it "g[0] = subgroup" $ do
         Types.id (gc !! 0) `shouldBe` Types.id sg
       it "g[1] = s4" $ do
@@ -158,13 +158,9 @@ groupBounds =
       it "subgroup.count = 2" $ do
         length sgc' `shouldBe` 2
       it "subgroup[0] is a group of [s1]" $ do
-        children (sgc' !! 0) `shouldBe` [s1]
+        map Types.id (children (sgc' !! 0)) `shouldBe` [Types.id s1]
       it "subgroup[1] is a group of [s2, s3]" $ do
-        children (sgc' !! 1) `shouldBe` [s2, s3]
-
-
--- http://www.raytracerchallenge.com/bonus/bounding-boxes.html
--- https://forum.raytracerchallenge.com/thread/189/solved-bonus-chapter-bvh
+        map Types.id (children (sgc' !! 1)) `shouldBe` [(Types.id s2), (Types.id s3)]
 
 groupIntersections :: Spec
 groupIntersections =

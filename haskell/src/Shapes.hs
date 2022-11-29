@@ -388,16 +388,17 @@ divide s@Cylinder {} t = s
 divide s@Triangle {} t = s
 divide g@Group {} t
   -- given a group, subdivide the group until threshold
-  | length (children g) <= t = g
+  | length (children g) < t = g { children = map (\c -> divide c t) (children g) }
   | otherwise =
   -- g' is a group with the children of the shapes that do not fit in
   --  the left/right partitions
   let (g', left, right) = partitionChildren g
       -- subgroup (make a new group with the given children) and set that group
       --  as the child to the input group
-      gLeft             = if null left then g' else makeSubgroup g' left
-      gRight            = if null right then gLeft else makeSubgroup gLeft right
-  -- dived each child in the group
-      gRight'            = gRight { children = map (\c -> divide c t) (children gRight) }
-  in  gRight'
-
+      gLeftSub          = if null left then g' else makeSubgroup g' left
+      gRightSub         = if null right then gLeftSub else makeSubgroup g' right
+      gDivided          = gRightSub
+                          { children =
+                              (map (\c -> divide c t) (children gLeftSub)) ++
+                              (map (\c -> divide c t) (children gRightSub)) }
+  in  gDivided
