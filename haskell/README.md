@@ -23,6 +23,7 @@ First, build with profiling `stack build --profile`. Then run with profiling `st
 ## Resources
 
 - [Book page](http://www.raytracerchallenge.com/)
+- [Bounding Boxes Bonus Chapter](http://www.raytracerchallenge.com/bonus/bounding-boxes.html)
 - [Arrays](https://wiki.haskell.org/Arrays)
 - [Vectors](https://wiki.haskell.org/Numeric_Haskell:_A_Vector_Tutorial)
 - [RTC Haskell](https://github.com/micahcantor/haskell-raytracer)
