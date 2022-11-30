@@ -61,12 +61,26 @@ impl M4x4 {
         M3x3(b)
     }
 
+    fn minor(&self, row: u8, column: u8) -> f32 {
+        self.sub_matrix(row, column).determinant()
+    }
+
     fn cofactor(&self, row: u8, column: u8) -> f32 {
-        0.0
+        let minor = self.minor(row, column);
+
+        // negate if the sum is odd
+        if (row + column) % 2 != 0 {
+            -minor
+        } else {
+            minor
+        }
     }
 
     fn determinant(&self) -> f32 {
-        0.0
+        (self[(0, 0)] * self.cofactor(0, 0))
+            + (self[(0, 1)] * self.cofactor(0, 1))
+            + (self[(0, 2)] * self.cofactor(0, 2))
+            + (self[(0, 3)] * self.cofactor(0, 3))
     }
 }
 
