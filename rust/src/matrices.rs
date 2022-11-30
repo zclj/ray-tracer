@@ -51,7 +51,7 @@ impl M4x4 {
         let [x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2] = a;
 
         let b = match column {
-            0 => [y0, z0, w0, y1, z1, w1, x2, z2, w2],
+            0 => [y0, z0, w0, y1, z1, w1, y2, z2, w2],
             1 => [x0, z0, w0, x1, z1, w1, x2, z2, w2],
             2 => [x0, y0, w0, x1, y1, w1, x2, y2, w2],
             3 => [x0, y0, z0, x1, y1, z1, x2, y2, z2],
