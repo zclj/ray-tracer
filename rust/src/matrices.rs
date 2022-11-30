@@ -82,6 +82,10 @@ impl M4x4 {
             + (self[(0, 2)] * self.cofactor(0, 2))
             + (self[(0, 3)] * self.cofactor(0, 3))
     }
+
+    fn is_invertible(&self) -> bool {
+        self.determinant() != 0.0
+    }
 }
 
 impl PartialEq<M4x4> for M4x4 {
@@ -784,5 +788,51 @@ mod test {
         assert_eq!(cof3, 210.0);
         assert_eq!(cof4, 51.0);
         assert_eq!(det, -4071.0);
+    }
+
+    // Scenario: Testing an invertible matrix for invertibility
+    // Given the following 4x4 matrix A:
+    //   |  6 |  4 |  4 |  4 |
+    //   |  5 |  5 |  7 |  6 |
+    //   |  4 | -9 |  3 | -7 |
+    //   |  9 |  1 |  7 | -6 |
+    // Then determinant(A) = -2120
+    //   And A is invertible
+    #[test]
+    fn testing_an_invertible_matrix_for_invertibility() {
+        let a = M4x4::from_elements(
+            [6.0, 4.0, 4.0, 4.0],
+            [5.0, 5.0, 7.0, 6.0],
+            [4.0, -9.0, 3.0, -7.0],
+            [9.0, 1.0, 7.0, -6.0],
+        );
+
+        let det = a.determinant();
+
+        assert_eq!(det, -2120.0);
+        assert_eq!(a.is_invertible(), true);
+    }
+
+    // Scenario: Testing a noninvertible matrix for invertibility
+    // Given the following 4x4 matrix A:
+    //   | -4 |  2 | -2 | -3 |
+    //   |  9 |  6 |  2 |  6 |
+    //   |  0 | -5 |  1 | -5 |
+    //   |  0 |  0 |  0 |  0 |
+    // Then determinant(A) = 0
+    //   And A is not invertible
+    #[test]
+    fn testing_a_noninvertible_matrix_for_invertibility() {
+        let a = M4x4::from_elements(
+            [-4.0, 2.0, -2.0, -3.0],
+            [9.0, 6.0, 2.0, 6.0],
+            [0.0, -5.0, 1.0, -5.0],
+            [0.0, 0.0, 0.0, 0.0],
+        );
+
+        let det = a.determinant();
+
+        assert_eq!(det, 0.0);
+        assert_eq!(a.is_invertible(), false);
     }
 }
