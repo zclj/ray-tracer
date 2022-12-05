@@ -78,6 +78,7 @@ fn process_line(cs: &[Color], line_str: &mut String) {
 }
 
 impl Canvas {
+    #[must_use]
     pub fn new(width: usize, height: usize) -> Self {
         Canvas {
             width,
@@ -96,6 +97,7 @@ impl Canvas {
         &self.pixels[idx]
     }
 
+    #[must_use]
     pub fn to_ppm(&self) -> String {
         let mut ppm = String::with_capacity(self.width * self.height * 12);
 
