@@ -100,6 +100,7 @@ pub struct Point {
 }
 
 impl Point {
+    #[must_use]
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
@@ -162,6 +163,7 @@ pub struct Vector {
 }
 
 impl Vector {
+    #[must_use]
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
@@ -172,6 +174,7 @@ impl Vector {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
+    #[must_use]
     pub fn norm(&self) -> Self {
         let m = self.mag();
 
