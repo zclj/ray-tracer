@@ -86,6 +86,21 @@ impl M4x4 {
     fn is_invertible(&self) -> bool {
         self.determinant() != 0.0
     }
+
+    fn inverse(&self) -> Self {
+        assert!(self.is_invertible());
+
+        let mut m: [f32; 16] = [0.0; 16];
+
+        for row in 0..4 {
+            for col in 0..4 {
+                let c = self.cofactor(row, col);
+                m[(col * 4) as usize + row as usize] = c / self.determinant();
+            }
+        }
+
+        M4x4(m)
+    }
 }
 
 impl PartialEq<M4x4> for M4x4 {
@@ -834,5 +849,52 @@ mod test {
 
         assert_eq!(det, 0.0);
         assert_eq!(a.is_invertible(), false);
+    }
+
+    // Scenario: Calculating the inverse of a matrix
+    // Given the following 4x4 matrix A:
+    //     | -5 |  2 |  6 | -8 |
+    //     |  1 | -5 |  1 |  8 |
+    //     |  7 |  7 | -6 | -7 |
+    //     |  1 | -3 |  7 |  4 |
+    //   And B ← inverse(A)
+    // Then determinant(A) = 532
+    //   And cofactor(A, 2, 3) = -160
+    //   And B[3,2] = -160/532
+    //   And cofactor(A, 3, 2) = 105
+    //   And B[2,3] = 105/532
+    //   And B is the following 4x4 matrix:
+    //     |  0.21805 |  0.45113 |  0.24060 | -0.04511 |
+    //     | -0.80827 | -1.45677 | -0.44361 |  0.52068 |
+    //     | -0.07895 | -0.22368 | -0.05263 |  0.19737 |
+    //     | -0.52256 | -0.81391 | -0.30075 |  0.30639 |
+    #[test]
+    fn calculating_the_inverse_of_a_matrix() {
+        let a = M4x4::from_elements(
+            [-5.0, 2.0, 6.0, -8.0],
+            [1.0, -5.0, 1.0, 8.0],
+            [7.0, 7.0, -6.0, -7.0],
+            [1.0, -3.0, 7.0, 4.0],
+        );
+
+        let b_cmp = M4x4::from_elements(
+            [0.21805, 0.45113, 0.24060, -0.04511],
+            [-0.80827, -1.45677, -0.44361, 0.52068],
+            [-0.07895, -0.22368, -0.05263, 0.19737],
+            [-0.52256, -0.81391, -0.30075, 0.30639],
+        );
+
+        let b = a.inverse();
+
+        let det = a.determinant();
+        let cof1 = a.cofactor(2, 3);
+        let cof2 = a.cofactor(3, 2);
+
+        assert_eq!(det, 532.0);
+        assert_eq!(cof1, -160.0);
+        assert_eq!(cof2, 105.0);
+        assert_eq!(b[(3, 2)], -160.0 / 532.0);
+        assert_eq!(b[(2, 3)], 105.0 / 532.0);
+        assert_eq!(b, b_cmp);
     }
 }
