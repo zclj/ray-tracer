@@ -71,10 +71,10 @@ impl M4x4 {
         let minor = self.minor(row, column);
 
         // negate if the sum is odd
-        if (row + column) % 2 != 0 {
-            -minor
-        } else {
+        if (row + column) % 2 == 0 {
             minor
+        } else {
+            -minor
         }
     }
 
