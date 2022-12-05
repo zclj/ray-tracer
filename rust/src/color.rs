@@ -8,6 +8,7 @@ pub struct Color {
 }
 
 impl Color {
+    #[must_use]
     pub fn new(red: f32, green: f32, blue: f32) -> Color {
         Color { red, green, blue }
     }
