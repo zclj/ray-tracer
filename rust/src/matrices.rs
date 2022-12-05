@@ -144,7 +144,7 @@ impl Mul<&M4x4> for &M4x4 {
         for i in 0..4 {
             for j in 0..4 {
                 for k in 0..4 {
-                    m[j + (i * 4)] += self[(i, k)] * rhs[(k, j)]
+                    m[j + (i * 4)] += self[(i, k)] * rhs[(k, j)];
                 }
             }
         }
@@ -166,7 +166,7 @@ impl Mul<&Point> for &M4x4 {
 
 impl MulAssign<&M4x4> for M4x4 {
     fn mul_assign(&mut self, rhs: &M4x4) {
-        *self = &*self * rhs
+        *self = &*self * rhs;
     }
 }
 
