@@ -961,4 +961,38 @@ mod test {
 
         assert_eq!(b, b_cmp);
     }
+
+    // Scenario: Multiplying a product by its inverse
+    // Given the following 4x4 matrix A:
+    //     |  3 | -9 |  7 |  3 |
+    //     |  3 | -8 |  2 | -9 |
+    //     | -4 |  4 |  4 |  1 |
+    //     | -6 |  5 | -1 |  1 |
+    //   And the following 4x4 matrix B:
+    //     |  8 |  2 |  2 |  2 |
+    //     |  3 | -1 |  7 |  0 |
+    //     |  7 |  0 |  5 |  4 |
+    //     |  6 | -2 |  0 |  5 |
+    //   And C ← A * B
+    // Then C * inverse(B) = A
+    #[test]
+    fn multiplying_a_product_by_its_inverse() {
+        let a = M4x4::from_elements(
+            [3.0, -9.0, 7.0, 3.0],
+            [3.0, -8.0, 2.0, -9.0],
+            [-4.0, 4.0, 4.0, 1.0],
+            [-6.0, 5.0, -1.0, 1.0],
+        );
+
+        let b = M4x4::from_elements(
+            [8.0, 2.0, 2.0, 2.0],
+            [3.0, -1.0, 7.0, 0.0],
+            [7.0, 0.0, 5.0, 4.0],
+            [6.0, -2.0, 0.0, 5.0],
+        );
+
+        let c = &a * &b;
+
+        assert_eq!(a, &c * &b.inverse())
+    }
 }
