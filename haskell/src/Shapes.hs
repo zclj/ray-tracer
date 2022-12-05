@@ -386,19 +386,26 @@ divide s@Cube {} t = s
 divide s@Cone {} t = s
 divide s@Cylinder {} t = s
 divide s@Triangle {} t = s
-divide g@Group {} t
+divide g@Group {} t =
   -- given a group, subdivide the group until threshold
-  | length (children g) < t = g { children = map (\c -> divide c t) (children g) }
-  | otherwise =
   -- g' is a group with the children of the shapes that do not fit in
   --  the left/right partitions
-  let (g', left, right) = partitionChildren g
-      -- subgroup (make a new group with the given children) and set that group
-      --  as the child to the input group
-      gLeftSub          = if null left then g' else makeSubgroup g' left
-      gRightSub         = if null right then gLeftSub else makeSubgroup g' right
-      gDivided          = gRightSub
-                          { children =
-                              (map (\c -> divide c t) (children gLeftSub)) ++
-                              (map (\c -> divide c t) (children gRightSub)) }
-  in  gDivided
+  let g' = if t <= length (children g)
+           then let (g', left, right) = partitionChildren g
+                    -- subgroup (make a new group with the given children) and set
+                    --  that group as the child to the input group
+                    gLeftSub          = if null left
+                                        then g'
+                                        else makeSubgroup g' left
+                    gRightSub         = if null right
+                                        then gLeftSub
+                                        else makeSubgroup gLeftSub right
+                in gRightSub
+           else g
+  in  g' { children = map (\c -> divide c t) (children g') }
+
+showGroupTree :: String -> Shape -> String
+showGroupTree s g@Group {children = c} =
+  " G(" ++ (show (length c)) ++ ")[" ++ (concatMap (\x -> (showGroupTree s x)) c) ++ "]"
+showGroupTree s x  = s ++ " S[" ++ (show (Types.id x)) ++ "]"
+

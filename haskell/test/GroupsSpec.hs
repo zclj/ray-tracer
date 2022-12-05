@@ -121,9 +121,9 @@ groupBounds =
       it "subgroup ← g[1] is a group and subgroup.count = 2" $ do
         length (children g'1) `shouldBe` 2
       it "subgroup[0] is a group of [s1]" $ do
-        Types.id (head (children ((children g'1) !! 0))) `shouldBe` Types.id s1
+        Types.id (head (children ((reverse (children g'1)) !! 0))) `shouldBe` Types.id s1
       it "subgroup[1] is a group of [s2]" $ do
-        Types.id (head (children ((children g'1) !! 1))) `shouldBe` Types.id s2
+        Types.id (head (children ((reverse (children g'1)) !! 1))) `shouldBe` Types.id s2
     {- Scenario: Subdividing a group with too few children
          Given s1 ← sphere() with:
              | transform | translation(-2, 0, 0) |
@@ -150,7 +150,7 @@ groupBounds =
           g' = divide g 3
           gc = children g'
           sg' = (gc !! 0)
-          sgc' = (children sg')
+          sgc' = (reverse (children sg'))
       it "g[0] = subgroup" $ do
         Types.id (gc !! 0) `shouldBe` Types.id sg
       it "g[1] = s4" $ do
