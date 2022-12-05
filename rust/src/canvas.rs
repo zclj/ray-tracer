@@ -35,6 +35,7 @@ fn push_digits(d: u8, s: &mut String) {
     }
 }
 
+#[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
 fn process_line(cs: &[Color], line_str: &mut String) {
     let mut count = 0;
 
