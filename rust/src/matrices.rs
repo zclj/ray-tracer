@@ -16,6 +16,7 @@ impl M4x4 {
         [0.0, 0.0, 0.0, 1.0],
     );
 
+    #[must_use]
     pub const fn from_elements(
         [x0, y0, z0, w0]: [f32; 4],
         [x1, y1, z1, w1]: [f32; 4],
@@ -28,6 +29,7 @@ impl M4x4 {
     }
 
     #[rustfmt::skip]
+    #[must_use]
     pub fn transpose(&self) -> Self {
         M4x4([
             self[(0,0)], self[(1,0)], self[(2,0)], self[(3,0)],
@@ -175,6 +177,7 @@ impl MulAssign<&M4x4> for M4x4 {
 pub struct M2x2([f32; 4]);
 
 impl M2x2 {
+    #[must_use]
     pub fn from_elements([x0, y0]: [f32; 2], [x1, y1]: [f32; 2]) -> M2x2 {
         M2x2([x0, y0, x1, y1])
     }
@@ -218,6 +221,7 @@ impl Index<(usize, usize)> for M2x2 {
 pub struct M3x3([f32; 9]);
 
 impl M3x3 {
+    #[must_use]
     pub fn from_elements(
         [x0, y0, z0]: [f32; 3],
         [x1, y1, z1]: [f32; 3],
