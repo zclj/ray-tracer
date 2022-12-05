@@ -89,7 +89,7 @@ impl Canvas {
 
     pub fn write_pixel(&mut self, width: usize, height: usize, color: Color) {
         let idx = width + (self.width * height);
-        self.pixels[idx] = color
+        self.pixels[idx] = color;
     }
 
     fn pixel_at(&self, width: usize, height: usize) -> &Color {
