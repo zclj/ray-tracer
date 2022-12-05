@@ -256,10 +256,10 @@ impl M3x3 {
         let minor = self.minor(row, column);
 
         // negate if the sum if odd
-        if (row + column) % 2 != 0 {
-            -minor
-        } else {
+        if (row + column) % 2 == 0 {
             minor
+        } else {
+            -minor
         }
     }
 
