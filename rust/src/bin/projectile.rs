@@ -71,7 +71,7 @@ fn main() {
 
     let path = Path::new("demos/ppms/projectile.ppm");
 
-    let mut file = match File::create(&path) {
+    let mut file = match File::create(path) {
         Err(why) => panic!("could not create file {}: {} ", path.display(), why),
         Ok(file) => file,
     };
