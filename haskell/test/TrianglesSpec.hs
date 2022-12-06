@@ -15,7 +15,31 @@ import Transformations
 triangleTests :: TestTree
 triangleTests = testGroup "Triangle Tests" [
   testGroup "Specs for"
-  [ unsafePerformIO (testSpec "Triangles" triangleBasics)]]
+  [ unsafePerformIO (testSpec "Triangles" triangleBasics)
+  , unsafePerformIO (testSpec "Triangles" triangleSmoothing)]]
+
+-- 'Background'
+pp1 = T.point 0 1 0
+pp2 = T.point (-1) 0 0
+pp3 = T.point 1 0 0
+nn1 = T.vector 0 1 0
+nn2 = T.vector (-1) 0 0
+nn3 = T.vector 1 0 0
+tri = smoothTriangle pp1 pp2 pp3 nn1 nn2 nn3
+
+triangleSmoothing :: Spec
+triangleSmoothing =
+  describe "Triangle" $ do
+    {- Scenario: Constructing a smooth triangle
+         Then tri.p1 = p1
+           And tri.p2 = p2
+           And tri.p3 = p3
+           And tri.n1 = n1
+           And tri.n2 = n2
+           And tri.n3 = n3 -}
+    describe "Constructing a smooth triangle" $ do
+      it "tri.p1 = p1" $ do
+        (Types.p1 tri) `shouldBe` pp1
 
 triangleBasics :: Spec
 triangleBasics =

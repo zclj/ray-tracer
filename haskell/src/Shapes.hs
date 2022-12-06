@@ -42,6 +42,9 @@ triangle id p1 p2 p3 =
       n  = norm (e2 `cross` e1)
   in Triangle id identity defaultMaterial p1 p2 p3 e1 e2 n Nothing
 
+smoothTriangle :: Tuple -> Tuple -> Tuple -> Tuple -> Tuple -> Tuple -> Shape
+smoothTriangle p1 p2 p3 n1 n2 n3 = undefined
+
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
 cubeNormal m x y z
