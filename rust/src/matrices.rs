@@ -128,10 +128,10 @@ impl Index<usize> for M4x4 {
 impl Index<(usize, usize)> for M4x4 {
     type Output = f32;
 
-    fn index(&self, (idxi, idxj): (usize, usize)) -> &f32 {
-        assert!(idxi < 4 && idxj < 4, "Matrix index out of bounds.");
+    fn index(&self, (idx_row, idx_col): (usize, usize)) -> &f32 {
+        assert!(idx_row < 4 && idx_col < 4, "Matrix index out of bounds.");
 
-        &self.0[idxj + (idxi * 4)]
+        &self.0[idx_col + (idx_row * 4)]
     }
 }
 
@@ -210,10 +210,10 @@ impl Index<usize> for M2x2 {
 impl Index<(usize, usize)> for M2x2 {
     type Output = f32;
 
-    fn index(&self, (idxi, idxj): (usize, usize)) -> &f32 {
-        assert!(idxi < 2 && idxj < 2, "Matrix index out of bounds.");
+    fn index(&self, (idx_row, idx_col): (usize, usize)) -> &f32 {
+        assert!(idx_row < 2 && idx_col < 2, "Matrix index out of bounds.");
 
-        &self.0[idxj + (idxi * 2)]
+        &self.0[idx_col + (idx_row * 2)]
     }
 }
 
@@ -297,10 +297,10 @@ impl Index<usize> for M3x3 {
 impl Index<(usize, usize)> for M3x3 {
     type Output = f32;
 
-    fn index(&self, (idxi, idxj): (usize, usize)) -> &f32 {
-        assert!(idxi < 3 && idxj < 3, "Matrix index out of bounds.");
+    fn index(&self, (idx_row, idx_col): (usize, usize)) -> &f32 {
+        assert!(idx_row < 3 && idx_col < 3, "Matrix index out of bounds.");
 
-        &self.0[idxj + (idxi * 3)]
+        &self.0[idx_col + (idx_row * 3)]
     }
 }
 
