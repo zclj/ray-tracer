@@ -46,21 +46,93 @@ wallMaterial = defaultMaterial
                , specular   = 0
                , reflective = 0.3}
 
+----------------------------------------
+-- describe the elements of the scene
+----------------------------------------
+
+-- the checkered floor
+
+floorPlane =
+  Plane { Types.id        = 1
+        , Types.transform = rotationY 0.31415
+        , Types.material  =
+            defaultMaterial
+            { materialPattern = Just (checkersPattern
+                                       (Color (Red 0.35) (Green 0.35) (Blue 0.35))
+                                       (Color (Red 0.65) (Green 0.65) (Blue 0.65)))
+            , specular        = 0
+            , reflective      = 0.4 }
+        , Types.parent    = Nothing }
+
+ceilingPlane =
+  Plane { Types.id        = 2
+        , Types.transform = translation 0 5 0
+        , Types.material  = defaultMaterial
+                            { color      = Color (Red 0.8) (Green 0.8) (Blue 0.8)
+                            , ambient    = 0.3
+                            , specular   = 0 }
+        , Types.parent    = Nothing }
+
+westWall =  Plane { Types.id        = 3
+                  , Types.transform = T.transform
+                                      [ rotationY (pi/2)
+                                      , rotationZ (pi/2)
+                                      , translation (-5) 0 0]
+                  , Types.material  = wallMaterial
+                  , Types.parent    = Nothing }
+
+eastWall =  Plane { Types.id        = 4
+                  , Types.transform = T.transform [ rotationY (pi/2)
+                                                  , rotationZ (pi/2)
+                                                  , translation 5 0 0]
+                  , Types.material  = wallMaterial
+                  , Types.parent    = Nothing }
+
+northWall =  Plane { Types.id = 5
+                   , Types.transform = T.transform
+                                       [ rotationX (pi/2)
+                                       , translation 0 0 5]
+                   , Types.material  = wallMaterial
+                   , Types.parent    = Nothing }
+
+southWall =  Plane { Types.id = 6
+                   , Types.transform = T.transform
+                                       [ rotationX (pi/2)
+                                       , translation 0 0 (-5)]
+                   , Types.material  = wallMaterial
+                   , Types.parent    = Nothing }
 
 ----------------------------------------
 -- Read OBJ-file
 ----------------------------------------
 
 writeSceneChapter15 = do
-  parser <- parseObjFile "obj-files/teddy.obj"
+  parser <- parseObjFile "obj-files/teddy.obj" --"obj-files/teddy-partial.obj"--"obj-files/teddy.obj"
   let group = objToGroup parser
-      g     = updateTransform group (T.transform
-                                     [ scaling 0.05 0.05 0.05
-                                     , rotationY (pi)
-                                     , (translation (-0.6) 1 0.6)])
+      dg    = divide group 20
+      g     = updateTransform dg (T.transform
+                                   [ scaling 0.05 0.05 0.05
+                                   , rotationY (pi)
+                                   , (translation (-0.6) 1 0.6)])
+      --dg    = divide group 1
+              -- org: 11m 7
+              -- groups 20 : 1m 58s (200x100)
+              -- groups 20 : 7m 10s (400x200)
+  -- We got 32 triangles
+  -- putStrLn "OBJ Group child count"
+  -- putStrLn (show (length (children group)))
+  -- putStrLn "Divide Group child count"
+  -- putStrLn (show (length (children dg)))
+  -- putStrLn "Divide Group child child count"
+  -- putStrLn (showGroupTree "" (head (children dg)))
+
   writeFile
-    "demo/teddy.ppm"
-    (PPM.canvasToPPMString (render camera (World [g] lightSource)))
+    "teddy.ppm"
+    (PPM.canvasToPPMString
+     (render
+      camera
+      (World [g, floorPlane, ceilingPlane, westWall, eastWall, northWall, southWall]
+        lightSource)))
 
 ----------------------------------------
 -- renderSceneChapter15 =
