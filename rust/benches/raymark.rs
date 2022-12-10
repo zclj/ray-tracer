@@ -124,7 +124,47 @@ pub fn glam_matrix_transpose(c: &mut Criterion) {
     });
 }
 
-// TODO : submatrix, minor, cofactor, determinant, inverse, Eq, Indexing
+pub fn matrix_sub_matrix(c: &mut Criterion) {
+    let a = M4x4::from_elements(
+        [-6.0, 1.0, 1.0, 6.0],
+        [-8.0, 5.0, 8.0, 6.0],
+        [-1.0, 0.0, 8.0, 2.0],
+        [-7.0, 1.0, -1.0, 1.0],
+    );
+
+    c.bench_function("Matrix 4x4 Submatrix", |b| {
+        b.iter(|| black_box(a.sub_matrix(2, 1)))
+    });
+}
+
+pub fn matrix_determinant(c: &mut Criterion) {
+    let a = M4x4::from_elements(
+        [0.0, 9.0, 3.0, 0.0],
+        [9.0, 8.0, 0.0, 8.0],
+        [1.0, 8.0, 5.0, 3.0],
+        [0.0, 0.0, 5.0, 8.0],
+    );
+
+    c.bench_function("Matrix 4x4 Determinant", |b| {
+        b.iter(|| black_box(a.determinant()))
+    });
+}
+
+pub fn glam_matrix_determinant(c: &mut Criterion) {
+    let x = Mat4::from_cols_array_2d(&[
+        [0.0, 9.0, 3.0, 0.0],
+        [9.0, 8.0, 0.0, 8.0],
+        [1.0, 8.0, 5.0, 3.0],
+        [0.0, 0.0, 5.0, 8.0],
+    ]);
+
+    c.bench_function("glam Matrix 4x4 Determinant", |b| {
+        b.iter(|| black_box(x.determinant()))
+    });
+}
+// @NOTE - don't find any glam correspondence to sub matrix
+
+// TODO : inverse, Eq, Indexing
 
 criterion_group!(
     benches,
@@ -135,5 +175,8 @@ criterion_group!(
     matrix_assign_multiplication,
     matrix_transpose,
     glam_matrix_transpose,
+    matrix_sub_matrix,
+    matrix_determinant,
+    glam_matrix_determinant,
 );
 criterion_main!(benches);
