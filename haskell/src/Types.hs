@@ -45,6 +45,15 @@ data Shape = Sphere { id        :: Int
                       , e2        :: Tuple
                       , normal    :: Tuple
                       , parent    :: Maybe Shape}
+           | SmoothTriangle { id         :: Int
+                            , transform  :: Matrix
+                            , material   :: Material
+                            , tp1        :: Tuple
+                            , tp2        :: Tuple
+                            , tp3        :: Tuple
+                            , tn1        :: Tuple
+                            , tn2        :: Tuple
+                            , tn3        :: Tuple }
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

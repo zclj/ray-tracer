@@ -25,7 +25,7 @@ pp3 = T.point 1 0 0
 nn1 = T.vector 0 1 0
 nn2 = T.vector (-1) 0 0
 nn3 = T.vector 1 0 0
-tri = smoothTriangle pp1 pp2 pp3 nn1 nn2 nn3
+tri = smoothTriangle 1 pp1 pp2 pp3 nn1 nn2 nn3
 
 triangleSmoothing :: Spec
 triangleSmoothing =
@@ -39,7 +39,17 @@ triangleSmoothing =
            And tri.n3 = n3 -}
     describe "Constructing a smooth triangle" $ do
       it "tri.p1 = p1" $ do
-        (Types.p1 tri) `shouldBe` pp1
+        (Types.tp1 tri) `shouldBe` pp1
+      it "tri.p2 = p2" $ do
+        (Types.tp2 tri) `shouldBe` pp2
+      it "tri.p3 = p3" $ do
+        (Types.tp3 tri) `shouldBe` pp3
+      it "tri.n1 = n1" $ do
+        (Types.tn1 tri) `shouldBe` nn1
+      it "tri.n2 = n2" $ do
+        (Types.tn2 tri) `shouldBe` nn2
+      it "tri.n2 = n3" $ do
+        (Types.tn3 tri) `shouldBe` nn3
 
 triangleBasics :: Spec
 triangleBasics =
