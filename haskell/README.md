@@ -27,6 +27,7 @@ First, build with profiling `stack build --profile`. Then run with profiling `st
 - [Arrays](https://wiki.haskell.org/Arrays)
 - [Vectors](https://wiki.haskell.org/Numeric_Haskell:_A_Vector_Tutorial)
 - [RTC Haskell](https://github.com/micahcantor/haskell-raytracer)
+- [RTC C++](https://github.com/elp2/ray-tracer-challenge)
 - [Forum - Reflection](https://forum.raytracerchallenge.com/thread/4/reflection-refraction-scene-description)
 
 ## 3D models
