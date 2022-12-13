@@ -39,6 +39,10 @@ impl M4x4 {
         ])
     }
 
+    /// # Panics
+    ///
+    /// Will panic if row or column is out of bounds
+    #[must_use]
     pub fn sub_matrix(&self, row: u8, column: u8) -> M3x3 {
         let [x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3] = self.0;
 
@@ -78,6 +82,7 @@ impl M4x4 {
         }
     }
 
+    #[must_use]
     pub fn determinant(&self) -> f32 {
         (self[(0, 0)] * self.cofactor(0, 0))
             + (self[(0, 1)] * self.cofactor(0, 1))
@@ -89,7 +94,11 @@ impl M4x4 {
         self.determinant() != 0.0
     }
 
-    fn inverse(&self) -> Self {
+    /// # Panics
+    ///
+    /// Will panic if matrix is not invertible
+    #[must_use]
+    pub fn inverse(&self) -> Self {
         assert!(self.is_invertible());
 
         let mut m: [f32; 16] = [0.0; 16];
