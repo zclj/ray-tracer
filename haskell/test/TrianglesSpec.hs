@@ -39,17 +39,29 @@ triangleSmoothing =
            And tri.n3 = n3 -}
     describe "Constructing a smooth triangle" $ do
       it "tri.p1 = p1" $ do
-        (Types.tp1 tri) `shouldBe` pp1
+        (Types.p1 tri) `shouldBe` pp1
       it "tri.p2 = p2" $ do
-        (Types.tp2 tri) `shouldBe` pp2
+        (Types.p2 tri) `shouldBe` pp2
       it "tri.p3 = p3" $ do
-        (Types.tp3 tri) `shouldBe` pp3
+        (Types.p3 tri) `shouldBe` pp3
       it "tri.n1 = n1" $ do
         (Types.tn1 tri) `shouldBe` nn1
       it "tri.n2 = n2" $ do
         (Types.tn2 tri) `shouldBe` nn2
       it "tri.n2 = n3" $ do
         (Types.tn3 tri) `shouldBe` nn3
+    {- Scenario: An intersection with a smooth triangle stores u/v
+         When r ← ray(point(-0.2, 0.3, -2), vector(0, 0, 1))
+           And xs ← local_intersect(tri, r)
+         Then xs[0].u = 0.45
+           And xs[0].v = 0.25 -}
+    describe "An intersection with a smooth triangle stores u/v" $ do
+      let r  = makeRay (T.point (-0.2) 0.3 (-2)) (T.vector 0 0 1)
+          xs = localIntersect tri r
+      it "xs[0].u = 0.45" $ do
+        (intersectionU (xs !! 0)) ~= 0.45 `shouldBe` True
+      it "xs[0].v = 0.25" $ do
+        (intersectionV (xs !! 0)) ~= 0.25 `shouldBe` True
 
 triangleBasics :: Spec
 triangleBasics =

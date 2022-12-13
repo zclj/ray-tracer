@@ -48,9 +48,11 @@ data Shape = Sphere { id        :: Int
            | SmoothTriangle { id         :: Int
                             , transform  :: Matrix
                             , material   :: Material
-                            , tp1        :: Tuple
-                            , tp2        :: Tuple
-                            , tp3        :: Tuple
+                            , p1         :: Tuple
+                            , p2         :: Tuple
+                            , p3         :: Tuple
+                            , e1         :: Tuple
+                            , e2         :: Tuple
                             , tn1        :: Tuple
                             , tn2        :: Tuple
                             , tn3        :: Tuple }
@@ -59,6 +61,11 @@ data Shape = Sphere { id        :: Int
 data Intersection = Intersection
                     { intersectionT      :: Double
                     , intersectionObject :: Shape}
+                  | IntersectionUV
+                    { intersectionT      :: Double
+                    , intersectionObject :: Shape
+                    , intersectionU      :: Double
+                    , intersectionV      :: Double }
                   deriving (Show, Eq, Ord)
 
 {- Precomputation of intersections -}

@@ -44,7 +44,9 @@ triangle id p1 p2 p3 =
 
 smoothTriangle :: Int -> Tuple -> Tuple -> Tuple -> Tuple -> Tuple -> Tuple -> Shape
 smoothTriangle id p1 p2 p3 n1 n2 n3
-  = SmoothTriangle id identity defaultMaterial p1 p2 p3 n1 n2 n3
+  = let e1 = (p2 `sub` p1)
+        e2 = (p3 `sub` p1)
+    in SmoothTriangle id identity defaultMaterial p1 p2 p3 e1 e2 n1 n2 n3
 
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
@@ -133,10 +135,27 @@ localIntersect t@Triangle {} r =
              then []
              else let originCrossE1 = p1ToOrigin `cross` (e1 t)
                       v = f * ((direction r) `dot` originCrossE1)
-                  in if v < 0 || (u + v) > 1
+                  in if v < 0 || (u+ v) > 1
                      then []
                      else let tt = f * (e2 t) `dot` originCrossE1
                           in [Intersection tt t]
+-- @TODO - re-use triangle intersect on both smooth and not smooth
+localIntersect t@SmoothTriangle {} r =
+  let dirCrossE2 = (direction r) `cross` (e2 t)
+      det        = (e1 t) `dot` dirCrossE2
+  in if (abs det) < epsilon
+     then []
+     else let f = 1.0 / det
+              p1ToOrigin = (origin r) `sub` (p1 t)
+              u = f * (p1ToOrigin `dot` dirCrossE2)
+          in if u < 0 || u > 1
+             then []
+             else let originCrossE1 = p1ToOrigin `cross` (e1 t)
+                      v = f * ((direction r) `dot` originCrossE1)
+                  in if v < 0 || (u + v) > 1
+                     then []
+                     else let tt = f * (e2 t) `dot` originCrossE1
+                          in [IntersectionUV tt t u v]
 
 intersectBody :: Shape -> Double -> Double -> Double -> Ray -> [Intersection]
 intersectBody s a b c r
