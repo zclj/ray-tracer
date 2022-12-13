@@ -6,7 +6,7 @@ use std::ops::{Index, Mul, MulAssign};
 // M4x4
 
 #[derive(Debug)]
-pub struct M4x4([f32; 16]);
+pub struct M4x4(pub [f32; 16]);
 
 impl M4x4 {
     pub const IDENTITY: Self = Self::from_elements(
