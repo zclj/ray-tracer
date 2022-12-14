@@ -62,6 +62,15 @@ triangleSmoothing =
         (intersectionU (xs !! 0)) ~= 0.45 `shouldBe` True
       it "xs[0].v = 0.25" $ do
         (intersectionV (xs !! 0)) ~= 0.25 `shouldBe` True
+    {- Scenario: A smooth triangle uses u/v to interpolate the normal
+         When i ← intersection_with_uv(1, tri, 0.45, 0.25)
+           And n ← normal_at(tri, point(0, 0, 0), i)
+         Then n = vector(-0.5547, 0.83205, 0) -}
+    describe "A smooth triangle uses u/v to interpolate the normal" $ do
+      let i = IntersectionUV 1 tri 0.45 0.25
+          n = objectNormalAt tri (T.point 0 0 0) i
+      it "n = vector(-0.5547, 0.83205, 0)" $ do
+        n `shouldBe` (T.vector (-0.5547) (0.83205) 0)
 
 triangleBasics :: Spec
 triangleBasics =
@@ -104,9 +113,9 @@ triangleBasics =
            And n3 = t.normal -}
     describe "Finding the normal on a triangle" $ do
       let t = triangle 1 (T.point 0 1 0) (T.point (-1) 0 0) (T.point 1 0 0)
-          n1 = localNormalAt t (T.point 0 0.5 0)
-          n2 = localNormalAt t (T.point (-0.5) 0.75 0)
-          n3 = localNormalAt t (T.point 0.5 0.25 0)
+          n1 = localNormalAt t (T.point 0 0.5 0) (Intersection 0 t)
+          n2 = localNormalAt t (T.point (-0.5) 0.75 0) (Intersection 0 t)
+          n3 = localNormalAt t (T.point 0.5 0.25 0) (Intersection 0 t)
       it "n1 = t.normal" $ do
         normal t `shouldBe` n1
       it "n2 = t.normal" $ do

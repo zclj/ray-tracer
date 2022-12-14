@@ -55,7 +55,8 @@ data Shape = Sphere { id        :: Int
                             , e2         :: Tuple
                             , tn1        :: Tuple
                             , tn2        :: Tuple
-                            , tn3        :: Tuple }
+                            , tn3        :: Tuple
+                            , parent     :: Maybe Shape}
             deriving (Show, Eq, Ord)
 
 data Intersection = Intersection

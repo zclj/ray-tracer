@@ -124,6 +124,6 @@ cubeIntersections =
                     , T.vector 0 0 (-1)
                     , T.vector 1 0 0
                     , T.vector (-1) 0 0]
-          ns = map (localNormalAt c) points
+          ns = map (\x -> localNormalAt c x (Intersection 0 c)) points
       it "is correct" $ do
         ns `shouldBe` normals

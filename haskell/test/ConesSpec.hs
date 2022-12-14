@@ -37,7 +37,7 @@ coneNormal =
           normals = [ T.vector 0 0 0
                     , T.vector 1 (-sqrt 2) 1
                     , T.vector (-1) 1 0]
-          ns   = map (localNormalAt s) points
+          ns   = map (\t -> localNormalAt s t (Intersection 0 s)) points
       it "all normals are calculated" $ do
         ns `shouldBe` normals
 

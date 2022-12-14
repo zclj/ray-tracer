@@ -46,7 +46,7 @@ smoothTriangle :: Int -> Tuple -> Tuple -> Tuple -> Tuple -> Tuple -> Tuple -> S
 smoothTriangle id p1 p2 p3 n1 n2 n3
   = let e1 = (p2 `sub` p1)
         e2 = (p3 `sub` p1)
-    in SmoothTriangle id identity defaultMaterial p1 p2 p3 e1 e2 n1 n2 n3
+    in SmoothTriangle id identity defaultMaterial p1 p2 p3 e1 e2 n1 n2 n3 Nothing
 
 ----------------------------------------
 cubeNormal :: Double -> Double -> Double -> Double -> Tuple
@@ -55,23 +55,27 @@ cubeNormal m x y z
   | m ~= abs y = vector 0 y 0
   | m ~= abs z = vector 0 0 z
 
-localNormalAt :: Shape -> Tuple -> Tuple
-localNormalAt Sphere {} objectPoint = objectPoint `sub` T.point 0 0 0
-localNormalAt Plane {} _ = vector 0 1 0
-localNormalAt Cube {} objectPoint@(Tuple x y z _) =
+localNormalAt :: Shape -> Tuple -> Intersection -> Tuple
+localNormalAt Sphere {} objectPoint _ = objectPoint `sub` T.point 0 0 0
+localNormalAt Plane {} _ _ = vector 0 1 0
+localNormalAt Cube {} objectPoint@(Tuple x y z _) _ =
   let maxc = maximum [abs x, abs y, abs z]
   in cubeNormal maxc x y z
-localNormalAt c@Cylinder {} objectPoint@(Tuple x y z _)
+localNormalAt c@Cylinder {} objectPoint@(Tuple x y z _) _
   | (x**2 + z**2) < 1 && (y >= ((maxY c) - epsilon)) = vector 0 1 0
   | (x**2 + z**2) < 1 && (y <= ((minY c) + epsilon)) = vector 0 (-1) 0
   | otherwise = vector x 0 z
-localNormalAt c@Cone {} objectPoint@(Tuple x y z _)
+localNormalAt c@Cone {} objectPoint@(Tuple x y z _) _
   | (x**2 + z**2) < 1 && (y >= ((maxY c) - epsilon)) = vector 0 1 0
   | (x**2 + z**2) < 1 && (y <= ((minY c) + epsilon)) = vector 0 (-1) 0
   | otherwise = let yn  = sqrt(x^2 + z^2)
                     yn' = if y > 0 then -yn else yn
                 in vector x yn' z
-localNormalAt t@Triangle {} _ = normal t
+localNormalAt t@Triangle {} _ _ = normal t
+localNormalAt t@SmoothTriangle {} point hit =
+  ((tn2 t) `T.mul` (intersectionU hit)) `T.add`
+  ((tn3 t) `T.mul` (intersectionV hit)) `T.add`
+  ((tn1 t) `T.mul` (1 - (intersectionU hit) - (intersectionV hit)))
 
 localIntersect :: Shape -> Ray -> [Intersection]
 localIntersect s@Sphere {} r =
@@ -188,10 +192,10 @@ intersectShapes :: [Shape] -> Ray -> [Intersection]
 intersectShapes objects r
   = sort $ concatMap (\s -> localIntersect s (R.transform r (inverse (Types.transform s)))) objects
 
-objectNormalAt :: Shape -> Tuple -> Tuple
-objectNormalAt s worldPoint =
+objectNormalAt :: Shape -> Tuple -> Intersection -> Tuple
+objectNormalAt s worldPoint i =
   let localPoint  = worldToObject s worldPoint
-      localNormal = localNormalAt s localPoint
+      localNormal = localNormalAt s localPoint i
       worldNormal = normalToWorld s localNormal
   in worldNormal
 

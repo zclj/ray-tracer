@@ -40,7 +40,7 @@ castOnPixel :: Int -> Int -> Shape -> Color -> Light -> Color
 castOnPixel x y s c l = let (hit, ray) = processPixel x y s
                         in case hit of
                              Just n -> let p      = Rays.position ray (intersectionT n)
-                                           normal = localNormalAt (intersectionObject n) p
+                                           normal = localNormalAt (intersectionObject n) p (Intersection 0 (defaultSphere 0))
                                            eye    = neg (direction ray)
                                        in lighting (material (intersectionObject n)) (defaultSphere 1) l p eye normal False
                              Nothing -> Color (Red 0) (Green 0) (Blue 0)

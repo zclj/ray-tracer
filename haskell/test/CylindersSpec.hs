@@ -40,7 +40,7 @@ cylinderNormal =
                      , T.vector 0 0 (-1)
                      , T.vector 0 0 1
                      , T.vector (-1) 0 0]
-          ns   = map (localNormalAt cyl) points
+          ns   = map (\t -> localNormalAt cyl t (Intersection 0 cyl)) points
       it "all normals are calculated" $ do
         ns `shouldBe` normals
     {- Scenario Outline: The normal vector on a cylinder's end caps
@@ -73,7 +73,7 @@ cylinderNormal =
                     , T.vector 0 1 0
                     , T.vector 0 1 0
                     , T.vector 0 1 0]
-          ns   = map (localNormalAt cyl) points
+          ns   = map (\t -> localNormalAt cyl t (Intersection 0 cyl)) points
       it "all normals are calculated" $ do
         ns `shouldBe` normals
 

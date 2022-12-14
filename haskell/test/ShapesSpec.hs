@@ -531,7 +531,7 @@ shapeBasics =
           (g1', g2') = addChild g1 g2
           s = (defaultSphere 3) { Types.transform = translation 5 0 0 }
           (g2'', s') = addChild g2' s
-          n = objectNormalAt s' (Tuples.point 1.7321 1.1547 (-5.5774))
+          n = objectNormalAt s' (Tuples.point 1.7321 1.1547 (-5.5774)) (Intersection 0 g1)
       it "n = vector(0.2857, 0.4286, -0.8571)" $ do
         n `shouldBe` vector 0.2857 0.4286 (-0.8571)
 

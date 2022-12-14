@@ -69,7 +69,7 @@ sphereNormals =
          Then n = vector(1, 0, 0) -}
     describe "The normal on a sphere at a point on the x axis" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (T.point 1 0 0)
+          n = localNormalAt s (T.point 1 0 0) (Intersection 0 s)
       it "is the vector(1, 0, 0)" $ do
         n `shouldBe` vector 1 0 0
     {- Scenario: The normal on a sphere at a point on the y axis
@@ -78,7 +78,7 @@ sphereNormals =
          Then n = vector(0, 1, 0) -}
     describe "The normal on a sphere at a point on the y axis" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (T.point 0 1 0)
+          n = localNormalAt s (T.point 0 1 0) (Intersection 0 s)
       it "is the vector(0, 1, 0)" $ do
         n `shouldBe` vector 0 1 0
     {- Scenario: The normal on a sphere at a point on the z axis
@@ -87,7 +87,7 @@ sphereNormals =
          Then n = vector(0, 0, 1) -}
     describe "The normal on a sphere at a point on the z axis" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (T.point 0 0 1)
+          n = localNormalAt s (T.point 0 0 1) (Intersection 0 s)
       it "is the vector(0, 0, 1)" $ do
         n `shouldBe` vector 0 0 1
     {- Scenario: The normal on a sphere at a nonaxial point
@@ -96,7 +96,7 @@ sphereNormals =
          Then n = vector(√3/3, √3/3, √3/3) -}
     describe "The normal on a sphere at a nonaxial point" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (T.point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = localNormalAt s (T.point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)) (Intersection 0 s)
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` vector (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)
     {- Scenario: The normal is a normalized vector
@@ -105,7 +105,7 @@ sphereNormals =
          Then n = normalize(n) -}
     describe "The normal is a normalized vector" $ do
       let s = defaultSphere 1
-          n = localNormalAt s (T.point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3))
+          n = localNormalAt s (T.point (sqrt 3 / 3) (sqrt 3 / 3) (sqrt 3 / 3)) (Intersection 0 s)
       it "is the vector(√3/3, √3/3, √3/3)" $ do
         n `shouldBe` norm n
     {- Scenario: Computing the normal on a translated sphere
@@ -116,7 +116,7 @@ sphereNormals =
     describe "Computing the normal on a translated sphere" $ do
       let s  = defaultSphere 1
           s' = s { Types.transform = translation 0 1 0 }
-          n  = objectNormalAt s' (T.point 0 1.70711 (-0.70711))
+          n  = objectNormalAt s' (T.point 0 1.70711 (-0.70711)) (Intersection 0 s)
       it "is the vector(0, 0.70711, -0.70711)" $ do
         n `shouldBe` vector 0 0.70711 (-0.70711)
     {- Scenario: Computing the normal on a transformed sphere
@@ -129,7 +129,7 @@ sphereNormals =
       let s = defaultSphere 1
           m = scaling 1 0.5 1 `Matrices.mul` rotationZ(pi/5)
           s' = s { Types.transform = m }
-          n = objectNormalAt s' (T.point 0 (sqrt 2 / 2) (-(sqrt 2 / 2)))
+          n = objectNormalAt s' (T.point 0 (sqrt 2 / 2) (-(sqrt 2 / 2))) (Intersection 0 s)
       it "is the vector(0, 0.97014, -0.24254)" $ do
         n `shouldBe` vector 0 0.97014 (-0.24254)
 

@@ -89,9 +89,9 @@ planeNormal =
            And n3 = vector(0, 1, 0) -}
     describe "The normal of a plane is constant everywhere" $ do
       let p  = defaultPlane 1
-          n1 = localNormalAt p (T.point 0 0 0)
-          n2 = localNormalAt p (T.point 10 0 (-10))
-          n3 = localNormalAt p (T.point (-5) 0 150)
+          n1 = localNormalAt p (T.point 0 0 0) (Intersection 0 p)
+          n2 = localNormalAt p (T.point 10 0 (-10)) (Intersection 0 p)
+          n3 = localNormalAt p (T.point (-5) 0 150) (Intersection 0 p)
       it "n1 = vector(0, 1, 0)" $ do
         n1 `shouldBe` vector 0 1 0
       it "n2 = vector(0, 1, 0)" $ do
