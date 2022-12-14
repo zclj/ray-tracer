@@ -123,24 +123,11 @@ localIntersect group@Group {children} r =
   if intersectBox (bounds group) r
   then intersectShapes children r
   else []
-localIntersect t@Triangle {} r =
-  let dirCrossE2 = (direction r) `cross` (e2 t)
-      det        = (e1 t) `dot` dirCrossE2
-  in if (abs det) < epsilon
-     then []
-     else let f = 1.0 / det
-              p1ToOrigin = (origin r) `sub` (p1 t)
-              u = f * (p1ToOrigin `dot` dirCrossE2)
-          in if u < 0 || u > 1
-             then []
-             else let originCrossE1 = p1ToOrigin `cross` (e1 t)
-                      v = f * ((direction r) `dot` originCrossE1)
-                  in if v < 0 || (u+ v) > 1
-                     then []
-                     else let tt = f * (e2 t) `dot` originCrossE1
-                          in [Intersection tt t]
--- @TODO - re-use triangle intersect on both smooth and not smooth
-localIntersect t@SmoothTriangle {} r =
+localIntersect t@Triangle {} r = intersectTriangle t r
+localIntersect t@SmoothTriangle {} r = intersectTriangle t r
+
+intersectTriangle :: Shape -> Ray -> [Intersection]
+intersectTriangle t r =
   let dirCrossE2 = (direction r) `cross` (e2 t)
       det        = (e1 t) `dot` dirCrossE2
   in if (abs det) < epsilon
@@ -155,7 +142,9 @@ localIntersect t@SmoothTriangle {} r =
                   in if v < 0 || (u + v) > 1
                      then []
                      else let tt = f * (e2 t) `dot` originCrossE1
-                          in [IntersectionUV tt t u v]
+                          in case t of
+                               Triangle {} -> [Intersection tt t]
+                               SmoothTriangle {} -> [IntersectionUV tt t u v]
 
 intersectBody :: Shape -> Double -> Double -> Double -> Ray -> [Intersection]
 intersectBody s a b c r
