@@ -248,3 +248,25 @@ objFileParserBasics =
         p2 t2 `shouldBe` getVertex parser 3
       it "t2.p3 = parser.vertices[4]" $ do
         p3 t2 `shouldBe` getVertex parser 4
+    {- Scenario: Vertex normal records
+         Given file ← a file containing:
+         """
+         vn 0 0 1
+         vn 0.707 0 -0.707
+         vn 1 2 3
+         """
+         When parser ← parse_obj_file(file)
+         Then parser.normals[1] = vector(0, 0, 1)
+           And parser.normals[2] = vector(0.707, 0, -0.707)
+           And parser.normals[3] = vector(1, 2, 3) -}
+    describe "Vertex normal records" $ do
+      let contents = "vn 0 0 1\n\
+                     \vn 0.707 0 -0.707\n\
+                     \vn 1 2 3"
+          parser = parseObjFileContent contents
+      it "parser.normals[1] = vector(0, 0, 1)" $ do
+        getNormal parser 1 `shouldBe` vector 1 2 3
+      it "parser.normals[2] = vector(0.707, 0, -0.707)" $ do
+        getNormal parser 2 `shouldBe` vector 0.707 0 (-0.707)
+      it "parser.normals[3] = vector(1, 2, 3)" $ do
+        getNormal parser 3 `shouldBe` vector 1 2 3

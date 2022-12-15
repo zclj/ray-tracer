@@ -9,20 +9,24 @@ import Debug.Trace
 
 data Parser = Parser { ignored  :: [String]
                      , vertices :: [Tuple]
-                     , groups   :: [Shape]}
+                     , groups   :: [Shape]
+                     , normals  :: [Tuple]}
               deriving(Show)
 
 getVertex :: Parser -> Int -> Tuple
-getVertex (Parser _ v _) idx = v !! (idx - 1)
+getVertex (Parser _ v _ _) idx = v !! (idx - 1)
+
+getNormal :: Parser -> Int -> Tuple
+getNormal (Parser _ _ _ n) idx = n !! (idx - 1)
 
 parseVertex :: String -> Parser -> Parser
-parseVertex s p@(Parser i v g) =
+parseVertex s p@(Parser i v g n) =
   let parts        = words s
       [v1, v2, v3] = tail parts
-  in Parser i (v ++ [(T.point (read v1) (read v2) (read v3))]) g
+  in Parser i (v ++ [(T.point (read v1) (read v2) (read v3))]) g n
 
 parseTriangle :: String -> Parser -> Parser
-parseTriangle s p@(Parser i v groups) =
+parseTriangle s p@(Parser i v groups n) =
   let parts        = words s
       g:gs         = groups
       [v1, v2, v3] = tail parts
@@ -30,10 +34,10 @@ parseTriangle s p@(Parser i v groups) =
       vx2 = (getVertex p ((read v2)::Int))
       vx3 = (getVertex p ((read v3)::Int))
       g'  = (fst (addChild g (triangle 1 vx1 vx2 vx3)))
-  in Parser i v (g':gs)
+  in Parser i v (g':gs) n
 
 parsePolygon :: String -> Parser -> Parser
-parsePolygon s p@(Parser i v g) =
+parsePolygon s p@(Parser i v g n) =
   let vertices             = tail (words s)
       [v1, v2, v3, v4, v5] = vertices
   in foldr parseTriangle p [ (unwords ["f", v1, v4, v5])
@@ -42,19 +46,19 @@ parsePolygon s p@(Parser i v g) =
 
 -- \f 1/1/1 2/2/2 3/3/3 4/4/4"
 parseFace :: String -> Parser -> Parser
-parseFace s p@(Parser i v g) =
+parseFace s p@(Parser i v g n) =
   let parts = words s
   in if length (tail parts) == 3
      then parseTriangle s p
      else parsePolygon s p
 
 parseGroup :: String -> Parser -> Parser
-parseGroup s p@(Parser i v gs) =
+parseGroup s p@(Parser i v gs n) =
   let parts = words s
-  in Parser i v ((defaultGroup ((length gs) + 1)):gs)
+  in Parser i v ((defaultGroup ((length gs) + 1)):gs) n
 
 parseObjFileEntry :: String -> Parser -> Parser
-parseObjFileEntry s p@(Parser i v g) =
+parseObjFileEntry s p@(Parser i v g n) =
   let parts = (words s)
   in if length parts == 0
      then p
@@ -62,14 +66,14 @@ parseObjFileEntry s p@(Parser i v g) =
             "v" -> parseVertex s p
             "f" -> parseFace s p
             "g" -> parseGroup s p
-            _   -> Parser (i ++ [s]) v g
+            _   -> Parser (i ++ [s]) v g n
 
 parseObjFileContent :: String -> Parser
 parseObjFileContent s =
-  foldr parseObjFileEntry (Parser [] [] [(defaultGroup 1)]) (reverse (lines s))
+  foldr parseObjFileEntry (Parser [] [] [(defaultGroup 1)] []) (reverse (lines s))
 
 objToGroup :: Parser -> Shape
-objToGroup (Parser _ _ gs) =
+objToGroup (Parser _ _ gs _) =
   let defaultG = last gs
   in fst (addChildren defaultG (init gs))
 
