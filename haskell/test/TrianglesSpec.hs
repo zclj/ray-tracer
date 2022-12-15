@@ -11,6 +11,7 @@ import Tuples as T
 import Rays
 import Matrices
 import Transformations
+import Intersection
 
 triangleTests :: TestTree
 triangleTests = testGroup "Triangle Tests" [
@@ -71,6 +72,19 @@ triangleSmoothing =
           n = objectNormalAt tri (T.point 0 0 0) i
       it "n = vector(-0.5547, 0.83205, 0)" $ do
         n `shouldBe` (T.vector (-0.5547) (0.83205) 0)
+    {- Scenario: Preparing the normal on a smooth triangle
+         When i ← intersection_with_uv(1, tri, 0.45, 0.25)
+           And r ← ray(point(-0.2, 0.3, -2), vector(0, 0, 1))
+           And xs ← intersections(i)
+           And comps ← prepare_computations(i, r, xs)
+         Then comps.normalv = vector(-0.5547, 0.83205, 0) -}
+    describe "Preparing the normal on a smooth triangle" $ do
+      let i     = IntersectionUV 1 tri 0.45 0.25
+          r     = makeRay (T.point (-0.2) 0.3 (-2)) (T.vector 0 0 1)
+          xs    = [i]
+          comps = prepareComputations i r xs
+      it "comps.normalv = vector(-0.5547, 0.83205, 0)" $ do
+        normalv comps `shouldBe` T.vector (-0.5547) 0.83205 0
 
 triangleBasics :: Spec
 triangleBasics =

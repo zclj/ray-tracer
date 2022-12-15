@@ -11,7 +11,7 @@ prepareComputations i r xs =
   let it               = intersectionT i
       po               = Rays.position r it
       obj              = intersectionObject i
-      normalv          = objectNormalAt obj po (Intersection 0 obj)
+      normalv          = objectNormalAt obj po i
       eyev             = neg (direction r)
       (inside, normal) = if (normalv `dot` eyev) < 0
                          then (True, neg normalv)
