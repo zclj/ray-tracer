@@ -265,7 +265,7 @@ objFileParserBasics =
                      \vn 1 2 3"
           parser = parseObjFileContent contents
       it "parser.normals[1] = vector(0, 0, 1)" $ do
-        getNormal parser 1 `shouldBe` vector 1 2 3
+        getNormal parser 1 `shouldBe` vector 0 0 1
       it "parser.normals[2] = vector(0.707, 0, -0.707)" $ do
         getNormal parser 2 `shouldBe` vector 0.707 0 (-0.707)
       it "parser.normals[3] = vector(1, 2, 3)" $ do

@@ -25,6 +25,12 @@ parseVertex s p@(Parser i v g n) =
       [v1, v2, v3] = tail parts
   in Parser i (v ++ [(T.point (read v1) (read v2) (read v3))]) g n
 
+parseNormal :: String -> Parser -> Parser
+parseNormal s p@(Parser i v g n) =
+  let parts        = words s
+      [n1, n2, n3] = tail parts
+  in Parser i v g (n ++ [(T.vector (read n1) (read n2) (read n3))])
+
 parseTriangle :: String -> Parser -> Parser
 parseTriangle s p@(Parser i v groups n) =
   let parts        = words s
@@ -63,9 +69,10 @@ parseObjFileEntry s p@(Parser i v g n) =
   in if length parts == 0
      then p
      else case head parts of
-            "v" -> parseVertex s p
-            "f" -> parseFace s p
-            "g" -> parseGroup s p
+            "v"  -> parseVertex s p
+            "f"  -> parseFace s p
+            "g"  -> parseGroup s p
+            "vn" -> parseNormal s p
             _   -> Parser (i ++ [s]) v g n
 
 parseObjFileContent :: String -> Parser
@@ -82,11 +89,8 @@ parseObjFile path =
   do contents <- readFile path
      return (parseObjFileContent contents)
 
-content = "v  7.0000 0.0000 12.0000\n\
-          \v  4.9700 -4.9700 12.0000\n\
-          \v  4.9811 -4.9811 12.4922\n\
-          \v  7.0156 0.0000 12.4922\n\
-          \g Teapot001\n\
-          \f 1/1/1 2/2/2 3/3/3 4/4/4"
+content = "vn 0 0 1\n\
+          \vn 0.707 0 -0.707\n\
+          \vn 1 2 3"
 
 parser = parseObjFileContent content
