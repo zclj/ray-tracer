@@ -270,3 +270,60 @@ objFileParserBasics =
         getNormal parser 2 `shouldBe` vector 0.707 0 (-0.707)
       it "parser.normals[3] = vector(1, 2, 3)" $ do
         getNormal parser 3 `shouldBe` vector 1 2 3
+    {- Scenario: Faces with normals
+         Given file ← a file containing:
+         """
+         v 0 1 0
+         v -1 0 0
+         v 1 0 0
+
+         vn -1 0 0
+         vn 1 0 0
+         vn 0 1 0
+
+         f 1//3 2//1 3//2
+         f 1/0/3 2/102/1 3/14/2
+         """
+         When parser ← parse_obj_file(file)
+           And g ← parser.default_group
+           And t1 ← first child of g
+           And t2 ← second child of g
+         Then t1.p1 = parser.vertices[1]
+           And t1.p2 = parser.vertices[2]
+           And t1.p3 = parser.vertices[3]
+           And t1.n1 = parser.normals[3]
+           And t1.n2 = parser.normals[1]
+           And t1.n3 = parser.normals[2]
+           And t2 = t1 -}
+    describe "Faces with normals" $ do
+      let contents = "v 0 1 0\n\
+                     \v -1 0 0\n\
+                     \v 1 0 0\n\
+                     \       \n\
+                     \vn -1 0\n\
+                     \vn 1 0 \n\
+                     \vn 0 1 \n\
+                     \       \n\
+                     \f 1//3 \n\
+                     \f 1/0/3 2/102/1 3/14/2"
+          parser = parseObjFileContent contents
+          g      = objToGroup parser
+          [c1, c2]   = reverse (children g)
+          c      = reverse (children c1)
+          t1     = head c
+          t2     = c !! 1
+      it "t1.p1 = parser.vertices[1]" $ do
+        p1 t1 `shouldBe` getVertex parser 1
+      it "t1.p2 = parser.vertices[2]" $ do
+        p2 t1 `shouldBe` getVertex parser 2
+      it "t1.p3 = parser.vertices[3]" $ do
+        p3 t1 `shouldBe` getVertex parser 3
+      it "t1.n1 = parser.normals[3]" $ do
+        tn1 t1 `shouldBe` getNormal parser 1
+      it "t1.n2 = parser.normals[1]" $ do
+        tn2 t1 `shouldBe` getNormal parser 2
+      it "t1.n3 = parser.normals[2]" $ do
+        tn3 t1 `shouldBe` getNormal parser 3
+      it "t2 = t1" $ do
+        t2 `shouldBe` t1
+

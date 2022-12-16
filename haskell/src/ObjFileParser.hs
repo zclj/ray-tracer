@@ -89,8 +89,15 @@ parseObjFile path =
   do contents <- readFile path
      return (parseObjFileContent contents)
 
-content = "vn 0 0 1\n\
-          \vn 0.707 0 -0.707\n\
-          \vn 1 2 3"
+content = "v 0 1 0\n\
+          \v -1 0 0\n\
+          \v 1 0 0\n\
+          \       \n\
+          \vn -1 0\n\
+          \vn 1 0 \n\
+          \vn 0 1 \n\
+          \       \n\
+          \f 1//3 \n\
+          \f 1/0/3 2/102/1 3/14/2"
 
 parser = parseObjFileContent content
