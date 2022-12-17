@@ -1,5 +1,5 @@
 use crate::utils::epsilon_eq;
-use crate::vector::Point;
+use crate::vector::{Point, Vector};
 use std::ops::{Index, Mul, MulAssign};
 
 ////////////////////////////////////////
@@ -169,6 +169,18 @@ impl Mul<&Point> for &M4x4 {
             self[(0, 0)] * rhs.x + self[(0, 1)] * rhs.y + self[(0, 2)] * rhs.z + self[(0, 3)],
             self[(1, 0)] * rhs.x + self[(1, 1)] * rhs.y + self[(1, 2)] * rhs.z + self[(1, 3)],
             self[(2, 0)] * rhs.x + self[(2, 1)] * rhs.y + self[(2, 2)] * rhs.z + self[(2, 3)],
+        )
+    }
+}
+
+impl Mul<&Vector> for &M4x4 {
+    type Output = Vector;
+
+    fn mul(self, rhs: &Vector) -> Vector {
+        Vector::new(
+            self[(0, 0)] * rhs.x + self[(0, 1)] * rhs.y + self[(0, 2)] * rhs.z,
+            self[(1, 0)] * rhs.x + self[(1, 1)] * rhs.y + self[(1, 2)] * rhs.z,
+            self[(2, 0)] * rhs.x + self[(2, 1)] * rhs.y + self[(2, 2)] * rhs.z,
         )
     }
 }
@@ -573,7 +585,7 @@ mod test {
     //   And b ← tuple(1, 2, 3, 1)
     // Then A * b = tuple(18, 24, 33, 1)
     #[test]
-    fn a_matrix_multiplied_by_a_tuple() {
+    fn a_matrix_multiplied_by_a_point() {
         let a = M4x4::from_elements(
             [1.0, 2.0, 3.0, 4.0],
             [2.0, 4.0, 4.0, 2.0],
@@ -584,6 +596,20 @@ mod test {
         let b = Point::new(1.0, 2.0, 3.0);
 
         assert_eq!(&a * &b, Point::new(18.0, 24.0, 33.0));
+    }
+
+    #[test]
+    fn a_matrix_multiplied_by_a_vector() {
+        let a = M4x4::from_elements(
+            [1.0, 2.0, 3.0, 4.0],
+            [2.0, 4.0, 4.0, 2.0],
+            [8.0, 6.0, 4.0, 1.0],
+            [0.0, 0.0, 0.0, 1.0],
+        );
+
+        let b = Vector::new(1.0, 2.0, 3.0);
+
+        assert_eq!(&a * &b, Vector::new(14.0, 22.0, 32.0));
     }
 
     // Scenario: Multiplying a matrix by the identity matrix
