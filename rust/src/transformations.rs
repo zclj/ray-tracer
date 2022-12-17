@@ -79,4 +79,41 @@ mod test {
 
         assert_eq!(&transform * &p, Point::new(-8.0, 18.0, 32.0))
     }
+
+    // Scenario: A scaling matrix applied to a vector
+    // Given transform ← scaling(2, 3, 4)
+    //   And v ← vector(-4, 6, 8)
+    //  Then transform * v = vector(-8, 18, 32)
+    #[test]
+    fn a_scaling_matrix_applied_to_a_vector() {
+        let transform = scaling(2.0, 3.0, 4.0);
+        let v = Vector::new(-4.0, 6.0, 8.0);
+
+        assert_eq!(&transform * &v, Vector::new(-8.0, 18.0, 32.0))
+    }
+
+    // Scenario: Multiplying by the inverse of a scaling matrix
+    //   Given transform ← scaling(2, 3, 4)
+    //     And inv ← inverse(transform)
+    //     And v ← vector(-4, 6, 8)
+    //    Then inv * v = vector(-2, 2, 2)
+    #[test]
+    fn multiplying_by_the_inverse_of_a_scaling_matrix() {
+        let transform = scaling(2.0, 3.0, 4.0).inverse();
+        let v = Vector::new(-4.0, 6.0, 8.0);
+
+        assert_eq!(&transform * &v, Vector::new(-2.0, 2.0, 2.0))
+    }
+
+    // Scenario: Reflection is scaling by a negative value
+    //   Given transform ← scaling(-1, 1, 1)
+    //     And p ← point(2, 3, 4)
+    //    Then transform * p = point(-2, 3, 4)
+    #[test]
+    fn reflection_is_scaling_by_a_negative_value() {
+        let transform = scaling(-1.0, 1.0, 1.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(-2.0, 3.0, 4.0))
+    }
 }
