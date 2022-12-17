@@ -7,9 +7,18 @@ pub fn translation(x: f32, y: f32, z: f32) -> M4x4 {
     ])
 }
 
+pub fn scaling(x: f32, y: f32, z: f32) -> M4x4 {
+    M4x4::from_elements(
+        [x, 0.0, 0.0, 0.0],
+        [0.0, y, 0.0, 0.0],
+        [0.0, 0.0, z, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    )
+}
+
 #[cfg(test)]
 mod test {
-    use crate::transformations::translation;
+    use crate::transformations::{scaling, translation};
     use crate::vector::{Point, Vector};
 
     // Scenario: Multiplying by a translation matrix
@@ -57,5 +66,17 @@ mod test {
         let p = transform.transform_point3(Vec3::new(-3.0, 4.0, 5.0));
 
         assert_eq!(p, Vec3::new(2.0, 1.0, 7.0))
+    }
+
+    // Scenario: A scaling matrix applied to a point
+    // Given transform ← scaling(2, 3, 4)
+    //   And p ← point(-4, 6, 8)
+    //  Then transform * p = point(-8, 18, 32)
+    #[test]
+    fn a_scaling_matrix_applied_to_a_point() {
+        let transform = scaling(2.0, 3.0, 4.0);
+        let p = Point::new(-4.0, 6.0, 8.0);
+
+        assert_eq!(&transform * &p, Point::new(-8.0, 18.0, 32.0))
     }
 }
