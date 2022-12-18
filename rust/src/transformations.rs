@@ -337,4 +337,23 @@ mod test {
         assert_eq!(p3, Point::new(5.0, -5.0, 0.0));
         assert_eq!(p4, Point::new(15.0, 0.0, 7.0));
     }
+
+    // Scenario: Chained transformations must be applied in reverse order
+    // Given p ← point(1, 0, 1)
+    //   And A ← rotation_x(π / 2)
+    //   And B ← scaling(5, 5, 5)
+    //   And C ← translation(10, 5, 7)
+    // When T ← C * B * A
+    // Then T * p = point(15, 0, 7)
+    #[test]
+    fn chained_transformations_must_be_applied_in_reverse_order() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = rotation_x(PI / 2.0);
+        let b = scaling(5.0, 5.0, 5.0);
+        let c = translation(10.0, 5.0, 7.0);
+
+        let t = &c * &(&b * &a);
+
+        assert_eq!(&t * &p, Point::new(15.0, 0.0, 7.0));
+    }
 }
