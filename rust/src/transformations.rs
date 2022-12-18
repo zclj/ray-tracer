@@ -307,4 +307,34 @@ mod test {
 
         assert_eq!(&transform * &p, Point::new(2.0, 3.0, 7.0))
     }
+
+    // Scenario: Individual transformations are applied in sequence
+    //   Given p ← point(1, 0, 1)
+    //     And A ← rotation_x(π / 2)
+    //     And B ← scaling(5, 5, 5)
+    //     And C ← translation(10, 5, 7)
+    //   # apply rotation first
+    //   When p2 ← A * p
+    //   Then p2 = point(1, -1, 0)
+    //   # then apply scaling
+    //   When p3 ← B * p2
+    //   Then p3 = point(5, -5, 0)
+    //   # then apply translation
+    //   When p4 ← C * p3
+    //   Then p4 = point(15, 0, 7)
+    #[test]
+    fn individual_transformations_are_applied_in_sequence() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = rotation_x(PI / 2.0);
+        let b = scaling(5.0, 5.0, 5.0);
+        let c = translation(10.0, 5.0, 7.0);
+
+        let p2 = &a * &p;
+        let p3 = &b * &p2;
+        let p4 = &c * &p3;
+
+        assert_eq!(p2, Point::new(1.0, -1.0, 0.0));
+        assert_eq!(p3, Point::new(5.0, -5.0, 0.0));
+        assert_eq!(p4, Point::new(15.0, 0.0, 7.0));
+    }
 }
