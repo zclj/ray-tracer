@@ -10,6 +10,7 @@ pub fn translation(x: f32, y: f32, z: f32) -> M4x4 {
     )
 }
 
+#[must_use]
 pub fn scaling(x: f32, y: f32, z: f32) -> M4x4 {
     M4x4::from_elements(
         [x, 0.0, 0.0, 0.0],
@@ -19,11 +20,32 @@ pub fn scaling(x: f32, y: f32, z: f32) -> M4x4 {
     )
 }
 
+#[must_use]
 pub fn rotation_x(r: f32) -> M4x4 {
     M4x4::from_elements(
         [1.0, 0.0, 0.0, 0.0],
         [0.0, f32::cos(r), -f32::sin(r), 0.0],
         [0.0, f32::sin(r), f32::cos(r), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    )
+}
+
+#[must_use]
+pub fn rotation_y(r: f32) -> M4x4 {
+    M4x4::from_elements(
+        [f32::cos(r), 0.0, f32::sin(r), 0.0],
+        [0.0, 1.0, 0.0, 0.0],
+        [-f32::sin(r), 0.0, f32::cos(r), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    )
+}
+
+#[must_use]
+pub fn rotation_z(r: f32) -> M4x4 {
+    M4x4::from_elements(
+        [f32::cos(r), -f32::sin(r), 0.0, 0.0],
+        [f32::sin(r), f32::cos(r), 0.0, 0.0],
+        [0.0, 0.0, 1.0, 0.0],
         [0.0, 0.0, 0.0, 1.0],
     )
 }
@@ -164,5 +186,43 @@ mod test {
             &half_quarter_inv * &p,
             Point::new(0.0, f32::sqrt(2.0) / 2.0, -f32::sqrt(2.0) / 2.0)
         )
+    }
+
+    // Scenario: Rotating a point around the y axis
+    //   Given p ← point(0, 0, 1)
+    //     And half_quarter ← rotation_y(π / 4)
+    //     And full_quarter ← rotation_y(π / 2)
+    //   Then half_quarter * p = point(√2/2, 0, √2/2)
+    //     And full_quarter * p = point(1, 0, 0)
+    #[test]
+    fn rotating_a_point_around_the_y_axis() {
+        let p = Point::new(0.0, 0.0, 1.0);
+        let half_quarter = rotation_y(PI / 4.0);
+        let full_quarter = rotation_y(PI / 2.0);
+
+        assert_eq!(
+            &half_quarter * &p,
+            Point::new(f32::sqrt(2.0) / 2.0, 0.0, f32::sqrt(2.0) / 2.0)
+        );
+        assert_eq!(&full_quarter * &p, Point::new(1.0, 0.0, 0.0))
+    }
+
+    // Scenario: Rotating a point around the z axis
+    //   Given p ← point(0, 1, 0)
+    //     And half_quarter ← rotation_z(π / 4)
+    //     And full_quarter ← rotation_z(π / 2)
+    //   Then half_quarter * p = point(-√2/2, √2/2, 0)
+    //     And full_quarter * p = point(-1, 0, 0)
+    #[test]
+    fn rotating_a_point_around_the_z_axis() {
+        let p = Point::new(0.0, 1.0, 0.0);
+        let half_quarter = rotation_z(PI / 4.0);
+        let full_quarter = rotation_z(PI / 2.0);
+
+        assert_eq!(
+            &half_quarter * &p,
+            Point::new(-f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0, 0.0)
+        );
+        assert_eq!(&full_quarter * &p, Point::new(-1.0, 0.0, 0.0))
     }
 }
