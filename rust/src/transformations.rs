@@ -60,6 +60,11 @@ pub fn shearing(x_y: f32, x_z: f32, y_x: f32, y_z: f32, z_x: f32, z_y: f32) -> M
     )
 }
 
+#[must_use]
+pub fn transform(transforms: &[M4x4]) -> M4x4 {
+    transforms.iter().fold(M4x4::IDENTITY, |acc, m| (m * &acc))
+}
+
 #[cfg(test)]
 mod test {
     //use crate::transformations::{scaling, translation};
@@ -353,6 +358,19 @@ mod test {
         let c = translation(10.0, 5.0, 7.0);
 
         let t = &c * &(&b * &a);
+
+        assert_eq!(&t * &p, Point::new(15.0, 0.0, 7.0));
+    }
+
+    // Instead of a 'fluent API' we can just fold the transforms
+    #[test]
+    fn fold_is_fluent() {
+        let p = Point::new(1.0, 0.0, 1.0);
+        let a = rotation_x(PI / 2.0);
+        let b = scaling(5.0, 5.0, 5.0);
+        let c = translation(10.0, 5.0, 7.0);
+
+        let t = transform(&[a, b, c]);
 
         assert_eq!(&t * &p, Point::new(15.0, 0.0, 7.0));
     }
