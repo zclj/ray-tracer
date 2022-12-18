@@ -2,9 +2,12 @@ use crate::matrices::M4x4;
 
 #[must_use]
 pub fn translation(x: f32, y: f32, z: f32) -> M4x4 {
-    M4x4([
-        1.0, 0.0, 0.0, x, 0.0, 1.0, 0.0, y, 0.0, 0.0, 1.0, z, 0.0, 0.0, 0.0, 1.0,
-    ])
+    M4x4::from_elements(
+        [1.0, 0.0, 0.0, x],
+        [0.0, 1.0, 0.0, y],
+        [0.0, 0.0, 1.0, z],
+        [0.0, 0.0, 0.0, 1.0],
+    )
 }
 
 pub fn scaling(x: f32, y: f32, z: f32) -> M4x4 {
