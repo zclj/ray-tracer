@@ -149,4 +149,20 @@ mod test {
         );
         assert_eq!(&full_quarter * &p, Point::new(0.0, 0.0, 1.0))
     }
+
+    // Scenario: The inverse of an x-rotation rotates in the opposite direction
+    // Given p ← point(0, 1, 0)
+    //   And half_quarter ← rotation_x(π / 4)
+    //   And inv ← inverse(half_quarter)
+    // Then inv * p = point(0, √2/2, -√2/2)
+    #[test]
+    fn the_inverse_of_an_x_rotation_rotates_in_the_opposite_direction() {
+        let p = Point::new(0.0, 1.0, 0.0);
+        let half_quarter_inv = rotation_x(PI / 4.0).inverse();
+
+        assert_eq!(
+            &half_quarter_inv * &p,
+            Point::new(0.0, f32::sqrt(2.0) / 2.0, -f32::sqrt(2.0) / 2.0)
+        )
+    }
 }
