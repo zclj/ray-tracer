@@ -19,10 +19,21 @@ pub fn scaling(x: f32, y: f32, z: f32) -> M4x4 {
     )
 }
 
+pub fn rotation_x(r: f32) -> M4x4 {
+    M4x4::from_elements(
+        [1.0, 0.0, 0.0, 0.0],
+        [0.0, f32::cos(r), -f32::sin(r), 0.0],
+        [0.0, f32::sin(r), f32::cos(r), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    )
+}
+
 #[cfg(test)]
 mod test {
-    use crate::transformations::{scaling, translation};
+    //use crate::transformations::{scaling, translation};
+    use super::*;
     use crate::vector::{Point, Vector};
+    use std::f32::consts::PI;
 
     // Scenario: Multiplying by a translation matrix
     // Given transform ← translation(5, -3, 2)
@@ -118,5 +129,24 @@ mod test {
         let p = Point::new(2.0, 3.0, 4.0);
 
         assert_eq!(&transform * &p, Point::new(-2.0, 3.0, 4.0))
+    }
+
+    // Scenario: Rotating a point around the x axis
+    //   Given p ← point(0, 1, 0)
+    //     And half_quarter ← rotation_x(π / 4)
+    //     And full_quarter ← rotation_x(π / 2)
+    //   Then half_quarter * p = point(0, √2/2, √2/2)
+    //     And full_quarter * p = point(0, 0, 1)
+    #[test]
+    fn rotating_a_point_around_the_x_axis() {
+        let p = Point::new(0.0, 1.0, 0.0);
+        let half_quarter = rotation_x(PI / 4.0);
+        let full_quarter = rotation_x(PI / 2.0);
+
+        assert_eq!(
+            &half_quarter * &p,
+            Point::new(0.0, f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0)
+        );
+        assert_eq!(&full_quarter * &p, Point::new(0.0, 0.0, 1.0))
     }
 }
