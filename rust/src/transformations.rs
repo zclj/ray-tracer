@@ -50,6 +50,16 @@ pub fn rotation_z(r: f32) -> M4x4 {
     )
 }
 
+#[must_use]
+pub fn shearing(x_y: f32, x_z: f32, y_x: f32, y_z: f32, z_x: f32, z_y: f32) -> M4x4 {
+    M4x4::from_elements(
+        [1.0, x_y, x_z, 0.0],
+        [y_x, 1.0, y_z, 0.0],
+        [z_x, z_y, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    )
+}
+
 #[cfg(test)]
 mod test {
     //use crate::transformations::{scaling, translation};
@@ -224,5 +234,77 @@ mod test {
             Point::new(-f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0, 0.0)
         );
         assert_eq!(&full_quarter * &p, Point::new(-1.0, 0.0, 0.0))
+    }
+
+    // Scenario: A shearing transformation moves x in proportion to y
+    //   Given transform ← shearing(1, 0, 0, 0, 0, 0)
+    //     And p ← point(2, 3, 4)
+    //   Then transform * p = point(5, 3, 4)
+    #[test]
+    fn a_shearing_transformation_moves_x_in_proportion_to_y() {
+        let transform = shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(5.0, 3.0, 4.0))
+    }
+
+    // Scenario: A shearing transformation moves x in proportion to z
+    //   Given transform ← shearing(0, 1, 0, 0, 0, 0)
+    //     And p ← point(2, 3, 4)
+    //   Then transform * p = point(6, 3, 4)
+    #[test]
+    fn a_shearing_transformation_moves_x_in_proportion_to_z() {
+        let transform = shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(6.0, 3.0, 4.0))
+    }
+
+    // Scenario: A shearing transformation moves y in proportion to x
+    //   Given transform ← shearing(0, 0, 1, 0, 0, 0)
+    //     And p ← point(2, 3, 4)
+    //   Then transform * p = point(2, 5, 4)
+    #[test]
+    fn a_shearing_transformation_moves_y_in_proportion_to_x() {
+        let transform = shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(2.0, 5.0, 4.0))
+    }
+
+    // Scenario: A shearing transformation moves y in proportion to z
+    //   Given transform ← shearing(0, 0, 0, 1, 0, 0)
+    //     And p ← point(2, 3, 4)
+    //   Then transform * p = point(2, 7, 4)
+    #[test]
+    fn a_shearing_transformation_moves_y_in_proportion_to_z() {
+        let transform = shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(2.0, 7.0, 4.0))
+    }
+
+    // Scenario: A shearing transformation moves z in proportion to x
+    //   Given transform ← shearing(0, 0, 0, 0, 1, 0)
+    //     And p ← point(2, 3, 4)
+    //   Then transform * p = point(2, 3, 6)
+    #[test]
+    fn a_shearing_transformation_moves_z_in_proportion_to_x() {
+        let transform = shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(2.0, 3.0, 6.0))
+    }
+
+    // Scenario: A shearing transformation moves z in proportion to y
+    //   Given transform ← shearing(0, 0, 0, 0, 0, 1)
+    //     And p ← point(2, 3, 4)
+    //   Then transform * p = point(2, 3, 7)
+    #[test]
+    fn a_shearing_transformation_moves_z_in_proportion_to_y() {
+        let transform = shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        let p = Point::new(2.0, 3.0, 4.0);
+
+        assert_eq!(&transform * &p, Point::new(2.0, 3.0, 7.0))
     }
 }
