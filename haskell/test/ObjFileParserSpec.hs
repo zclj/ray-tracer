@@ -300,16 +300,15 @@ objFileParserBasics =
                      \v -1 0 0\n\
                      \v 1 0 0\n\
                      \       \n\
-                     \vn -1 0\n\
-                     \vn 1 0 \n\
-                     \vn 0 1 \n\
+                     \vn -1 0 0\n\
+                     \vn 1 0 0\n\
+                     \vn 0 1 0\n\
                      \       \n\
-                     \f 1//3 \n\
+                     \f 1//3 2//1 3//2 \n\
                      \f 1/0/3 2/102/1 3/14/2"
           parser = parseObjFileContent contents
           g      = objToGroup parser
-          [c1, c2]   = reverse (children g)
-          c      = reverse (children c1)
+          c      = (children g)
           t1     = head c
           t2     = c !! 1
       it "t1.p1 = parser.vertices[1]" $ do
@@ -319,11 +318,13 @@ objFileParserBasics =
       it "t1.p3 = parser.vertices[3]" $ do
         p3 t1 `shouldBe` getVertex parser 3
       it "t1.n1 = parser.normals[3]" $ do
-        tn1 t1 `shouldBe` getNormal parser 1
+        tn1 t1 `shouldBe` getNormal parser 3
       it "t1.n2 = parser.normals[1]" $ do
-        tn2 t1 `shouldBe` getNormal parser 2
+        tn2 t1 `shouldBe` getNormal parser 1
       it "t1.n3 = parser.normals[2]" $ do
-        tn3 t1 `shouldBe` getNormal parser 3
+        tn3 t1 `shouldBe` getNormal parser 2
       it "t2 = t1" $ do
-        t2 `shouldBe` t1
+        [(p1 t2), (p2 t2), (p3 t2), (tn1 t2), (tn2 t2), (tn3 t2)]
+          `shouldBe`
+          [(p1 t1), (p2 t1), (p3 t1), (tn1 t1), (tn2 t1), (tn3 t1)]
 

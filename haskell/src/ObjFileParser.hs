@@ -1,9 +1,9 @@
 module ObjFileParser where
 
 import Tuples as T
-import Data.Char
 import Types
 import Shapes
+import Data.List.Split as S
 
 import Debug.Trace
 
@@ -31,15 +31,47 @@ parseNormal s p@(Parser i v g n) =
       [n1, n2, n3] = tail parts
   in Parser i v g (n ++ [(T.vector (read n1) (read n2) (read n3))])
 
+-- Faces might have multiple parts :
+-- vertex index/texture index/vertex-normal index
+-- f 1/1/1 2/2/2 3/3/3 4/4/4"
+-- f 1//3 2//1 3//2
+parseFace :: String -> Parser -> Parser
+parseFace s p@(Parser i v g n) =
+  let parts = words s
+  in if length (tail parts) == 3
+     then parseTriangle s p
+     else parsePolygon s p
+
+makeTriangle :: String -> String -> String -> Parser -> Shape
+makeTriangle v1 v2 v3 p =
+  let vx1 = (getVertex p ((read v1)::Int))
+      vx2 = (getVertex p ((read v2)::Int))
+      vx3 = (getVertex p ((read v3)::Int))
+  in (triangle 1 vx1 vx2 vx3)
+
+makeSmoothTriangle :: String -> String -> String -> String -> String -> String -> Parser -> Shape
+makeSmoothTriangle v1 v2 v3 n1 n2 n3 p =
+  let vx1 = (getVertex p ((read v1)::Int))
+      vx2 = (getVertex p ((read v2)::Int))
+      vx3 = (getVertex p ((read v3)::Int))
+      nx1 = (getNormal p ((read n1)::Int))
+      nx2 = (getNormal p ((read n2)::Int))
+      nx3 = (getNormal p ((read n3)::Int))
+  in (smoothTriangle 1 vx1 vx2 vx3 nx1 nx2 nx3)
+
 parseTriangle :: String -> Parser -> Parser
 parseTriangle s p@(Parser i v groups n) =
   let parts        = words s
       g:gs         = groups
-      [v1, v2, v3] = tail parts
-      vx1 = (getVertex p ((read v1)::Int))
-      vx2 = (getVertex p ((read v2)::Int))
-      vx3 = (getVertex p ((read v3)::Int))
-      g'  = (fst (addChild g (triangle 1 vx1 vx2 vx3)))
+      [f1, f2, f3] = tail parts
+      shape        = if (elem '/' f1)
+                     then let [[v1, t1, n1], [v2, t2, n2], [v3, t3, n3]] =
+                                map (splitOn "/") [f1, f2, f3]
+                          in if (n1 == "") || (n2 == "") || (n3 == "")
+                             then makeTriangle f1 f2 f3 p
+                             else makeSmoothTriangle v1 v2 v3 n1 n2 n3 p
+                     else makeTriangle f1 f2 f3 p
+      g'           = (fst (addChild g shape))
   in Parser i v (g':gs) n
 
 parsePolygon :: String -> Parser -> Parser
@@ -49,14 +81,6 @@ parsePolygon s p@(Parser i v g n) =
   in foldr parseTriangle p [ (unwords ["f", v1, v4, v5])
                            , (unwords ["f", v1, v3, v4])
                            , (unwords ["f", v1, v2, v3])]
-
--- \f 1/1/1 2/2/2 3/3/3 4/4/4"
-parseFace :: String -> Parser -> Parser
-parseFace s p@(Parser i v g n) =
-  let parts = words s
-  in if length (tail parts) == 3
-     then parseTriangle s p
-     else parsePolygon s p
 
 parseGroup :: String -> Parser -> Parser
 parseGroup s p@(Parser i v gs n) =
@@ -93,11 +117,11 @@ content = "v 0 1 0\n\
           \v -1 0 0\n\
           \v 1 0 0\n\
           \       \n\
-          \vn -1 0\n\
-          \vn 1 0 \n\
-          \vn 0 1 \n\
+          \vn -1 0 0\n\
+          \vn 1 0 0\n\
+          \vn 0 1 0\n\
           \       \n\
-          \f 1//3 \n\
+          \f 1//3 2//1 3//2 \n\
           \f 1/0/3 2/102/1 3/14/2"
 
 parser = parseObjFileContent content

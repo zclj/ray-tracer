@@ -66,6 +66,7 @@ library
     , base >=4.7 && <5
     , deepseq
     , monad-par
+    , split
   default-language: Haskell2010
 
 executable ray-tracer-exe
@@ -81,6 +82,7 @@ executable ray-tracer-exe
     , deepseq
     , monad-par
     , ray-tracer
+    , split
   default-language: Haskell2010
 
 test-suite ray-tracer-test
@@ -118,6 +120,7 @@ test-suite ray-tracer-test
     , deepseq
     , monad-par
     , ray-tracer
+    , split
     , tasty
     , tasty-hspec
     , tasty-hunit

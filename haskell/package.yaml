@@ -24,6 +24,7 @@ dependencies:
 - array
 - monad-par
 - deepseq
+- split
 
 library:
   source-dirs: src
