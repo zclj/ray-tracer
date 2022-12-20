@@ -237,18 +237,27 @@ pub fn matrix_indexing(c: &mut Criterion) {
 }
 
 pub fn transform_translation(c: &mut Criterion) {
-    let transform = translation(5.0, -3.0, 2.0);
+    let translation = translation(5.0, -3.0, 2.0);
     let p = Point::new(-3.0, 4.0, 5.0);
 
-    c.bench_function("Translation", |b| b.iter(|| black_box(&transform * &p)));
+    let glam_translation = Mat4::from_translation(Vec3::new(5.0, -3.0, 2.0));
+
+    let mut group = c.benchmark_group("Transform");
+
+    group.bench_function("Translation", |b| b.iter(|| black_box(&translation * &p)));
+
+    group.bench_function("glam Translation", |b| {
+        b.iter(|| black_box(glam_translation.transform_point3(Vec3::new(-3.0, 4.0, 5.0))))
+    });
+    group.finish()
 }
 
-pub fn glam_transform_translation(c: &mut Criterion) {
-    let transform = Mat4::from_translation(Vec3::new(5.0, -3.0, 2.0));
-    c.bench_function("glam Translation", |b| {
-        b.iter(|| black_box(transform.transform_point3(Vec3::new(-3.0, 4.0, 5.0))))
-    });
-}
+// pub fn glam_transform_translation(c: &mut Criterion) {
+//     let transform = Mat4::from_translation(Vec3::new(5.0, -3.0, 2.0));
+//     c.bench_function("glam Translation", |b| {
+//         b.iter(|| black_box(transform.transform_point3(Vec3::new(-3.0, 4.0, 5.0))))
+//     });
+// }
 
 criterion_group!(
     benches,
@@ -268,6 +277,6 @@ criterion_group!(
     glam_matrix_equality,
     matrix_indexing,
     transform_translation,
-    glam_transform_translation,
+    //glam_transform_translation,
 );
 criterion_main!(benches);
