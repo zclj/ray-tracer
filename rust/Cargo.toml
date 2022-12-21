@@ -16,5 +16,9 @@ criterion = "0.3"
 name = "raymark"
 harness = false
 
+[[bench]]
+name = "matrices"
+harness = false
+
 [profile.release]
 debug = true
