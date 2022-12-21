@@ -319,6 +319,8 @@ bounds shape@Group { children } =
 
 bounds shape@Triangle { p1, p2, p3 } =
   foldr (flip addBoundingBoxPoint) defaultBoundingBox [p1, p2, p3]
+bounds shape@SmoothTriangle { p1, p2, p3 } =
+  foldr (flip addBoundingBoxPoint) defaultBoundingBox [p1, p2, p3]
 
 defaultBoundingBox :: BoundingBox
 defaultBoundingBox = BoundingBox (T.point (1/0) (1/0) (1/0)) (T.point (-1/0) (-1/0) (-1/0))
@@ -402,6 +404,7 @@ divide s@Cube {} t = s
 divide s@Cone {} t = s
 divide s@Cylinder {} t = s
 divide s@Triangle {} t = s
+divide s@SmoothTriangle {} t = s
 divide g@Group {} t =
   -- given a group, subdivide the group until threshold
   -- g' is a group with the children of the shapes that do not fit in
