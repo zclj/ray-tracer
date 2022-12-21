@@ -77,10 +77,11 @@ parseTriangle s p@(Parser i v groups n) =
 parsePolygon :: String -> Parser -> Parser
 parsePolygon s p@(Parser i v g n) =
   let vertices             = tail (words s)
-      [v1, v2, v3, v4, v5] = vertices
-  in foldr parseTriangle p [ (unwords ["f", v1, v4, v5])
-                           , (unwords ["f", v1, v3, v4])
-                           , (unwords ["f", v1, v2, v3])]
+  in foldr (\i acc ->
+              parseTriangle
+              (unwords ["f", (vertices !! 0), (vertices !! i), (vertices !! (i+1))]) acc)
+     p
+     (reverse [1..((length vertices) - 2)])
 
 parseGroup :: String -> Parser -> Parser
 parseGroup s p@(Parser i v gs n) =
