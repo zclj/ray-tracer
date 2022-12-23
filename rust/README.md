@@ -18,6 +18,8 @@ Using [Criterion](https://github.com/bheisler/criterion.rs).
 
 Run with `cargo bench`
 
+Filter with `cargo bench -- id-string`
+
 ## Inspection
 
 Using [cargo-show-asm](https://github.com/pacak/cargo-show-asm).

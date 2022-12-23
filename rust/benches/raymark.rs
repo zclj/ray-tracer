@@ -1,7 +1,10 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use glam::{Mat4, Vec3};
 use ray_tracer::canvas::Canvas;
 use ray_tracer::color::Color;
 use ray_tracer::matrices::{M2x2, M3x3, M4x4};
+use ray_tracer::transformations::translation;
+use ray_tracer::vector::Point;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     let canvas = Canvas::new(black_box(900), black_box(600));
@@ -55,8 +58,6 @@ pub fn matrix_multiplication(c: &mut Criterion) {
         b.iter(|| black_box(&x * &y))
     });
 }
-
-use glam::Mat4;
 
 pub fn glam_matrix_multiplication(c: &mut Criterion) {
     let x = Mat4::from_cols_array_2d(&[
@@ -235,6 +236,20 @@ pub fn matrix_indexing(c: &mut Criterion) {
     c.bench_function("Matrix 4x4 Indexing", |b| b.iter(|| black_box(x[(2, 2)])));
 }
 
+pub fn transform_translation(c: &mut Criterion) {
+    let transform = translation(5.0, -3.0, 2.0);
+    let p = Point::new(-3.0, 4.0, 5.0);
+
+    c.bench_function("Translation", |b| b.iter(|| black_box(&transform * &p)));
+}
+
+pub fn glam_transform_translation(c: &mut Criterion) {
+    let transform = Mat4::from_translation(Vec3::new(5.0, -3.0, 2.0));
+    c.bench_function("glam Translation", |b| {
+        b.iter(|| black_box(transform.transform_point3(Vec3::new(-3.0, 4.0, 5.0))))
+    });
+}
+
 criterion_group!(
     benches,
     criterion_benchmark,
@@ -252,5 +267,7 @@ criterion_group!(
     matrix_equality,
     glam_matrix_equality,
     matrix_indexing,
+    transform_translation,
+    glam_transform_translation,
 );
 criterion_main!(benches);
