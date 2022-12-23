@@ -18,7 +18,7 @@ import ObjFileParser
 ----------------------------------------
 -- The Camera
 ----------------------------------------
-camera = (makeCamera 200 100 1.152)
+camera = (makeCamera 800 400 1.152)
          { C.transform = viewTransform
                          (T.point (-2.6) 1.5 (-3.9))
                          (T.point (-0.6) 1 (-0.8))
@@ -107,31 +107,26 @@ southWall =  Plane { Types.id = 6
 ----------------------------------------
 
 writeSceneChapter15 = do
-  parser <- parseObjFile "obj-files/teddy.obj" --"obj-files/teddy-partial.obj"--"obj-files/teddy.obj"
+  parser <- parseObjFile "obj-files/teapot-low.obj"
   let group = objToGroup parser
       dg    = divide group 20
       g     = updateTransform dg (T.transform
-                                   [ scaling 0.05 0.05 0.05
-                                   , rotationY (pi)
-                                   , (translation (-0.6) 1 0.6)])
-      --dg    = divide group 1
-              -- org: 11m 7
-              -- groups 20 : 1m 58s (200x100)
-              -- groups 20 : 7m 10s (400x200)
-  -- We got 32 triangles
-  -- putStrLn "OBJ Group child count"
-  -- putStrLn (show (length (children group)))
-  -- putStrLn "Divide Group child count"
-  -- putStrLn (show (length (children dg)))
-  -- putStrLn "Divide Group child child count"
-  -- putStrLn (showGroupTree "" (head (children dg)))
-
+                                 [ rotationZ (pi/4)
+                                 , rotationX (-pi/2)
+                                 , scaling 0.15 0.15 0.15
+                                 , translation (1.6) (0) 1.6])
   writeFile
-    "teddy.ppm"
+    "teapot-low.ppm"
     (PPM.canvasToPPMString
      (render
       camera
-      (World [g, floorPlane, ceilingPlane, westWall, eastWall, northWall, southWall]
+      (World [g
+             , floorPlane
+             ,ceilingPlane
+             , westWall
+             , eastWall
+             , northWall
+             , southWall]
         lightSource)))
 
 ----------------------------------------
