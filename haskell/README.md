@@ -1,5 +1,8 @@
-# ray-tracer
+# Ray Tracer Challenge in Haskell
 
+## Example
+
+![Chapter 11](./demos/chapter11-render.png "Chapter 11")
 ## Executing
 
 Create the pre-configured demo canvas with `stack run`. `canvas.ppm` will be created with the resulting canvas.
