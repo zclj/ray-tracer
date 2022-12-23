@@ -343,3 +343,13 @@ hits =
           i  = SUT.hit xs
       it "The hit is the first positive intersection" $ do
         i `shouldBe` Just i4
+    describe "hit of intersections with and without pepared UV" $ do
+      let s  = defaultSphere 1
+          i1 = Intersection 5 s
+          i2 = Intersection 7 s
+          i3 = Intersection (-3) s
+          i4 = IntersectionUV 2 s 1 1
+          xs = [i1, i2, i3, i4]
+          i  = SUT.hit xs
+      it "The hit is the first positive intersection" $ do
+        i `shouldBe` Just i4

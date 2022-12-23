@@ -6,8 +6,9 @@ import Matrices
 import Materials
 import Tuples as T
 import Rays as R
-import Data.List (sort, find)
+import Data.List (sortBy, find)
 import Types
+import Data.Ord
 
 ----------------------------------------
 -- Defauls
@@ -190,7 +191,7 @@ checkAxis origin direction min max =
 
 intersectShapes :: [Shape] -> Ray -> [Intersection]
 intersectShapes objects r
-  = sort $ concatMap (\s -> localIntersect s (R.transform r (inverse (Types.transform s)))) objects
+  = sortBy (comparing intersectionT) $ concatMap (\s -> localIntersect s (R.transform r (inverse (Types.transform s)))) objects
 
 objectNormalAt :: Shape -> Tuple -> Intersection -> Tuple
 objectNormalAt s worldPoint i =

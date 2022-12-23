@@ -4,7 +4,8 @@ import Types
 import Tuples
 import Rays
 import Shapes
-import Data.List (sort, find)
+import Data.List (sortBy, find)
+import Data.Ord
 
 prepareComputations :: Intersection -> Ray -> [Intersection] -> Computation
 prepareComputations i r xs =
@@ -34,7 +35,8 @@ prepareComputations i r xs =
 hit :: [Intersection] -> Maybe Intersection
 hit xs = find (\i -> case i of
                        (Intersection t _) -> t >= 0
-                       (IntersectionUV t _ _ _) -> t >= 0) $ sort xs
+                       (IntersectionUV t _ _ _) -> t >= 0)
+         $ sortBy (comparing intersectionT) xs
 
 schlick :: Computation -> Double
 schlick c =
