@@ -37,7 +37,7 @@ pub fn transform_scaling(c: &mut Criterion) {
     group.finish()
 }
 
-pub fn translation_rotation(c: &mut Criterion) {
+pub fn transform_rotation(c: &mut Criterion) {
     let p = Point::new(1.0, 1.0, 1.0);
     let rot_x = rotation_x(PI / 2.0);
     let rot_y = rotation_y(PI / 2.0);
@@ -65,12 +65,21 @@ pub fn translation_rotation(c: &mut Criterion) {
 
     group.finish()
 }
-// @TODO - shearing, multiple?
+
+pub fn transform_shearing(c: &mut Criterion) {
+    let transform = shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Point::new(2.0, 3.0, 4.0);
+
+    c.bench_function("Transform - Shearing", |b| {
+        b.iter(|| black_box(&transform * &p))
+    });
+}
 
 criterion_group!(
     benches,
     transform_translation,
     transform_scaling,
-    translation_rotation,
+    transform_rotation,
+    transform_shearing,
 );
 criterion_main!(benches);
