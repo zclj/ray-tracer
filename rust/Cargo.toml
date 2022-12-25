@@ -20,5 +20,9 @@ harness = false
 name = "matrices"
 harness = false
 
+[[bench]]
+name = "transformations"
+harness = false
+
 [profile.release]
 debug = true
