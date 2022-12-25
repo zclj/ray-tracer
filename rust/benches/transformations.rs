@@ -3,6 +3,7 @@ use glam::{Mat4, Vec3};
 use ray_tracer::matrices::{M2x2, M3x3, M4x4};
 use ray_tracer::transformations::*;
 use ray_tracer::vector::Point;
+use std::f32::consts::PI;
 
 pub fn transform_translation(c: &mut Criterion) {
     let translation = translation(5.0, -3.0, 2.0);
@@ -36,7 +37,40 @@ pub fn transform_scaling(c: &mut Criterion) {
     group.finish()
 }
 
-// @TODO - rotation, shearing, multiple?
+pub fn translation_rotation(c: &mut Criterion) {
+    let p = Point::new(1.0, 1.0, 1.0);
+    let rot_x = rotation_x(PI / 2.0);
+    let rot_y = rotation_y(PI / 2.0);
+    let rot_z = rotation_z(PI / 2.0);
 
-criterion_group!(benches, transform_translation, transform_scaling,);
+    let mut group = c.benchmark_group("Transform - Rotation");
+
+    group.bench_function("rotation X", |b| b.iter(|| black_box(&rot_x * &p)));
+    group.bench_function("rotation Y", |b| b.iter(|| black_box(&rot_y * &p)));
+    group.bench_function("rotation Z", |b| b.iter(|| black_box(&rot_z * &p)));
+
+    let glam_rot_x = Mat4::from_rotation_x(PI / 2.0);
+    let glam_rot_y = Mat4::from_rotation_y(PI / 2.0);
+    let glam_rot_z = Mat4::from_rotation_z(PI / 2.0);
+
+    group.bench_function("glam rotation X", |b| {
+        b.iter(|| black_box(glam_rot_x.transform_point3(Vec3::new(1.0, 1.0, 1.0))))
+    });
+    group.bench_function("glam rotation Y", |b| {
+        b.iter(|| black_box(glam_rot_y.transform_point3(Vec3::new(1.0, 1.0, 1.0))))
+    });
+    group.bench_function("glam rotation Z", |b| {
+        b.iter(|| black_box(glam_rot_z.transform_point3(Vec3::new(1.0, 1.0, 1.0))))
+    });
+
+    group.finish()
+}
+// @TODO - shearing, multiple?
+
+criterion_group!(
+    benches,
+    transform_translation,
+    transform_scaling,
+    translation_rotation,
+);
 criterion_main!(benches);
