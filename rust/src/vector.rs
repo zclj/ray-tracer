@@ -246,18 +246,18 @@ impl std::ops::Neg for Vector {
     }
 }
 
-impl std::ops::Mul<f32> for Vector {
-    type Output = Self;
+impl std::ops::Mul<f32> for &Vector {
+    type Output = Vector;
 
-    fn mul(self, rhs: f32) -> Self {
+    fn mul(self, rhs: f32) -> Vector {
         Vector::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
 }
 
-impl std::ops::Div<f32> for Vector {
-    type Output = Self;
+impl std::ops::Div<f32> for &Vector {
+    type Output = Vector;
 
-    fn div(self, rhs: f32) -> Self {
+    fn div(self, rhs: f32) -> Vector {
         Vector::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
 }
@@ -430,7 +430,7 @@ mod tests {
     fn multiplying_a_tuple_by_a_scalar() {
         let v = Vector::new(1.0, -2.0, 3.0);
 
-        assert_eq!(v * 3.5, Vector::new(3.5, -7.0, 10.5));
+        assert_eq!(&v * 3.5, Vector::new(3.5, -7.0, 10.5));
     }
 
     // Scenario: Multiplying a tuple by a fraction
@@ -440,7 +440,7 @@ mod tests {
     fn multiplying_a_tuple_by_a_fraction() {
         let v = Vector::new(1.0, -2.0, 3.0);
 
-        assert_eq!(v * 0.5, Vector::new(0.5, -1.0, 1.5));
+        assert_eq!(&v * 0.5, Vector::new(0.5, -1.0, 1.5));
     }
 
     // Scenario: Dividing a tuple by a scalar
@@ -450,7 +450,7 @@ mod tests {
     fn dividing_a_tuple_by_a_scalar() {
         let v = Vector::new(1.0, -2.0, 3.0);
 
-        assert_eq!(v / 2.0, Vector::new(0.5, -1.0, 1.5));
+        assert_eq!(&v / 2.0, Vector::new(0.5, -1.0, 1.5));
     }
 
     // Scenario: Computing the magnitude of vector(1, 0, 0)

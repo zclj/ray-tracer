@@ -30,7 +30,7 @@ fn launch(g: f32, w: f32) -> Vec<Projectile> {
     };
     let proj = Projectile {
         position: Point::new(0., 1., 0.),
-        velocity: (Vector::new(1., 1.8, 0.)).norm() * 11.25,
+        velocity: (&(Vector::new(1., 1.8, 0.)).norm()) * 11.25,
     };
 
     let mut ps = vec![proj];
