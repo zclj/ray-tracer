@@ -1,13 +1,17 @@
 use crate::rays::Ray;
 use crate::vector::Point;
 
-struct Sphere {
+pub struct Sphere {
     id: u32,
 }
 
 impl Sphere {
     pub fn new(id: u32) -> Self {
         Sphere { id }
+    }
+
+    pub fn id(&self) -> u32 {
+        self.id
     }
 }
 
