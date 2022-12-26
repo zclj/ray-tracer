@@ -1,12 +1,13 @@
 use crate::vector::{Point, Vector};
 
-struct Ray {
-    origin: Point,
-    direction: Vector,
+pub struct Ray {
+    pub origin: Point,
+    pub direction: Vector,
 }
 
 impl Ray {
-    fn new(origin: Point, direction: Vector) -> Self {
+    #[must_use]
+    pub fn new(origin: Point, direction: Vector) -> Self {
         Ray { origin, direction }
     }
 

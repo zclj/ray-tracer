@@ -136,6 +136,14 @@ impl std::ops::Sub<Point> for Point {
     }
 }
 
+impl std::ops::Sub<&Point> for &Point {
+    type Output = Vector;
+
+    fn sub(self, rhs: &Point) -> Vector {
+        Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
 impl std::ops::Sub<Vector> for Point {
     type Output = Point;
 
@@ -181,7 +189,8 @@ impl Vector {
         Vector::new(self.x / m, self.y / m, self.z / m)
     }
 
-    fn dot(&self, rhs: &Vector) -> f32 {
+    #[must_use]
+    pub fn dot(&self, rhs: &Vector) -> f32 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
