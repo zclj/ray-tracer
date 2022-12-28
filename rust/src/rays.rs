@@ -1,3 +1,4 @@
+use crate::matrices::M4x4;
 use crate::vector::{Point, Vector};
 
 pub struct Ray {
@@ -14,11 +15,19 @@ impl Ray {
     fn position(&self, t: f32) -> Point {
         &self.origin + &(&self.direction * t)
     }
+
+    fn transform(&self, m: &M4x4) -> Ray {
+        Ray {
+            origin: m * &self.origin,
+            direction: m * &self.direction,
+        }
+    }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::transformations::{scaling, translation};
     use crate::vector::{Point, Vector};
 
     // Scenario: Creating and querying a ray
@@ -52,5 +61,37 @@ mod test {
         assert_eq!(r.position(1.0), Point::new(3.0, 3.0, 4.0));
         assert_eq!(r.position(-1.0), Point::new(1.0, 3.0, 4.0));
         assert_eq!(r.position(2.5), Point::new(4.5, 3.0, 4.0));
+    }
+
+    // Scenario: Translating a ray
+    //   Given r ← ray(point(1, 2, 3), vector(0, 1, 0))
+    //     And m ← translation(3, 4, 5)
+    //   When r2 ← transform(r, m)
+    //   Then r2.origin = point(4, 6, 8)
+    //     And r2.direction = vector(0, 1, 0)
+    #[test]
+    fn translating_a_ray() {
+        let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
+        let m = translation(3.0, 4.0, 5.0);
+        let r2 = r.transform(&m);
+
+        assert_eq!(r2.origin, Point::new(4.0, 6.0, 8.0));
+        assert_eq!(r2.direction, Vector::new(0.0, 1.0, 0.0));
+    }
+
+    // Scenario: Scaling a ray
+    //   Given r ← ray(point(1, 2, 3), vector(0, 1, 0))
+    //     And m ← scaling(2, 3, 4)
+    //   When r2 ← transform(r, m)
+    //   Then r2.origin = point(2, 6, 12)
+    //     And r2.direction = vector(0, 3, 0)
+    #[test]
+    fn scaling_a_ray() {
+        let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
+        let m = scaling(2.0, 3.0, 4.0);
+        let r2 = r.transform(&m);
+
+        assert_eq!(r2.origin, Point::new(2.0, 6.0, 12.0));
+        assert_eq!(r2.direction, Vector::new(0.0, 3.0, 0.0));
     }
 }
