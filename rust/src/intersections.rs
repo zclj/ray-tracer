@@ -17,7 +17,8 @@ impl Intersection {
     }
 }
 
-fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
+#[must_use]
+pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
     let (s_id, s_transform) = match shape {
         Shape::Sphere { id, transform } => (*id, transform),
     };
@@ -51,7 +52,10 @@ fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
     ]
 }
 
-fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
+/// # Panics
+///
+/// Will panic if intersection t value is NaN
+pub fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
     xs.sort_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
     let pos_xs: Vec<&Intersection> = xs.iter().filter(|x| x.t >= 0.0).collect();
 
