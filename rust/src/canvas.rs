@@ -39,7 +39,7 @@ fn push_digits(d: u8, s: &mut String) {
 fn process_line(cs: &[Color], line_str: &mut String) {
     let mut count = 0;
 
-    let to_ppm_sample = |s: f32| f32::max(f32::min(255.0, (s * 255.0).ceil()), 0.0);
+    let to_ppm_sample = |s: f32| (s * 255.0).ceil().clamp(0.0, 255.0);
 
     for c in cs {
         let samples = [
