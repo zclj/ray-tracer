@@ -16,7 +16,8 @@ impl Ray {
         &self.origin + &(&self.direction * t)
     }
 
-    fn transform(&self, m: &M4x4) -> Ray {
+    #[must_use]
+    pub fn transform(&self, m: &M4x4) -> Ray {
         Ray {
             origin: m * &self.origin,
             direction: m * &self.direction,

@@ -18,10 +18,16 @@ impl Intersection {
 }
 
 fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
-    let sphere_to_ray = &r.origin - &Point::new(0.0, 0.0, 0.0);
+    let (s_id, s_transform) = match shape {
+        Shape::Sphere { id, transform } => (*id, transform),
+    };
 
-    let a = r.direction.dot(&r.direction);
-    let b = 2.0 * r.direction.dot(&sphere_to_ray);
+    let obj_ray = r.transform(&s_transform.inverse());
+
+    let sphere_to_ray = &obj_ray.origin - &Point::new(0.0, 0.0, 0.0);
+
+    let a = obj_ray.direction.dot(&obj_ray.direction);
+    let b = 2.0 * obj_ray.direction.dot(&sphere_to_ray);
     let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
 
     let discriminant = b.powf(2.0) - (4.0 * a * c);
@@ -32,10 +38,6 @@ fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
 
     let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
     let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
-
-    let s_id = match shape {
-        Shape::Sphere { id } => *id,
-    };
 
     vec![
         Intersection {
@@ -64,6 +66,7 @@ mod test {
     use super::*;
     use crate::context::Context;
     use crate::shape::Shape;
+    use crate::transformations::{scaling, translation};
     use crate::vector::Vector;
 
     // Scenario: An intersection encapsulates t and object
@@ -113,7 +116,7 @@ mod test {
     fn a_ray_intersects_a_sphere_at_two_points() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
 
         let xs = intersect(ctx.get_shape(s_id), &r);
 
@@ -133,7 +136,7 @@ mod test {
     fn a_ray_intersects_a_sphere_at_a_tangent() {
         let r = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
 
         let xs = intersect(ctx.get_shape(s_id), &r);
 
@@ -151,7 +154,7 @@ mod test {
     fn a_ray_misses_a_sphere() {
         let r = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
 
         let xs = intersect(ctx.get_shape(s_id), &r);
 
@@ -169,7 +172,7 @@ mod test {
     fn a_ray_originates_inside_a_sphere() {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
 
         let xs = intersect(ctx.get_shape(s_id), &r);
 
@@ -189,7 +192,7 @@ mod test {
     fn a_sphere_is_behind_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
 
         let xs = intersect(ctx.get_shape(s_id), &r);
 
@@ -209,7 +212,7 @@ mod test {
     fn intersect_sets_the_object_on_the_intersection() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
         let xs = intersect(ctx.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
@@ -227,7 +230,7 @@ mod test {
     #[test]
     fn the_hit_when_all_intersections_have_positive_t() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
         let i1 = Intersection::new(1.0, s_id);
         let i2 = Intersection::new(2.0, s_id);
 
@@ -247,7 +250,7 @@ mod test {
     #[test]
     fn the_hit_when_some_intersections_have_negative_t() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
         let i1 = Intersection::new(-1.0, s_id);
         let i2 = Intersection::new(1.0, s_id);
 
@@ -267,7 +270,7 @@ mod test {
     #[test]
     fn the_hit_when_all_intersections_have_negative_t() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
         let i1 = Intersection::new(-2.0, s_id);
         let i2 = Intersection::new(-1.0, s_id);
 
@@ -289,7 +292,7 @@ mod test {
     #[test]
     fn the_hit_is_always_the_lowest_nonnegative_intersection() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere();
+        let s_id = ctx.push_sphere(None);
         let i1 = Intersection::new(5.0, s_id);
         let i2 = Intersection::new(7.0, s_id);
         let i3 = Intersection::new(-3.0, s_id);
@@ -299,5 +302,41 @@ mod test {
         let i = hit(&mut is);
 
         assert_eq!(i, Some(&Intersection::new(2.0, s_id)));
+    }
+
+    // Scenario: Intersecting a scaled sphere with a ray
+    //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And s ← sphere()
+    //   When set_transform(s, scaling(2, 2, 2))
+    //     And xs ← intersect(s, r)
+    //   Then xs.count = 2
+    //     And xs[0].t = 3
+    //     And xs[1].t = 7
+    #[test]
+    fn intersecting_a_scaled_sphere_with_a_ray() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(Some(scaling(2.0, 2.0, 2.0)));
+        let xs = intersect(ctx.get_shape(s_id), &r);
+
+        assert_eq!(xs.len(), 2);
+        assert_eq!(xs[0].t, 3.0);
+        assert_eq!(xs[1].t, 7.0);
+    }
+
+    // Scenario: Intersecting a translated sphere with a ray
+    //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And s ← sphere()
+    //   When set_transform(s, translation(5, 0, 0))
+    //     And xs ← intersect(s, r)
+    //   Then xs.count = 0
+    #[test]
+    fn intersecting_a_translated_sphere_with_a_ray() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(Some(translation(5.0, 0.0, 0.0)));
+        let xs = intersect(ctx.get_shape(s_id), &r);
+
+        assert_eq!(xs.len(), 0);
     }
 }
