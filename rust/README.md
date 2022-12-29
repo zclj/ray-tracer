@@ -12,6 +12,14 @@ Coverage report, `cargo llvm-cov nextest --open` or `--html`. [Docs](https://lib
 
 Using [Cargo Flamegraph](https://github.com/flamegraph-rs/flamegraph).
 
+To enable perf without running as root, you can lower the `perf_event_paranoid` value:
+
+`echo -1 | sudo tee /proc/sys/kernel/perf_event_paranoid`
+
+and back to default:
+
+`echo 4 | sudo tee /proc/sys/kernel/perf_event_paranoid`
+
 ## Benchmarks
 
 Using [Criterion](https://github.com/bheisler/criterion.rs).
