@@ -6,9 +6,16 @@ pub enum Shape {
 }
 
 impl Shape {
-    fn normal_at(&self, p: Point) -> Vector {
+    fn normal_at(&self, world_point: &Point) -> Vector {
         match self {
-            Shape::Sphere { .. } => (p - Point::new(0., 0., 0.)).norm(),
+            Shape::Sphere { transform, .. } => {
+                let inversed = transform.inverse();
+                let object_point = &inversed * world_point;
+                let object_normal = object_point - Point::new(0., 0., 0.);
+                let world_normal = &inversed.transpose() * &object_normal;
+
+                world_normal.norm()
+            }
         }
     }
 }
@@ -17,7 +24,8 @@ impl Shape {
 mod test {
     use super::*;
     use crate::context::Context;
-    use crate::transformations::translation;
+    use crate::transformations::{rotation_z, scaling, translation};
+    use core::f32::consts::PI;
 
     // Scenario: A sphere's default transformation
     //   Given s ← sphere()
@@ -63,7 +71,7 @@ mod test {
         let s_id = ctx.push_sphere(None);
         let s = ctx.get_shape(s_id);
 
-        let n = s.normal_at(Point::new(1.0, 0.0, 0.0));
+        let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
 
         assert_eq!(n, Vector::new(1.0, 0.0, 0.0))
     }
@@ -78,7 +86,7 @@ mod test {
         let s_id = ctx.push_sphere(None);
         let s = ctx.get_shape(s_id);
 
-        let n = s.normal_at(Point::new(0.0, 1.0, 0.0));
+        let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
 
         assert_eq!(n, Vector::new(0.0, 1.0, 0.0))
     }
@@ -93,7 +101,7 @@ mod test {
         let s_id = ctx.push_sphere(None);
         let s = ctx.get_shape(s_id);
 
-        let n = s.normal_at(Point::new(0.0, 0.0, 1.0));
+        let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
 
         assert_eq!(n, Vector::new(0.0, 0.0, 1.0))
     }
@@ -108,7 +116,7 @@ mod test {
         let s_id = ctx.push_sphere(None);
         let s = ctx.get_shape(s_id);
 
-        let n = s.normal_at(Point::new(
+        let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
             f32::sqrt(3.0) / 3.0,
             f32::sqrt(3.0) / 3.0,
@@ -122,5 +130,61 @@ mod test {
                 f32::sqrt(3.0) / 3.0
             )
         )
+    }
+
+    // Scenario: The normal is a normalized vector
+    //   Given s ← sphere()
+    //   When n ← normal_at(s, point(√3/3, √3/3, √3/3))
+    //   Then n = normalize(n)
+    #[test]
+    fn the_normal_is_a_normalized_vector() {
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(None);
+        let s = ctx.get_shape(s_id);
+
+        let n = s.normal_at(&Point::new(
+            f32::sqrt(3.0) / 3.0,
+            f32::sqrt(3.0) / 3.0,
+            f32::sqrt(3.0) / 3.0,
+        ));
+
+        assert_eq!(n, n.norm())
+    }
+
+    // Scenario: Computing the normal on a translated sphere
+    //   Given s ← sphere()
+    //     And set_transform(s, translation(0, 1, 0))
+    //   When n ← normal_at(s, point(0, 1.70711, -0.70711))
+    //   Then n = vector(0, 0.70711, -0.70711)
+    #[test]
+    fn computing_the_normal_on_a_translated_sphere() {
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(Some(translation(0.0, 1.0, 0.0)));
+        let s = ctx.get_shape(s_id);
+
+        let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
+
+        assert_eq!(n, Vector::new(0.0, 0.70711, -0.70711))
+    }
+
+    // Scenario: Computing the normal on a transformed sphere
+    //   Given s ← sphere()
+    //     And m ← scaling(1, 0.5, 1) * rotation_z(π/5)
+    //     And set_transform(s, m)
+    //   When n ← normal_at(s, point(0, √2/2, -√2/2))
+    //   Then n = vector(0, 0.97014, -0.24254)
+    #[test]
+    fn computing_the_normal_on_a_transformed_sphere() {
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)));
+        let s = ctx.get_shape(s_id);
+
+        let n = s.normal_at(&Point::new(
+            0.0,
+            f32::sqrt(2.0) / 2.0,
+            -f32::sqrt(2.0) / 2.0,
+        ));
+
+        assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254))
     }
 }
