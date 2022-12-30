@@ -201,6 +201,11 @@ impl Vector {
             self.x * rhs.y - self.y * rhs.x,
         )
     }
+
+    #[must_use]
+    pub fn reflect(&self, normal: &Vector) -> Vector {
+        self - &(normal * (2.0 * self.dot(normal)))
+    }
 }
 
 impl std::ops::Add<Point> for Vector {
@@ -239,6 +244,14 @@ impl std::ops::Sub<Vector> for Vector {
     type Output = Self;
 
     fn sub(self, rhs: Vector) -> Self {
+        Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
+impl std::ops::Sub<&Vector> for &Vector {
+    type Output = Vector;
+
+    fn sub(self, rhs: &Vector) -> Vector {
         Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
 }
@@ -569,5 +582,33 @@ mod tests {
 
         assert_eq!(a.cross(&b), Vector::new(-1.0, 2.0, -1.0));
         assert_eq!(b.cross(&a), Vector::new(1.0, -2.0, 1.0));
+    }
+
+    // Scenario: Reflecting a vector approaching at 45°
+    //   Given v ← vector(1, -1, 0)
+    //     And n ← vector(0, 1, 0)
+    //   When r ← reflect(v, n)
+    //   Then r = vector(1, 1, 0)
+    #[test]
+    fn reflecting_a_vector_approaching_at_45() {
+        let v = Vector::new(1.0, -1.0, 0.0);
+        let n = Vector::new(0.0, 1.0, 0.0);
+        let r = v.reflect(&n);
+
+        assert_eq!(r, Vector::new(1.0, 1.0, 0.0))
+    }
+
+    // Scenario: Reflecting a vector off a slanted surface
+    //   Given v ← vector(0, -1, 0)
+    //     And n ← vector(√2/2, √2/2, 0)
+    //   When r ← reflect(v, n)
+    //   Then r = vector(1, 0, 0)
+    #[test]
+    fn reflecting_a_vector_off_a_slanted_surface() {
+        let v = Vector::new(0.0, -1.0, 0.0);
+        let n = Vector::new(f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0, 0.0);
+        let r = v.reflect(&n);
+
+        assert_eq!(r, Vector::new(1.0, 0.0, 0.0))
     }
 }
