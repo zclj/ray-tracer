@@ -3,6 +3,7 @@ pub mod canvas;
 pub mod color;
 pub mod context;
 pub mod intersections;
+pub mod lights;
 pub mod matrices;
 pub mod rays;
 pub mod shape;
