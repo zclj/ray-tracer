@@ -43,7 +43,7 @@ fn silhouette_into_canvas() -> Canvas {
     };
 
     let mut context = Context::new();
-    let sphere_id = context.push_sphere(None);
+    let sphere_id = context.push_sphere(None, None);
     let sphere = context.get_shape(sphere_id);
 
     for y in 0..(canvas_pixels - 1) {

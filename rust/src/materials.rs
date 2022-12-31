@@ -1,11 +1,12 @@
 use crate::color::Color;
 
-struct Material {
-    color: Color,
-    ambient: f32,
-    diffuse: f32,
-    specular: f32,
-    shininess: f32,
+#[derive(Debug, PartialEq)]
+pub struct Material {
+    pub color: Color,
+    pub ambient: f32,
+    pub diffuse: f32,
+    pub specular: f32,
+    pub shininess: f32,
 }
 
 impl Material {

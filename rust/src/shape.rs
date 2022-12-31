@@ -1,8 +1,13 @@
+use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::vector::{Point, Vector};
 
 pub enum Shape {
-    Sphere { id: u32, transform: M4x4 },
+    Sphere {
+        id: u32,
+        transform: M4x4,
+        material: Material,
+    },
 }
 
 impl Shape {
@@ -24,6 +29,7 @@ impl Shape {
 mod test {
     use super::*;
     use crate::context::Context;
+    use crate::materials::Material;
     use crate::transformations::{rotation_z, scaling, translation};
     use core::f32::consts::PI;
 
@@ -33,7 +39,7 @@ mod test {
     #[test]
     fn a_spheres_default_transformation() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None);
+        let s_id = ctx.push_sphere(None, None);
 
         let s_transform = match ctx.get_shape(0) {
             Shape::Sphere { transform, .. } => transform,
@@ -51,7 +57,7 @@ mod test {
     #[test]
     fn changing_a_spheres_transformation() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(translation(2.0, 3.0, 4.0)));
+        let s_id = ctx.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
 
         let s_transform = match ctx.get_shape(0) {
             Shape::Sphere { transform, .. } => transform,
@@ -68,7 +74,7 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_x_axis() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None);
+        let s_id = ctx.push_sphere(None, None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
@@ -83,7 +89,7 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_y_axis() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None);
+        let s_id = ctx.push_sphere(None, None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
@@ -98,7 +104,7 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_z_axis() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None);
+        let s_id = ctx.push_sphere(None, None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
@@ -113,7 +119,7 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_nonaxial_point() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None);
+        let s_id = ctx.push_sphere(None, None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(
@@ -139,7 +145,7 @@ mod test {
     #[test]
     fn the_normal_is_a_normalized_vector() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None);
+        let s_id = ctx.push_sphere(None, None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(
@@ -159,7 +165,7 @@ mod test {
     #[test]
     fn computing_the_normal_on_a_translated_sphere() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(translation(0.0, 1.0, 0.0)));
+        let s_id = ctx.push_sphere(Some(translation(0.0, 1.0, 0.0)), None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
@@ -176,7 +182,7 @@ mod test {
     #[test]
     fn computing_the_normal_on_a_transformed_sphere() {
         let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)));
+        let s_id = ctx.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
         let s = ctx.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(
@@ -186,5 +192,52 @@ mod test {
         ));
 
         assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254))
+    }
+
+    // Scenario: A sphere has a default material
+    //   Given s ← sphere()
+    //   When m ← s.material
+    //   Then m = material()
+    #[test]
+    fn a_sphere_has_a_default_material() {
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
+        let s = ctx.get_shape(s_id);
+
+        let s_material = match ctx.get_shape(0) {
+            Shape::Sphere { material, .. } => material,
+        };
+
+        let material: Material = Default::default();
+        assert_eq!(*s_material, material)
+    }
+    // Scenario: A sphere may be assigned a material
+    //   Given s ← sphere()
+    //     And m ← material()
+    //     And m.ambient ← 1
+    //   When s.material ← m
+    //   Then s.material = m
+    #[test]
+    fn a_sphere_may_be_assigned_a_material() {
+        let mut ctx = Context::new();
+        let s_id = ctx.push_sphere(
+            None,
+            Some(Material {
+                ambient: 1.0,
+                ..Default::default()
+            }),
+        );
+        let s = ctx.get_shape(s_id);
+
+        let s_material = match ctx.get_shape(0) {
+            Shape::Sphere { material, .. } => material,
+        };
+
+        let material = Material {
+            ambient: 1.0,
+            ..Default::default()
+        };
+
+        assert_eq!(*s_material, material)
     }
 }

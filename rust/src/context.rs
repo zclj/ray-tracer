@@ -1,3 +1,4 @@
+use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::shape::Shape;
 
@@ -15,7 +16,11 @@ impl Context {
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    pub fn push_sphere(&mut self, transform_option: Option<M4x4>) -> u32 {
+    pub fn push_sphere(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
         let id = self.objects.len() as u32;
 
         let transform = match transform_option {
@@ -23,7 +28,16 @@ impl Context {
             None => M4x4::IDENTITY,
         };
 
-        self.objects.push(Shape::Sphere { id, transform });
+        let material = match material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        self.objects.push(Shape::Sphere {
+            id,
+            transform,
+            material,
+        });
 
         id
     }
@@ -48,7 +62,7 @@ mod test {
     #[test]
     fn context_contain_shapes() {
         let mut ctx = Context::new();
-        ctx.push_sphere(None);
+        ctx.push_sphere(None, None);
 
         let s_id = match ctx.get_shape(0) {
             Shape::Sphere { id, .. } => id,
