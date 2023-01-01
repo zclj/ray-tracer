@@ -268,6 +268,18 @@ impl std::ops::Neg for Vector {
     }
 }
 
+impl std::ops::Neg for &Vector {
+    type Output = Vector;
+
+    fn neg(self) -> Vector {
+        Vector {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
+    }
+}
+
 impl std::ops::Mul<f32> for &Vector {
     type Output = Vector;
 

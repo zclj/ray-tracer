@@ -2,8 +2,8 @@ use crate::color::Color;
 use crate::vector::Point;
 
 pub struct PointLight {
-    position: Point,
-    intensity: Color,
+    pub position: Point,
+    pub intensity: Color,
 }
 
 impl PointLight {

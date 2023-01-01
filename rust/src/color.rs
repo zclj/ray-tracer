@@ -54,10 +54,30 @@ impl std::ops::Mul<f32> for Color {
     }
 }
 
+impl std::ops::Mul<f32> for &Color {
+    type Output = Color;
+
+    fn mul(self, rhs: f32) -> Color {
+        Color::new(self.red * rhs, self.green * rhs, self.blue * rhs)
+    }
+}
+
 impl std::ops::Mul<Color> for Color {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self {
+        Color::new(
+            self.red * rhs.red,
+            self.green * rhs.green,
+            self.blue * rhs.blue,
+        )
+    }
+}
+
+impl std::ops::Mul<&Color> for &Color {
+    type Output = Color;
+
+    fn mul(self, rhs: &Color) -> Color {
         Color::new(
             self.red * rhs.red,
             self.green * rhs.green,
