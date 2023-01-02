@@ -1,6 +1,7 @@
 use crate::rays::Ray;
 use crate::shape::Shape;
-use crate::vector::Point;
+use crate::vector::{Point, Vector};
+use crate::world::World;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersection {
@@ -8,11 +9,31 @@ pub struct Intersection {
     pub object: u32,
 }
 
+struct ComputedIntersection {
+    t: f32,
+    object: u32,
+    point: Point,
+    eyev: Vector,
+    normalv: Vector,
+}
+
 impl Intersection {
     fn new(t: f32, shape_id: u32) -> Self {
         Intersection {
             t,
             object: shape_id,
+        }
+    }
+
+    fn compute(&self, world: &World, ray: &Ray) -> ComputedIntersection {
+        ComputedIntersection {
+            t: self.t,
+            object: self.object,
+            point: ray.position(self.t),
+            eyev: -&ray.direction,
+            normalv: world
+                .get_shape(self.object)
+                .normal_at(&ray.position(self.t)),
         }
     }
 }
@@ -349,5 +370,32 @@ mod test {
         let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 0);
+    }
+
+    // Scenario: Precomputing the state of an intersection
+    //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And shape ← sphere()
+    //     And i ← intersection(4, shape)
+    //   When comps ← prepare_computations(i, r)
+    //   Then comps.t = i.t
+    //     And comps.object = i.object
+    //     And comps.point = point(0, 0, -1)
+    //     And comps.eyev = vector(0, 0, -1)
+    //     And comps.normalv = vector(0, 0, -1)
+    #[test]
+    fn precomputing_the_state_of_an_intersection() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+
+        let i = Intersection::new(4.0, s_id);
+
+        let comps = i.compute(&world, &r);
+
+        assert_eq!(comps.t, i.t);
+        assert_eq!(comps.object, i.object);
+        assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
+        assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(comps.normalv, Vector::new(0.0, 0.0, -1.0));
     }
 }
