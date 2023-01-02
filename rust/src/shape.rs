@@ -2,6 +2,7 @@ use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::vector::{Point, Vector};
 
+#[derive(PartialEq, Debug)]
 pub enum Shape {
     Sphere {
         id: u32,
