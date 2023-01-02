@@ -12,7 +12,8 @@ impl Ray {
         Ray { origin, direction }
     }
 
-    fn position(&self, t: f32) -> Point {
+    #[must_use]
+    pub fn position(&self, t: f32) -> Point {
         &self.origin + &(&self.direction * t)
     }
 

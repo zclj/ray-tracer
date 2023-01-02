@@ -92,6 +92,7 @@ impl Canvas {
         self.pixels[idx] = color;
     }
 
+    #[allow(dead_code)]
     fn pixel_at(&self, width: usize, height: usize) -> &Color {
         let idx = width + (self.width * height);
         &self.pixels[idx]

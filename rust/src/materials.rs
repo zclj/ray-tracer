@@ -22,7 +22,8 @@ impl Material {
         }
     }
 
-    fn lighting(
+    #[must_use]
+    pub fn lighting(
         &self,
         light: &PointLight,
         position: &Point,

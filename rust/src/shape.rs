@@ -11,7 +11,8 @@ pub enum Shape {
 }
 
 impl Shape {
-    fn normal_at(&self, world_point: &Point) -> Vector {
+    #[must_use]
+    pub fn normal_at(&self, world_point: &Point) -> Vector {
         match self {
             Shape::Sphere { transform, .. } => {
                 let inversed = transform.inverse();
@@ -21,6 +22,13 @@ impl Shape {
 
                 world_normal.norm()
             }
+        }
+    }
+
+    #[must_use]
+    pub fn material(&self) -> &Material {
+        match self {
+            Shape::Sphere { material, .. } => material,
         }
     }
 }
