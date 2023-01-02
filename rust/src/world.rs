@@ -1,7 +1,9 @@
 use crate::color::Color;
+use crate::intersections::{intersect, sort_by_t, Intersection};
 use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
+use crate::rays::Ray;
 use crate::shape::Shape;
 use crate::transformations::scaling;
 use crate::vector::Point;
@@ -12,6 +14,7 @@ pub struct World {
 }
 
 impl World {
+    #[allow(dead_code)]
     fn test_default() -> Self {
         let mut w = World::new();
 
@@ -81,6 +84,14 @@ impl World {
     pub fn get_shape(&self, id: u32) -> &Shape {
         &self.shapes[id as usize]
     }
+
+    #[must_use]
+    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
+        let mut is: Vec<Intersection> =
+            self.shapes.iter().flat_map(|s| intersect(s, ray)).collect();
+        sort_by_t(&mut is);
+        is
+    }
 }
 
 impl Default for World {
@@ -93,7 +104,9 @@ impl Default for World {
 mod test {
     use super::*;
     use crate::materials::Material;
+    use crate::rays::Ray;
     use crate::shape::Shape;
+    use crate::vector::{Point, Vector};
 
     #[test]
     fn world_contain_shapes() {
@@ -161,5 +174,28 @@ mod test {
                 intensity: Color::new(1.0, 1.0, 1.0)
             }
         )
+    }
+
+    // Scenario: Intersect a world with a ray
+    //   Given w ← default_world()
+    //     And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //   When xs ← intersect_world(w, r)
+    //   Then xs.count = 4
+    //     And xs[0].t = 4
+    //     And xs[1].t = 4.5
+    //     And xs[2].t = 5.5
+    //     And xs[3].t = 6
+    #[test]
+    fn intersect_a_world_with_a_ray() {
+        let w = World::test_default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+
+        let xs = w.intersect(&r);
+
+        assert_eq!(xs.len(), 4);
+        assert_eq!(xs[0].t, 4.0);
+        assert_eq!(xs[1].t, 4.5);
+        assert_eq!(xs[2].t, 5.5);
+        assert_eq!(xs[3].t, 6.0);
     }
 }

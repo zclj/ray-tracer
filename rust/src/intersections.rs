@@ -17,6 +17,13 @@ impl Intersection {
     }
 }
 
+/// # Panics
+///
+/// Will panic if intersection t value is NaN
+pub fn sort_by_t(xs: &mut [Intersection]) {
+    xs.sort_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
+}
+
 #[must_use]
 pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
     let (s_id, s_transform) = match shape {
