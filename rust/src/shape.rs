@@ -36,9 +36,9 @@ impl Shape {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::context::Context;
     use crate::materials::Material;
     use crate::transformations::{rotation_z, scaling, translation};
+    use crate::world::World;
     use core::f32::consts::PI;
 
     // Scenario: A sphere's default transformation
@@ -46,10 +46,10 @@ mod test {
     //   Then s.transform = identity_matrix
     #[test]
     fn a_spheres_default_transformation() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
 
-        let s_transform = match ctx.get_shape(0) {
+        let s_transform = match world.get_shape(0) {
             Shape::Sphere { transform, .. } => transform,
             _ => panic!(),
         };
@@ -64,10 +64,10 @@ mod test {
     //   Then s.transform = t
     #[test]
     fn changing_a_spheres_transformation() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
 
-        let s_transform = match ctx.get_shape(0) {
+        let s_transform = match world.get_shape(0) {
             Shape::Sphere { transform, .. } => transform,
             _ => panic!(),
         };
@@ -81,9 +81,9 @@ mod test {
     //   Then n = vector(1, 0, 0)
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_x_axis() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
 
@@ -96,9 +96,9 @@ mod test {
     //   Then n = vector(0, 1, 0)
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_y_axis() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
 
@@ -111,9 +111,9 @@ mod test {
     //   Then n = vector(0, 0, 1)
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_z_axis() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
 
@@ -126,9 +126,9 @@ mod test {
     //   Then n = vector(√3/3, √3/3, √3/3)
     #[test]
     fn the_normal_on_a_sphere_at_a_nonaxial_point() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
@@ -152,9 +152,9 @@ mod test {
     //   Then n = normalize(n)
     #[test]
     fn the_normal_is_a_normalized_vector() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
@@ -172,9 +172,9 @@ mod test {
     //   Then n = vector(0, 0.70711, -0.70711)
     #[test]
     fn computing_the_normal_on_a_translated_sphere() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(translation(0.0, 1.0, 0.0)), None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(translation(0.0, 1.0, 0.0)), None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
 
@@ -189,9 +189,9 @@ mod test {
     //   Then n = vector(0, 0.97014, -0.24254)
     #[test]
     fn computing_the_normal_on_a_transformed_sphere() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
+        let s = world.get_shape(s_id);
 
         let n = s.normal_at(&Point::new(
             0.0,
@@ -208,11 +208,11 @@ mod test {
     //   Then m = material()
     #[test]
     fn a_sphere_has_a_default_material() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
-        let s = ctx.get_shape(s_id);
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
+        let s = world.get_shape(s_id);
 
-        let s_material = match ctx.get_shape(0) {
+        let s_material = match world.get_shape(0) {
             Shape::Sphere { material, .. } => material,
         };
 
@@ -227,17 +227,17 @@ mod test {
     //   Then s.material = m
     #[test]
     fn a_sphere_may_be_assigned_a_material() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(
+        let mut world = World::new();
+        let s_id = world.push_sphere(
             None,
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
         );
-        let s = ctx.get_shape(s_id);
+        let s = world.get_shape(s_id);
 
-        let s_material = match ctx.get_shape(0) {
+        let s_material = match world.get_shape(0) {
             Shape::Sphere { material, .. } => material,
         };
 

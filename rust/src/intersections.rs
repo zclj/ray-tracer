@@ -68,10 +68,10 @@ pub fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::context::Context;
     use crate::shape::Shape;
     use crate::transformations::{scaling, translation};
     use crate::vector::Vector;
+    use crate::world::World;
 
     // Scenario: An intersection encapsulates t and object
     //   Given s ← sphere()
@@ -119,10 +119,10 @@ mod test {
     #[test]
     fn a_ray_intersects_a_sphere_at_two_points() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 4.0);
@@ -139,10 +139,10 @@ mod test {
     #[test]
     fn a_ray_intersects_a_sphere_at_a_tangent() {
         let r = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 5.0);
@@ -157,10 +157,10 @@ mod test {
     #[test]
     fn a_ray_misses_a_sphere() {
         let r = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 0);
     }
@@ -175,10 +175,10 @@ mod test {
     #[test]
     fn a_ray_originates_inside_a_sphere() {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, -1.0);
@@ -195,10 +195,10 @@ mod test {
     #[test]
     fn a_sphere_is_behind_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, -6.0);
@@ -215,9 +215,9 @@ mod test {
     #[test]
     fn intersect_sets_the_object_on_the_intersection() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].object, s_id);
@@ -233,8 +233,8 @@ mod test {
     //   Then i = i1
     #[test]
     fn the_hit_when_all_intersections_have_positive_t() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
         let i1 = Intersection::new(1.0, s_id);
         let i2 = Intersection::new(2.0, s_id);
 
@@ -253,8 +253,8 @@ mod test {
     //   Then i = i2
     #[test]
     fn the_hit_when_some_intersections_have_negative_t() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
         let i1 = Intersection::new(-1.0, s_id);
         let i2 = Intersection::new(1.0, s_id);
 
@@ -273,8 +273,8 @@ mod test {
     //   Then i is nothing
     #[test]
     fn the_hit_when_all_intersections_have_negative_t() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
         let i1 = Intersection::new(-2.0, s_id);
         let i2 = Intersection::new(-1.0, s_id);
 
@@ -295,8 +295,8 @@ mod test {
     // Then i = i4
     #[test]
     fn the_hit_is_always_the_lowest_nonnegative_intersection() {
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(None, None);
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
         let i1 = Intersection::new(5.0, s_id);
         let i2 = Intersection::new(7.0, s_id);
         let i3 = Intersection::new(-3.0, s_id);
@@ -319,9 +319,9 @@ mod test {
     #[test]
     fn intersecting_a_scaled_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(scaling(2.0, 2.0, 2.0)), None);
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(scaling(2.0, 2.0, 2.0)), None);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 3.0);
@@ -337,9 +337,9 @@ mod test {
     #[test]
     fn intersecting_a_translated_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut ctx = Context::new();
-        let s_id = ctx.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
-        let xs = intersect(ctx.get_shape(s_id), &r);
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
+        let xs = intersect(world.get_shape(s_id), &r);
 
         assert_eq!(xs.len(), 0);
     }

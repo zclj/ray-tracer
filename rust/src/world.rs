@@ -2,15 +2,15 @@ use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::shape::Shape;
 
-pub struct Context {
+pub struct World {
     objects: Vec<Shape>,
 }
 
-impl Context {
+impl World {
     #[must_use]
     pub fn new() -> Self {
         // @TODO - we could have knowledge about the capacity
-        Context {
+        World {
             objects: Vec::new(),
         }
     }
@@ -48,9 +48,9 @@ impl Context {
     }
 }
 
-impl Default for Context {
+impl Default for World {
     fn default() -> Self {
-        Context::new()
+        World::new()
     }
 }
 
@@ -60,8 +60,8 @@ mod test {
     use crate::shape::Shape;
 
     #[test]
-    fn context_contain_shapes() {
-        let mut ctx = Context::new();
+    fn world_contain_shapes() {
+        let mut ctx = World::new();
         ctx.push_sphere(None, None);
 
         let s_id = match ctx.get_shape(0) {
