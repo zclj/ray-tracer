@@ -63,6 +63,7 @@ impl Material {
             };
             (diffuse, specular)
         };
+
         ambient + diffuse + specular
     }
 }
@@ -132,6 +133,18 @@ mod test {
     //     And light ← point_light(point(0, 0, -10), color(1, 1, 1))
     //   When result ← lighting(m, light, position, eyev, normalv)
     //   Then result = color(1.0, 1.0, 1.0)
+    #[test]
+    fn lighting_with_the_eye_between_light_and_surface_eye_offset_45() {
+        let m: Material = Default::default();
+        let position: Point = Point::new(0.0, 0.0, 0.0);
+
+        let eyev = Vector::new(0.0, f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
+        let result = m.lighting(&light, &position, &eyev, &normalv);
+
+        assert_eq!(result, Color::new(1.0, 1.0, 1.0))
+    }
 
     // Scenario: Lighting with eye opposite surface, light offset 45°
     //   Given eyev ← vector(0, 0, -1)
@@ -139,6 +152,18 @@ mod test {
     //     And light ← point_light(point(0, 10, -10), color(1, 1, 1))
     //   When result ← lighting(m, light, position, eyev, normalv)
     //   Then result = color(0.7364, 0.7364, 0.7364)
+    #[test]
+    fn lighting_with_eye_opposite_surface_light_offset_45() {
+        let m: Material = Default::default();
+        let position: Point = Point::new(0.0, 0.0, 0.0);
+
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
+        let result = m.lighting(&light, &position, &eyev, &normalv);
+
+        assert_eq!(result, Color::new(0.7364, 0.7364, 0.7364))
+    }
 
     // Scenario: Lighting with eye in the path of the reflection vector
     //   Given eyev ← vector(0, -√2/2, -√2/2)
@@ -146,6 +171,18 @@ mod test {
     //     And light ← point_light(point(0, 10, -10), color(1, 1, 1))
     //   When result ← lighting(m, light, position, eyev, normalv)
     //   Then result = color(1.6364, 1.6364, 1.6364)
+    #[test]
+    fn lighting_with_eye_in_the_path_of_the_reflection_vector() {
+        let m: Material = Default::default();
+        let position: Point = Point::new(0.0, 0.0, 0.0);
+
+        let eyev = Vector::new(0.0, -f32::sqrt(2.0) / 2.0, -f32::sqrt(2.0) / 2.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
+        let result = m.lighting(&light, &position, &eyev, &normalv);
+
+        assert_eq!(result, Color::new(1.6363853, 1.6363853, 1.6363853))
+    }
 
     // Scenario: Lighting with the light behind the surface
     //   Given eyev ← vector(0, 0, -1)
@@ -153,4 +190,16 @@ mod test {
     //     And light ← point_light(point(0, 0, 10), color(1, 1, 1))
     //   When result ← lighting(m, light, position, eyev, normalv)
     //   Then result = color(0.1, 0.1, 0.1)
+    #[test]
+    fn lighting_with_the_light_behind_the_surface() {
+        let m: Material = Default::default();
+        let position: Point = Point::new(0.0, 0.0, 0.0);
+
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, 10.0), Color::new(1.0, 1.0, 1.0));
+        let result = m.lighting(&light, &position, &eyev, &normalv);
+
+        assert_eq!(result, Color::new(0.1, 0.1, 0.1))
+    }
 }
