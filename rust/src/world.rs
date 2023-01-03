@@ -28,15 +28,7 @@ impl World {
             }),
         );
 
-        w.push_sphere(
-            Some(scaling(0.5, 0.5, 0.5)),
-            Some(Material {
-                color: Color::new(0.8, 1.0, 0.6),
-                diffuse: 0.7,
-                specular: 0.2,
-                ..Default::default()
-            }),
-        );
+        w.push_sphere(Some(scaling(0.5, 0.5, 0.5)), Some(Material::default()));
 
         w
     }
