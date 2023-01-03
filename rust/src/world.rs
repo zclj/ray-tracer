@@ -1,5 +1,5 @@
 use crate::color::Color;
-use crate::intersections::{intersect, sort_by_t, Intersection};
+use crate::intersections::{intersect, sort_by_t, ComputedIntersection, Intersection};
 use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
@@ -84,6 +84,13 @@ impl World {
         sort_by_t(&mut is);
         is
     }
+
+    #[must_use]
+    pub fn shade_hit(&self, comp: &ComputedIntersection) -> Color {
+        let m = &self.get_shape(comp.object).material();
+
+        m.lighting(&self.light, &comp.point, &comp.eyev, &comp.normalv)
+    }
 }
 
 impl Default for World {
@@ -150,12 +157,7 @@ mod test {
             &Shape::Sphere {
                 id: 1,
                 transform: scaling(0.5, 0.5, 0.5),
-                material: Material {
-                    color: Color::new(0.8, 1.0, 0.6),
-                    diffuse: 0.7,
-                    specular: 0.2,
-                    ..Default::default()
-                },
+                material: Material::default(),
             }
         );
 
@@ -189,5 +191,54 @@ mod test {
         assert_eq!(xs[1].t, 4.5);
         assert_eq!(xs[2].t, 5.5);
         assert_eq!(xs[3].t, 6.0);
+    }
+
+    // Scenario: Shading an intersection
+    //   Given w ← default_world()
+    //     And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And shape ← the first object in w
+    //     And i ← intersection(4, shape)
+    //   When comps ← prepare_computations(i, r)
+    //     And c ← shade_hit(w, comps)
+    //   Then c = color(0.38066, 0.47583, 0.2855)
+    #[test]
+    fn shading_an_intersection() {
+        let w = World::test_default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+
+        // first shape in test world has id 0
+        let i = Intersection::new(4.0, 0);
+
+        let comps = i.compute(&w, &r);
+        let c = w.shade_hit(&comps);
+
+        assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
+    }
+
+    // Scenario: Shading an intersection from the inside
+    //   Given w ← default_world()
+    //     And w.light ← point_light(point(0, 0.25, 0), color(1, 1, 1))
+    //     And r ← ray(point(0, 0, 0), vector(0, 0, 1))
+    //     And shape ← the second object in w
+    //     And i ← intersection(0.5, shape)
+    //   When comps ← prepare_computations(i, r)
+    //     And c ← shade_hit(w, comps)
+    //   Then c = color(0.90498, 0.90498, 0.90498)
+    #[test]
+    fn shading_an_intersection_from_the_inside() {
+        let w = World {
+            light: PointLight::new(Point::new(0.0, 0.25, 0.0), Color::new(1.0, 1.0, 1.0)),
+            ..World::test_default()
+        };
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+
+        // second shape in test world has id 1
+        let i = Intersection::new(0.5, 1);
+
+        let comps = i.compute(&w, &r);
+        let c = w.shade_hit(&comps);
+
+        assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
     }
 }
