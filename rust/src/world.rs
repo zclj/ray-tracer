@@ -1,5 +1,5 @@
 use crate::color::Color;
-use crate::intersections::{intersect, sort_by_t, ComputedIntersection, Intersection};
+use crate::intersections::{hit, intersect, sort_by_t, ComputedIntersection, Intersection};
 use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
@@ -90,6 +90,20 @@ impl World {
         let m = &self.get_shape(comp.object).material();
 
         m.lighting(&self.light, &comp.point, &comp.eyev, &comp.normalv)
+    }
+
+    #[must_use]
+    pub fn color_at(&self, ray: &Ray) -> Color {
+        let mut is = self.intersect(ray);
+        let the_hit = hit(&mut is);
+
+        match the_hit {
+            Some(i) => {
+                let comp = i.compute(self, ray);
+                self.shade_hit(&comp)
+            }
+            None => Color::new(0.0, 0.0, 0.0),
+        }
     }
 }
 
@@ -240,5 +254,73 @@ mod test {
         let c = w.shade_hit(&comps);
 
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
+    }
+
+    // Scenario: The color when a ray misses
+    //   Given w ← default_world()
+    //     And r ← ray(point(0, 0, -5), vector(0, 1, 0))
+    //   When c ← color_at(w, r)
+    //   Then c = color(0, 0, 0)
+    #[test]
+    fn the_color_when_a_ray_misses() {
+        let w = World::test_default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
+
+        let c = w.color_at(&r);
+
+        assert_eq!(c, Color::new(0.0, 0.0, 0.0))
+    }
+
+    // Scenario: The color when a ray hits
+    //   Given w ← default_world()
+    //     And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //   When c ← color_at(w, r)
+    //   Then c = color(0.38066, 0.47583, 0.2855)
+    #[test]
+    fn the_color_when_a_ray_hits() {
+        let w = World::test_default();
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+
+        let c = w.color_at(&r);
+
+        assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855))
+    }
+
+    // Scenario: The color with an intersection behind the ray
+    //   Given w ← default_world()
+    //     And outer ← the first object in w
+    //     And outer.material.ambient ← 1
+    //     And inner ← the second object in w
+    //     And inner.material.ambient ← 1
+    //     And r ← ray(point(0, 0, 0.75), vector(0, 0, -1))
+    //   When c ← color_at(w, r)
+    //   Then c = inner.material.color
+    #[test]
+    fn the_color_with_an_intersection_behind_the_ray() {
+        let mut w = World::default();
+
+        let outer_id = w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ambient: 1.0,
+                ..Default::default()
+            }),
+        );
+
+        let inner_id = w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ambient: 1.0,
+                ..Material::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
+        let c = w.color_at(&r);
+
+        assert_eq!(c, w.get_shape(inner_id).material().color)
     }
 }
