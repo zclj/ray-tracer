@@ -9,24 +9,27 @@ pub struct Intersection {
     pub object: u32,
 }
 
-struct ComputedIntersection {
-    t: f32,
-    object: u32,
-    point: Point,
-    eyev: Vector,
-    normalv: Vector,
-    inside: bool,
+#[derive(Debug)]
+pub struct ComputedIntersection {
+    pub t: f32,
+    pub object: u32,
+    pub point: Point,
+    pub eyev: Vector,
+    pub normalv: Vector,
+    pub inside: bool,
 }
 
 impl Intersection {
-    fn new(t: f32, shape_id: u32) -> Self {
+    #[must_use]
+    pub fn new(t: f32, shape_id: u32) -> Self {
         Intersection {
             t,
             object: shape_id,
         }
     }
 
-    fn compute(&self, world: &World, ray: &Ray) -> ComputedIntersection {
+    #[must_use]
+    pub fn compute(&self, world: &World, ray: &Ray) -> ComputedIntersection {
         let mut normalv = world
             .get_shape(self.object)
             .normal_at(&ray.position(self.t));
