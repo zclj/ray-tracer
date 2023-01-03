@@ -15,6 +15,7 @@ struct ComputedIntersection {
     point: Point,
     eyev: Vector,
     normalv: Vector,
+    inside: bool,
 }
 
 impl Intersection {
@@ -26,14 +27,26 @@ impl Intersection {
     }
 
     fn compute(&self, world: &World, ray: &Ray) -> ComputedIntersection {
+        let mut normalv = world
+            .get_shape(self.object)
+            .normal_at(&ray.position(self.t));
+
+        let eyev = -&ray.direction;
+
+        let is_inside = if normalv.dot(&eyev) < 0.0 {
+            normalv = -normalv;
+            true
+        } else {
+            false
+        };
+
         ComputedIntersection {
             t: self.t,
             object: self.object,
             point: ray.position(self.t),
-            eyev: -&ray.direction,
-            normalv: world
-                .get_shape(self.object)
-                .normal_at(&ray.position(self.t)),
+            eyev,
+            normalv,
+            inside: is_inside,
         }
     }
 }
@@ -397,5 +410,50 @@ mod test {
         assert_eq!(comps.point, Point::new(0.0, 0.0, -1.0));
         assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
         assert_eq!(comps.normalv, Vector::new(0.0, 0.0, -1.0));
+    }
+
+    // Scenario: The hit, when an intersection occurs on the outside
+    //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And shape ← sphere()
+    //     And i ← intersection(4, shape)
+    //   When comps ← prepare_computations(i, r)
+    //   Then comps.inside = false
+    #[test]
+    fn the_hit_when_an_intersection_occurs_on_the_outside() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+
+        let i = Intersection::new(4.0, s_id);
+
+        let comps = i.compute(&world, &r);
+
+        assert_eq!(comps.inside, false);
+    }
+
+    // Scenario: The hit, when an intersection occurs on the inside
+    //   Given r ← ray(point(0, 0, 0), vector(0, 0, 1))
+    //     And shape ← sphere()
+    //     And i ← intersection(1, shape)
+    //   When comps ← prepare_computations(i, r)
+    //   Then comps.point = point(0, 0, 1)
+    //     And comps.eyev = vector(0, 0, -1)
+    //     And comps.inside = true
+    //       # normal would have been (0, 0, 1), but is inverted!
+    //     And comps.normalv = vector(0, 0, -1)
+    #[test]
+    fn the_hit_when_an_intersection_occurs_on_the_inside() {
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+        let mut world = World::new();
+        let s_id = world.push_sphere(None, None);
+
+        let i = Intersection::new(1.0, s_id);
+
+        let comps = i.compute(&world, &r);
+
+        assert_eq!(comps.point, Point::new(0.0, 0.0, 1.0));
+        assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(comps.normalv, Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(comps.inside, true);
     }
 }
