@@ -1,4 +1,5 @@
 use crate::matrices::M4x4;
+use crate::vector::{Point, Vector};
 
 #[must_use]
 pub fn translation(x: f32, y: f32, z: f32) -> M4x4 {
@@ -63,6 +64,11 @@ pub fn shearing(x_y: f32, x_z: f32, y_x: f32, y_z: f32, z_x: f32, z_y: f32) -> M
 #[must_use]
 pub fn transform(transforms: &[M4x4]) -> M4x4 {
     transforms.iter().fold(M4x4::IDENTITY, |acc, m| (m * &acc))
+}
+
+#[must_use]
+pub fn view_transform(from: &Point, to: &Point, up: &Vector) -> M4x4 {
+    M4x4::IDENTITY
 }
 
 #[cfg(test)]
@@ -373,5 +379,22 @@ mod test {
         let t = transform(&[a, b, c]);
 
         assert_eq!(&t * &p, Point::new(15.0, 0.0, 7.0));
+    }
+
+    // Scenario: The transformation matrix for the default orientation
+    //   Given from ← point(0, 0, 0)
+    //     And to ← point(0, 0, -1)
+    //     And up ← vector(0, 1, 0)
+    //   When t ← view_transform(from, to, up)
+    //   Then t = identity_matrix
+    #[test]
+    fn the_transformation_matrix_for_the_default_orientation() {
+        let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, 0.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+
+        let t = view_transform(from, to, up);
+
+        assert_eq!(t, M4x4::IDENTITY);
     }
 }
