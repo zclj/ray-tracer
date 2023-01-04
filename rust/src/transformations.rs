@@ -68,7 +68,20 @@ pub fn transform(transforms: &[M4x4]) -> M4x4 {
 
 #[must_use]
 pub fn view_transform(from: &Point, to: &Point, up: &Vector) -> M4x4 {
-    M4x4::IDENTITY
+    //M4x4::IDENTITY
+    let forward = (to - from).norm();
+    let upn = up.norm();
+    let left = forward.cross(&upn);
+    let true_up = left.cross(&forward);
+
+    let orientation = M4x4::from_elements(
+        [left.x, left.y, left.z, 0.0],
+        [true_up.x, true_up.y, true_up.z, 0.0],
+        [-forward.x, -forward.y, -forward.z, 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    );
+
+    &orientation * &translation(-from.x, -from.y, -from.z)
 }
 
 #[cfg(test)]
@@ -390,11 +403,74 @@ mod test {
     #[test]
     fn the_transformation_matrix_for_the_default_orientation() {
         let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, -1.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+
+        let t = view_transform(&from, &to, &up);
+
+        assert_eq!(t, M4x4::IDENTITY);
+    }
+
+    // Scenario: A view transformation matrix looking in positive z direction
+    //   Given from ← point(0, 0, 0)
+    //     And to ← point(0, 0, 1)
+    //     And up ← vector(0, 1, 0)
+    //   When t ← view_transform(from, to, up)
+    //   Then t = scaling(-1, 1, -1)
+    #[test]
+    fn a_view_transformation_matrix_looking_in_positive_z_direction() {
+        let from = Point::new(0.0, 0.0, 0.0);
+        let to = Point::new(0.0, 0.0, 1.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+
+        let t = view_transform(&from, &to, &up);
+
+        assert_eq!(t, scaling(-1.0, 1.0, -1.0));
+    }
+
+    // Scenario: The view transformation moves the world
+    //   Given from ← point(0, 0, 8)
+    //     And to ← point(0, 0, 0)
+    //     And up ← vector(0, 1, 0)
+    //   When t ← view_transform(from, to, up)
+    //   Then t = translation(0, 0, -8)
+    #[test]
+    fn the_view_transformation_moves_the_world() {
+        let from = Point::new(0.0, 0.0, 8.0);
         let to = Point::new(0.0, 0.0, 0.0);
         let up = Vector::new(0.0, 1.0, 0.0);
 
-        let t = view_transform(from, to, up);
+        let t = view_transform(&from, &to, &up);
 
-        assert_eq!(t, M4x4::IDENTITY);
+        assert_eq!(t, translation(0.0, 0.0, -8.0));
+    }
+
+    // Scenario: An arbitrary view transformation
+    //   Given from ← point(1, 3, 2)
+    //     And to ← point(4, -2, 8)
+    //     And up ← vector(1, 1, 0)
+    //   When t ← view_transform(from, to, up)
+    //   Then t is the following 4x4 matrix:
+    //       | -0.50709 | 0.50709 |  0.67612 | -2.36643 |
+    //       |  0.76772 | 0.60609 |  0.12122 | -2.82843 |
+    //       | -0.35857 | 0.59761 | -0.71714 |  0.00000 |
+    //       |  0.00000 | 0.00000 |  0.00000 |  1.00000 |
+    #[test]
+    fn an_arbitrary_view_transformation() {
+        let from = Point::new(1.0, 3.0, 2.0);
+        let to = Point::new(4.0, -2.0, 8.0);
+        let up = Vector::new(1.0, 1.0, 0.0);
+
+        let t = view_transform(&from, &to, &up);
+
+        assert_eq!(
+            t,
+            M4x4::from_elements(
+                [-0.50709, 0.50709, 0.67612, -2.36643],
+                [0.76772, 0.60609, 0.12122, -2.82843],
+                [-0.35857, 0.59761, -0.71714, 0.00000],
+                [0.00000, 0.00000, 0.00000, 1.00000]
+            )
+        )
     }
 }

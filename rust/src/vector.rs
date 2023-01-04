@@ -194,7 +194,8 @@ impl Vector {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
-    fn cross(&self, rhs: &Vector) -> Vector {
+    #[must_use]
+    pub fn cross(&self, rhs: &Vector) -> Vector {
         Vector::new(
             self.y * rhs.z - self.z * rhs.y,
             self.z * rhs.x - self.x * rhs.z,
