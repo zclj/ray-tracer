@@ -10,6 +10,10 @@ Playing around with different language implementation. Should not be considered 
 
 - [Bonus Chapters - Bounding Boxes](http://www.raytracerchallenge.com/bonus/bounding-boxes.html)
 
+### Models
+
+- https://benedikt-bitterli.me/resources/
+
 ## License
 
 Copyright © 2019-2022 Stefan Karlsson
