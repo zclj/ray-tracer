@@ -1,12 +1,14 @@
+use crate::canvas::Canvas;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::vector::Point;
+use crate::world::World;
 
 pub struct Camera {
     hsize: u16,
     vsize: u16,
     field_of_view: f32,
-    transform: M4x4,
+    pub transform: M4x4,
     half_width: f32,
     half_height: f32,
     pixel_size: f32,
@@ -57,16 +59,51 @@ impl Camera {
 
         Ray::new(origin, direction)
     }
+
+    #[must_use]
+    pub fn render(&self, world: &World) -> Canvas {
+        let mut image = Canvas::new(self.hsize.into(), self.vsize.into());
+
+        for y in 0..(self.vsize - 1) {
+            for x in 0..(self.hsize - 1) {
+                let ray = self.ray_for_pixel(x, y);
+                let color = world.color_at(&ray);
+                image.write_pixel(x as usize, y as usize, color);
+            }
+        }
+
+        image
+    }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::color::Color;
+    use crate::materials::Material;
     use crate::matrices::M4x4;
-    use crate::transformations::{rotation_y, translation};
+    use crate::transformations::{rotation_y, scaling, translation, view_transform};
     use crate::vector::{Point, Vector};
+    use crate::world::World;
     use std::f32::consts::PI;
 
+    fn test_world() -> World {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ..Default::default()
+            }),
+        );
+
+        w.push_sphere(Some(scaling(0.5, 0.5, 0.5)), Some(Material::default()));
+
+        w
+    }
     // Scenario: Constructing a camera
     //   Given hsize ← 160
     //     And vsize ← 120
@@ -154,5 +191,29 @@ mod test {
             r.direction,
             Vector::new(f32::sqrt(2.0) / 2.0, 0.0, -f32::sqrt(2.0) / 2.0)
         );
+    }
+
+    // Scenario: Rendering a world with a camera
+    //   Given w ← default_world()
+    //     And c ← camera(11, 11, π/2)
+    //     And from ← point(0, 0, -5)
+    //     And to ← point(0, 0, 0)
+    //     And up ← vector(0, 1, 0)
+    //     And c.transform ← view_transform(from, to, up)
+    //   When image ← render(c, w)
+    //   Then pixel_at(image, 5, 5) = color(0.38066, 0.47583, 0.2855)
+    #[test]
+    fn rendering_a_world_with_a_camera() {
+        let w = test_world();
+        let mut c = Camera::new(11, 11, PI / 2.0);
+        let from = Point::new(0.0, 0.0, -5.0);
+        let to = Point::new(0.0, 0.0, 0.0);
+        let up = Vector::new(0.0, 1.0, 0.0);
+
+        c.transform = view_transform(&from, &to, &up);
+
+        let image = c.render(&w);
+
+        assert_eq!(image.pixel_at(5, 5), &Color::new(0.38066, 0.47583, 0.2855))
     }
 }
