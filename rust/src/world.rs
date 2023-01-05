@@ -10,7 +10,7 @@ use crate::vector::Point;
 
 pub struct World {
     shapes: Vec<Shape>,
-    light: PointLight,
+    pub light: PointLight,
 }
 
 impl World {
