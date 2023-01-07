@@ -117,8 +117,8 @@ mod test {
     use crate::materials::Material;
     use crate::rays::Ray;
     use crate::shape::Shape;
+    use crate::transformations::scaling;
     use crate::vector::{Point, Vector};
-    use crate::transformations::{scaling};
 
     fn test_default() -> World {
         let mut w = World::new();
@@ -145,7 +145,6 @@ mod test {
 
         let s_id = match ctx.get_shape(0) {
             Shape::Sphere { id, .. } => id,
-            _ => panic!(),
         };
 
         assert_eq!(*s_id, 0);
@@ -316,7 +315,7 @@ mod test {
     fn the_color_with_an_intersection_behind_the_ray() {
         let mut w = World::default();
 
-        let outer_id = w.push_sphere(
+        w.push_sphere(
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),

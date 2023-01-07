@@ -48,11 +48,10 @@ mod test {
     #[test]
     fn a_spheres_default_transformation() {
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        world.push_sphere(None, None);
 
         let s_transform = match world.get_shape(0) {
             Shape::Sphere { transform, .. } => transform,
-            _ => panic!(),
         };
 
         assert_eq!(*s_transform, M4x4::IDENTITY)
@@ -66,11 +65,10 @@ mod test {
     #[test]
     fn changing_a_spheres_transformation() {
         let mut world = World::new();
-        let s_id = world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
+        world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
 
         let s_transform = match world.get_shape(0) {
             Shape::Sphere { transform, .. } => transform,
-            _ => panic!(),
         };
 
         assert_eq!(*s_transform, translation(2.0, 3.0, 4.0))
@@ -210,8 +208,7 @@ mod test {
     #[test]
     fn a_sphere_has_a_default_material() {
         let mut world = World::new();
-        let s_id = world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
-        let s = world.get_shape(s_id);
+        world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
 
         let s_material = match world.get_shape(0) {
             Shape::Sphere { material, .. } => material,
@@ -229,14 +226,13 @@ mod test {
     #[test]
     fn a_sphere_may_be_assigned_a_material() {
         let mut world = World::new();
-        let s_id = world.push_sphere(
+        world.push_sphere(
             None,
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
         );
-        let s = world.get_shape(s_id);
 
         let s_material = match world.get_shape(0) {
             Shape::Sphere { material, .. } => material,

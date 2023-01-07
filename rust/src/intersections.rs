@@ -112,7 +112,6 @@ pub fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::shape::Shape;
     use crate::transformations::{scaling, translation};
     use crate::vector::Vector;
     use crate::world::World;
