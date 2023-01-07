@@ -43,7 +43,7 @@ fn shaded_sphere_canvas() -> Canvas {
                 let point = &ray.position(hit.t);
                 let normal = &shape.normal_at(point);
                 let eye = -&ray.direction;
-                shape.material().lighting(light, point, &eye, normal)
+                shape.material().lighting(light, point, &eye, normal, false)
             }
             None => Color::new(0.0, 0.0, 0.0),
         }

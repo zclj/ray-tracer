@@ -29,6 +29,7 @@ impl Material {
         position: &Point,
         eyev: &Vector,
         normalv: &Vector,
+        in_shadow: bool,
     ) -> Color {
         // combine the surface color with the light's color/intensity
         let effective_color = &self.color * &light.intensity;
@@ -39,33 +40,37 @@ impl Material {
         // compute the ambient contribution
         let ambient = &effective_color * self.ambient;
 
-        // light_dot_normal represents the cosine of the angle between the
-        // light vector and the normal vector. A negative number means the
-        // light is on the other side of the surface.
-        let light_dot_normal = &lightv.dot(normalv);
-        let (diffuse, specular) = if *light_dot_normal < 0.0 {
-            (Color::new(0.0, 0.0, 0.0), Color::new(0.0, 0.0, 0.0))
+        if in_shadow {
+            ambient
         } else {
-            // compute the diffuse contribution
-            let diffuse = &effective_color * self.diffuse * *light_dot_normal;
-
-            // reflect_dot_eye represents the cosine of the angle between the
-            // reflection vector and the eye vector.
-            // A negative number means the light reflects away from the eye.
-            let reflectv = -(&lightv.reflect(normalv));
-            let reflect_dot_eye = &reflectv.dot(eyev);
-
-            let specular = if *reflect_dot_eye <= 0.0 {
-                Color::new(0.0, 0.0, 0.0)
+            // light_dot_normal represents the cosine of the angle between the
+            // light vector and the normal vector. A negative number means the
+            // light is on the other side of the surface.
+            let light_dot_normal = &lightv.dot(normalv);
+            let (diffuse, specular) = if *light_dot_normal < 0.0 {
+                (Color::new(0.0, 0.0, 0.0), Color::new(0.0, 0.0, 0.0))
             } else {
-                // compute the specular contribution
-                let factor = reflect_dot_eye.powf(self.shininess);
-                &light.intensity * self.specular * factor
-            };
-            (diffuse, specular)
-        };
+                // compute the diffuse contribution
+                let diffuse = &effective_color * self.diffuse * *light_dot_normal;
 
-        ambient + diffuse + specular
+                // reflect_dot_eye represents the cosine of the angle between the
+                // reflection vector and the eye vector.
+                // A negative number means the light reflects away from the eye.
+                let reflectv = -(&lightv.reflect(normalv));
+                let reflect_dot_eye = &reflectv.dot(eyev);
+
+                let specular = if *reflect_dot_eye <= 0.0 {
+                    Color::new(0.0, 0.0, 0.0)
+                } else {
+                    // compute the specular contribution
+                    let factor = reflect_dot_eye.powf(self.shininess);
+                    &light.intensity * self.specular * factor
+                };
+                (diffuse, specular)
+            };
+
+            ambient + diffuse + specular
+        }
     }
 }
 
@@ -123,7 +128,7 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let result = m.lighting(&light, &position, &eyev, &normalv);
+        let result = m.lighting(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, Color::new(1.9, 1.9, 1.9))
     }
@@ -142,7 +147,7 @@ mod test {
         let eyev = Vector::new(0.0, f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let result = m.lighting(&light, &position, &eyev, &normalv);
+        let result = m.lighting(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, Color::new(1.0, 1.0, 1.0))
     }
@@ -161,7 +166,7 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let result = m.lighting(&light, &position, &eyev, &normalv);
+        let result = m.lighting(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, Color::new(0.7364, 0.7364, 0.7364))
     }
@@ -180,7 +185,7 @@ mod test {
         let eyev = Vector::new(0.0, -f32::sqrt(2.0) / 2.0, -f32::sqrt(2.0) / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let result = m.lighting(&light, &position, &eyev, &normalv);
+        let result = m.lighting(&light, &position, &eyev, &normalv, false);
 
         assert_eq!(result, Color::new(1.6363853, 1.6363853, 1.6363853))
     }
@@ -199,7 +204,29 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, 10.0), Color::new(1.0, 1.0, 1.0));
-        let result = m.lighting(&light, &position, &eyev, &normalv);
+        let result = m.lighting(&light, &position, &eyev, &normalv, false);
+
+        assert_eq!(result, Color::new(0.1, 0.1, 0.1))
+    }
+
+    // Scenario: Lighting with the surface in shadow
+    //   Given eyev ← vector(0, 0, -1)
+    //     And normalv ← vector(0, 0, -1)
+    //     And light ← point_light(point(0, 0, -10), color(1, 1, 1))
+    //     And in_shadow ← true
+    //   When result ← lighting(m, light, position, eyev, normalv, in_shadow)
+    //   Then result = color(0.1, 0.1, 0.1)
+    #[test]
+    fn lighting_with_the_surface_in_shadow() {
+        let m: Material = Default::default();
+        let position: Point = Point::new(0.0, 0.0, 0.0);
+
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
+        let in_shadow = true;
+
+        let result = m.lighting(&light, &position, &eyev, &normalv, in_shadow);
 
         assert_eq!(result, Color::new(0.1, 0.1, 0.1))
     }

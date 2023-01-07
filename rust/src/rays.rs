@@ -1,6 +1,7 @@
 use crate::matrices::M4x4;
 use crate::vector::{Point, Vector};
 
+#[derive(Debug)]
 pub struct Ray {
     pub origin: Point,
     pub direction: Vector,

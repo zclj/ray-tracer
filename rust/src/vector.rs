@@ -92,7 +92,7 @@
 
 use crate::utils::epsilon_eq;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Point {
     pub x: f32,
     pub y: f32,
@@ -178,7 +178,8 @@ impl Vector {
 }
 
 impl Vector {
-    fn mag(&self) -> f32 {
+    #[must_use]
+    pub fn mag(&self) -> f32 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
