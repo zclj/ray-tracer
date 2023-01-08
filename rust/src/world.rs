@@ -72,7 +72,7 @@ impl World {
 
         m.lighting(
             &self.light,
-            &comp.point,
+            &comp.over_point,
             &comp.eyev,
             &comp.normalv,
             shadowed,
