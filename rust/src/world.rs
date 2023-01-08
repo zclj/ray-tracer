@@ -68,8 +68,15 @@ impl World {
     #[must_use]
     pub fn shade_hit(&self, comp: &ComputedIntersection) -> Color {
         let m = &self.get_shape(comp.object).material();
+        let shadowed = self.is_shadowed(&comp.over_point);
 
-        m.lighting(&self.light, &comp.point, &comp.eyev, &comp.normalv, false)
+        m.lighting(
+            &self.light,
+            &comp.point,
+            &comp.eyev,
+            &comp.normalv,
+            shadowed,
+        )
     }
 
     #[must_use]
@@ -117,7 +124,7 @@ mod test {
     use crate::materials::Material;
     use crate::rays::Ray;
     use crate::shape::Shape;
-    use crate::transformations::scaling;
+    use crate::transformations::{scaling, translation};
     use crate::vector::{Point, Vector};
 
     fn test_default() -> World {
@@ -394,5 +401,35 @@ mod test {
         let is_in_shadow = w.is_shadowed(&p);
 
         assert_eq!(is_in_shadow, false)
+    }
+
+    // Scenario: shade_hit() is given an intersection in shadow
+    //   Given w ← world()
+    //     And w.light ← point_light(point(0, 0, -10), color(1, 1, 1))
+    //     And s1 ← sphere()
+    //     And s1 is added to w
+    //     And s2 ← sphere() with:
+    //       | transform | translation(0, 0, 10) |
+    //     And s2 is added to w
+    //     And r ← ray(point(0, 0, 5), vector(0, 0, 1))
+    //     And i ← intersection(4, s2)
+    //   When comps ← prepare_computations(i, r)
+    //     And c ← shade_hit(w, comps)
+    //   Then c = color(0.1, 0.1, 0.1)
+    #[test]
+    fn shade_hit_is_given_an_intersection_in_shadow() {
+        let mut w = World::new();
+        w.light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
+        w.push_sphere(None, None);
+        let s2_id = w.push_sphere(Some(translation(0.0, 0.0, 10.0)), None);
+
+        let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
+        let i = Intersection::new(4.0, s2_id);
+
+        let comps = i.compute(&w, &r);
+
+        let c = w.shade_hit(&comps);
+
+        assert_eq!(c, Color::new(0.1, 0.1, 0.1))
     }
 }

@@ -1,5 +1,6 @@
 use crate::rays::Ray;
 use crate::shape::Shape;
+use crate::utils::EPSILON;
 use crate::vector::{Point, Vector};
 use crate::world::World;
 
@@ -17,6 +18,7 @@ pub struct ComputedIntersection {
     pub eyev: Vector,
     pub normalv: Vector,
     pub inside: bool,
+    pub over_point: Point,
 }
 
 impl Intersection {
@@ -43,10 +45,13 @@ impl Intersection {
             false
         };
 
+        let cpoint = ray.position(self.t);
+
         ComputedIntersection {
             t: self.t,
             object: self.object,
-            point: ray.position(self.t),
+            over_point: &cpoint + &(&normalv * EPSILON),
+            point: cpoint,
             eyev,
             normalv,
             inside: is_inside,
@@ -457,5 +462,29 @@ mod test {
         assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
         assert_eq!(comps.normalv, Vector::new(0.0, 0.0, -1.0));
         assert_eq!(comps.inside, true);
+    }
+
+    // Scenario: The hit should offset the point
+    //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And shape ← sphere() with:
+    //       | transform | translation(0, 0, 1) |
+    //     And i ← intersection(5, shape)
+    //   When comps ← prepare_computations(i, r)
+    //   Then comps.over_point.z < -EPSILON/2
+    //     And comps.point.z > comps.over_point.z
+    const EPSILON: f32 = 0.00001;
+
+    #[test]
+    fn the_hit_should_offset_the_point() {
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+        let mut world = World::new();
+        let s_id = world.push_sphere(Some(translation(0.0, 0.0, 1.0)), None);
+
+        let i = Intersection::new(5.0, s_id);
+
+        let comps = i.compute(&world, &r);
+
+        assert_eq!(comps.over_point.z < -EPSILON / 2.0, true);
+        assert_eq!(comps.point.z > comps.over_point.z, true);
     }
 }
