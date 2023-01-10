@@ -1,6 +1,5 @@
 use crate::rays::Ray;
 use crate::shape::Shape;
-use crate::utils::EPSILON;
 use crate::vector::{Point, Vector};
 use crate::world::World;
 
@@ -31,14 +30,14 @@ impl Intersection {
     }
 
     #[must_use]
-    pub fn compute(&self, world: &World, ray: &Ray) -> ComputedIntersection {
+    pub fn compute(&self, world: &World, ray: &Ray, shadow_bias: f32) -> ComputedIntersection {
         let mut normalv = world
             .get_shape(self.object)
             .normal_at(&ray.position(self.t));
 
         let eyev = -&ray.direction;
 
-        let is_inside = if normalv.dot(&eyev) < 0.0 {
+        let is_inside = if (normalv.dot(&eyev)) < 0.0 {
             normalv = -normalv;
             true
         } else {
@@ -50,7 +49,7 @@ impl Intersection {
         ComputedIntersection {
             t: self.t,
             object: self.object,
-            over_point: &cpoint + &(&normalv * EPSILON),
+            over_point: &cpoint + &(&normalv * shadow_bias),
             point: cpoint,
             eyev,
             normalv,
@@ -105,7 +104,7 @@ pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
 ///
 /// Will panic if intersection t value is NaN
 pub fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
-    xs.sort_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
+    sort_by_t(xs);
     let pos_xs: Vec<&Intersection> = xs.iter().filter(|x| x.t >= 0.0).collect();
 
     match pos_xs.first() {
@@ -118,6 +117,7 @@ pub fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
 mod test {
     use super::*;
     use crate::transformations::{scaling, translation};
+    use crate::utils::EPSILON;
     use crate::vector::Vector;
     use crate::world::World;
 
@@ -410,7 +410,7 @@ mod test {
 
         let i = Intersection::new(4.0, s_id);
 
-        let comps = i.compute(&world, &r);
+        let comps = i.compute(&world, &r, EPSILON);
 
         assert_eq!(comps.t, i.t);
         assert_eq!(comps.object, i.object);
@@ -433,7 +433,7 @@ mod test {
 
         let i = Intersection::new(4.0, s_id);
 
-        let comps = i.compute(&world, &r);
+        let comps = i.compute(&world, &r, EPSILON);
 
         assert_eq!(comps.inside, false);
     }
@@ -456,7 +456,7 @@ mod test {
 
         let i = Intersection::new(1.0, s_id);
 
-        let comps = i.compute(&world, &r);
+        let comps = i.compute(&world, &r, EPSILON);
 
         assert_eq!(comps.point, Point::new(0.0, 0.0, 1.0));
         assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
@@ -472,8 +472,6 @@ mod test {
     //   When comps ← prepare_computations(i, r)
     //   Then comps.over_point.z < -EPSILON/2
     //     And comps.point.z > comps.over_point.z
-    const EPSILON: f32 = 0.00001;
-
     #[test]
     fn the_hit_should_offset_the_point() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
@@ -482,7 +480,7 @@ mod test {
 
         let i = Intersection::new(5.0, s_id);
 
-        let comps = i.compute(&world, &r);
+        let comps = i.compute(&world, &r, EPSILON);
 
         assert_eq!(comps.over_point.z < -EPSILON / 2.0, true);
         assert_eq!(comps.point.z > comps.over_point.z, true);

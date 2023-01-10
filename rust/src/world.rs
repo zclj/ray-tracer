@@ -5,11 +5,13 @@ use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::shape::Shape;
+use crate::utils::EPSILON;
 use crate::vector::Point;
 
 pub struct World {
     shapes: Vec<Shape>,
     pub light: PointLight,
+    shadow_bias: f32,
 }
 
 impl World {
@@ -22,6 +24,7 @@ impl World {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
             },
+            shadow_bias: EPSILON,
         }
     }
 
@@ -86,7 +89,7 @@ impl World {
 
         match the_hit {
             Some(i) => {
-                let comp = i.compute(self, ray);
+                let comp = i.compute(self, ray, self.shadow_bias);
                 self.shade_hit(&comp)
             }
             None => Color::new(0.0, 0.0, 0.0),
@@ -246,7 +249,7 @@ mod test {
         // first shape in test world has id 0
         let i = Intersection::new(4.0, 0);
 
-        let comps = i.compute(&w, &r);
+        let comps = i.compute(&w, &r, EPSILON);
         let c = w.shade_hit(&comps);
 
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
@@ -273,7 +276,7 @@ mod test {
         // second shape in test world has id 1
         let i = Intersection::new(0.5, 1);
 
-        let comps = i.compute(&w, &r);
+        let comps = i.compute(&w, &r, EPSILON);
         let c = w.shade_hit(&comps);
 
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
@@ -426,7 +429,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(4.0, s2_id);
 
-        let comps = i.compute(&w, &r);
+        let comps = i.compute(&w, &r, EPSILON);
 
         let c = w.shade_hit(&comps);
 
