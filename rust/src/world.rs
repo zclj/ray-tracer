@@ -11,7 +11,7 @@ use crate::vector::Point;
 pub struct World {
     shapes: Vec<Shape>,
     pub light: PointLight,
-    shadow_bias: f32,
+    pub shadow_bias: f32,
 }
 
 impl World {
