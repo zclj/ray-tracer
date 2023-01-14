@@ -487,4 +487,40 @@ mod test {
         assert_eq!(comps.over_point.z < -EPSILON / 2.0, true);
         assert_eq!(comps.point.z > comps.over_point.z, true);
     }
+
+    // Scenario: Intersect with a ray parallel to the plane
+    //   Given p ← plane()
+    //     And r ← ray(point(0, 10, 0), vector(0, 0, 1))
+    //   When xs ← local_intersect(p, r)
+    //   Then xs is empty
+    #[test]
+    fn intersect_with_a_ray_parallel_to_the_plane() {
+        let mut world = World::new();
+        let p_id = world.push_plane(None, None);
+
+        let p = world.get_shape(p_id);
+        let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+
+        let xs = p.intersect(&r);
+
+        assert_eq!(xs.len(), 0)
+    }
+
+    // Scenario: Intersect with a coplanar ray
+    //   Given p ← plane()
+    //     And r ← ray(point(0, 0, 0), vector(0, 0, 1))
+    //   When xs ← local_intersect(p, r)
+    //   Then xs is empty
+    #[test]
+    fn intersect_with_a_coplanar_ray() {
+        let mut world = World::new();
+        let p_id = world.push_plane(None, None);
+
+        let p = world.get_shape(p_id);
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+
+        let xs = p.intersect(&r);
+
+        assert_eq!(xs.len(), 0)
+    }
 }

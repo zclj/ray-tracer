@@ -1,5 +1,7 @@
+use crate::intersections::Intersection;
 use crate::materials::Material;
 use crate::matrices::M4x4;
+use crate::rays::Ray;
 use crate::vector::{Point, Vector};
 
 #[derive(PartialEq, Debug)]
@@ -30,6 +32,13 @@ impl Shape {
                 world_normal.norm()
             }
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
+        }
+    }
+
+    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
+        match self {
+            Shape::Sphere { .. } => todo!(),
+            Shape::Plane { .. } => Vec::new(),
         }
     }
 
