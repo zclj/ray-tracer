@@ -9,6 +9,12 @@ pub enum Shape {
         transform: M4x4,
         material: Material,
     },
+
+    Plane {
+        id: u32,
+        transform: M4x4,
+        material: Material,
+    },
 }
 
 impl Shape {
@@ -23,13 +29,21 @@ impl Shape {
 
                 world_normal.norm()
             }
+            Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
         }
     }
 
     #[must_use]
     pub fn material(&self) -> &Material {
         match self {
-            Shape::Sphere { material, .. } => material,
+            Shape::Sphere { material, .. } | Shape::Plane { material, .. } => material,
+        }
+    }
+
+    #[must_use]
+    pub fn transform(&self) -> &M4x4 {
+        match self {
+            Shape::Sphere { transform, .. } | Shape::Plane { transform, .. } => transform,
         }
     }
 }
@@ -50,9 +64,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(None, None);
 
-        let s_transform = match world.get_shape(0) {
-            Shape::Sphere { transform, .. } => transform,
-        };
+        let s_transform = world.get_shape(0).transform();
 
         assert_eq!(*s_transform, M4x4::IDENTITY)
     }
@@ -67,9 +79,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
 
-        let s_transform = match world.get_shape(0) {
-            Shape::Sphere { transform, .. } => transform,
-        };
+        let s_transform = world.get_shape(0).transform();
 
         assert_eq!(*s_transform, translation(2.0, 3.0, 4.0))
     }
@@ -210,9 +220,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
 
-        let s_material = match world.get_shape(0) {
-            Shape::Sphere { material, .. } => material,
-        };
+        let s_material = world.get_shape(0).material();
 
         let material: Material = Default::default();
         assert_eq!(*s_material, material)
@@ -234,9 +242,7 @@ mod test {
             }),
         );
 
-        let s_material = match world.get_shape(0) {
-            Shape::Sphere { material, .. } => material,
-        };
+        let s_material = world.get_shape(0).material();
 
         let material = Material {
             ambient: 1.0,
@@ -244,5 +250,29 @@ mod test {
         };
 
         assert_eq!(*s_material, material)
+    }
+
+    // Scenario: The normal of a plane is constant everywhere
+    //   Given p ← plane()
+    //   When n1 ← local_normal_at(p, point(0, 0, 0))
+    //     And n2 ← local_normal_at(p, point(10, 0, -10))
+    //     And n3 ← local_normal_at(p, point(-5, 0, 150))
+    //   Then n1 = vector(0, 1, 0)
+    //     And n2 = vector(0, 1, 0)
+    //     And n3 = vector(0, 1, 0)
+    #[test]
+    fn the_normal_of_a_plane_is_constant_everywhere() {
+        let mut world = World::new();
+        let p_id = world.push_plane(None, None);
+
+        let p = world.get_shape(p_id);
+
+        let n1 = p.normal_at(&Point::new(0.0, 0.0, 0.0));
+        let n2 = p.normal_at(&Point::new(10.0, 0.0, -10.0));
+        let n3 = p.normal_at(&Point::new(-5.0, 0.0, 150.0));
+
+        assert_eq!(n1, Vector::new(0.0, 1.0, 0.0));
+        assert_eq!(n2, Vector::new(0.0, 1.0, 0.0));
+        assert_eq!(n3, Vector::new(0.0, 1.0, 0.0))
     }
 }

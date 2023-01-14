@@ -68,7 +68,9 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 #[must_use]
 pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
     let (s_id, s_transform) = match shape {
-        Shape::Sphere { id, transform, .. } => (*id, transform),
+        Shape::Sphere { id, transform, .. } | Shape::Plane { id, transform, .. } => {
+            (*id, transform)
+        }
     };
 
     let obj_ray = r.transform(&s_transform.inverse());

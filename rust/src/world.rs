@@ -55,6 +55,33 @@ impl World {
         id
     }
 
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn push_plane(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
+        let id = self.shapes.len() as u32;
+
+        let transform = match transform_option {
+            Some(t) => t,
+            None => M4x4::IDENTITY,
+        };
+
+        let material = match material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        self.shapes.push(Shape::Plane {
+            id,
+            transform,
+            material,
+        });
+
+        id
+    }
+
     #[must_use]
     pub fn get_shape(&self, id: u32) -> &Shape {
         &self.shapes[id as usize]
@@ -155,6 +182,7 @@ mod test {
 
         let s_id = match ctx.get_shape(0) {
             Shape::Sphere { id, .. } => id,
+            _ => panic!(),
         };
 
         assert_eq!(*s_id, 0);
