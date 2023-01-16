@@ -2,6 +2,7 @@ use crate::intersections::Intersection;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
+use crate::utils::EPSILON;
 use crate::vector::{Point, Vector};
 
 #[derive(PartialEq, Debug)]
@@ -35,10 +36,17 @@ impl Shape {
         }
     }
 
+    #[must_use]
     pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
         match self {
             Shape::Sphere { .. } => todo!(),
-            Shape::Plane { .. } => Vec::new(),
+            Shape::Plane { id, .. } => {
+                if ray.direction.y.abs() < EPSILON {
+                    Vec::new()
+                } else {
+                    vec![Intersection::new(-ray.origin.y / ray.direction.y, *id)]
+                }
+            }
         }
     }
 

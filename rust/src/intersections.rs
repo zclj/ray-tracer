@@ -523,4 +523,48 @@ mod test {
 
         assert_eq!(xs.len(), 0)
     }
+
+    // Scenario: A ray intersecting a plane from above
+    //   Given p ← plane()
+    //     And r ← ray(point(0, 1, 0), vector(0, -1, 0))
+    //   When xs ← local_intersect(p, r)
+    //   Then xs.count = 1
+    //     And xs[0].t = 1
+    //     And xs[0].object = p
+    #[test]
+    fn a_ray_intersecting_a_plane_from_above() {
+        let mut world = World::new();
+        let p_id = world.push_plane(None, None);
+
+        let p = world.get_shape(p_id);
+        let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
+
+        let xs = p.intersect(&r);
+
+        assert_eq!(xs.len(), 1);
+        assert_eq!(xs[0].t, 1.0);
+        assert_eq!(xs[0].object, p_id)
+    }
+
+    // Scenario: A ray intersecting a plane from below
+    //   Given p ← plane()
+    //     And r ← ray(point(0, -1, 0), vector(0, 1, 0))
+    //   When xs ← local_intersect(p, r)
+    //   Then xs.count = 1
+    //     And xs[0].t = 1
+    //     And xs[0].object = p
+    #[test]
+    fn a_ray_intersecting_a_plane_from_below() {
+        let mut world = World::new();
+        let p_id = world.push_plane(None, None);
+
+        let p = world.get_shape(p_id);
+        let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+
+        let xs = p.intersect(&r);
+
+        assert_eq!(xs.len(), 1);
+        assert_eq!(xs[0].t, 1.0);
+        assert_eq!(xs[0].object, p_id)
+    }
 }
