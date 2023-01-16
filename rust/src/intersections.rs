@@ -67,39 +67,10 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 
 #[must_use]
 pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
-    let (s_id, s_transform) = match shape {
-        Shape::Sphere { id, transform, .. } | Shape::Plane { id, transform, .. } => {
-            (*id, transform)
-        }
-    };
+    // the ray transformed in local space
+    let obj_ray = r.transform(&shape.transform().inverse());
 
-    let obj_ray = r.transform(&s_transform.inverse());
-
-    let sphere_to_ray = &obj_ray.origin - &Point::new(0.0, 0.0, 0.0);
-
-    let a = obj_ray.direction.dot(&obj_ray.direction);
-    let b = 2.0 * obj_ray.direction.dot(&sphere_to_ray);
-    let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
-
-    let discriminant = b.powf(2.0) - (4.0 * a * c);
-
-    if discriminant < 0.0 {
-        return Vec::new();
-    }
-
-    let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-    let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
-
-    vec![
-        Intersection {
-            t: t1,
-            object: s_id,
-        },
-        Intersection {
-            t: t2,
-            object: s_id,
-        },
-    ]
+    shape.intersect(&obj_ray)
 }
 
 /// # Panics
