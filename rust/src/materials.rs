@@ -86,6 +86,10 @@ impl Default for Material {
     }
 }
 
+enum Pattern {
+    Stripe { a: Color, b: Color },
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -229,5 +233,36 @@ mod test {
         let result = m.lighting(&light, &position, &eyev, &normalv, in_shadow);
 
         assert_eq!(result, Color::new(0.1, 0.1, 0.1))
+    }
+
+    // Background:
+    //   Given black ← color(0, 0, 0)
+    //     And white ← color(1, 1, 1)
+    const black: Color = Color {
+        red: 0.0,
+        green: 0.0,
+        blue: 0.0,
+    };
+    const white: Color = Color {
+        red: 1.0,
+        green: 1.0,
+        blue: 1.0,
+    };
+
+    // Scenario: Creating a stripe pattern
+    //   Given pattern ← stripe_pattern(white, black)
+    //   Then pattern.a = white
+    //     And pattern.b = black
+    #[test]
+    fn creating_a_stripe_pattern() {
+        let pattern = Pattern::Stripe { a: white, b: black };
+
+        let (a, b) = match pattern {
+            Pattern::Stripe { a, b } => (a, b),
+            //_ => panic!(),
+        };
+
+        assert_eq!(a, white);
+        assert_eq!(b, black)
     }
 }
