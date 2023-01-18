@@ -90,6 +90,21 @@ enum Pattern {
     Stripe { a: Color, b: Color },
 }
 
+impl Pattern {
+    fn stripe_at(&self, point: &Point) -> Color {
+        match self {
+            Pattern::Stripe { a, b } => {
+                if (point.x.floor() % 2.0) == 0.0 {
+                    a.clone()
+                } else {
+                    b.clone()
+                }
+            }
+            //_ => panic!("stripe_at used by non-stripe pattern"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -264,5 +279,53 @@ mod test {
 
         assert_eq!(a, white);
         assert_eq!(b, black)
+    }
+
+    // Scenario: A stripe pattern is constant in y
+    //   Given pattern ← stripe_pattern(white, black)
+    //   Then stripe_at(pattern, point(0, 0, 0)) = white
+    //     And stripe_at(pattern, point(0, 1, 0)) = white
+    //     And stripe_at(pattern, point(0, 2, 0)) = white
+    #[test]
+    fn a_stripe_pattern_is_constant_in_y() {
+        let pattern = Pattern::Stripe { a: white, b: black };
+
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 1.0, 0.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 2.0, 0.0)), white)
+    }
+
+    // Scenario: A stripe pattern is constant in z
+    //   Given pattern ← stripe_pattern(white, black)
+    //   Then stripe_at(pattern, point(0, 0, 0)) = white
+    //     And stripe_at(pattern, point(0, 0, 1)) = white
+    //     And stripe_at(pattern, point(0, 0, 2)) = white
+    #[test]
+    fn a_stripe_pattern_is_constant_in_z() {
+        let pattern = Pattern::Stripe { a: white, b: black };
+
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 1.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 2.0)), white)
+    }
+
+    // Scenario: A stripe pattern alternates in x
+    //   Given pattern ← stripe_pattern(white, black)
+    //   Then stripe_at(pattern, point(0, 0, 0)) = white
+    //     And stripe_at(pattern, point(0.9, 0, 0)) = white
+    //     And stripe_at(pattern, point(1, 0, 0)) = black
+    //     And stripe_at(pattern, point(-0.1, 0, 0)) = black
+    //     And stripe_at(pattern, point(-1, 0, 0)) = black
+    //     And stripe_at(pattern, point(-1.1, 0, 0)) = white
+    #[test]
+    fn a_stripe_pattern_alternates_in_x() {
+        let pattern = Pattern::Stripe { a: white, b: black };
+
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(0.9, 0.0, 0.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(1.0, 0.0, 0.0)), black);
+        assert_eq!(pattern.stripe_at(&Point::new(-0.1, 0.0, 0.0)), black);
+        assert_eq!(pattern.stripe_at(&Point::new(-1.0, 0.0, 0.0)), black);
+        assert_eq!(pattern.stripe_at(&Point::new(-1.1, 0.0, 0.0)), white);
     }
 }
