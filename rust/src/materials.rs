@@ -9,16 +9,25 @@ pub struct Material {
     pub diffuse: f32,
     pub specular: f32,
     pub shininess: f32,
+    pub pattern: Option<Pattern>,
 }
 
 impl Material {
-    fn new(color: Color, ambient: f32, diffuse: f32, specular: f32, shininess: f32) -> Self {
+    fn new(
+        color: Color,
+        ambient: f32,
+        diffuse: f32,
+        specular: f32,
+        shininess: f32,
+        pattern: Option<Pattern>,
+    ) -> Self {
         Material {
             color,
             ambient,
             diffuse,
             specular,
             shininess,
+            pattern,
         }
     }
 
@@ -31,8 +40,16 @@ impl Material {
         normalv: &Vector,
         in_shadow: bool,
     ) -> Color {
+        let color = if let Some(p) = &self.pattern {
+            match p {
+                Pattern::Stripe { .. } => p.stripe_at(position),
+            }
+        } else {
+            self.color.clone()
+        };
+
         // combine the surface color with the light's color/intensity
-        let effective_color = &self.color * &light.intensity;
+        let effective_color = &color * &light.intensity;
 
         // find the direction to the light source
         let lightv = (&light.position - position).norm();
@@ -82,11 +99,13 @@ impl Default for Material {
             diffuse: 0.9,
             specular: 0.9,
             shininess: 200.0,
+            pattern: None,
         }
     }
 }
 
-enum Pattern {
+#[derive(Debug, PartialEq)]
+pub enum Pattern {
     Stripe { a: Color, b: Color },
 }
 
@@ -99,8 +118,7 @@ impl Pattern {
                 } else {
                     b.clone()
                 }
-            }
-            //_ => panic!("stripe_at used by non-stripe pattern"),
+            } //_ => panic!("stripe_at used by non-stripe pattern"),
         }
     }
 }
@@ -327,5 +345,42 @@ mod test {
         assert_eq!(pattern.stripe_at(&Point::new(-0.1, 0.0, 0.0)), black);
         assert_eq!(pattern.stripe_at(&Point::new(-1.0, 0.0, 0.0)), black);
         assert_eq!(pattern.stripe_at(&Point::new(-1.1, 0.0, 0.0)), white);
+    }
+
+    // Scenario: Lighting with a pattern applied
+    //   Given m.pattern ← stripe_pattern(color(1, 1, 1), color(0, 0, 0))
+    //     And m.ambient ← 1
+    //     And m.diffuse ← 0
+    //     And m.specular ← 0
+    //     And eyev ← vector(0, 0, -1)
+    //     And normalv ← vector(0, 0, -1)
+    //     And light ← point_light(point(0, 0, -10), color(1, 1, 1))
+    //   When c1 ← lighting(m, light, point(0.9, 0, 0), eyev, normalv, false)
+    //     And c2 ← lighting(m, light, point(1.1, 0, 0), eyev, normalv, false)
+    //   Then c1 = color(1, 1, 1)
+    //     And c2 = color(0, 0, 0)
+    #[test]
+    fn lighting_with_a_pattern_applied() {
+        let mut m = Material {
+            color: Color::new(1.0, 1.0, 1.0),
+            ambient: 1.0,
+            diffuse: 0.0,
+            specular: 0.0,
+            shininess: 0.0,
+            pattern: Some(Pattern::Stripe {
+                a: Color::new(1.0, 1.0, 1.0),
+                b: Color::new(0.0, 0.0, 0.0),
+            }),
+        };
+
+        let eyev = Vector::new(0.0, 0.0, -1.0);
+        let normalv = Vector::new(0.0, 0.0, -1.0);
+        let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
+
+        let c1 = m.lighting(&light, &Point::new(0.9, 0.0, 0.0), &eyev, &normalv, false);
+        let c2 = m.lighting(&light, &Point::new(1.1, 0.0, 0.0), &eyev, &normalv, false);
+
+        assert_eq!(c1, Color::new(1.0, 1.0, 1.0));
+        assert_eq!(c2, Color::new(0.0, 0.0, 0.0));
     }
 }
