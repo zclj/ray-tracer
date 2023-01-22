@@ -1,5 +1,6 @@
 use crate::color::Color;
 use crate::lights::PointLight;
+use crate::matrices::M4x4;
 use crate::shape::Shape;
 use crate::vector::{Point, Vector};
 
@@ -115,11 +116,17 @@ pub struct Pattern {
     a: Color,
     b: Color,
     kind: PatternKind,
+    transform: M4x4,
 }
 
 impl Pattern {
     pub fn new(a: Color, b: Color, kind: PatternKind) -> Self {
-        Pattern { a, b, kind }
+        Pattern {
+            a,
+            b,
+            kind,
+            transform: M4x4::IDENTITY,
+        }
     }
 
     fn stripe_at(&self, point: &Point) -> Color {
@@ -130,8 +137,11 @@ impl Pattern {
         }
     }
 
-    fn stripe_at_shape(&self, shape: &Shape, point: &Point) -> Color {
-        Color::new(0.0, 0.1, 0.0)
+    fn stripe_at_shape(&self, shape: &Shape, world_point: &Point) -> Color {
+        let object_point = &shape.transform().inverse() * world_point;
+        let pattern_point = &self.transform.inverse() * &object_point;
+
+        self.stripe_at(&pattern_point)
     }
 }
 
@@ -403,11 +413,7 @@ mod test {
         let s_id = world.push_sphere(
             Some(scaling(2.0, 2.0, 2.0)),
             Some(Material {
-                pattern: Some(Pattern::new(
-                    Color::new(0.5, 1.0, 0.1),
-                    Color::new(1.0, 0.5, 0.0),
-                    PatternKind::Stripe,
-                )),
+                pattern: Some(Pattern::new(white, black, PatternKind::Stripe)),
                 ..Material::default()
             }),
         );
