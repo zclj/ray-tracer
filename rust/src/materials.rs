@@ -113,19 +113,20 @@ pub enum PatternKind {
 
 #[derive(Debug, PartialEq)]
 pub struct Pattern {
-    a: Color,
-    b: Color,
-    kind: PatternKind,
-    transform: M4x4,
+    pub a: Color,
+    pub b: Color,
+    pub kind: PatternKind,
+    pub transform: M4x4,
 }
 
 impl Pattern {
-    pub fn new(a: Color, b: Color, kind: PatternKind) -> Self {
+    #[must_use]
+    pub fn new(a: Color, b: Color, kind: PatternKind, transform: M4x4) -> Self {
         Pattern {
             a,
             b,
             kind,
-            transform: M4x4::IDENTITY,
+            transform,
         }
     }
 
@@ -142,6 +143,17 @@ impl Pattern {
         let pattern_point = &self.transform.inverse() * &object_point;
 
         self.stripe_at(&pattern_point)
+    }
+}
+
+impl Default for Pattern {
+    fn default() -> Self {
+        Pattern::new(
+            Color::new(1.0, 1.0, 1.0),
+            Color::new(0.0, 0.0, 0.0),
+            PatternKind::Stripe,
+            M4x4::IDENTITY,
+        )
     }
 }
 
@@ -310,7 +322,7 @@ mod test {
     //     And pattern.b = black
     #[test]
     fn creating_a_stripe_pattern() {
-        let pattern = Pattern::new(white, black, PatternKind::Stripe);
+        let pattern = Pattern::default();
 
         assert_eq!(pattern.a, white);
         assert_eq!(pattern.b, black);
@@ -324,7 +336,7 @@ mod test {
     //     And stripe_at(pattern, point(0, 2, 0)) = white
     #[test]
     fn a_stripe_pattern_is_constant_in_y() {
-        let pattern = Pattern::new(white, black, PatternKind::Stripe);
+        let pattern = Pattern::default();
 
         assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
         assert_eq!(pattern.stripe_at(&Point::new(0.0, 1.0, 0.0)), white);
@@ -338,7 +350,7 @@ mod test {
     //     And stripe_at(pattern, point(0, 0, 2)) = white
     #[test]
     fn a_stripe_pattern_is_constant_in_z() {
-        let pattern = Pattern::new(white, black, PatternKind::Stripe);
+        let pattern = Pattern::default();
 
         assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
         assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 1.0)), white);
@@ -355,7 +367,7 @@ mod test {
     //     And stripe_at(pattern, point(-1.1, 0, 0)) = white
     #[test]
     fn a_stripe_pattern_alternates_in_x() {
-        let pattern = Pattern::new(white, black, PatternKind::Stripe);
+        let pattern = Pattern::default();
 
         assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
         assert_eq!(pattern.stripe_at(&Point::new(0.9, 0.0, 0.0)), white);
@@ -385,7 +397,7 @@ mod test {
             diffuse: 0.0,
             specular: 0.0,
             shininess: 0.0,
-            pattern: Some(Pattern::new(white, black, PatternKind::Stripe)),
+            pattern: Some(Pattern::default()),
         };
 
         let eyev = Vector::new(0.0, 0.0, -1.0);
@@ -405,7 +417,7 @@ mod test {
     //     And pattern ← stripe_pattern(white, black)
     //   When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
     //   Then c = white
-    use crate::transformations::scaling;
+    use crate::transformations::{scaling, translation};
     use crate::world::World;
     #[test]
     fn stripes_with_an_object_transformation() {
@@ -413,7 +425,7 @@ mod test {
         let s_id = world.push_sphere(
             Some(scaling(2.0, 2.0, 2.0)),
             Some(Material {
-                pattern: Some(Pattern::new(white, black, PatternKind::Stripe)),
+                pattern: Some(Pattern::default()),
                 ..Material::default()
             }),
         );
@@ -434,22 +446,26 @@ mod test {
     //   Then c = white
     #[test]
     fn stripes_with_a_pattern_transformation() {
-        // let mut world = World::new();
-        // let s_id = world.push_sphere(None,
-        //                              Some(Material {
-        //                                  pattern: Some(Pattern::Stripe {
-        //                                      a: Color::new(0.5, 1.0, 0.1),
-        //                                      b: Color::new(1.0, 0.5, 0.0),
-        //                                  }),
-        //                                  ..Material::default()
-        //                              }));
+        let mut world = World::new();
+        let s_id = world.push_sphere(
+            None,
+            Some(
+                (Material {
+                    pattern: Some(Pattern {
+                        transform: scaling(2.0, 2.0, 2.0),
+                        ..Pattern::default()
+                    }),
+                    ..Material::default()
+                }),
+            ),
+        );
 
-        // let sphere = world.get_shape(s_id);
-        // let pattern = sphere.material().pattern.as_ref().unwrap();
+        let sphere = world.get_shape(s_id);
+        let pattern = sphere.material().pattern.as_ref().unwrap();
 
-        // let c = pattern.stripe_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
+        let c = pattern.stripe_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
 
-        // assert_eq!(c, white);
+        assert_eq!(c, white);
     }
 
     // Scenario: Stripes with both an object and a pattern transformation
@@ -459,4 +475,27 @@ mod test {
     //     And set_pattern_transform(pattern, translation(0.5, 0, 0))
     //   When c ← stripe_at_object(pattern, object, point(2.5, 0, 0))
     //   Then c = white
+    #[test]
+    fn stripes_with_both_an_object_and_a_pattern_transformation() {
+        let mut world = World::new();
+        let s_id = world.push_sphere(
+            Some(scaling(2.0, 2.0, 2.0)),
+            Some(
+                (Material {
+                    pattern: Some(Pattern {
+                        transform: translation(0.5, 0.0, 0.0),
+                        ..Pattern::default()
+                    }),
+                    ..Material::default()
+                }),
+            ),
+        );
+
+        let sphere = world.get_shape(s_id);
+        let pattern = sphere.material().pattern.as_ref().unwrap();
+
+        let c = pattern.stripe_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));
+
+        assert_eq!(c, white);
+    }
 }
