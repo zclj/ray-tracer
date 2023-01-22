@@ -97,10 +97,12 @@ impl World {
 
     #[must_use]
     pub fn shade_hit(&self, comp: &ComputedIntersection) -> Color {
-        let m = &self.get_shape(comp.object).material();
+        let shape = &self.get_shape(comp.object);
+        let m = &shape.material();
         let shadowed = self.is_shadowed(&comp.over_point);
 
         m.lighting(
+            shape,
             &self.light,
             &comp.over_point,
             &comp.eyev,
