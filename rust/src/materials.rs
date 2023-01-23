@@ -106,6 +106,7 @@ impl Default for Material {
 #[derive(Debug, PartialEq)]
 pub enum PatternKind {
     Stripe,
+    Gradient,
 }
 
 #[derive(Debug, PartialEq)]
@@ -127,11 +128,21 @@ impl Pattern {
         }
     }
 
-    fn stripe_at(&self, point: &Point) -> Color {
-        if (point.x.floor() % 2.0) == 0.0 {
-            self.a.clone()
-        } else {
-            self.b.clone()
+    fn pattern_at(&self, point: &Point) -> Color {
+        match self.kind {
+            PatternKind::Stripe => {
+                if (point.x.floor() % 2.0) == 0.0 {
+                    self.a.clone()
+                } else {
+                    self.b.clone()
+                }
+            }
+            PatternKind::Gradient => {
+                let distance = &self.b - &self.a;
+                let fraction = point.x - f32::floor(point.x);
+
+                &self.a + &(distance * fraction)
+            }
         }
     }
 
@@ -139,9 +150,7 @@ impl Pattern {
         let object_point = &shape.transform().inverse() * world_point;
         let pattern_point = &self.transform.inverse() * &object_point;
 
-        match self.kind {
-            PatternKind::Stripe => self.stripe_at(&pattern_point),
-        }
+        self.pattern_at(&pattern_point)
     }
 }
 
@@ -370,9 +379,9 @@ mod test {
     fn a_stripe_pattern_is_constant_in_y() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 1.0, 0.0)), WHITE);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 2.0, 0.0)), WHITE)
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 1.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 2.0, 0.0)), WHITE)
     }
 
     // Scenario: A stripe pattern is constant in z
@@ -384,9 +393,9 @@ mod test {
     fn a_stripe_pattern_is_constant_in_z() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 1.0)), WHITE);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 2.0)), WHITE)
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 1.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 2.0)), WHITE)
     }
 
     // Scenario: A stripe pattern alternates in x
@@ -401,12 +410,12 @@ mod test {
     fn a_stripe_pattern_alternates_in_x() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
-        assert_eq!(pattern.stripe_at(&Point::new(0.9, 0.0, 0.0)), WHITE);
-        assert_eq!(pattern.stripe_at(&Point::new(1.0, 0.0, 0.0)), BLACK);
-        assert_eq!(pattern.stripe_at(&Point::new(-0.1, 0.0, 0.0)), BLACK);
-        assert_eq!(pattern.stripe_at(&Point::new(-1.0, 0.0, 0.0)), BLACK);
-        assert_eq!(pattern.stripe_at(&Point::new(-1.1, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.9, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(1.0, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.pattern_at(&Point::new(-0.1, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.pattern_at(&Point::new(-1.0, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.pattern_at(&Point::new(-1.1, 0.0, 0.0)), WHITE);
     }
 
     // Scenario: Lighting with a pattern applied
@@ -544,5 +553,30 @@ mod test {
         let c = pattern.pattern_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));
 
         assert_eq!(c, WHITE);
+    }
+
+    // Scenario: A gradient linearly interpolates between colors
+    //   Given pattern ← gradient_pattern(white, black)
+    //   Then pattern_at(pattern, point(0, 0, 0)) = white
+    //     And pattern_at(pattern, point(0.25, 0, 0)) = color(0.75, 0.75, 0.75)
+    //     And pattern_at(pattern, point(0.5, 0, 0)) = color(0.5, 0.5, 0.5)
+    //     And pattern_at(pattern, point(0.75, 0, 0)) = color(0.25, 0.25, 0.25)
+    #[test]
+    fn a_gradient_linearly_interpolates_between_colors() {
+        let pattern = Pattern::new(WHITE, BLACK, PatternKind::Gradient, M4x4::IDENTITY);
+
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(
+            pattern.pattern_at(&Point::new(0.25, 0.0, 0.0)),
+            Color::new(0.75, 0.75, 0.75)
+        );
+        assert_eq!(
+            pattern.pattern_at(&Point::new(0.5, 0.0, 0.0)),
+            Color::new(0.5, 0.5, 0.5)
+        );
+        assert_eq!(
+            pattern.pattern_at(&Point::new(0.75, 0.0, 0.0)),
+            Color::new(0.25, 0.25, 0.25)
+        )
     }
 }

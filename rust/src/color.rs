@@ -34,10 +34,34 @@ impl std::ops::Add<Color> for Color {
     }
 }
 
+impl std::ops::Add<&Color> for &Color {
+    type Output = Color;
+
+    fn add(self, rhs: &Color) -> Color {
+        Color {
+            red: self.red + rhs.red,
+            green: self.green + rhs.green,
+            blue: self.blue + rhs.blue,
+        }
+    }
+}
+
 impl std::ops::Sub<Color> for Color {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self {
+        Color::new(
+            self.red - rhs.red,
+            self.green - rhs.green,
+            self.blue - rhs.blue,
+        )
+    }
+}
+
+impl std::ops::Sub<&Color> for &Color {
+    type Output = Color;
+
+    fn sub(self, rhs: &Color) -> Color {
         Color::new(
             self.red - rhs.red,
             self.green - rhs.green,
