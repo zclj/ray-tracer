@@ -43,14 +43,12 @@ impl Material {
         normalv: &Vector,
         in_shadow: bool,
     ) -> Color {
-        let color = if let Some(p) = &self.pattern {
-            p.pattern_at_shape(shape, position)
-        } else {
-            self.color.clone()
-        };
-
         // combine the surface color with the light's color/intensity
-        let effective_color = &color * &light.intensity;
+        let effective_color = if let Some(p) = &self.pattern {
+            &p.pattern_at_shape(shape, position) * &light.intensity
+        } else {
+            &self.color * &light.intensity
+        };
 
         // find the direction to the light source
         let lightv = (&light.position - position).norm();
