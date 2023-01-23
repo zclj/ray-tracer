@@ -44,9 +44,7 @@ impl Material {
         in_shadow: bool,
     ) -> Color {
         let color = if let Some(p) = &self.pattern {
-            match p.kind {
-                PatternKind::Stripe { .. } => p.stripe_at_shape(shape, position),
-            }
+            p.pattern_at_shape(shape, position)
         } else {
             self.color.clone()
         };
@@ -139,11 +137,13 @@ impl Pattern {
         }
     }
 
-    fn stripe_at_shape(&self, shape: &Shape, world_point: &Point) -> Color {
+    fn pattern_at_shape(&self, shape: &Shape, world_point: &Point) -> Color {
         let object_point = &shape.transform().inverse() * world_point;
         let pattern_point = &self.transform.inverse() * &object_point;
 
-        self.stripe_at(&pattern_point)
+        match self.kind {
+            PatternKind::Stripe => self.stripe_at(&pattern_point),
+        }
     }
 }
 
@@ -339,12 +339,12 @@ mod test {
     // Background:
     //   Given black ← color(0, 0, 0)
     //     And white ← color(1, 1, 1)
-    const black: Color = Color {
+    const BLACK: Color = Color {
         red: 0.0,
         green: 0.0,
         blue: 0.0,
     };
-    const white: Color = Color {
+    const WHITE: Color = Color {
         red: 1.0,
         green: 1.0,
         blue: 1.0,
@@ -358,8 +358,8 @@ mod test {
     fn creating_a_stripe_pattern() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.a, white);
-        assert_eq!(pattern.b, black);
+        assert_eq!(pattern.a, WHITE);
+        assert_eq!(pattern.b, BLACK);
         assert_eq!(pattern.kind, PatternKind::Stripe)
     }
 
@@ -372,9 +372,9 @@ mod test {
     fn a_stripe_pattern_is_constant_in_y() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 1.0, 0.0)), white);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 2.0, 0.0)), white)
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 1.0, 0.0)), WHITE);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 2.0, 0.0)), WHITE)
     }
 
     // Scenario: A stripe pattern is constant in z
@@ -386,9 +386,9 @@ mod test {
     fn a_stripe_pattern_is_constant_in_z() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 1.0)), white);
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 2.0)), white)
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 1.0)), WHITE);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 2.0)), WHITE)
     }
 
     // Scenario: A stripe pattern alternates in x
@@ -403,12 +403,12 @@ mod test {
     fn a_stripe_pattern_alternates_in_x() {
         let pattern = Pattern::default();
 
-        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), white);
-        assert_eq!(pattern.stripe_at(&Point::new(0.9, 0.0, 0.0)), white);
-        assert_eq!(pattern.stripe_at(&Point::new(1.0, 0.0, 0.0)), black);
-        assert_eq!(pattern.stripe_at(&Point::new(-0.1, 0.0, 0.0)), black);
-        assert_eq!(pattern.stripe_at(&Point::new(-1.0, 0.0, 0.0)), black);
-        assert_eq!(pattern.stripe_at(&Point::new(-1.1, 0.0, 0.0)), white);
+        assert_eq!(pattern.stripe_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.stripe_at(&Point::new(0.9, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.stripe_at(&Point::new(1.0, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.stripe_at(&Point::new(-0.1, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.stripe_at(&Point::new(-1.0, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.stripe_at(&Point::new(-1.1, 0.0, 0.0)), WHITE);
     }
 
     // Scenario: Lighting with a pattern applied
@@ -425,7 +425,7 @@ mod test {
     //     And c2 = color(0, 0, 0)
     #[test]
     fn lighting_with_a_pattern_applied() {
-        let mut m = Material {
+        let m = Material {
             color: Color::new(1.0, 1.0, 1.0),
             ambient: 1.0,
             diffuse: 0.0,
@@ -486,9 +486,9 @@ mod test {
         let sphere = world.get_shape(s_id);
         let pattern = sphere.material().pattern.as_ref().unwrap();
 
-        let c = pattern.stripe_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
+        let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
 
-        assert_eq!(c, white);
+        assert_eq!(c, WHITE);
     }
 
     // Scenario: Stripes with a pattern transformation
@@ -502,23 +502,21 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(
             None,
-            Some(
-                (Material {
-                    pattern: Some(Pattern {
-                        transform: scaling(2.0, 2.0, 2.0),
-                        ..Pattern::default()
-                    }),
-                    ..Material::default()
+            Some(Material {
+                pattern: Some(Pattern {
+                    transform: scaling(2.0, 2.0, 2.0),
+                    ..Pattern::default()
                 }),
-            ),
+                ..Material::default()
+            }),
         );
 
         let sphere = world.get_shape(s_id);
         let pattern = sphere.material().pattern.as_ref().unwrap();
 
-        let c = pattern.stripe_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
+        let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
 
-        assert_eq!(c, white);
+        assert_eq!(c, WHITE);
     }
 
     // Scenario: Stripes with both an object and a pattern transformation
@@ -533,22 +531,20 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(
             Some(scaling(2.0, 2.0, 2.0)),
-            Some(
-                (Material {
-                    pattern: Some(Pattern {
-                        transform: translation(0.5, 0.0, 0.0),
-                        ..Pattern::default()
-                    }),
-                    ..Material::default()
+            Some(Material {
+                pattern: Some(Pattern {
+                    transform: translation(0.5, 0.0, 0.0),
+                    ..Pattern::default()
                 }),
-            ),
+                ..Material::default()
+            }),
         );
 
         let sphere = world.get_shape(s_id);
         let pattern = sphere.material().pattern.as_ref().unwrap();
 
-        let c = pattern.stripe_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));
+        let c = pattern.pattern_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));
 
-        assert_eq!(c, white);
+        assert_eq!(c, WHITE);
     }
 }

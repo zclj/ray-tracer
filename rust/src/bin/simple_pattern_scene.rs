@@ -1,7 +1,7 @@
 use ray_tracer::camera::Camera;
 use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
-use ray_tracer::materials::{Material, Pattern, PatternKind};
+use ray_tracer::materials::{Material, Pattern};
 use ray_tracer::transformations::{rotation_y, scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
 use ray_tracer::world::World;
