@@ -107,6 +107,7 @@ impl Default for Material {
 pub enum PatternKind {
     Stripe,
     Gradient,
+    Ring,
 }
 
 #[derive(Debug, PartialEq)]
@@ -142,6 +143,13 @@ impl Pattern {
                 let fraction = point.x - f32::floor(point.x);
 
                 &self.a + &(distance * fraction)
+            }
+            PatternKind::Ring => {
+                if f32::floor(f32::sqrt(point.x.powf(2.0) + point.z.powf(2.0))) % 2.0 == 0.0 {
+                    self.a.clone()
+                } else {
+                    self.b.clone()
+                }
             }
         }
     }
@@ -578,5 +586,21 @@ mod test {
             pattern.pattern_at(&Point::new(0.75, 0.0, 0.0)),
             Color::new(0.25, 0.25, 0.25)
         )
+    }
+
+    // Scenario: A ring should extend in both x and z
+    //   Given pattern ← ring_pattern(white, black)
+    //   Then pattern_at(pattern, point(0, 0, 0)) = white
+    //     And pattern_at(pattern, point(1, 0, 0)) = black
+    //     And pattern_at(pattern, point(0, 0, 1)) = black
+    //     # 0.708 = just slightly more than √2/2
+    //     And pattern_at(pattern, point(0.708, 0, 0.708)) = black
+    #[test]
+    fn a_ring_should_extend_in_both_x_and_z() {
+        let pattern = Pattern::new(WHITE, BLACK, PatternKind::Ring, M4x4::IDENTITY);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(1.0, 0.0, 0.0)), BLACK);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 1.0)), BLACK);
+        assert_eq!(pattern.pattern_at(&Point::new(0.708, 0.0, 0.708)), BLACK)
     }
 }
