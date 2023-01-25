@@ -108,6 +108,7 @@ pub enum PatternKind {
     Stripe,
     Gradient,
     Ring,
+    Checkers,
 }
 
 #[derive(Debug, PartialEq)]
@@ -146,6 +147,13 @@ impl Pattern {
             }
             PatternKind::Ring => {
                 if f32::floor(f32::sqrt(point.x.powf(2.0) + point.z.powf(2.0))) % 2.0 == 0.0 {
+                    self.a.clone()
+                } else {
+                    self.b.clone()
+                }
+            }
+            PatternKind::Checkers => {
+                if ((point.x.floor() + point.y.floor() + point.z.floor()) % 2.0) == 0.0 {
                     self.a.clone()
                 } else {
                     self.b.clone()
@@ -602,5 +610,44 @@ mod test {
         assert_eq!(pattern.pattern_at(&Point::new(1.0, 0.0, 0.0)), BLACK);
         assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 1.0)), BLACK);
         assert_eq!(pattern.pattern_at(&Point::new(0.708, 0.0, 0.708)), BLACK)
+    }
+
+    // Scenario: Checkers should repeat in x
+    //   Given pattern ← checkers_pattern(white, black)
+    //   Then pattern_at(pattern, point(0, 0, 0)) = white
+    //     And pattern_at(pattern, point(0.99, 0, 0)) = white
+    //     And pattern_at(pattern, point(1.01, 0, 0)) = black
+    #[test]
+    fn checkers_should_repeat_in_x() {
+        let pattern = Pattern::new(WHITE, BLACK, PatternKind::Checkers, M4x4::IDENTITY);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.99, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(1.01, 0.0, 0.0)), BLACK);
+    }
+
+    // Scenario: Checkers should repeat in y
+    //   Given pattern ← checkers_pattern(white, black)
+    //   Then pattern_at(pattern, point(0, 0, 0)) = white
+    //     And pattern_at(pattern, point(0, 0.99, 0)) = white
+    //     And pattern_at(pattern, point(0, 1.01, 0)) = black
+    #[test]
+    fn checkers_should_repeat_in_y() {
+        let pattern = Pattern::new(WHITE, BLACK, PatternKind::Checkers, M4x4::IDENTITY);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.99, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 1.01, 0.0)), BLACK);
+    }
+
+    // Scenario: Checkers should repeat in z
+    //   Given pattern ← checkers_pattern(white, black)
+    //   Then pattern_at(pattern, point(0, 0, 0)) = white
+    //     And pattern_at(pattern, point(0, 0, 0.99)) = white
+    //     And pattern_at(pattern, point(0, 0, 1.01)) = black
+    #[test]
+    fn checkers_should_repeat_in_z() {
+        let pattern = Pattern::new(WHITE, BLACK, PatternKind::Checkers, M4x4::IDENTITY);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.99)), WHITE);
+        assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 1.01)), BLACK);
     }
 }
