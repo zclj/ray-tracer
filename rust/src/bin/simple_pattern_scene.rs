@@ -1,8 +1,10 @@
 use ray_tracer::camera::Camera;
 use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
-use ray_tracer::materials::{Material, Pattern};
-use ray_tracer::transformations::{rotation_y, scaling, transform, translation, view_transform};
+use ray_tracer::materials::{Material, Pattern, PatternKind};
+use ray_tracer::transformations::{
+    rotation_x, rotation_y, scaling, transform, translation, view_transform,
+};
 use ray_tracer::vector::{Point, Vector};
 use ray_tracer::world::World;
 use std::f32::consts::PI;
@@ -32,6 +34,7 @@ fn main() {
             pattern: Some(Pattern {
                 a: Color::new(0.3, 0.3, 0.9),
                 b: Color::new(0.7, 0.3, 0.3),
+                kind: PatternKind::Checkers,
                 ..Pattern::default()
             }),
             ..Material::default()
@@ -47,7 +50,8 @@ fn main() {
             pattern: Some(Pattern {
                 a: Color::new(0.1, 1.0, 0.5),
                 b: Color::new(1.0, 0.1, 0.5),
-                ..Pattern::default()
+                transform: &scaling(0.2, 0.2, 0.2) * &rotation_x(PI / 4.0),
+                kind: PatternKind::Ring,
             }),
             ..Material::default()
         }),
@@ -81,6 +85,12 @@ fn main() {
             color: Color::new(1.0, 0.8, 0.1),
             diffuse: 0.7,
             specular: 0.3,
+            pattern: Some(Pattern {
+                a: Color::new(0.5, 1.0, 0.1),
+                b: Color::new(0.2, 0.5, 0.3),
+                transform: scaling(0.3, 0.3, 0.3),
+                kind: PatternKind::Gradient,
+            }),
             ..Material::default()
         }),
     );
