@@ -18,6 +18,7 @@ pub struct ComputedIntersection {
     pub normalv: Vector,
     pub inside: bool,
     pub over_point: Point,
+    pub reflectv: Vector,
 }
 
 impl Intersection {
@@ -52,6 +53,7 @@ impl Intersection {
             over_point: &cpoint + &(&normalv * shadow_bias),
             point: cpoint,
             eyev,
+            reflectv: ray.direction.reflect(&normalv),
             normalv,
             inside: is_inside,
         }
@@ -537,5 +539,30 @@ mod test {
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);
         assert_eq!(xs[0].object, p_id)
+    }
+
+    // Scenario: Precomputing the reflection vector
+    //   Given shape ← plane()
+    //     And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))
+    //     And i ← intersection(√2, shape)
+    //   When comps ← prepare_computations(i, r)
+    //   Then comps.reflectv = vector(0, √2/2, √2/2)
+    #[test]
+    fn precomputing_the_reflection_vector() {
+        let mut world = World::new();
+        let s_id = world.push_plane(None, None);
+
+        let r = Ray::new(
+            Point::new(0.0, 1.0, -1.0),
+            Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
+        );
+        let i = Intersection::new(f32::sqrt(2.0), s_id);
+
+        let comps = i.compute(&world, &r, EPSILON);
+
+        assert_eq!(
+            comps.reflectv,
+            Vector::new(0.0, f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0)
+        );
     }
 }
