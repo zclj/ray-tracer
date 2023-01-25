@@ -11,6 +11,7 @@ pub struct Material {
     pub diffuse: f32,
     pub specular: f32,
     pub shininess: f32,
+    pub reflective: f32,
     pub pattern: Option<Pattern>,
 }
 
@@ -21,6 +22,7 @@ impl Material {
         diffuse: f32,
         specular: f32,
         shininess: f32,
+        reflective: f32,
         pattern: Option<Pattern>,
     ) -> Self {
         Material {
@@ -29,6 +31,7 @@ impl Material {
             diffuse,
             specular,
             shininess,
+            reflective,
             pattern,
         }
     }
@@ -92,7 +95,7 @@ impl Material {
 
 impl Default for Material {
     fn default() -> Self {
-        Material::new(Color::new(1.0, 1.0, 1.0), 0.1, 0.9, 0.9, 200.0, None)
+        Material::new(Color::new(1.0, 1.0, 1.0), 0.1, 0.9, 0.9, 200.0, 0.0, None)
     }
 }
 
@@ -447,6 +450,7 @@ mod test {
             diffuse: 0.0,
             specular: 0.0,
             shininess: 0.0,
+            reflective: 0.0,
             pattern: Some(Pattern::default()),
         };
 
@@ -642,5 +646,15 @@ mod test {
         assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.0)), WHITE);
         assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 0.99)), WHITE);
         assert_eq!(pattern.pattern_at(&Point::new(0.0, 0.0, 1.01)), BLACK);
+    }
+
+    // Scenario: Reflectivity for the default material
+    //   Given m ← material()
+    //   Then m.reflective = 0.0
+    #[test]
+    fn reflectivity_for_the_default_material() {
+        let m = Material::default();
+
+        assert_eq!(m.reflective, 0.0)
     }
 }
