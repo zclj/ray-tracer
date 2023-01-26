@@ -163,7 +163,7 @@ impl std::ops::Sub<Vector> for Point {
 // # use ray_tracer::vector::Vector;
 // assert_eq!(Vector::new(4.0, 1.0, 4.0).x , 4.0)
 // ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vector {
     pub x: f32,
     pub y: f32,

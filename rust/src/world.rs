@@ -142,6 +142,19 @@ impl World {
             None => false,
         }
     }
+
+    #[must_use]
+    pub fn reflected_color(&self, comp: &ComputedIntersection) -> Color {
+        let shape = self.get_shape(comp.object);
+        if shape.material().reflective == 0.0 {
+            Color::new(0.0, 0.0, 0.0)
+        } else {
+            let reflect_ray = Ray::new(comp.over_point.clone(), comp.reflectv.clone());
+            let color = self.color_at(&reflect_ray);
+
+            &color * shape.material().reflective
+        }
+    }
 }
 
 impl Default for World {
@@ -464,5 +477,97 @@ mod test {
         let c = w.shade_hit(&comps);
 
         assert_eq!(c, Color::new(0.1, 0.1, 0.1))
+    }
+
+    // Scenario: The reflected color for a nonreflective material
+    //   Given w ← default_world()
+    //     And r ← ray(point(0, 0, 0), vector(0, 0, 1))
+    //     And shape ← the second object in w
+    //     And shape.material.ambient ← 1
+    //     And i ← intersection(1, shape)
+    //   When comps ← prepare_computations(i, r)
+    //     And color ← reflected_color(w, comps)
+    //   Then color = color(0, 0, 0)
+    #[test]
+    fn the_reflected_color_for_a_nonreflective_material() {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ..Default::default()
+            }),
+        );
+
+        let sid = w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ambient: 1.0,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
+
+        let i = Intersection::new(1.0, sid);
+        let comps = i.compute(&w, &r, EPSILON);
+        let color = w.reflected_color(&comps);
+
+        assert_eq!(color, Color::new(0.0, 0.0, 0.0));
+    }
+
+    // Scenario: The reflected color for a reflective material
+    //   Given w ← default_world()
+    //     And shape ← plane() with:
+    //       | material.reflective | 0.5                   |
+    //       | transform           | translation(0, -1, 0) |
+    //     And shape is added to w
+    //     And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+    //     And i ← intersection(√2, shape)
+    //   When comps ← prepare_computations(i, r)
+    //     And color ← reflected_color(w, comps)
+    //   Then color = color(0.19032, 0.2379, 0.14274)
+    #[test]
+    fn the_reflected_color_for_a_reflective_material() {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ..Default::default()
+            }),
+        );
+
+        w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ..Default::default()
+            }),
+        );
+
+        let pid = w.push_plane(
+            Some(translation(0.0, -1.0, 0.0)),
+            Some(Material {
+                reflective: 0.5,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
+        );
+
+        let i = Intersection::new(f32::sqrt(2.0), pid);
+        let comps = i.compute(&w, &r, EPSILON);
+        let color = w.reflected_color(&comps);
+
+        assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
     }
 }
