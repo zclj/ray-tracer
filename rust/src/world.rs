@@ -101,14 +101,16 @@ impl World {
         let m = &shape.material();
         let shadowed = self.is_shadowed(&comp.over_point);
 
-        m.lighting(
+        let surface = m.lighting(
             shape,
             &self.light,
             &comp.over_point,
             &comp.eyev,
             &comp.normalv,
             shadowed,
-        )
+        );
+
+        &self.reflected_color(comp) + &surface
     }
 
     #[must_use]
@@ -569,5 +571,57 @@ mod test {
         let color = w.reflected_color(&comps);
 
         assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
+    }
+
+    // Scenario: shade_hit() with a reflective material
+    //   Given w ← default_world()
+    //     And shape ← plane() with:
+    //       | material.reflective | 0.5                   |
+    //       | transform           | translation(0, -1, 0) |
+    //     And shape is added to w
+    //     And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+    //     And i ← intersection(√2, shape)
+    //   When comps ← prepare_computations(i, r)
+    //     And color ← shade_hit(w, comps)
+    //   Then color = color(0.87677, 0.92436, 0.82918)
+    #[test]
+    fn shade_hit_with_a_reflective_material() {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ..Default::default()
+            }),
+        );
+
+        w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ..Default::default()
+            }),
+        );
+
+        let pid = w.push_plane(
+            Some(translation(0.0, -1.0, 0.0)),
+            Some(Material {
+                reflective: 0.5,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
+        );
+
+        let i = Intersection::new(f32::sqrt(2.0), pid);
+        let comps = i.compute(&w, &r, EPSILON);
+        let color = w.shade_hit(&comps);
+
+        assert_eq!(color, Color::new(0.876757, 0.92434, 0.82917));
     }
 }
