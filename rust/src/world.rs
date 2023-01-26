@@ -96,7 +96,7 @@ impl World {
     }
 
     #[must_use]
-    pub fn shade_hit(&self, comp: &ComputedIntersection) -> Color {
+    pub fn shade_hit(&self, comp: &ComputedIntersection, remaining: u8) -> Color {
         let shape = &self.get_shape(comp.object);
         let m = &shape.material();
         let shadowed = self.is_shadowed(&comp.over_point);
@@ -110,18 +110,18 @@ impl World {
             shadowed,
         );
 
-        &self.reflected_color(comp) + &surface
+        &self.reflected_color(comp, remaining) + &surface
     }
 
     #[must_use]
-    pub fn color_at(&self, ray: &Ray) -> Color {
+    pub fn color_at(&self, ray: &Ray, remaining: u8) -> Color {
         let mut is = self.intersect(ray);
         let the_hit = hit(&mut is);
 
         match the_hit {
             Some(i) => {
                 let comp = i.compute(self, ray, self.shadow_bias);
-                self.shade_hit(&comp)
+                self.shade_hit(&comp, remaining)
             }
             None => Color::new(0.0, 0.0, 0.0),
         }
@@ -146,13 +146,16 @@ impl World {
     }
 
     #[must_use]
-    pub fn reflected_color(&self, comp: &ComputedIntersection) -> Color {
+    pub fn reflected_color(&self, comp: &ComputedIntersection, remaining: u8) -> Color {
+        if remaining == 0 {
+            return Color::new(0.0, 0.0, 0.0);
+        }
         let shape = self.get_shape(comp.object);
         if shape.material().reflective == 0.0 {
             Color::new(0.0, 0.0, 0.0)
         } else {
             let reflect_ray = Ray::new(comp.over_point.clone(), comp.reflectv.clone());
-            let color = self.color_at(&reflect_ray);
+            let color = self.color_at(&reflect_ray, remaining - 1);
 
             &color * shape.material().reflective
         }
@@ -295,7 +298,7 @@ mod test {
         let i = Intersection::new(4.0, 0);
 
         let comps = i.compute(&w, &r, EPSILON);
-        let c = w.shade_hit(&comps);
+        let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
     }
@@ -322,7 +325,7 @@ mod test {
         let i = Intersection::new(0.5, 1);
 
         let comps = i.compute(&w, &r, EPSILON);
-        let c = w.shade_hit(&comps);
+        let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
     }
@@ -337,7 +340,7 @@ mod test {
         let w = test_default();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
 
-        let c = w.color_at(&r);
+        let c = w.color_at(&r, 1);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -352,7 +355,7 @@ mod test {
         let w = test_default();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
-        let c = w.color_at(&r);
+        let c = w.color_at(&r, 1);
 
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855))
     }
@@ -390,7 +393,7 @@ mod test {
         );
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
-        let c = w.color_at(&r);
+        let c = w.color_at(&r, 1);
 
         assert_eq!(c, w.get_shape(inner_id).material().color)
     }
@@ -476,7 +479,7 @@ mod test {
 
         let comps = i.compute(&w, &r, EPSILON);
 
-        let c = w.shade_hit(&comps);
+        let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, Color::new(0.1, 0.1, 0.1))
     }
@@ -516,7 +519,7 @@ mod test {
 
         let i = Intersection::new(1.0, sid);
         let comps = i.compute(&w, &r, EPSILON);
-        let color = w.reflected_color(&comps);
+        let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
     }
@@ -568,7 +571,7 @@ mod test {
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
         let comps = i.compute(&w, &r, EPSILON);
-        let color = w.reflected_color(&comps);
+        let color = w.reflected_color(&comps, 1);
 
         assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
     }
@@ -620,8 +623,101 @@ mod test {
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
         let comps = i.compute(&w, &r, EPSILON);
-        let color = w.shade_hit(&comps);
+        let color = w.shade_hit(&comps, 1);
 
         assert_eq!(color, Color::new(0.876757, 0.92434, 0.82917));
+    }
+
+    // Scenario: color_at() with mutually reflective surfaces
+    //   Given w ← world()
+    //     And w.light ← point_light(point(0, 0, 0), color(1, 1, 1))
+    //     And lower ← plane() with:
+    //       | material.reflective | 1                     |
+    //       | transform           | translation(0, -1, 0) |
+    //     And lower is added to w
+    //     And upper ← plane() with:
+    //       | material.reflective | 1                    |
+    //       | transform           | translation(0, 1, 0) |
+    //     And upper is added to w
+    //     And r ← ray(point(0, 0, 0), vector(0, 1, 0))
+    //   Then color_at(w, r) should terminate successfully
+    #[test]
+    fn color_at_with_mutually_reflective_surfaces() {
+        let mut w = World::new();
+        w.light = PointLight::new(Point::new(0.0, 0.0, 0.0), Color::new(1.0, 1.0, 1.0));
+        let _lower_id = w.push_plane(
+            Some(translation(0.0, -1.0, 0.0)),
+            Some(Material {
+                reflective: 1.0,
+                ..Default::default()
+            }),
+        );
+
+        let _upper_id = w.push_plane(
+            Some(translation(0.0, 1.0, 0.0)),
+            Some(Material {
+                reflective: 1.0,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, -3.0), Vector::new(0.0, 1.0, 0.0));
+
+        assert_eq!(
+            w.color_at(&r, 1),
+            Color::new(0.7692048, 0.7692048, 0.7692048)
+        );
+    }
+
+    // Scenario: The reflected color at the maximum recursive depth
+    //   Given w ← default_world()
+    //     And shape ← plane() with:
+    //       | material.reflective | 0.5                   |
+    //       | transform           | translation(0, -1, 0) |
+    //     And shape is added to w
+    //     And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+    //     And i ← intersection(√2, shape)
+    //   When comps ← prepare_computations(i, r)
+    //     And color ← reflected_color(w, comps, 0)
+    //   Then color = color(0, 0, 0)
+    #[test]
+    fn the_reflected_color_at_the_maximum_recursive_depth() {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ..Default::default()
+            }),
+        );
+
+        w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ..Default::default()
+            }),
+        );
+
+        let pid = w.push_plane(
+            Some(translation(0.0, -1.0, 0.0)),
+            Some(Material {
+                reflective: 0.5,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
+        );
+
+        let i = Intersection::new(f32::sqrt(2.0), pid);
+        let comps = i.compute(&w, &r, EPSILON);
+        let color = w.reflected_color(&comps, 0);
+
+        assert_eq!(color, Color::new(0.0, 0.0, 0.0));
     }
 }

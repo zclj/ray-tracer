@@ -61,13 +61,13 @@ impl Camera {
     }
 
     #[must_use]
-    pub fn render(&self, world: &World) -> Canvas {
+    pub fn render(&self, world: &World, reflection_limit: u8) -> Canvas {
         let mut image = Canvas::new(self.hsize.into(), self.vsize.into());
 
         for y in 0..(self.vsize - 1) {
             for x in 0..(self.hsize - 1) {
                 let ray = self.ray_for_pixel(x, y);
-                let color = world.color_at(&ray);
+                let color = world.color_at(&ray, reflection_limit);
                 image.write_pixel(x as usize, y as usize, color);
             }
         }
@@ -212,7 +212,7 @@ mod test {
 
         c.transform = view_transform(&from, &to, &up);
 
-        let image = c.render(&w);
+        let image = c.render(&w, 1);
 
         assert_eq!(image.pixel_at(5, 5), &Color::new(0.38066, 0.47583, 0.2855))
     }

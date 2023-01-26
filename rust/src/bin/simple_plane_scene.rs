@@ -68,7 +68,7 @@ fn main() {
         &Vector::new(0.0, 1.0, 0.0),
     );
 
-    let canvas = camera.render(&world);
+    let canvas = camera.render(&world, 1);
 
     let ppm = canvas.to_ppm();
 
