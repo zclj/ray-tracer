@@ -13,6 +13,8 @@ pub struct Material {
     pub shininess: f32,
     pub reflective: f32,
     pub pattern: Option<Pattern>,
+    pub transparency: f32,
+    pub refractive_index: f32,
 }
 
 impl Material {
@@ -24,6 +26,8 @@ impl Material {
         shininess: f32,
         reflective: f32,
         pattern: Option<Pattern>,
+        transparency: f32,
+        refractive_index: f32,
     ) -> Self {
         Material {
             color,
@@ -33,6 +37,8 @@ impl Material {
             shininess,
             reflective,
             pattern,
+            transparency,
+            refractive_index,
         }
     }
 
@@ -95,7 +101,7 @@ impl Material {
 
 impl Default for Material {
     fn default() -> Self {
-        Material::new(Color::new(1.0, 1.0, 1.0), 0.1, 0.9, 0.9, 200.0, 0.0, None)
+        Material::new(Color::new(1.0, 1.0, 1.0), 0.1, 0.9, 0.9, 200.0, 0.0, None, 0.0, 1.0)
     }
 }
 
@@ -452,6 +458,7 @@ mod test {
             shininess: 0.0,
             reflective: 0.0,
             pattern: Some(Pattern::default()),
+            ..Default::default()
         };
 
         let eyev = Vector::new(0.0, 0.0, -1.0);
@@ -656,5 +663,17 @@ mod test {
         let m = Material::default();
 
         assert_eq!(m.reflective, 0.0)
+    }
+
+    // Scenario: Transparency and Refractive Index for the default material
+    //   Given m ← material()
+    //   Then m.transparency = 0.0
+    //     And m.refractive_index = 1.0
+    #[test]
+    fn transparency_and_refractive_index_for_the_default_material() {
+        let m = Material::default();
+
+        assert_eq!(m.transparency, 0.0);
+        assert_eq!(m.refractive_index, 1.0)
     }
 }
