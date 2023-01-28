@@ -3,7 +3,7 @@ use crate::shape::Shape;
 use crate::vector::{Point, Vector};
 use crate::world::World;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Intersection {
     pub t: f32,
     pub object: u32,
@@ -19,6 +19,8 @@ pub struct ComputedIntersection {
     pub inside: bool,
     pub over_point: Point,
     pub reflectv: Vector,
+    pub n1: f32,
+    pub n2: f32,
 }
 
 impl Intersection {
@@ -31,7 +33,16 @@ impl Intersection {
     }
 
     #[must_use]
-    pub fn compute(&self, world: &World, ray: &Ray, shadow_bias: f32) -> ComputedIntersection {
+    /// # Panics
+    ///
+    /// Will panic shapes do not exist
+    pub fn compute(
+        &self,
+        world: &World,
+        ray: &Ray,
+        intersections: &[Intersection],
+        shadow_bias: f32,
+    ) -> ComputedIntersection {
         let mut normalv = world
             .get_shape(self.object)
             .normal_at(&ray.position(self.t));
@@ -47,6 +58,47 @@ impl Intersection {
 
         let cpoint = ray.position(self.t);
 
+        // compute refractive indices on both sides (n1, n2)
+        // @TODO - there might be a nicer way to do this
+        let mut n1 = 1.0;
+        let mut n2 = 1.0;
+        {
+            let mut containers: Vec<u32> = vec![];
+
+            for i in intersections {
+                if i == self {
+                    if containers.is_empty() {
+                        n1 = 1.0;
+                    } else {
+                        n1 = world
+                            .get_shape(*containers.last().unwrap())
+                            .material()
+                            .refractive_index;
+                    }
+                }
+
+                if containers.contains(&i.object) {
+                    containers.remove(containers.iter().position(|x| *x == i.object).unwrap());
+                } else {
+                    containers.push(i.object);
+                }
+
+                if i == self {
+                    if containers.is_empty() {
+                        n2 = 1.0;
+                    } else {
+                        n2 = world
+                            .get_shape(*containers.last().unwrap())
+                            .material()
+                            .refractive_index;
+                    }
+
+                    break;
+                }
+            }
+        };
+        //
+
         ComputedIntersection {
             t: self.t,
             object: self.object,
@@ -56,6 +108,8 @@ impl Intersection {
             reflectv: ray.direction.reflect(&normalv),
             normalv,
             inside: is_inside,
+            n1,
+            n2,
         }
     }
 }
@@ -385,7 +439,7 @@ mod test {
 
         let i = Intersection::new(4.0, s_id);
 
-        let comps = i.compute(&world, &r, EPSILON);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
 
         assert_eq!(comps.t, i.t);
         assert_eq!(comps.object, i.object);
@@ -408,7 +462,7 @@ mod test {
 
         let i = Intersection::new(4.0, s_id);
 
-        let comps = i.compute(&world, &r, EPSILON);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
 
         assert_eq!(comps.inside, false);
     }
@@ -431,7 +485,7 @@ mod test {
 
         let i = Intersection::new(1.0, s_id);
 
-        let comps = i.compute(&world, &r, EPSILON);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
 
         assert_eq!(comps.point, Point::new(0.0, 0.0, 1.0));
         assert_eq!(comps.eyev, Vector::new(0.0, 0.0, -1.0));
@@ -455,7 +509,7 @@ mod test {
 
         let i = Intersection::new(5.0, s_id);
 
-        let comps = i.compute(&world, &r, EPSILON);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
 
         assert_eq!(comps.over_point.z < -EPSILON / 2.0, true);
         assert_eq!(comps.point.z > comps.over_point.z, true);
@@ -558,11 +612,103 @@ mod test {
         );
         let i = Intersection::new(f32::sqrt(2.0), s_id);
 
-        let comps = i.compute(&world, &r, EPSILON);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
 
         assert_eq!(
             comps.reflectv,
             Vector::new(0.0, f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0)
         );
+    }
+
+    // Scenario Outline: Finding n1 and n2 at various intersections
+    //   Given A ← glass_sphere() with:
+    //       | transform                 | scaling(2, 2, 2) |
+    //       | material.refractive_index | 1.5              |
+    //     And B ← glass_sphere() with:
+    //       | transform                 | translation(0, 0, -0.25) |
+    //       | material.refractive_index | 2.0                      |
+    //     And C ← glass_sphere() with:
+    //       | transform                 | translation(0, 0, 0.25) |
+    //       | material.refractive_index | 2.5                     |
+    //     And r ← ray(point(0, 0, -4), vector(0, 0, 1))
+    //     And xs ← intersections(2:A, 2.75:B, 3.25:C, 4.75:B, 5.25:C, 6:A)
+    //   When comps ← prepare_computations(xs[<index>], r, xs)
+    //   Then comps.n1 = <n1>
+    //     And comps.n2 = <n2>
+
+    //   Examples:
+    //     | index | n1  | n2  |
+    //     | 0     | 1.0 | 1.5 |
+    //     | 1     | 1.5 | 2.0 |
+    //     | 2     | 2.0 | 2.5 |
+    //     | 3     | 2.5 | 2.5 |
+    //     | 4     | 2.5 | 1.5 |
+    //     | 5     | 1.5 | 1.0 |
+    use crate::materials::Material;
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections() {
+        let mut world = World::new();
+
+        let a_id = world.push_sphere(
+            Some(scaling(2.0, 2.0, 2.0)),
+            Some(Material {
+                transparency: 1.0,
+                refractive_index: 1.5,
+                ..Default::default()
+            }),
+        );
+
+        let b_id = world.push_sphere(
+            Some(translation(0.0, 0.0, -0.25)),
+            Some(Material {
+                transparency: 1.0,
+                refractive_index: 2.0,
+                ..Default::default()
+            }),
+        );
+
+        let c_id = world.push_sphere(
+            Some(translation(0.0, 0.0, 0.25)),
+            Some(Material {
+                transparency: 1.0,
+                refractive_index: 2.5,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, -4.0), Vector::new(0.0, 0.0, 1.0));
+
+        let xs = [
+            Intersection::new(2.0, a_id),
+            Intersection::new(2.75, b_id),
+            Intersection::new(3.25, c_id),
+            Intersection::new(4.75, b_id),
+            Intersection::new(5.25, c_id),
+            Intersection::new(6.0, a_id),
+        ];
+
+        let comps = xs
+            .iter()
+            .map(|i| i.compute(&world, &r, &xs, EPSILON))
+            .collect::<Vec<ComputedIntersection>>();
+
+        assert_eq!(comps[0].n1, 1.0);
+        assert_eq!(comps[0].n2, 1.5);
+
+        assert_eq!(comps[1].n1, 1.5);
+        assert_eq!(comps[1].n2, 2.0);
+
+        assert_eq!(comps[2].n1, 2.0);
+        assert_eq!(comps[2].n2, 2.5);
+
+        assert_eq!(comps[3].n1, 2.5);
+        assert_eq!(comps[3].n2, 2.5);
+
+        assert_eq!(comps[4].n1, 2.5);
+        assert_eq!(comps[4].n2, 1.5);
+
+        assert_eq!(comps[5].n1, 1.5);
+        assert_eq!(comps[5].n2, 1.0);
     }
 }

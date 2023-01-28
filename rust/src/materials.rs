@@ -18,6 +18,7 @@ pub struct Material {
 }
 
 impl Material {
+    #[allow(clippy::too_many_arguments)]
     fn new(
         color: Color,
         ambient: f32,
@@ -101,7 +102,17 @@ impl Material {
 
 impl Default for Material {
     fn default() -> Self {
-        Material::new(Color::new(1.0, 1.0, 1.0), 0.1, 0.9, 0.9, 200.0, 0.0, None, 0.0, 1.0)
+        Material::new(
+            Color::new(1.0, 1.0, 1.0),
+            0.1,
+            0.9,
+            0.9,
+            200.0,
+            0.0,
+            None,
+            0.0,
+            1.0,
+        )
     }
 }
 

@@ -115,12 +115,14 @@ impl World {
 
     #[must_use]
     pub fn color_at(&self, ray: &Ray, remaining: u8) -> Color {
-        let mut is = self.intersect(ray);
-        let the_hit = hit(&mut is);
+        // @TODO - Is there a better way of handling the sorting of the is?
+        let is = self.intersect(ray);
+        let mut hit_intersections = is.clone();
+        let the_hit = hit(&mut hit_intersections);
 
         match the_hit {
             Some(i) => {
-                let comp = i.compute(self, ray, self.shadow_bias);
+                let comp = i.compute(self, ray, &is, self.shadow_bias);
                 self.shade_hit(&comp, remaining)
             }
             None => Color::new(0.0, 0.0, 0.0),
@@ -297,7 +299,7 @@ mod test {
         // first shape in test world has id 0
         let i = Intersection::new(4.0, 0);
 
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
         let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
@@ -324,7 +326,7 @@ mod test {
         // second shape in test world has id 1
         let i = Intersection::new(0.5, 1);
 
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
         let c = w.shade_hit(&comps, 0);
 
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
@@ -477,7 +479,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(4.0, s2_id);
 
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
 
         let c = w.shade_hit(&comps, 0);
 
@@ -518,7 +520,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let i = Intersection::new(1.0, sid);
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
@@ -570,7 +572,7 @@ mod test {
         );
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
         let color = w.reflected_color(&comps, 1);
 
         assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
@@ -622,7 +624,7 @@ mod test {
         );
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
         let color = w.shade_hit(&comps, 1);
 
         assert_eq!(color, Color::new(0.876757, 0.92434, 0.82917));
@@ -715,7 +717,7 @@ mod test {
         );
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
-        let comps = i.compute(&w, &r, EPSILON);
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
