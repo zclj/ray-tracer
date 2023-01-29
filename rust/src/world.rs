@@ -162,6 +162,17 @@ impl World {
             &color * shape.material().reflective
         }
     }
+
+    #[must_use]
+    pub fn refracted_color(&self, comp: &ComputedIntersection, remaining: u8) -> Color {
+        let shape = self.get_shape(comp.object);
+
+        if shape.material().transparency == 0.0 {
+            Color::new(0.0, 0.0, 0.0)
+        } else {
+            Color::new(1.0, 1.0, 1.0)
+        }
+    }
 }
 
 impl Default for World {
@@ -721,5 +732,45 @@ mod test {
         let color = w.reflected_color(&comps, 0);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
+    }
+
+    // Scenario: The refracted color with an opaque surface
+    //   Given w ← default_world()
+    //     And shape ← the first object in w
+    //     And r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And xs ← intersections(4:shape, 6:shape)
+    //   When comps ← prepare_computations(xs[0], r, xs)
+    //     And c ← refracted_color(w, comps, 5)
+    //   Then c = color(0, 0, 0)
+    #[test]
+    fn the_refracted_color_with_an_opaque_surface() {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ..Default::default()
+            }),
+        );
+
+        let sid = w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ambient: 1.0,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+
+        let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
+        let comps = xs[0].compute(&w, &r, &xs, EPSILON);
+
+        let c = w.refracted_color(&comps, 5);
+
+        assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
 }
