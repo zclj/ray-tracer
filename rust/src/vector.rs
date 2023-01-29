@@ -152,6 +152,14 @@ impl std::ops::Sub<Vector> for Point {
     }
 }
 
+impl std::ops::Sub<&Vector> for &Point {
+    type Output = Point;
+
+    fn sub(self, rhs: &Vector) -> Point {
+        Point::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
+    }
+}
+
 // pub fn vector(x: f32, y: f32, z: f32) -> Vector4D {
 //     Vector4D::new(x, y, z, 0.0)
 // }

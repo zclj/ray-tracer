@@ -18,6 +18,7 @@ pub struct ComputedIntersection {
     pub normalv: Vector,
     pub inside: bool,
     pub over_point: Point,
+    pub under_point: Point,
     pub reflectv: Vector,
     pub n1: f32,
     pub n2: f32,
@@ -99,10 +100,12 @@ impl Intersection {
         };
         //
 
+        let shadow_biased_normal = &normalv * shadow_bias;
         ComputedIntersection {
             t: self.t,
             object: self.object,
-            over_point: &cpoint + &(&normalv * shadow_bias),
+            over_point: &cpoint + &shadow_biased_normal,
+            under_point: &cpoint - &shadow_biased_normal,
             point: cpoint,
             eyev,
             reflectv: ray.direction.reflect(&normalv),
@@ -710,5 +713,31 @@ mod test {
 
         assert_eq!(comps[5].n1, 1.5);
         assert_eq!(comps[5].n2, 1.0);
+    }
+
+    // Scenario: The under point is offset below the surface
+    //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And shape ← glass_sphere() with:
+    //       | transform | translation(0, 0, 1) |
+    //     And i ← intersection(5, shape)
+    //     And xs ← intersections(i)
+    //   When comps ← prepare_computations(i, r, xs)
+    //   Then comps.under_point.z > EPSILON/2
+    //     And comps.point.z < comps.under_point.z
+    #[test]
+    fn the_under_point_is_offset_below_the_surface() {
+        let mut world = World::new();
+
+        let s_id = world.push_sphere(Some(translation(0.0, 0.0, 1.0)), None);
+
+        let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
+
+        let i = Intersection::new(5.0, s_id);
+        let xs = [i.clone()];
+
+        let comps = i.compute(&world, &r, &xs, EPSILON);
+
+        assert_eq!(comps.under_point.z > EPSILON / 2.0, true);
+        assert_eq!(comps.point.z < comps.under_point.z, true)
     }
 }
