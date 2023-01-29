@@ -886,4 +886,24 @@ mod test {
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
+
+    // Scenario: The refracted color with a refracted ray
+    //   Given w ← default_world()
+    //     And A ← the first object in w
+    //     And A has:
+    //       | material.ambient | 1.0            |
+    //       | material.pattern | test_pattern() |
+    //     And B ← the second object in w
+    //     And B has:
+    //       | material.transparency     | 1.0 |
+    //       | material.refractive_index | 1.5 |
+    //     And r ← ray(point(0, 0, 0.1), vector(0, 1, 0))
+    //     And xs ← intersections(-0.9899:A, -0.4899:B, 0.4899:B, 0.9899:A)
+    //   When comps ← prepare_computations(xs[2], r, xs)
+    //     And c ← refracted_color(w, comps, 5)
+    //   Then c = color(0, 0.99888, 0.04725)
+    #[test]
+    fn the_refracted_color_with_a_refracted_ray() {
+        todo!()
+    }
 }
