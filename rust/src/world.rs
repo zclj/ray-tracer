@@ -171,21 +171,30 @@ impl World {
 
         let shape = self.get_shape(comp.object);
 
+        let n_ratio = comp.n1 / comp.n2;
+        let cos_i = comp.eyev.dot(&comp.normalv);
+        let sin2_t = n_ratio.powf(2.0) * (1.0 - cos_i.powf(2.0));
+
         // check for total internal reflection
-        {
-            let n_ratio = comp.n1 / comp.n2;
-            let cos_i = comp.eyev.dot(&comp.normalv);
-            let sin2_t = n_ratio.powf(2.0) * (1.0 - cos_i.powf(2.0));
-            if sin2_t > 1.0 {
-                // internal reflection, i.e, return black
-                return Color::new(0.0, 0.0, 0.0);
-            }
+        if sin2_t > 1.0 {
+            // internal reflection, i.e, return black
+            println!("Internal reflection");
+            return Color::new(0.0, 0.0, 0.0);
         }
 
         if shape.material().transparency == 0.0 {
+            println!("Transparency 0.0");
             Color::new(0.0, 0.0, 0.0)
         } else {
-            Color::new(1.0, 1.0, 1.0)
+            println!("Calc refraction");
+            let cos_t = f32::sqrt(1.0 - sin2_t);
+            // compute the direction of the refracted ray
+            let direction = &comp.normalv * (n_ratio * cos_i - cos_t) - &comp.eyev * n_ratio;
+            // create the refracted ray
+            let refracted_ray = Ray::new(comp.under_point.clone(), direction);
+
+            // find the color of the refracted ray
+            self.color_at(&refracted_ray, remaining - 1) * shape.material().transparency
         }
     }
 }
@@ -902,8 +911,50 @@ mod test {
     //   When comps ← prepare_computations(xs[2], r, xs)
     //     And c ← refracted_color(w, comps, 5)
     //   Then c = color(0, 0.99888, 0.04725)
+    use crate::materials::{Pattern, PatternKind};
     #[test]
     fn the_refracted_color_with_a_refracted_ray() {
-        todo!()
+        let mut w = World::new();
+
+        let aid = w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                diffuse: 0.7,
+                specular: 0.2,
+                ambient: 1.0,
+                pattern: Some(Pattern::new(
+                    Color::new(0.0, 0.0, 0.0),
+                    Color::new(0.0, 0.0, 0.0),
+                    PatternKind::Point,
+                    M4x4::IDENTITY,
+                )),
+                ..Default::default()
+            }),
+        );
+
+        let bid = w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ambient: 1.0,
+                transparency: 1.0,
+                refractive_index: 1.5,
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.1), Vector::new(0.0, 1.0, 0.0));
+
+        let xs = [
+            Intersection::new(-0.9899, aid),
+            Intersection::new(-0.4899, bid),
+            Intersection::new(0.4899, bid),
+            Intersection::new(0.9899, aid),
+        ];
+        let comps = xs[2].compute(&w, &r, &xs, EPSILON);
+
+        let c = w.refracted_color(&comps, 5);
+
+        assert_eq!(c, Color::new(0.0, 0.998874, 0.047218))
     }
 }

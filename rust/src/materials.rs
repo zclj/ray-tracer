@@ -122,6 +122,7 @@ pub enum PatternKind {
     Gradient,
     Ring,
     Checkers,
+    Point,
 }
 
 #[derive(Debug, PartialEq)]
@@ -172,6 +173,7 @@ impl Pattern {
                     self.b.clone()
                 }
             }
+            PatternKind::Point => Color::new(point.x, point.y, point.z),
         }
     }
 
