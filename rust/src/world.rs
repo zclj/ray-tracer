@@ -178,15 +178,12 @@ impl World {
         // check for total internal reflection
         if sin2_t > 1.0 {
             // internal reflection, i.e, return black
-            println!("Internal reflection");
             return Color::new(0.0, 0.0, 0.0);
         }
 
         if shape.material().transparency == 0.0 {
-            println!("Transparency 0.0");
             Color::new(0.0, 0.0, 0.0)
         } else {
-            println!("Calc refraction");
             let cos_t = f32::sqrt(1.0 - sin2_t);
             // compute the direction of the refracted ray
             let direction = &comp.normalv * (n_ratio * cos_i - cos_t) - &comp.eyev * n_ratio;
