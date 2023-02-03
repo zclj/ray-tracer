@@ -980,8 +980,13 @@ mod test {
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
+                ambient: 0.1,
                 diffuse: 0.7,
                 specular: 0.2,
+                shininess: 200.0,
+                reflective: 0.0,
+                transparency: 0.0,
+                refractive_index: 1.0,
                 ..Default::default()
             }),
         );
@@ -989,7 +994,6 @@ mod test {
         w.push_sphere(
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
-                ambient: 1.0,
                 ..Default::default()
             }),
         );
