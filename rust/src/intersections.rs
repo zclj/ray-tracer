@@ -117,6 +117,24 @@ impl Intersection {
     }
 }
 
+impl ComputedIntersection {
+    pub fn schlick(&self) -> f32 {
+        let cos = self.eyev.dot(&self.normalv);
+
+        if self.n1 > self.n2 {
+            let n = self.n1 / self.n2;
+            let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
+            if sin2_t > 1.0 {
+                return 1.0;
+            } else {
+                return 0.0;
+            }
+        }
+
+        0.0
+    }
+}
+
 /// # Panics
 ///
 /// Will panic if intersection t value is NaN
@@ -740,4 +758,56 @@ mod test {
         assert_eq!(comps.under_point.z > EPSILON / 2.0, true);
         assert_eq!(comps.point.z < comps.under_point.z, true)
     }
+
+    // Scenario: The Schlick approximation under total internal reflection
+    //   Given shape ← glass_sphere()
+    //     And r ← ray(point(0, 0, √2/2), vector(0, 1, 0))
+    //     And xs ← intersections(-√2/2:shape, √2/2:shape)
+    //   When comps ← prepare_computations(xs[1], r, xs)
+    //     And reflectance ← schlick(comps)
+    //   Then reflectance = 1.0
+    #[test]
+    fn the_schlick_approximation_under_total_internal_reflection() {
+        let mut world = World::new();
+
+        let s_id = world.push_sphere(
+            None,
+            Some(Material {
+                transparency: 1.0,
+                refractive_index: 1.5,
+                ..Material::default()
+            }),
+        );
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, f32::sqrt(2.0) / 2.0),
+            Vector::new(0.0, 1.0, 0.0),
+        );
+
+        let xs = [
+            Intersection::new(-f32::sqrt(2.0) / 2.0, s_id),
+            Intersection::new(f32::sqrt(2.0) / 2.0, s_id),
+        ];
+
+        let comps = xs[1].compute(&world, &r, &xs, EPSILON);
+        let reflectance = comps.schlick();
+
+        assert_eq!(reflectance, 1.0)
+    }
+
+    // Scenario: The Schlick approximation with a perpendicular viewing angle
+    //   Given shape ← glass_sphere()
+    //     And r ← ray(point(0, 0, 0), vector(0, 1, 0))
+    //     And xs ← intersections(-1:shape, 1:shape)
+    //   When comps ← prepare_computations(xs[1], r, xs)
+    //     And reflectance ← schlick(comps)
+    //   Then reflectance = 0.04
+
+    // Scenario: The Schlick approximation with small angle and n2 > n1
+    //   Given shape ← glass_sphere()
+    //     And r ← ray(point(0, 0.99, -2), vector(0, 0, 1))
+    //     And xs ← intersections(1.8589:shape)
+    //   When comps ← prepare_computations(xs[0], r, xs)
+    //     And reflectance ← schlick(comps)
+    //   Then reflectance = 0.48873
 }
