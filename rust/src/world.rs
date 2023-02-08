@@ -952,7 +952,7 @@ mod test {
 
         let c = w.refracted_color(&comps, 5);
 
-        assert_eq!(c, Color::new(0.0, 0.998874, 0.047218))
+        assert_eq!(c, Color::new(0.0, 0.99888, 0.04725))
     }
 
     // Scenario: shade_hit() with a transparent material
