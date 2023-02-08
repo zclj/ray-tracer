@@ -4,6 +4,8 @@
 
 With nextest, `cargo nextest run`
 
+Running individual tests `cargo nextest run -E 'test(=world::test::the_refracted_color_with_a_refracted_ray) + test(=test2)'`
+
 Test coverage with `cargo install cargo-llvm-cov` and `cargo llvm-cov nextest`
 
 Coverage report, `cargo llvm-cov nextest --open` or `--html`. [Docs](https://lib.rs/crates/cargo-llvm-cov)
