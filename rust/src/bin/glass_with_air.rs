@@ -23,7 +23,7 @@ fn main() {
         intensity: Color::new(0.9, 0.9, 0.9),
     };
 
-    world.shadow_bias = 0.01;
+    world.shadow_bias = 0.0001;
 
     let wall_id = world.push_plane(
         Some(transform(&[
@@ -52,7 +52,7 @@ fn main() {
             specular: 0.9,
             diffuse: 0.0,
             shininess: 300.0,
-            reflective: 0.9,
+            //reflective: 0.9,
             transparency: 0.9,
             refractive_index: 1.5,
             ..Material::default()
@@ -67,7 +67,7 @@ fn main() {
             specular: 0.9,
             diffuse: 0.0,
             shininess: 300.0,
-            reflective: 0.9,
+            //reflective: 0.9,
             transparency: 0.9,
             refractive_index: 1.0000034,
             ..Material::default()
@@ -80,7 +80,7 @@ fn main() {
         &Point::new(0.0, 0.0, 0.0),
         &Vector::new(0.0, 1.0, 0.0),
     );
-    let canvas = camera.render(&world, 2);
+    let canvas = camera.render(&world, 5);
 
     let ppm = canvas.to_ppm();
 
