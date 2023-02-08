@@ -52,7 +52,7 @@ fn main() {
             specular: 0.9,
             diffuse: 0.0,
             shininess: 300.0,
-            //reflective: 0.9,
+            reflective: 0.9,
             transparency: 0.9,
             refractive_index: 1.5,
             ..Material::default()
@@ -67,7 +67,7 @@ fn main() {
             specular: 0.9,
             diffuse: 0.0,
             shininess: 300.0,
-            //reflective: 0.9,
+            reflective: 0.9,
             transparency: 0.9,
             refractive_index: 1.0000034,
             ..Material::default()

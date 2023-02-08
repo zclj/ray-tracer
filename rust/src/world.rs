@@ -110,7 +110,15 @@ impl World {
             shadowed,
         );
 
-        (&self.reflected_color(comp, remaining) + &surface) + self.refracted_color(comp, remaining)
+        let reflected = self.reflected_color(comp, remaining);
+        let refracted = self.refracted_color(comp, remaining);
+
+        if m.reflective > 0.0 && m.transparency > 0.0 {
+            let reflectance = comp.schlick();
+            return &surface + &(&reflected * reflectance) + refracted * (1.0 - reflectance);
+        }
+
+        &surface + &reflected + refracted
     }
 
     #[must_use]
@@ -1027,5 +1035,81 @@ mod test {
         let c = w.shade_hit(&comps, 5);
 
         assert_eq!(c, Color::new(0.93642, 0.68642, 0.68642))
+    }
+
+    // Scenario: shade_hit() with a reflective, transparent material
+    //   Given w ← default_world()
+    //     And r ← ray(point(0, 0, -3), vector(0, -√2/2, √2/2))
+    //     And floor ← plane() with:
+    //       | transform                 | translation(0, -1, 0) |
+    //       | material.reflective       | 0.5                   |
+    //       | material.transparency     | 0.5                   |
+    //       | material.refractive_index | 1.5                   |
+    //     And floor is added to w
+    //     And ball ← sphere() with:
+    //       | material.color     | (1, 0, 0)                  |
+    //       | material.ambient   | 0.5                        |
+    //       | transform          | translation(0, -3.5, -0.5) |
+    //     And ball is added to w
+    //     And xs ← intersections(√2:floor)
+    //   When comps ← prepare_computations(xs[0], r, xs)
+    //     And color ← shade_hit(w, comps, 5)
+    //   Then color = color(0.93391, 0.69643, 0.69243)
+    #[test]
+    fn shade_hit_with_a_reflective_transparent_material() {
+        let mut w = World::new();
+
+        w.push_sphere(
+            None,
+            Some(Material {
+                color: Color::new(0.8, 1.0, 0.6),
+                ambient: 0.1,
+                diffuse: 0.7,
+                specular: 0.2,
+                shininess: 200.0,
+                reflective: 0.0,
+                transparency: 0.0,
+                refractive_index: 1.0,
+                ..Default::default()
+            }),
+        );
+
+        w.push_sphere(
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material {
+                ..Default::default()
+            }),
+        );
+
+        let floor_id = w.push_plane(
+            Some(translation(0.0, -1.0, 0.0)),
+            Some(Material {
+                reflective: 0.5,
+                transparency: 0.5,
+                refractive_index: 1.5,
+                ..Default::default()
+            }),
+        );
+
+        let ball = w.push_sphere(
+            Some(translation(0.0, -3.5, -0.5)),
+            Some(Material {
+                ambient: 0.5,
+                color: Color::new(1.0, 0.0, 0.0),
+                ..Default::default()
+            }),
+        );
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -3.0),
+            Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
+        );
+
+        let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
+        let comps = xs[0].compute(&w, &r, &xs, EPSILON);
+
+        let c = w.shade_hit(&comps, 5);
+
+        assert_eq!(c, Color::new(0.93391, 0.69643, 0.69243))
     }
 }
