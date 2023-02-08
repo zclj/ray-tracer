@@ -119,7 +119,7 @@ impl Intersection {
 
 impl ComputedIntersection {
     pub fn schlick(&self) -> f32 {
-        let cos = self.eyev.dot(&self.normalv);
+        let mut cos = self.eyev.dot(&self.normalv);
 
         if self.n1 > self.n2 {
             let n = self.n1 / self.n2;
@@ -127,11 +127,13 @@ impl ComputedIntersection {
             if sin2_t > 1.0 {
                 return 1.0;
             } else {
-                return 0.0;
+                let cos_t = f32::sqrt(1.0 - sin2_t);
+                let cos = cos_t;
             }
         }
 
-        0.0
+        let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powf(2.0);
+        r0 + (1.0 - r0) * (1.0 - cos).powf(5.0)
     }
 }
 
@@ -802,6 +804,30 @@ mod test {
     //   When comps ← prepare_computations(xs[1], r, xs)
     //     And reflectance ← schlick(comps)
     //   Then reflectance = 0.04
+    use crate::utils::epsilon_eq;
+
+    #[test]
+    fn the_schlick_approximation_with_a_perpendicular_viewing_angle() {
+        let mut world = World::new();
+
+        let s_id = world.push_sphere(
+            None,
+            Some(Material {
+                transparency: 1.0,
+                refractive_index: 1.5,
+                ..Material::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0));
+
+        let xs = [Intersection::new(-1.0, s_id), Intersection::new(1.0, s_id)];
+
+        let comps = xs[1].compute(&world, &r, &xs, EPSILON);
+        let reflectance = comps.schlick();
+
+        assert_eq!(epsilon_eq(reflectance, 0.04), true)
+    }
 
     // Scenario: The Schlick approximation with small angle and n2 > n1
     //   Given shape ← glass_sphere()
@@ -810,4 +836,26 @@ mod test {
     //   When comps ← prepare_computations(xs[0], r, xs)
     //     And reflectance ← schlick(comps)
     //   Then reflectance = 0.48873
+    #[test]
+    fn the_schlick_approximation_with_small_angle_and_n2_gt_n1() {
+        let mut world = World::new();
+
+        let s_id = world.push_sphere(
+            None,
+            Some(Material {
+                transparency: 1.0,
+                refractive_index: 1.5,
+                ..Material::default()
+            }),
+        );
+
+        let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
+
+        let xs = [Intersection::new(1.8589, s_id)];
+
+        let comps = xs[0].compute(&world, &r, &xs, EPSILON);
+        let reflectance = comps.schlick();
+
+        assert_eq!(epsilon_eq(reflectance, 0.48873), true)
+    }
 }
