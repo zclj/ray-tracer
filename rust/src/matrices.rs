@@ -5,7 +5,7 @@ use std::ops::{Index, Mul, MulAssign};
 ////////////////////////////////////////
 // M4x4
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct M4x4([f32; 16]);
 
 impl M4x4 {

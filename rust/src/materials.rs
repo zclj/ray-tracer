@@ -4,7 +4,7 @@ use crate::matrices::M4x4;
 use crate::shape::Shape;
 use crate::vector::{Point, Vector};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Material {
     pub color: Color,
     pub ambient: f32,
@@ -116,7 +116,7 @@ impl Default for Material {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum PatternKind {
     Stripe,
     Gradient,
@@ -125,7 +125,7 @@ pub enum PatternKind {
     Point,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Pattern {
     pub a: Color,
     pub b: Color,
