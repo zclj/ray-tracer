@@ -3,9 +3,7 @@ use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::materials::{Pattern, PatternKind};
-use ray_tracer::transformations::{
-    rotation_x, rotation_y, scaling, transform, translation, view_transform,
-};
+use ray_tracer::transformations::{rotation_x, scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
 use ray_tracer::world::World;
 use std::f32::consts::PI;
@@ -25,7 +23,7 @@ fn main() {
 
     world.shadow_bias = 0.0001;
 
-    let wall_id = world.push_plane(
+    let _wall_id = world.push_plane(
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, 10.0),
@@ -44,7 +42,7 @@ fn main() {
         }),
     );
 
-    let glass_ball_id = world.push_sphere(
+    let _glass_ball_id = world.push_sphere(
         None,
         Some(Material {
             color: Color::new(1.0, 1.0, 1.0),
@@ -59,7 +57,7 @@ fn main() {
         }),
     );
 
-    let hollow_center = world.push_sphere(
+    let _hollow_center = world.push_sphere(
         Some(scaling(0.5, 0.5, 0.5)),
         Some(Material {
             color: Color::new(1.0, 1.0, 1.0),
