@@ -23,17 +23,17 @@ pub enum Shape {
 impl Shape {
     #[must_use]
     pub fn normal_at(&self, world_point: &Point) -> Vector {
-        match self {
-            Shape::Sphere { transform, .. } => {
-                let inversed = transform.inverse();
-                let object_point = &inversed * world_point;
-                let object_normal = object_point - Point::new(0., 0., 0.);
-                let world_normal = &inversed.transpose() * &object_normal;
+        let inversed = self.transform().inverse();
+        let object_point = &inversed * world_point;
 
-                world_normal.norm()
-            }
+        let object_normal = match self {
+            Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
-        }
+        };
+
+        let world_normal = &inversed.transpose() * &object_normal;
+
+        world_normal.norm()
     }
 
     #[must_use]
