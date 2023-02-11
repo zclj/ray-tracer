@@ -128,7 +128,7 @@ impl ComputedIntersection {
                 return 1.0;
             } else {
                 let cos_t = f32::sqrt(1.0 - sin2_t);
-                let cos = cos_t;
+                cos = cos_t;
             }
         }
 
