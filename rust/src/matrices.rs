@@ -99,18 +99,21 @@ impl M4x4 {
     /// Will panic if matrix is not invertible
     #[must_use]
     pub fn inverse(&self) -> Self {
-        assert!(self.is_invertible());
+        let determinant = self.determinant();
 
-        let mut m: [f32; 16] = [0.0; 16];
+        if epsilon_eq(determinant, 0.0) {
+            panic!("Matrix not invertible")
+        } else {
+            let mut m: [f32; 16] = [0.0; 16];
 
-        for row in 0..4 {
-            for col in 0..4 {
-                let c = self.cofactor(row, col);
-                m[(col * 4) as usize + row as usize] = c / self.determinant();
+            for row in 0..4 {
+                for col in 0..4 {
+                    let c = self.cofactor(row, col);
+                    m[(col * 4) as usize + row as usize] = c / determinant;
+                }
             }
+            M4x4(m)
         }
-
-        M4x4(m)
     }
 }
 
