@@ -46,9 +46,11 @@ impl World {
             None => Material::default(),
         };
 
+        let transform_inverse = transform.inverse();
         self.shapes.push(Shape::Sphere {
             id,
-            transform_inverse: transform.inverse(),
+            transform_inverse_transpose: transform_inverse.transpose(),
+            transform_inverse,
             transform,
             material,
         });
@@ -74,9 +76,11 @@ impl World {
             None => Material::default(),
         };
 
+        let transform_inverse = transform.inverse();
         self.shapes.push(Shape::Plane {
             id,
-            transform_inverse: transform.inverse(),
+            transform_inverse_transpose: transform_inverse.transpose(),
+            transform_inverse,
             transform,
             material,
         });

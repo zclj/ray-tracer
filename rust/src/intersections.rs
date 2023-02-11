@@ -118,19 +118,19 @@ impl Intersection {
 }
 
 impl ComputedIntersection {
+    #[must_use]
     pub fn schlick(&self) -> f32 {
         let mut cos = self.eyev.dot(&self.normalv);
 
-        if self.n1 > self.n2 {
-            let n = self.n1 / self.n2;
-            let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
-            if sin2_t > 1.0 {
-                return 1.0;
-            } else {
-                let cos_t = f32::sqrt(1.0 - sin2_t);
-                cos = cos_t;
-            }
+        let n = self.n1 / self.n2;
+        let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
+
+        if self.n1 > self.n2 && sin2_t > 1.0 {
+            return 1.0;
         }
+
+        let cos_t = f32::sqrt(1.0 - sin2_t);
+        cos = cos_t;
 
         let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powf(2.0);
         r0 + (1.0 - r0) * (1.0 - cos).powf(5.0)
@@ -147,7 +147,7 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 #[must_use]
 pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
     // the ray transformed in local space
-    let obj_ray = r.transform(&shape.transform().inverse());
+    let obj_ray = r.transform(shape.transform_inverse());
 
     shape.intersect(&obj_ray)
 }

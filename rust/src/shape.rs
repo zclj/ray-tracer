@@ -12,6 +12,7 @@ pub enum Shape {
         transform: M4x4,
         material: Material,
         transform_inverse: M4x4,
+        transform_inverse_transpose: M4x4,
     },
 
     Plane {
@@ -19,21 +20,21 @@ pub enum Shape {
         transform: M4x4,
         material: Material,
         transform_inverse: M4x4,
+        transform_inverse_transpose: M4x4,
     },
 }
 
 impl Shape {
     #[must_use]
     pub fn normal_at(&self, world_point: &Point) -> Vector {
-        let inversed = self.transform().inverse();
-        let object_point = &inversed * world_point;
+        let object_point = self.transform_inverse() * world_point;
 
         let object_normal = match self {
             Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
         };
 
-        let world_normal = &inversed.transpose() * &object_normal;
+        let world_normal = self.transform_inverse_transpose() * &object_normal;
 
         world_normal.norm()
     }
@@ -95,6 +96,20 @@ impl Shape {
             | Shape::Plane {
                 transform_inverse, ..
             } => transform_inverse,
+        }
+    }
+
+    #[must_use]
+    pub fn transform_inverse_transpose(&self) -> &M4x4 {
+        match self {
+            Shape::Sphere {
+                transform_inverse_transpose,
+                ..
+            }
+            | Shape::Plane {
+                transform_inverse_transpose,
+                ..
+            } => transform_inverse_transpose,
         }
     }
 }

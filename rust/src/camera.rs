@@ -7,8 +7,6 @@ use crate::world::World;
 pub struct Camera {
     hsize: u16,
     vsize: u16,
-    field_of_view: f32,
-    transform: M4x4,
     transform_inverse: M4x4,
     half_width: f32,
     half_height: f32,
@@ -18,7 +16,7 @@ pub struct Camera {
 impl Camera {
     #[allow(clippy::similar_names)]
     #[must_use]
-    pub fn new(hsize: u16, vsize: u16, field_of_view: f32, transform: M4x4) -> Self {
+    pub fn new(hsize: u16, vsize: u16, field_of_view: f32, transform: &M4x4) -> Self {
         let half_view = (field_of_view / 2.0).tan();
         let aspect: f32 = f32::from(hsize) / f32::from(vsize);
 
@@ -31,9 +29,7 @@ impl Camera {
         Camera {
             hsize,
             vsize,
-            field_of_view,
             transform_inverse: transform.inverse(),
-            transform,
             half_width,
             half_height,
             pixel_size: (half_width * 2.0) / (f32::from(hsize)),

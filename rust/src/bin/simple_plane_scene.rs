@@ -65,7 +65,7 @@ fn main() {
         1000,
         500,
         PI / 3.0,
-        view_transform(
+        &view_transform(
             &Point::new(0.1, 1.5, -7.0),
             &Point::new(0.0, 1.0, 0.0),
             &Vector::new(0.0, 1.0, 0.0),

@@ -90,10 +90,6 @@ impl M4x4 {
             + (self[(0, 3)] * self.cofactor(0, 3))
     }
 
-    fn is_invertible(&self) -> bool {
-        self.determinant() != 0.0
-    }
-
     /// # Panics
     ///
     /// Will panic if matrix is not invertible

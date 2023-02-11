@@ -208,7 +208,7 @@ fn main() {
         1200,
         600,
         1.152,
-        view_transform(
+        &view_transform(
             &Point::new(-2.6, 1.5, -3.9),
             &Point::new(-0.6, 1.0, -0.8),
             &Vector::new(0.0, 1.0, 0.0),
