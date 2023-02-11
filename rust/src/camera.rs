@@ -8,7 +8,8 @@ pub struct Camera {
     hsize: u16,
     vsize: u16,
     field_of_view: f32,
-    pub transform: M4x4,
+    transform: M4x4,
+    transform_inverse: M4x4,
     half_width: f32,
     half_height: f32,
     pixel_size: f32,
@@ -17,7 +18,7 @@ pub struct Camera {
 impl Camera {
     #[allow(clippy::similar_names)]
     #[must_use]
-    pub fn new(hsize: u16, vsize: u16, field_of_view: f32) -> Self {
+    pub fn new(hsize: u16, vsize: u16, field_of_view: f32, transform: M4x4) -> Self {
         let half_view = (field_of_view / 2.0).tan();
         let aspect: f32 = f32::from(hsize) / f32::from(vsize);
 
@@ -31,7 +32,8 @@ impl Camera {
             hsize,
             vsize,
             field_of_view,
-            transform: M4x4::IDENTITY,
+            transform_inverse: transform.inverse(),
+            transform,
             half_width,
             half_height,
             pixel_size: (half_width * 2.0) / (f32::from(hsize)),
@@ -52,9 +54,8 @@ impl Camera {
         // using the camera matrix, transform the canvas point and the origin,
         // and then compute the ray's direction vector.
         // (remember that the canvas is at z=-1)
-        let inverse_transform = self.transform.inverse();
-        let pixel = &inverse_transform * &Point::new(world_x, world_y, -1.0);
-        let origin = &inverse_transform * &Point::new(0.0, 0.0, 0.0);
+        let pixel = &self.transform_inverse * &Point::new(world_x, world_y, -1.0);
+        let origin = &self.transform_inverse * &Point::new(0.0, 0.0, 0.0);
         let direction = (&pixel - &origin).norm();
 
         Ray::new(origin, direction)
