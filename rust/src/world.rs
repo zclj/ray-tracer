@@ -48,6 +48,7 @@ impl World {
 
         self.shapes.push(Shape::Sphere {
             id,
+            transform_inverse: transform.inverse(),
             transform,
             material,
         });
@@ -75,6 +76,7 @@ impl World {
 
         self.shapes.push(Shape::Plane {
             id,
+            transform_inverse: transform.inverse(),
             transform,
             material,
         });

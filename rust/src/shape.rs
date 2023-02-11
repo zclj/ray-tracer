@@ -11,12 +11,14 @@ pub enum Shape {
         id: u32,
         transform: M4x4,
         material: Material,
+        transform_inverse: M4x4,
     },
 
     Plane {
         id: u32,
         transform: M4x4,
         material: Material,
+        transform_inverse: M4x4,
     },
 }
 
@@ -81,6 +83,18 @@ impl Shape {
     pub fn transform(&self) -> &M4x4 {
         match self {
             Shape::Sphere { transform, .. } | Shape::Plane { transform, .. } => transform,
+        }
+    }
+
+    #[must_use]
+    pub fn transform_inverse(&self) -> &M4x4 {
+        match self {
+            Shape::Sphere {
+                transform_inverse, ..
+            }
+            | Shape::Plane {
+                transform_inverse, ..
+            } => transform_inverse,
         }
     }
 }

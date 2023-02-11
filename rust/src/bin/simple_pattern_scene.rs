@@ -2,6 +2,7 @@ use ray_tracer::camera::Camera;
 use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::{Material, Pattern, PatternKind};
+use ray_tracer::matrices::M4x4;
 use ray_tracer::transformations::{
     rotation_x, rotation_y, scaling, transform, translation, view_transform,
 };
@@ -31,12 +32,12 @@ fn main() {
             color: Color::new(1.0, 1.0, 1.0),
             diffuse: 0.7,
             specular: 0.3,
-            pattern: Some(Pattern {
-                a: Color::new(0.3, 0.3, 0.9),
-                b: Color::new(0.7, 0.3, 0.3),
-                kind: PatternKind::Checkers,
-                ..Pattern::default()
-            }),
+            pattern: Some(Pattern::new(
+                Color::new(0.3, 0.3, 0.9),
+                Color::new(0.7, 0.3, 0.3),
+                PatternKind::Checkers,
+                M4x4::IDENTITY,
+            )),
             ..Material::default()
         }),
     );
@@ -47,12 +48,12 @@ fn main() {
             color: Color::new(0.1, 1.0, 0.5),
             diffuse: 0.7,
             specular: 0.3,
-            pattern: Some(Pattern {
-                a: Color::new(0.1, 1.0, 0.5),
-                b: Color::new(1.0, 0.1, 0.5),
-                transform: &scaling(0.2, 0.2, 0.2) * &rotation_x(PI / 4.0),
-                kind: PatternKind::Ring,
-            }),
+            pattern: Some(Pattern::new(
+                Color::new(0.1, 1.0, 0.5),
+                Color::new(1.0, 0.1, 0.5),
+                PatternKind::Ring,
+                &scaling(0.2, 0.2, 0.2) * &rotation_x(PI / 4.0),
+            )),
             ..Material::default()
         }),
     );
@@ -85,12 +86,12 @@ fn main() {
             color: Color::new(1.0, 0.8, 0.1),
             diffuse: 0.7,
             specular: 0.3,
-            pattern: Some(Pattern {
-                a: Color::new(0.5, 1.0, 0.1),
-                b: Color::new(0.2, 0.5, 0.3),
-                transform: scaling(0.3, 0.3, 0.3),
-                kind: PatternKind::Gradient,
-            }),
+            pattern: Some(Pattern::new(
+                Color::new(0.5, 1.0, 0.1),
+                Color::new(0.2, 0.5, 0.3),
+                PatternKind::Gradient,
+                scaling(0.3, 0.3, 0.3),
+            )),
             ..Material::default()
         }),
     );

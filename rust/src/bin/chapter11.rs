@@ -17,7 +17,7 @@ use std::io::Write;
 use std::path::Path;
 
 fn main() {
-    println!("Chapter 11 - demo");
+    //println!("Chapter 11 - demo");
 
     let mut world = World::new();
 
@@ -29,12 +29,12 @@ fn main() {
     world.shadow_bias = 0.0001;
 
     let wall_material = Material {
-        pattern: Some(Pattern {
-            a: Color::new(0.45, 0.45, 0.45),
-            b: Color::new(0.55, 0.55, 0.55),
-            kind: Stripe,
-            transform: transform(&[scaling(0.25, 0.25, 0.25), rotation_y(PI / 2.0)]),
-        }),
+        pattern: Some(Pattern::new(
+            Color::new(0.45, 0.45, 0.45),
+            Color::new(0.55, 0.55, 0.55),
+            Stripe,
+            transform(&[scaling(0.25, 0.25, 0.25), rotation_y(PI / 2.0)]),
+        )),
         ambient: 0.0,
         diffuse: 0.4,
         specular: 0.0,
@@ -225,5 +225,5 @@ fn main() {
         panic!("could not write file {}: {} ", path.display(), why)
     }
 
-    println!("Done");
+    //println!("Done");
 }

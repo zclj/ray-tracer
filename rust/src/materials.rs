@@ -131,6 +131,7 @@ pub struct Pattern {
     pub b: Color,
     pub kind: PatternKind,
     pub transform: M4x4,
+    pub transform_inverse: M4x4,
 }
 
 impl Pattern {
@@ -140,6 +141,7 @@ impl Pattern {
             a,
             b,
             kind,
+            transform_inverse: transform.inverse(),
             transform,
         }
     }
@@ -178,8 +180,8 @@ impl Pattern {
     }
 
     fn pattern_at_shape(&self, shape: &Shape, world_point: &Point) -> Color {
-        let object_point = &shape.transform().inverse() * world_point;
-        let pattern_point = &self.transform.inverse() * &object_point;
+        let object_point = shape.transform_inverse() * world_point;
+        let pattern_point = &self.transform_inverse * &object_point;
 
         self.pattern_at(&pattern_point)
     }
