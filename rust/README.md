@@ -22,6 +22,8 @@ and back to default:
 
 `echo 4 | sudo tee /proc/sys/kernel/perf_event_paranoid`
 
+Example of creating a flamegraph: `flamegraph -o flamegraph.svg -- ./target/release/chapter11`
+
 ## Benchmarks
 
 Using [Criterion](https://github.com/bheisler/criterion.rs).
