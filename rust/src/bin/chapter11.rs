@@ -107,7 +107,7 @@ fn main() {
     let _ball_1 = world.push_sphere(
         Some(transform(&[
             scaling(0.4, 0.4, 0.4),
-            translation(4.6, 0.4, 0.1),
+            translation(4.6, 0.4, 1.0),
         ])),
         Some(Material {
             color: Color::new(0.8, 0.5, 0.3),
@@ -160,7 +160,7 @@ fn main() {
         Some(Material {
             color: Color::new(1.0, 0.3, 0.2),
             specular: 0.4,
-            shininess: 50.0,
+            shininess: 5.0,
             ..Material::default()
         }),
     );
