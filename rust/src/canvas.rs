@@ -112,6 +112,19 @@ impl Canvas {
 
         ppm
     }
+
+    #[must_use]
+    pub fn from_colors(&self, colors: &[Vec<Color>]) -> Canvas {
+        let mut canvas = Canvas::new(self.width, self.height);
+
+        for (y, cs) in colors.iter().enumerate() {
+            for (x, c) in cs.iter().enumerate() {
+                canvas.write_pixel(x, y, c.clone());
+            }
+        }
+
+        canvas
+    }
 }
 
 #[cfg(test)]

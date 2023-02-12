@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 # only used to bench and test against
 glam = "0.22.0"
+rayon = "1.6"
 
 [dev-dependencies]
 criterion = "0.3"

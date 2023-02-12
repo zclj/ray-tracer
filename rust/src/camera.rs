@@ -1,8 +1,10 @@
 use crate::canvas::Canvas;
+use crate::color::Color;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::vector::Point;
 use crate::world::World;
+use rayon::prelude::*;
 
 pub struct Camera {
     hsize: u16,
@@ -59,17 +61,20 @@ impl Camera {
 
     #[must_use]
     pub fn render(&self, world: &World, reflection_limit: u8) -> Canvas {
-        let mut image = Canvas::new(self.hsize.into(), self.vsize.into());
+        let colors = (0..(self.vsize - 1))
+            .into_par_iter()
+            .map(|y| {
+                (0..(self.hsize - 1))
+                    .map(|x| {
+                        let ray = self.ray_for_pixel(x, y);
+                        world.color_at(&ray, reflection_limit)
+                    })
+                    .collect::<Vec<Color>>()
+            })
+            .collect::<Vec<Vec<Color>>>();
 
-        for y in 0..(self.vsize - 1) {
-            for x in 0..(self.hsize - 1) {
-                let ray = self.ray_for_pixel(x, y);
-                let color = world.color_at(&ray, reflection_limit);
-                image.write_pixel(x as usize, y as usize, color);
-            }
-        }
-
-        image
+        let image = Canvas::new(self.hsize.into(), self.vsize.into());
+        image.from_colors(&colors)
     }
 }
 
