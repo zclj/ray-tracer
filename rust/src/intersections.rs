@@ -145,11 +145,11 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 }
 
 #[must_use]
-pub fn intersect(shape: &Shape, r: &Ray) -> Vec<Intersection> {
+pub fn intersect(shape: &Shape, r: &Ray, intersections: &mut Vec<Intersection>) {
     // the ray transformed in local space
     let obj_ray = r.transform(shape.transform_inverse());
 
-    shape.intersect(&obj_ray)
+    shape.intersect(&obj_ray, intersections)
 }
 
 /// # Panics

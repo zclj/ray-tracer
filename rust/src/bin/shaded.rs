@@ -33,7 +33,8 @@ fn shaded_sphere_canvas() -> Canvas {
         let position = Point::new(world_x, world_y, wall_z);
         let ray_direction = (&position - &ray_origin).norm();
         let ray = Ray::new(Point::new(0.0, 0.0, -5.0), ray_direction);
-        let mut xs = intersect(shape, &ray);
+        let mut xs = Vec::new();
+        intersect(shape, &ray, &mut xs);
 
         let the_hit = hit(&mut xs);
 

@@ -40,7 +40,7 @@ impl Shape {
     }
 
     #[must_use]
-    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
+    pub fn intersect(&self, ray: &Ray, intersections: &mut Vec<Intersection>) {
         match self {
             Shape::Sphere { id, .. } => {
                 let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
@@ -52,22 +52,24 @@ impl Shape {
                 let discriminant = b.powf(2.0) - (4.0 * a * c);
 
                 if discriminant < 0.0 {
-                    return Vec::new();
+                    return;
                 }
 
                 let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
                 let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
 
-                vec![
-                    Intersection { t: t1, object: *id },
-                    Intersection { t: t2, object: *id },
-                ]
+                // vec![
+                //     Intersection { t: t1, object: *id },
+                //     Intersection { t: t2, object: *id },
+                // ]
+                intersections.push(Intersection { t: t1, object: *id });
+                intersections.push(Intersection { t: t2, object: *id });
             }
             Shape::Plane { id, .. } => {
                 if ray.direction.y.abs() < EPSILON {
-                    Vec::new()
+                    return;
                 } else {
-                    vec![Intersection::new(-ray.origin.y / ray.direction.y, *id)]
+                    intersections.push(Intersection::new(-ray.origin.y / ray.direction.y, *id))
                 }
             }
         }

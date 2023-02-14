@@ -1,5 +1,6 @@
 use crate::canvas::Canvas;
 use crate::color::Color;
+use crate::intersections::Intersection;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::vector::Point;
@@ -64,10 +65,11 @@ impl Camera {
         let colors = (0..(self.vsize - 1))
             .into_par_iter()
             .map(|y| {
+                let mut intersections = Vec::<Intersection>::with_capacity(100);
                 (0..(self.hsize - 1))
                     .map(|x| {
                         let ray = self.ray_for_pixel(x, y);
-                        world.color_at(&ray, reflection_limit)
+                        world.color_at(&ray, reflection_limit, &mut intersections)
                     })
                     .collect::<Vec<Color>>()
             })

@@ -94,18 +94,28 @@ impl World {
     }
 
     #[must_use]
-    pub fn intersect(&self, ray: &Ray) -> Vec<Intersection> {
-        let mut is: Vec<Intersection> =
-            self.shapes.iter().flat_map(|s| intersect(s, ray)).collect();
-        sort_by_t(&mut is);
-        is
+    pub fn intersect(&self, ray: &Ray, intersections: &mut Vec<Intersection>) {
+        intersections.clear();
+
+        self.shapes
+            .iter()
+            .for_each(|s| intersect(s, ray, intersections));
+        // let mut is: Vec<Intersection> =
+        //     self.shapes.iter().flat_map(|s| intersect(s, ray)).collect();
+
+        sort_by_t(intersections);
     }
 
     #[must_use]
-    pub fn shade_hit(&self, comp: &ComputedIntersection, remaining: u8) -> Color {
+    pub fn shade_hit(
+        &self,
+        comp: &ComputedIntersection,
+        remaining: u8,
+        intersections: &mut Vec<Intersection>,
+    ) -> Color {
         let shape = &self.get_shape(comp.object);
         let m = &shape.material();
-        let shadowed = self.is_shadowed(&comp.over_point);
+        let shadowed = self.is_shadowed(&comp.over_point, intersections);
 
         let surface = m.lighting(
             shape,
@@ -116,8 +126,8 @@ impl World {
             shadowed,
         );
 
-        let reflected = self.reflected_color(comp, remaining);
-        let refracted = self.refracted_color(comp, remaining);
+        let reflected = self.reflected_color(comp, remaining, intersections);
+        let refracted = self.refracted_color(comp, remaining, intersections);
 
         if m.reflective > 0.0 && m.transparency > 0.0 {
             let reflectance = comp.schlick();
@@ -128,32 +138,42 @@ impl World {
     }
 
     #[must_use]
-    pub fn color_at(&self, ray: &Ray, remaining: u8) -> Color {
+    pub fn color_at(
+        &self,
+        ray: &Ray,
+        remaining: u8,
+        intersections: &mut Vec<Intersection>,
+    ) -> Color {
         // @TODO - Is there a better way of handling the sorting of the is?
-        let is = self.intersect(ray);
-        let mut hit_intersections = is.clone();
-        let the_hit = hit(&mut hit_intersections);
+        self.intersect(ray, intersections);
+        //let mut hit_intersections = intersections.clone();
+        //let the_hit = hit(&mut hit_intersections);
+        //let the_hit = hit(intersections);
 
-        match the_hit {
+        // intersections are already sorted when created
+        let pos_xs: Vec<&Intersection> = intersections.iter().filter(|x| x.t >= 0.0).collect();
+
+        // check if we have a hit or not
+        match pos_xs.first() {
             Some(i) => {
-                let comp = i.compute(self, ray, &is, self.shadow_bias);
-                self.shade_hit(&comp, remaining)
+                let comp = i.compute(self, ray, intersections, self.shadow_bias);
+                self.shade_hit(&comp, remaining, intersections)
             }
-            None => Color::new(0.0, 0.0, 0.0),
+            _ => Color::new(0.0, 0.0, 0.0),
         }
     }
 
     #[must_use]
-    pub fn is_shadowed(&self, point: &Point) -> bool {
+    pub fn is_shadowed(&self, point: &Point, intersections: &mut Vec<Intersection>) -> bool {
         let v = &self.light.position - point;
         let distance = v.mag();
         let direction = v.norm();
 
         let r = Ray::new((*point).clone(), direction);
 
-        let mut intersections = self.intersect(&r);
+        self.intersect(&r, intersections);
 
-        let h = hit(&mut intersections);
+        let h = hit(intersections);
 
         match h {
             Some(i) => i.t < distance,
@@ -162,7 +182,12 @@ impl World {
     }
 
     #[must_use]
-    pub fn reflected_color(&self, comp: &ComputedIntersection, remaining: u8) -> Color {
+    pub fn reflected_color(
+        &self,
+        comp: &ComputedIntersection,
+        remaining: u8,
+        intersections: &mut Vec<Intersection>,
+    ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
@@ -171,14 +196,19 @@ impl World {
             Color::new(0.0, 0.0, 0.0)
         } else {
             let reflect_ray = Ray::new(comp.over_point.clone(), comp.reflectv.clone());
-            let color = self.color_at(&reflect_ray, remaining - 1);
+            let color = self.color_at(&reflect_ray, remaining - 1, intersections);
 
             &color * shape.material().reflective
         }
     }
 
     #[must_use]
-    pub fn refracted_color(&self, comp: &ComputedIntersection, remaining: u8) -> Color {
+    pub fn refracted_color(
+        &self,
+        comp: &ComputedIntersection,
+        remaining: u8,
+        intersections: &mut Vec<Intersection>,
+    ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
@@ -205,7 +235,8 @@ impl World {
             let refracted_ray = Ray::new(comp.under_point.clone(), direction);
 
             // find the color of the refracted ray
-            self.color_at(&refracted_ray, remaining - 1) * shape.material().transparency
+            self.color_at(&refracted_ray, remaining - 1, intersections)
+                * shape.material().transparency
         }
     }
 }
