@@ -11,6 +11,8 @@ Playing around with different language implementation. Should not be considered 
 - [Bonus Chapters - Bounding Boxes](http://www.raytracerchallenge.com/bonus/bounding-boxes.html)
 
 - [Example in Rust](https://github.com/ahamez/ray-tracer)
+
+- [High performance example](https://www.reddit.com/r/rust/comments/zsrvss/strolle_raytracing_2_million_triangles_in_realtime/)
 ### Models
 
 - https://benedikt-bitterli.me/resources/
