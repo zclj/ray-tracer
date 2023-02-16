@@ -155,8 +155,9 @@ pub fn intersect(shape: &Shape, r: &Ray, intersections: &mut Vec<Intersection>) 
 /// # Panics
 ///
 /// Will panic if intersection t value is NaN
-pub fn hit(xs: &mut [Intersection]) -> Option<&Intersection> {
-    sort_by_t(xs);
+#[inline]
+pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
+    // intersections are already sorted
     let pos_xs: Vec<&Intersection> = xs.iter().filter(|x| x.t >= 0.0).collect();
 
     match pos_xs.first() {

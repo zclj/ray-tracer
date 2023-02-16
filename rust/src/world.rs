@@ -144,17 +144,9 @@ impl World {
         remaining: u8,
         intersections: &mut Vec<Intersection>,
     ) -> Color {
-        // @TODO - Is there a better way of handling the sorting of the is?
         self.intersect(ray, intersections);
-        //let mut hit_intersections = intersections.clone();
-        //let the_hit = hit(&mut hit_intersections);
-        //let the_hit = hit(intersections);
 
-        // intersections are already sorted when created
-        let pos_xs: Vec<&Intersection> = intersections.iter().filter(|x| x.t >= 0.0).collect();
-
-        // check if we have a hit or not
-        match pos_xs.first() {
+        match hit(intersections) {
             Some(i) => {
                 let comp = i.compute(self, ray, intersections, self.shadow_bias);
                 self.shade_hit(&comp, remaining, intersections)
