@@ -144,18 +144,18 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
     xs.sort_unstable_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
 }
 
-#[must_use]
 pub fn intersect(shape: &Shape, r: &Ray, intersections: &mut Vec<Intersection>) {
     // the ray transformed in local space
     let obj_ray = r.transform(shape.transform_inverse());
 
-    shape.intersect(&obj_ray, intersections)
+    shape.intersect(&obj_ray, intersections);
 }
 
 /// # Panics
 ///
 /// Will panic if intersection t value is NaN
 #[inline]
+#[must_use]
 pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
     // intersections are already sorted
     let pos_xs: Vec<&Intersection> = xs.iter().filter(|x| x.t >= 0.0).collect();

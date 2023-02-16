@@ -36,7 +36,7 @@ fn shaded_sphere_canvas() -> Canvas {
         let mut xs = Vec::new();
         intersect(shape, &ray, &mut xs);
 
-        let the_hit = hit(&mut xs);
+        let the_hit = hit(&xs);
 
         match the_hit {
             Some(hit) => {

@@ -39,7 +39,6 @@ impl Shape {
         world_normal.norm()
     }
 
-    #[must_use]
     pub fn intersect(&self, ray: &Ray, intersections: &mut Vec<Intersection>) {
         match self {
             Shape::Sphere { id, .. } => {
@@ -58,19 +57,14 @@ impl Shape {
                 let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
                 let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
 
-                // vec![
-                //     Intersection { t: t1, object: *id },
-                //     Intersection { t: t2, object: *id },
-                // ]
                 intersections.push(Intersection { t: t1, object: *id });
                 intersections.push(Intersection { t: t2, object: *id });
             }
             Shape::Plane { id, .. } => {
                 if ray.direction.y.abs() < EPSILON {
                     return;
-                } else {
-                    intersections.push(Intersection::new(-ray.origin.y / ray.direction.y, *id))
                 }
+                intersections.push(Intersection::new(-ray.origin.y / ray.direction.y, *id));
             }
         }
     }

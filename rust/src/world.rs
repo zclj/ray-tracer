@@ -93,7 +93,6 @@ impl World {
         &self.shapes[id as usize]
     }
 
-    #[must_use]
     pub fn intersect(&self, ray: &Ray, intersections: &mut Vec<Intersection>) {
         intersections.clear();
 

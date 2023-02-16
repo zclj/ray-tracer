@@ -35,7 +35,7 @@ fn silhouette_into_canvas() -> Canvas {
         let mut xs = Vec::new();
         intersect(shape, &ray, &mut xs);
 
-        let is_hit = hit(&mut xs);
+        let is_hit = hit(&xs);
 
         match is_hit {
             Some(_) => color.clone(),
