@@ -141,7 +141,7 @@ impl ComputedIntersection {
 ///
 /// Will panic if intersection t value is NaN
 pub fn sort_by_t(xs: &mut [Intersection]) {
-    xs.sort_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
+    xs.sort_unstable_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
 }
 
 #[must_use]
