@@ -120,7 +120,7 @@ impl Intersection {
 impl ComputedIntersection {
     #[must_use]
     pub fn schlick(&self) -> f32 {
-        let mut cos = self.eyev.dot(&self.normalv);
+        let cos = self.eyev.dot(&self.normalv);
 
         let n = self.n1 / self.n2;
         let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
@@ -130,10 +130,9 @@ impl ComputedIntersection {
         }
 
         let cos_t = f32::sqrt(1.0 - sin2_t);
-        cos = cos_t;
 
         let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powf(2.0);
-        r0 + (1.0 - r0) * (1.0 - cos).powf(5.0)
+        r0 + (1.0 - r0) * (1.0 - cos_t).powf(5.0)
     }
 }
 
