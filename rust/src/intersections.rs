@@ -22,6 +22,7 @@ pub struct ComputedIntersection {
     pub reflectv: Vector,
     pub n1: f32,
     pub n2: f32,
+    pub cos_i: f32,
 }
 
 impl Intersection {
@@ -50,7 +51,8 @@ impl Intersection {
 
         let eyev = -&ray.direction;
 
-        let is_inside = if (normalv.dot(&eyev)) < 0.0 {
+        let cos_i = normalv.dot(&eyev);
+        let is_inside = if cos_i < 0.0 {
             normalv = -normalv;
             true
         } else {
@@ -102,6 +104,7 @@ impl Intersection {
 
         let shadow_biased_normal = &normalv * shadow_bias;
         ComputedIntersection {
+            cos_i,
             t: self.t,
             object: self.object,
             over_point: &cpoint + &shadow_biased_normal,
@@ -120,7 +123,7 @@ impl Intersection {
 impl ComputedIntersection {
     #[must_use]
     pub fn schlick(&self) -> f32 {
-        let mut cos = self.eyev.dot(&self.normalv);
+        let mut cos = self.cos_i;
 
         if self.n1 > self.n2 {
             let n = self.n1 / self.n2;
