@@ -120,19 +120,21 @@ impl Intersection {
 impl ComputedIntersection {
     #[must_use]
     pub fn schlick(&self) -> f32 {
-        let cos = self.eyev.dot(&self.normalv);
+        let mut cos = self.eyev.dot(&self.normalv);
 
-        let n = self.n1 / self.n2;
-        let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
-
-        if self.n1 > self.n2 && sin2_t > 1.0 {
-            return 1.0;
+        if self.n1 > self.n2 {
+            let n = self.n1 / self.n2;
+            let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
+            if sin2_t > 1.0 {
+                return 1.0;
+            } else {
+                let cos_t = f32::sqrt(1.0 - sin2_t);
+                let cos = cos_t;
+            }
         }
 
-        let cos_t = f32::sqrt(1.0 - sin2_t);
-
         let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powf(2.0);
-        r0 + (1.0 - r0) * (1.0 - cos_t).powf(5.0)
+        r0 + (1.0 - r0) * (1.0 - cos).powf(5.0)
     }
 }
 
@@ -870,7 +872,6 @@ mod test {
         let comps = xs[0].compute(&world, &r, &xs, EPSILON);
         let reflectance = comps.schlick();
 
-        //assert_eq!(epsilon_eq(reflectance, 0.48873), true)
-        assert_eq!(reflectance, 0.48873)
+        assert_eq!(epsilon_eq(reflectance, 0.48873), true)
     }
 }
