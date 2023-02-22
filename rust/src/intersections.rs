@@ -132,8 +132,7 @@ impl ComputedIntersection {
                 return 1.0;
             }
 
-            let cos_t = f32::sqrt(1.0 - sin2_t);
-            cos = cos_t;
+            cos = f32::sqrt(1.0 - sin2_t);
         }
 
         let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powf(2.0);
