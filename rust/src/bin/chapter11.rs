@@ -205,8 +205,8 @@ fn main() {
     // Camera and rendering
 
     let camera = Camera::new(
-        1200,
-        600,
+        1200, //3840,
+        600,  //2160,
         1.152,
         &view_transform(
             &Point::new(-2.6, 1.5, -3.9),
