@@ -36,7 +36,7 @@ impl Intersection {
     #[must_use]
     /// # Panics
     ///
-    /// Will panic shapes do not exist
+    /// Will panic if shape do not exist
     pub fn compute(
         &self,
         world: &World,
@@ -222,7 +222,8 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 4.0);
@@ -242,7 +243,8 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 5.0);
@@ -260,7 +262,8 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 0);
     }
@@ -278,7 +281,8 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, -1.0);
@@ -298,7 +302,8 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
 
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, -6.0);
@@ -317,7 +322,8 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].object, s_id);
@@ -403,6 +409,8 @@ mod test {
         let i4 = Intersection::new(2.0, s_id);
 
         let mut is = [i1, i2, i3, i4];
+        // to not sort redundantly, the sort is outside of the hit fn
+        sort_by_t(&mut is);
         let i = hit(&mut is);
 
         assert_eq!(i, Some(&Intersection::new(2.0, s_id)));
@@ -421,7 +429,8 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
         let s_id = world.push_sphere(Some(scaling(2.0, 2.0, 2.0)), None);
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 3.0);
@@ -439,7 +448,8 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
         let s_id = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
-        let xs = intersect(world.get_shape(s_id), &r);
+        let mut xs = vec![];
+        intersect(world.get_shape(s_id), &r, &mut xs);
 
         assert_eq!(xs.len(), 0);
     }
@@ -551,7 +561,8 @@ mod test {
         let p = world.get_shape(p_id);
         let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
-        let xs = p.intersect(&r);
+        let mut xs = vec![];
+        p.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0)
     }
@@ -569,7 +580,8 @@ mod test {
         let p = world.get_shape(p_id);
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
-        let xs = p.intersect(&r);
+        let mut xs = vec![];
+        p.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0)
     }
@@ -589,7 +601,8 @@ mod test {
         let p = world.get_shape(p_id);
         let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
 
-        let xs = p.intersect(&r);
+        let mut xs = vec![];
+        p.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);
@@ -611,7 +624,8 @@ mod test {
         let p = world.get_shape(p_id);
         let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
 
-        let xs = p.intersect(&r);
+        let mut xs = vec![];
+        p.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);
@@ -856,6 +870,7 @@ mod test {
         let comps = xs[0].compute(&world, &r, &xs, EPSILON);
         let reflectance = comps.schlick();
 
-        assert_eq!(epsilon_eq(reflectance, 0.48873), true)
+        //assert_eq!(epsilon_eq(reflectance, 0.48873), true)
+        assert_eq!(reflectance, 0.48873)
     }
 }

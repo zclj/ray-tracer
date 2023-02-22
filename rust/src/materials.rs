@@ -243,6 +243,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
@@ -267,6 +269,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
@@ -291,6 +295,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
 
@@ -316,6 +322,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
 
@@ -341,6 +349,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
 
@@ -368,6 +378,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
 
@@ -482,6 +494,8 @@ mod test {
         let shape = Shape::Sphere {
             id: 1,
             transform: M4x4::IDENTITY,
+            transform_inverse: M4x4::IDENTITY,
+            transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
         };
 
@@ -547,6 +561,7 @@ mod test {
             Some(Material {
                 pattern: Some(Pattern {
                     transform: scaling(2.0, 2.0, 2.0),
+                    transform_inverse: scaling(2.0, 2.0, 2.0).inverse(),
                     ..Pattern::default()
                 }),
                 ..Material::default()
@@ -576,6 +591,7 @@ mod test {
             Some(Material {
                 pattern: Some(Pattern {
                     transform: translation(0.5, 0.0, 0.0),
+                    transform_inverse: translation(0.5, 0.0, 0.0).inverse(),
                     ..Pattern::default()
                 }),
                 ..Material::default()

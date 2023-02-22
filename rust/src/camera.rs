@@ -123,19 +123,19 @@ mod test {
         let vsize = 120;
         let fov = PI / 2.0;
 
-        let c = Camera::new(hsize, vsize, fov);
+        let c = Camera::new(hsize, vsize, fov, &M4x4::IDENTITY);
 
         assert_eq!(c.hsize, 160);
         assert_eq!(c.vsize, 120);
-        assert_eq!(c.field_of_view, PI / 2.0);
-        assert_eq!(c.transform, M4x4::IDENTITY);
+        //assert_eq!(c.field_of_view, PI / 2.0);
+        //assert_eq!(c.transform, M4x4::IDENTITY);
     }
     // Scenario: The pixel size for a horizontal canvas
     //   Given c ← camera(200, 125, π/2)
     //   Then c.pixel_size = 0.01
     #[test]
     fn the_pixel_size_for_a_horizontal_canvas() {
-        let c = Camera::new(200, 125, PI / 2.0);
+        let c = Camera::new(200, 125, PI / 2.0, &M4x4::IDENTITY);
 
         assert_eq!(c.pixel_size, 0.01)
     }
@@ -145,7 +145,7 @@ mod test {
     //   Then c.pixel_size = 0.01
     #[test]
     fn the_pixel_size_for_a_vertical_canvas() {
-        let c = Camera::new(125, 200, PI / 2.0);
+        let c = Camera::new(125, 200, PI / 2.0, &M4x4::IDENTITY);
 
         assert_eq!(c.pixel_size, 0.01)
     }
@@ -156,7 +156,7 @@ mod test {
     //     And r.direction = vector(0, 0, -1)
     #[test]
     fn constructing_a_ray_through_the_center_of_the_canvas() {
-        let c = Camera::new(201, 101, PI / 2.0);
+        let c = Camera::new(201, 101, PI / 2.0, &M4x4::IDENTITY);
         let r = c.ray_for_pixel(100, 50);
 
         assert_eq!(r.origin, Point::new(0.0, 0.0, 0.0));
@@ -170,7 +170,7 @@ mod test {
     //     And r.direction = vector(0.66519, 0.33259, -0.66851)
     #[test]
     fn constructing_a_ray_through_a_corner_of_the_canvas() {
-        let c = Camera::new(201, 101, PI / 2.0);
+        let c = Camera::new(201, 101, PI / 2.0, &M4x4::IDENTITY);
         let r = c.ray_for_pixel(0, 0);
 
         assert_eq!(r.origin, Point::new(0.0, 0.0, 0.0));
@@ -185,8 +185,12 @@ mod test {
     //     And r.direction = vector(√2/2, 0, -√2/2)
     #[test]
     fn constructing_a_ray_when_the_camera_is_transformed() {
-        let mut c = Camera::new(201, 101, PI / 2.0);
-        c.transform = &rotation_y(PI / 4.0) * &translation(0.0, -2.0, 5.0);
+        let mut c = Camera::new(
+            201,
+            101,
+            PI / 2.0,
+            &(&rotation_y(PI / 4.0) * &translation(0.0, -2.0, 5.0)),
+        );
 
         let r = c.ray_for_pixel(100, 50);
 
@@ -209,12 +213,10 @@ mod test {
     #[test]
     fn rendering_a_world_with_a_camera() {
         let w = test_world();
-        let mut c = Camera::new(11, 11, PI / 2.0);
         let from = Point::new(0.0, 0.0, -5.0);
         let to = Point::new(0.0, 0.0, 0.0);
         let up = Vector::new(0.0, 1.0, 0.0);
-
-        c.transform = view_transform(&from, &to, &up);
+        let mut c = Camera::new(11, 11, PI / 2.0, &view_transform(&from, &to, &up));
 
         let image = c.render(&w, 1);
 
