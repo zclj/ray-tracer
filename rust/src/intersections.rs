@@ -127,10 +127,10 @@ impl ComputedIntersection {
             let sin2_t = n.powf(2.0) * (1.0 - cos.powf(2.0));
             if sin2_t > 1.0 {
                 return 1.0;
-            } else {
-                let cos_t = f32::sqrt(1.0 - sin2_t);
-                let cos = cos_t;
             }
+
+            let cos_t = f32::sqrt(1.0 - sin2_t);
+            cos = cos_t;
         }
 
         let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).powf(2.0);
