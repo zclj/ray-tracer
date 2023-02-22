@@ -159,12 +159,7 @@ pub fn intersect(shape: &Shape, r: &Ray, intersections: &mut Vec<Intersection>) 
 #[must_use]
 pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
     // intersections are already sorted
-    let pos_xs: Vec<&Intersection> = xs.iter().filter(|x| x.t >= 0.0).collect();
-
-    match pos_xs.first() {
-        Some(i) => Some(*i),
-        _ => None,
-    }
+    xs.iter().find(|x| x.t >= 0.0)
 }
 
 #[cfg(test)]
