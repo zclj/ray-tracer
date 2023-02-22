@@ -51,8 +51,7 @@ impl Intersection {
 
         let eyev = -&ray.direction;
 
-        let cos_i = normalv.dot(&eyev);
-        let is_inside = if cos_i < 0.0 {
+        let is_inside = if normalv.dot(&eyev) < 0.0 {
             normalv = -normalv;
             true
         } else {
@@ -104,7 +103,8 @@ impl Intersection {
 
         let shadow_biased_normal = &normalv * shadow_bias;
         ComputedIntersection {
-            cos_i,
+            // normal might have changed direction
+            cos_i: normalv.dot(&eyev),
             t: self.t,
             object: self.object,
             over_point: &cpoint + &shadow_biased_normal,

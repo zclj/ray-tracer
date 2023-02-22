@@ -207,7 +207,7 @@ impl World {
         let shape = self.get_shape(comp.object);
 
         let n_ratio = comp.n1 / comp.n2;
-        let cos_i = comp.eyev.dot(&comp.normalv);
+        let cos_i = comp.cos_i; //comp.eyev.dot(&comp.normalv);
         let sin2_t = n_ratio.powf(2.0) * (1.0 - cos_i.powf(2.0));
 
         // check for total internal reflection
