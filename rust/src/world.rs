@@ -318,8 +318,8 @@ mod test {
                 id: 1,
                 transform: scaling(0.5, 0.5, 0.5),
                 material: Material::default(),
-                transform_inverse: M4x4::IDENTITY,
-                transform_inverse_transpose: M4x4::IDENTITY,
+                transform_inverse: scaling(0.5, 0.5, 0.5).inverse(),
+                transform_inverse_transpose: scaling(0.5, 0.5, 0.5).inverse().transpose(),
             }
         );
 
