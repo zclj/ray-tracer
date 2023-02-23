@@ -185,7 +185,7 @@ mod test {
     //     And r.direction = vector(√2/2, 0, -√2/2)
     #[test]
     fn constructing_a_ray_when_the_camera_is_transformed() {
-        let mut c = Camera::new(
+        let c = Camera::new(
             201,
             101,
             PI / 2.0,
@@ -216,7 +216,7 @@ mod test {
         let from = Point::new(0.0, 0.0, -5.0);
         let to = Point::new(0.0, 0.0, 0.0);
         let up = Vector::new(0.0, 1.0, 0.0);
-        let mut c = Camera::new(11, 11, PI / 2.0, &view_transform(&from, &to, &up));
+        let c = Camera::new(11, 11, PI / 2.0, &view_transform(&from, &to, &up));
 
         let image = c.render(&w, 1);
 

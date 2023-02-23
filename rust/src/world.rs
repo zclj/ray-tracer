@@ -1066,7 +1066,7 @@ mod test {
             }),
         );
 
-        let ball = w.push_sphere(
+        let _ball = w.push_sphere(
             Some(translation(0.0, -3.5, -0.5)),
             Some(Material {
                 ambient: 0.5,
@@ -1143,7 +1143,7 @@ mod test {
             }),
         );
 
-        let ball = w.push_sphere(
+        let _ball = w.push_sphere(
             Some(translation(0.0, -3.5, -0.5)),
             Some(Material {
                 ambient: 0.5,
