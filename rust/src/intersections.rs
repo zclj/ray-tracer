@@ -43,6 +43,7 @@ impl Intersection {
         ray: &Ray,
         intersections: &[Intersection],
         shadow_bias: f32,
+        containers: &mut Vec<u32>,
     ) -> ComputedIntersection {
         let mut normalv = world
             .get_shape(self.object)
@@ -60,9 +61,8 @@ impl Intersection {
         // @TODO - there might be a nicer way to do this
         let mut n1 = 1.0;
         let mut n2 = 1.0;
+        containers.clear();
         {
-            let mut containers: Vec<u32> = vec![];
-
             for i in intersections {
                 if i == self {
                     if containers.is_empty() {

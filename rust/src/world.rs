@@ -111,6 +111,7 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         let shape = &self.get_shape(comp.object);
         let m = &shape.material();
@@ -125,8 +126,8 @@ impl World {
             shadowed,
         );
 
-        let reflected = self.reflected_color(comp, remaining, intersections);
-        let refracted = self.refracted_color(comp, remaining, intersections);
+        let reflected = self.reflected_color(comp, remaining, intersections, containers);
+        let refracted = self.refracted_color(comp, remaining, intersections, containers);
 
         if m.reflective > 0.0 && m.transparency > 0.0 {
             let reflectance = comp.schlick();
@@ -142,13 +143,14 @@ impl World {
         ray: &Ray,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         self.intersect(ray, intersections);
 
         match hit(intersections) {
             Some(i) => {
-                let comp = i.compute(self, ray, intersections, self.shadow_bias);
-                self.shade_hit(&comp, remaining, intersections)
+                let comp = i.compute(self, ray, intersections, self.shadow_bias, containers);
+                self.shade_hit(&comp, remaining, intersections, containers)
             }
             _ => Color::new(0.0, 0.0, 0.0),
         }
@@ -178,6 +180,7 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
@@ -187,7 +190,7 @@ impl World {
             Color::new(0.0, 0.0, 0.0)
         } else {
             let reflect_ray = Ray::new(comp.over_point.clone(), comp.reflectv.clone());
-            let color = self.color_at(&reflect_ray, remaining - 1, intersections);
+            let color = self.color_at(&reflect_ray, remaining - 1, intersections, containers);
 
             &color * shape.material().reflective
         }
@@ -199,6 +202,7 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
@@ -226,7 +230,7 @@ impl World {
             let refracted_ray = Ray::new(comp.under_point.clone(), direction);
 
             // find the color of the refracted ray
-            self.color_at(&refracted_ray, remaining - 1, intersections)
+            self.color_at(&refracted_ray, remaining - 1, intersections, containers)
                 * shape.material().transparency
         }
     }
