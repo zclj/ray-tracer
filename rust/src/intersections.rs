@@ -95,7 +95,6 @@ impl Intersection {
                 }
             }
         };
-        //
 
         let shadow_biased_normal = &normalv * shadow_bias;
         ComputedIntersection {
