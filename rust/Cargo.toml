@@ -12,9 +12,14 @@ rayon = "1.6"
 
 [dev-dependencies]
 criterion = "0.3"
+iai = "0.1"
 
 [[bench]]
 name = "rendering"
+harness = false
+
+[[bench]]
+name = "rendering_iai"
 harness = false
 
 [[bench]]
