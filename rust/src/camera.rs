@@ -6,6 +6,7 @@ use crate::rays::Ray;
 use crate::vector::Point;
 use crate::world::World;
 use rayon::prelude::*;
+use std::time::Instant;
 
 pub struct Camera {
     hsize: u16,
@@ -62,6 +63,7 @@ impl Camera {
 
     #[must_use]
     pub fn render(&self, world: &World, reflection_limit: u8) -> Canvas {
+        let start_time = Instant::now();
         let colors = (0..(self.vsize - 1))
             .into_par_iter()
             .map(|y| {
@@ -75,6 +77,8 @@ impl Camera {
                     .collect::<Vec<Color>>()
             })
             .collect::<Vec<Vec<Color>>>();
+        let end_time = Instant::now();
+        println!("Render time {:?}", end_time.duration_since(start_time));
 
         let image = Canvas::new(self.hsize.into(), self.vsize.into());
         image.from_colors(&colors)
