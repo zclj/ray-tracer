@@ -464,8 +464,8 @@ mod test {
         let s_id = world.push_sphere(None, None);
 
         let i = Intersection::new(4.0, s_id);
-
-        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
 
         assert_eq!(comps.t, i.t);
         assert_eq!(comps.object, i.object);
@@ -534,8 +534,8 @@ mod test {
         let s_id = world.push_sphere(Some(translation(0.0, 0.0, 1.0)), None);
 
         let i = Intersection::new(5.0, s_id);
-
-        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
 
         assert_eq!(comps.over_point.z < -EPSILON / 2.0, true);
         assert_eq!(comps.point.z > comps.over_point.z, true);
@@ -641,8 +641,8 @@ mod test {
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
         let i = Intersection::new(f32::sqrt(2.0), s_id);
-
-        let comps = i.compute(&world, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
 
         assert_eq!(
             comps.reflectv,
@@ -718,9 +718,10 @@ mod test {
             Intersection::new(6.0, a_id),
         ];
 
+        let mut containers = vec![];
         let comps = xs
             .iter()
-            .map(|i| i.compute(&world, &r, &xs, EPSILON))
+            .map(|i| i.compute(&world, &r, &xs, EPSILON, &mut containers))
             .collect::<Vec<ComputedIntersection>>();
 
         assert_eq!(comps[0].n1, 1.0);
@@ -762,7 +763,8 @@ mod test {
         let i = Intersection::new(5.0, s_id);
         let xs = [i.clone()];
 
-        let comps = i.compute(&world, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&world, &r, &xs, EPSILON, &mut containers);
 
         assert_eq!(comps.under_point.z > EPSILON / 2.0, true);
         assert_eq!(comps.point.z < comps.under_point.z, true)
@@ -798,7 +800,8 @@ mod test {
             Intersection::new(f32::sqrt(2.0) / 2.0, s_id),
         ];
 
-        let comps = xs[1].compute(&world, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[1].compute(&world, &r, &xs, EPSILON, &mut containers);
         let reflectance = comps.schlick();
 
         assert_eq!(reflectance, 1.0)
@@ -830,7 +833,8 @@ mod test {
 
         let xs = [Intersection::new(-1.0, s_id), Intersection::new(1.0, s_id)];
 
-        let comps = xs[1].compute(&world, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[1].compute(&world, &r, &xs, EPSILON, &mut containers);
         let reflectance = comps.schlick();
 
         assert_eq!(epsilon_eq(reflectance, 0.04), true)
@@ -859,8 +863,8 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
 
         let xs = [Intersection::new(1.8589, s_id)];
-
-        let comps = xs[0].compute(&world, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[0].compute(&world, &r, &xs, EPSILON, &mut containers);
         let reflectance = comps.schlick();
 
         assert_eq!(epsilon_eq(reflectance, 0.48873), true)

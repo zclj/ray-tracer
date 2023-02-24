@@ -376,9 +376,10 @@ mod test {
         // first shape in test world has id 0
         let i = Intersection::new(4.0, 0);
 
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 0, &mut intersections);
+        let c = w.shade_hit(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855));
     }
@@ -404,9 +405,10 @@ mod test {
         // second shape in test world has id 1
         let i = Intersection::new(0.5, 1);
 
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 0, &mut intersections);
+        let c = w.shade_hit(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.90498, 0.90498, 0.90498));
     }
@@ -422,7 +424,8 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0));
 
         let mut intersections = vec![];
-        let c = w.color_at(&r, 1, &mut intersections);
+        let mut containers = vec![];
+        let c = w.color_at(&r, 1, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -437,8 +440,9 @@ mod test {
         let w = test_default();
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
+        let mut containers = vec![];
         let mut intersections = vec![];
-        let c = w.color_at(&r, 1, &mut intersections);
+        let c = w.color_at(&r, 1, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.38066, 0.47583, 0.2855))
     }
@@ -476,8 +480,9 @@ mod test {
         );
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
+        let mut containers = vec![];
         let mut intersections = vec![];
-        let c = w.color_at(&r, 1, &mut intersections);
+        let c = w.color_at(&r, 1, &mut intersections, &mut containers);
 
         assert_eq!(c, w.get_shape(inner_id).material().color)
     }
@@ -565,9 +570,10 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(4.0, s2_id);
 
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 0, &mut intersections);
+        let c = w.shade_hit(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.1, 0.1, 0.1))
     }
@@ -606,9 +612,10 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let i = Intersection::new(1.0, sid);
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let color = w.reflected_color(&comps, 0, &mut intersections);
+        let color = w.reflected_color(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
     }
@@ -659,9 +666,10 @@ mod test {
         );
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let color = w.reflected_color(&comps, 1, &mut intersections);
+        let color = w.reflected_color(&comps, 1, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
     }
@@ -712,9 +720,11 @@ mod test {
         );
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
+
         let mut intersections = vec![];
-        let color = w.shade_hit(&comps, 1, &mut intersections);
+        let color = w.shade_hit(&comps, 1, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.876757, 0.92434, 0.82917));
     }
@@ -753,10 +763,11 @@ mod test {
         );
 
         let r = Ray::new(Point::new(0.0, 0.0, -3.0), Vector::new(0.0, 1.0, 0.0));
+        let mut containers = vec![];
         let mut intersections = vec![];
 
         assert_eq!(
-            w.color_at(&r, 1, &mut intersections),
+            w.color_at(&r, 1, &mut intersections, &mut containers),
             Color::new(0.7692048, 0.7692048, 0.7692048)
         );
     }
@@ -807,9 +818,10 @@ mod test {
         );
 
         let i = Intersection::new(f32::sqrt(2.0), pid);
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON);
+        let mut containers = vec![];
+        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let color = w.reflected_color(&comps, 0, &mut intersections);
+        let color = w.reflected_color(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
     }
@@ -847,10 +859,11 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
         let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 5, &mut intersections);
+        let c = w.refracted_color(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -893,10 +906,11 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
         let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 0, &mut intersections);
+        let c = w.refracted_color(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -947,10 +961,11 @@ mod test {
             Intersection::new(-f32::sqrt(2.0) / 2.0, sid),
             Intersection::new(f32::sqrt(2.0) / 2.0, sid),
         ];
-        let comps = xs[1].compute(&w, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[1].compute(&w, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 5, &mut intersections);
+        let c = w.refracted_color(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -1010,10 +1025,11 @@ mod test {
             Intersection::new(0.4899, bid),
             Intersection::new(0.9899, aid),
         ];
-        let comps = xs[2].compute(&w, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[2].compute(&w, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 5, &mut intersections);
+        let c = w.refracted_color(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.99888, 0.04725))
     }
@@ -1085,10 +1101,11 @@ mod test {
         );
 
         let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 5, &mut intersections);
+        let c = w.shade_hit(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.93642, 0.68642, 0.68642))
     }
@@ -1162,10 +1179,11 @@ mod test {
         );
 
         let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON);
+        let mut containers = vec![];
+        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 5, &mut intersections);
+        let c = w.shade_hit(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.93391, 0.69643, 0.69243))
     }
