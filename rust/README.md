@@ -24,6 +24,11 @@ and back to default:
 
 Example of creating a flamegraph: `flamegraph -o flamegraph.svg -- ./target/release/chapter11`
 
+### Memory
+
+For cache behaviour use: `valgrind --tool=cachegrind ./target/<app>`
+
+For dynamic heap analysis use: ``
 ## Benchmarks
 
 Using [Criterion](https://github.com/bheisler/criterion.rs).
