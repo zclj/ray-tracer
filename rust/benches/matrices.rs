@@ -1,6 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use glam::{Mat4, Vec3};
-use ray_tracer::matrices::{M2x2, M3x3, M4x4};
+use glam::{Mat4};
+use ray_tracer::matrices::{M4x4};
 
 pub fn matrix_multiplication(c: &mut Criterion) {
     let mut group = c.benchmark_group("Matrix multiplication");

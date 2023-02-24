@@ -1,6 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use glam::{Mat4, Vec3};
-use ray_tracer::matrices::{M2x2, M3x3, M4x4};
 use ray_tracer::transformations::*;
 use ray_tracer::vector::Point;
 use std::f32::consts::PI;
