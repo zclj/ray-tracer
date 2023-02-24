@@ -14,6 +14,10 @@ rayon = "1.6"
 criterion = "0.3"
 
 [[bench]]
+name = "rendering"
+harness = false
+
+[[bench]]
 name = "raymark"
 harness = false
 
