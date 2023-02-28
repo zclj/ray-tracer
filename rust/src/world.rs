@@ -99,8 +99,6 @@ impl World {
         self.shapes
             .iter()
             .for_each(|s| intersect(s, ray, intersections));
-        // let mut is: Vec<Intersection> =
-        //     self.shapes.iter().flat_map(|s| intersect(s, ray)).collect();
 
         sort_by_t(intersections);
     }
