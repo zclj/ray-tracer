@@ -5,6 +5,7 @@ use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::shape::Shape;
+use crate::shape::ShapeKind;
 use crate::utils::EPSILON;
 use crate::vector::Point;
 
@@ -12,6 +13,8 @@ pub struct World {
     shapes: Vec<Shape>,
     pub light: PointLight,
     pub shadow_bias: f32,
+    spheres: Vec<Shape>,
+    planes: Vec<Shape>,
 }
 
 impl World {
@@ -20,6 +23,8 @@ impl World {
         // @TODO - we could have knowledge about the capacity
         World {
             shapes: Vec::new(),
+            spheres: Vec::new(),
+            planes: Vec::new(),
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -48,6 +53,35 @@ impl World {
 
         let transform_inverse = transform.inverse();
         self.shapes.push(Shape::Sphere {
+            id,
+            transform_inverse_transpose: transform_inverse.transpose(),
+            transform_inverse,
+            transform,
+            material,
+        });
+
+        id
+    }
+
+    pub fn push_sphere_2(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
+        let id = self.spheres.len() as u32;
+
+        let transform = match transform_option {
+            Some(t) => t,
+            None => M4x4::IDENTITY,
+        };
+
+        let material = match material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        let transform_inverse = transform.inverse();
+        self.spheres.push(Shape::Sphere {
             id,
             transform_inverse_transpose: transform_inverse.transpose(),
             transform_inverse,
@@ -88,18 +122,98 @@ impl World {
         id
     }
 
-    #[must_use]
-    pub fn get_shape(&self, id: u32) -> &Shape {
-        &self.shapes[id as usize]
+    pub fn push_plane_2(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
+        let id = self.planes.len() as u32;
+
+        let transform = match transform_option {
+            Some(t) => t,
+            None => M4x4::IDENTITY,
+        };
+
+        let material = match material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        let transform_inverse = transform.inverse();
+        self.planes.push(Shape::Plane {
+            id,
+            transform_inverse_transpose: transform_inverse.transpose(),
+            transform_inverse,
+            transform,
+            material,
+        });
+
+        id
     }
 
-    pub fn intersect(&self, ray: &Ray, intersections: &mut Vec<Intersection>) {
+    #[must_use]
+    pub fn get_shape(&self, id: u32, kind: &ShapeKind) -> &Shape {
+        //&self.shapes[id as usize]
+        match kind {
+            ShapeKind::Sphere => &self.spheres[id as usize],
+            ShapeKind::Plane => &self.planes[id as usize],
+        }
+    }
+
+    pub fn intersect(&self, world_ray: &Ray, intersections: &mut Vec<Intersection>) {
         intersections.clear();
 
-        self.shapes
-            .iter()
-            .for_each(|s| intersect(s, ray, intersections));
+        // self.shapes
+        //     .iter()
+        //     .for_each(|s| intersect(s, ray, intersections));
 
+        // the ray transformed in local space
+        //let ray = world_ray.transform(shape.transform_inverse());
+
+        //println!("Spheres : {:?}", self.spheres);
+        self.spheres.iter().for_each(|s| {
+            let ray = world_ray.transform(s.transform_inverse());
+            let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
+
+            let a = ray.direction.dot(&ray.direction);
+            let b = 2.0 * ray.direction.dot(&sphere_to_ray);
+            let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
+
+            let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+            if discriminant < 0.0 {
+                return;
+            }
+
+            let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+            let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+            let id = s.id();
+            intersections.push(Intersection {
+                t: t1,
+                object: id,
+                kind: ShapeKind::Sphere,
+            });
+            intersections.push(Intersection {
+                t: t2,
+                object: id,
+                kind: ShapeKind::Sphere,
+            });
+        });
+
+        self.planes.iter().for_each(|p| {
+            let ray = world_ray.transform(p.transform_inverse());
+            if ray.direction.y.abs() < EPSILON {
+                return;
+            }
+            intersections.push(Intersection::new(
+                -ray.origin.y / ray.direction.y,
+                p.id(),
+                ShapeKind::Plane,
+            ));
+        });
+
+        //println!("Count intersections: {:?}", intersections.len());
         sort_by_t(intersections);
     }
 
@@ -109,9 +223,9 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<u32>,
+        containers: &mut Vec<(u32, ShapeKind)>,
     ) -> Color {
-        let shape = &self.get_shape(comp.object);
+        let shape = &self.get_shape(comp.object, &comp.kind);
         let m = &shape.material();
         let shadowed = self.is_shadowed(&comp.over_point, intersections);
 
@@ -141,7 +255,7 @@ impl World {
         ray: &Ray,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<u32>,
+        containers: &mut Vec<(u32, ShapeKind)>,
     ) -> Color {
         self.intersect(ray, intersections);
 
@@ -178,12 +292,12 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<u32>,
+        containers: &mut Vec<(u32, ShapeKind)>,
     ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
-        let shape = self.get_shape(comp.object);
+        let shape = self.get_shape(comp.object, &comp.kind);
         if shape.material().reflective == 0.0 {
             Color::new(0.0, 0.0, 0.0)
         } else {
@@ -200,13 +314,13 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<u32>,
+        containers: &mut Vec<(u32, ShapeKind)>,
     ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
 
-        let shape = self.get_shape(comp.object);
+        let shape = self.get_shape(comp.object, &comp.kind);
 
         let n_ratio = comp.n1 / comp.n2;
         let cos_i = comp.cos_i; //comp.eyev.dot(&comp.normalv);

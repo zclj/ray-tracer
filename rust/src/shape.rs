@@ -5,6 +5,12 @@ use crate::rays::Ray;
 use crate::utils::EPSILON;
 use crate::vector::{Point, Vector};
 
+#[derive(Debug, PartialEq, Clone)]
+pub enum ShapeKind {
+    Sphere,
+    Plane,
+}
+
 #[derive(PartialEq, Debug)]
 pub enum Shape {
     Sphere {
@@ -57,14 +63,26 @@ impl Shape {
                 let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
                 let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
 
-                intersections.push(Intersection { t: t1, object: *id });
-                intersections.push(Intersection { t: t2, object: *id });
+                intersections.push(Intersection {
+                    t: t1,
+                    object: *id,
+                    kind: ShapeKind::Sphere,
+                });
+                intersections.push(Intersection {
+                    t: t2,
+                    object: *id,
+                    kind: ShapeKind::Sphere,
+                });
             }
             Shape::Plane { id, .. } => {
                 if ray.direction.y.abs() < EPSILON {
                     return;
                 }
-                intersections.push(Intersection::new(-ray.origin.y / ray.direction.y, *id));
+                intersections.push(Intersection::new(
+                    -ray.origin.y / ray.direction.y,
+                    *id,
+                    ShapeKind::Plane,
+                ));
             }
         }
     }
@@ -73,6 +91,12 @@ impl Shape {
     pub fn material(&self) -> &Material {
         match self {
             Shape::Sphere { material, .. } | Shape::Plane { material, .. } => material,
+        }
+    }
+
+    pub fn id(&self) -> u32 {
+        match self {
+            Shape::Sphere { id, .. } | Shape::Plane { id, .. } => *id,
         }
     }
 

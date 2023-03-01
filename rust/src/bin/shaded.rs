@@ -4,7 +4,7 @@ use ray_tracer::intersections::{hit, intersect};
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::rays::Ray;
-use ray_tracer::shape::Shape;
+use ray_tracer::shape::{Shape, ShapeKind};
 use ray_tracer::vector::Point;
 use ray_tracer::world::World;
 use std::fs::File;
@@ -40,7 +40,7 @@ fn shaded_sphere_canvas() -> Canvas {
 
         match the_hit {
             Some(hit) => {
-                let shape = ctx.get_shape(hit.object);
+                let shape = ctx.get_shape(hit.object, &ShapeKind::Sphere);
                 let point = &ray.position(hit.t);
                 let normal = &shape.normal_at(point);
                 let eye = -&ray.direction;
@@ -58,7 +58,7 @@ fn shaded_sphere_canvas() -> Canvas {
         ..Default::default()
     };
     let sphere_id = world.push_sphere(None, Some(material));
-    let sphere = world.get_shape(sphere_id);
+    let sphere = world.get_shape(sphere_id, &ShapeKind::Sphere);
 
     let light = PointLight::new(Point::new(-10.0, -10.0, -10.0), Color::new(1.0, 1.0, 1.0));
 

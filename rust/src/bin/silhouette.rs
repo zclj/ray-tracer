@@ -2,7 +2,7 @@ use ray_tracer::canvas::Canvas;
 use ray_tracer::color::Color;
 use ray_tracer::intersections::{hit, intersect};
 use ray_tracer::rays::Ray;
-use ray_tracer::shape::Shape;
+use ray_tracer::shape::{Shape, ShapeKind};
 use ray_tracer::vector::Point;
 use ray_tracer::world::World;
 use std::fs::File;
@@ -45,7 +45,7 @@ fn silhouette_into_canvas() -> Canvas {
 
     let mut context = World::new();
     let sphere_id = context.push_sphere(None, None);
-    let sphere = context.get_shape(sphere_id);
+    let sphere = context.get_shape(sphere_id, &ShapeKind::Sphere);
 
     for y in 0..(canvas_pixels - 1) {
         for x in 0..(canvas_pixels - 1) {

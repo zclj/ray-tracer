@@ -1,5 +1,5 @@
 use crate::rays::Ray;
-use crate::shape::Shape;
+use crate::shape::{Shape, ShapeKind};
 use crate::vector::{Point, Vector};
 use crate::world::World;
 
@@ -7,6 +7,7 @@ use crate::world::World;
 pub struct Intersection {
     pub t: f32,
     pub object: u32,
+    pub kind: ShapeKind,
 }
 
 #[derive(Debug)]
@@ -22,14 +23,16 @@ pub struct ComputedIntersection {
     pub n1: f32,
     pub n2: f32,
     pub cos_i: f32,
+    pub kind: ShapeKind,
 }
 
 impl Intersection {
     #[must_use]
-    pub fn new(t: f32, shape_id: u32) -> Self {
+    pub fn new(t: f32, shape_id: u32, shape_kind: ShapeKind) -> Self {
         Intersection {
             t,
             object: shape_id,
+            kind: shape_kind,
         }
     }
 
@@ -43,10 +46,10 @@ impl Intersection {
         ray: &Ray,
         intersections: &[Intersection],
         shadow_bias: f32,
-        containers: &mut Vec<u32>,
+        containers: &mut Vec<(u32, ShapeKind)>,
     ) -> ComputedIntersection {
         let mut normalv = world
-            .get_shape(self.object)
+            .get_shape(self.object, &self.kind)
             .normal_at(&ray.position(self.t));
 
         let eyev = -&ray.direction;
@@ -68,27 +71,28 @@ impl Intersection {
                     if containers.is_empty() {
                         n1 = 1.0;
                     } else {
-                        n1 = world
-                            .get_shape(*containers.last().unwrap())
-                            .material()
-                            .refractive_index;
+                        let (obj, k) = containers.last().unwrap();
+                        n1 = world.get_shape(*obj, &k).material().refractive_index;
                     }
                 }
 
-                if containers.contains(&i.object) {
-                    containers.remove(containers.iter().position(|x| *x == i.object).unwrap());
+                if containers.contains(&(i.object, i.kind.clone())) {
+                    containers.remove(
+                        containers
+                            .iter()
+                            .position(|(x, k)| *x == i.object && *k == i.kind)
+                            .unwrap(),
+                    );
                 } else {
-                    containers.push(i.object);
+                    containers.push((i.object, i.kind.clone()));
                 }
 
                 if i == self {
                     if containers.is_empty() {
                         n2 = 1.0;
                     } else {
-                        n2 = world
-                            .get_shape(*containers.last().unwrap())
-                            .material()
-                            .refractive_index;
+                        let (obj, k) = containers.last().unwrap();
+                        n2 = world.get_shape(*obj, &k).material().refractive_index;
                     }
 
                     break;
@@ -110,6 +114,7 @@ impl Intersection {
             normalv,
             n1,
             n2,
+            kind: self.kind.clone(),
         }
     }
 }
