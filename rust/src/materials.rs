@@ -203,6 +203,7 @@ mod test {
     use super::*;
     use crate::color::Color;
     use crate::lights::PointLight;
+    use crate::shape::ShapeKind;
     use crate::vector::{Point, Vector};
 
     // Scenario: The default material
@@ -539,7 +540,7 @@ mod test {
             }),
         );
 
-        let sphere = world.get_shape(s_id);
+        let sphere = world.get_shape(s_id, &ShapeKind::Sphere);
         let pattern = sphere.material().pattern.as_ref().unwrap();
 
         let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
@@ -568,7 +569,7 @@ mod test {
             }),
         );
 
-        let sphere = world.get_shape(s_id);
+        let sphere = world.get_shape(s_id, &ShapeKind::Sphere);
         let pattern = sphere.material().pattern.as_ref().unwrap();
 
         let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
@@ -598,7 +599,7 @@ mod test {
             }),
         );
 
-        let sphere = world.get_shape(s_id);
+        let sphere = world.get_shape(s_id, &ShapeKind::Sphere);
         let pattern = sphere.material().pattern.as_ref().unwrap();
 
         let c = pattern.pattern_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));

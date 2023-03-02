@@ -42,7 +42,7 @@ fn main() {
         ..Material::default()
     };
 
-    let _floor_plane_id = world.push_plane_2(
+    let _floor_plane_id = world.push_plane(
         Some(rotation_y(0.31415)),
         Some(Material {
             pattern: Some(Pattern {
@@ -57,7 +57,7 @@ fn main() {
         }),
     );
 
-    let _ceiling_plane_id = world.push_plane_2(
+    let _ceiling_plane_id = world.push_plane(
         Some(translation(0.0, 5.0, 0.0)),
         Some(Material {
             color: Color::new(0.8, 0.8, 0.8),
@@ -67,7 +67,7 @@ fn main() {
         }),
     );
 
-    let _west_wall_id = world.push_plane_2(
+    let _west_wall_id = world.push_plane(
         Some(transform(&[
             rotation_y(PI / 2.0),
             rotation_z(PI / 2.0),
@@ -76,7 +76,7 @@ fn main() {
         Some(wall_material.clone()),
     );
 
-    let _east_wall_id = world.push_plane_2(
+    let _east_wall_id = world.push_plane(
         Some(transform(&[
             rotation_y(PI / 2.0),
             rotation_z(PI / 2.0),
@@ -85,7 +85,7 @@ fn main() {
         Some(wall_material.clone()),
     );
 
-    let _north_wall_id = world.push_plane_2(
+    let _north_wall_id = world.push_plane(
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, 5.0),
@@ -93,7 +93,7 @@ fn main() {
         Some(wall_material.clone()),
     );
 
-    let _south_wall_id = world.push_plane_2(
+    let _south_wall_id = world.push_plane(
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, -5.0),
@@ -104,7 +104,7 @@ fn main() {
     ////////////////////////////////////////
     // Background Balls
 
-    let _ball_1 = world.push_sphere_2(
+    let _ball_1 = world.push_sphere(
         Some(transform(&[
             scaling(0.4, 0.4, 0.4),
             translation(4.6, 0.4, 1.0),
@@ -116,7 +116,7 @@ fn main() {
         }),
     );
 
-    let _ball_2 = world.push_sphere_2(
+    let _ball_2 = world.push_sphere(
         Some(transform(&[
             scaling(0.3, 0.3, 0.3),
             translation(4.7, 0.3, 0.4),
@@ -128,7 +128,7 @@ fn main() {
         }),
     );
 
-    let _ball_3 = world.push_sphere_2(
+    let _ball_3 = world.push_sphere(
         Some(transform(&[
             scaling(0.5, 0.5, 0.5),
             translation(-1.0, 0.5, 4.5),
@@ -140,7 +140,7 @@ fn main() {
         }),
     );
 
-    let _ball_4 = world.push_sphere_2(
+    let _ball_4 = world.push_sphere(
         Some(transform(&[
             scaling(0.3, 0.3, 0.3),
             translation(-1.7, 0.3, 4.7),
@@ -155,7 +155,7 @@ fn main() {
     ////////////////////////////////////////
     // Foreground balls
 
-    let _red_ball = world.push_sphere_2(
+    let _red_ball = world.push_sphere(
         Some(transform(&[translation(-0.6, 1.0, 0.6)])),
         Some(Material {
             color: Color::new(1.0, 0.3, 0.2),
@@ -165,7 +165,7 @@ fn main() {
         }),
     );
 
-    let _blue_glass_ball = world.push_sphere_2(
+    let _blue_glass_ball = world.push_sphere(
         Some(transform(&[
             scaling(0.7, 0.7, 0.7),
             translation(0.6, 0.7, -0.6),
@@ -183,7 +183,7 @@ fn main() {
         }),
     );
 
-    let _green_glass_ball = world.push_sphere_2(
+    let _green_glass_ball = world.push_sphere(
         Some(transform(&[
             scaling(0.5, 0.5, 0.5),
             translation(-0.7, 0.5, -0.8),
