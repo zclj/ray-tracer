@@ -1,6 +1,7 @@
 use ray_tracer::canvas::Canvas;
 use ray_tracer::color::Color;
-use ray_tracer::intersections::{hit, intersect};
+use ray_tracer::intersections::intersect;
+use ray_tracer::intersections::Intersection;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::rays::Ray;
@@ -10,6 +11,11 @@ use ray_tracer::world::World;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+
+pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
+    // intersections are already sorted
+    xs.iter().find(|x| x.t >= 0.0)
+}
 
 fn shaded_sphere_canvas() -> Canvas {
     let canvas_pixels = 1000;

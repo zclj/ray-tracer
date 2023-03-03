@@ -1,5 +1,5 @@
 use crate::color::Color;
-use crate::intersections::{hit, sort_by_t, ComputedIntersection, Intersection};
+use crate::intersections::{sort_by_t, ComputedIntersection, Intersection};
 use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
@@ -99,7 +99,11 @@ impl World {
         }
     }
 
-    pub fn intersect(&self, world_ray: &Ray, intersections: &mut Vec<Intersection>) {
+    pub fn intersect(
+        &self,
+        world_ray: &Ray,
+        intersections: &mut Vec<Intersection>,
+    ) -> Option<usize> {
         intersections.clear();
 
         self.spheres.iter().for_each(|s| {
@@ -112,6 +116,7 @@ impl World {
 
             let discriminant = b.powf(2.0) - (4.0 * a * c);
 
+            // invert?
             if discriminant < 0.0 {
                 return;
             }
@@ -143,7 +148,10 @@ impl World {
             }
         });
 
+        // Sort the intersections and return the index of the 'hit'
         sort_by_t(intersections);
+
+        intersections.iter().position(|x| x.t >= 0.0)
     }
 
     #[must_use]
@@ -186,10 +194,11 @@ impl World {
         intersections: &mut Vec<Intersection>,
         containers: &mut Vec<(u32, ShapeKind)>,
     ) -> Color {
-        self.intersect(ray, intersections);
+        let the_hit = self.intersect(ray, intersections);
 
-        match hit(intersections) {
-            Some(i) => {
+        match the_hit {
+            Some(idx) => {
+                let i = &intersections[idx];
                 let comp = i.compute(self, ray, intersections, self.shadow_bias, containers);
                 self.shade_hit(&comp, remaining, intersections, containers)
             }
@@ -205,12 +214,10 @@ impl World {
 
         let r = Ray::new((*point).clone(), direction);
 
-        self.intersect(&r, intersections);
-
-        let h = hit(intersections);
+        let h = self.intersect(&r, intersections);
 
         match h {
-            Some(i) => i.t < distance,
+            Some(idx) => intersections[idx].t < distance,
             None => false,
         }
     }

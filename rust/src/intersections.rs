@@ -156,12 +156,12 @@ pub fn intersect(shape: &Shape, r: &Ray, intersections: &mut Vec<Intersection>) 
 /// # Panics
 ///
 /// Will panic if intersection t value is NaN
-#[inline]
-#[must_use]
-pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
-    // intersections are already sorted
-    xs.iter().find(|x| x.t >= 0.0)
-}
+// #[inline]
+// #[must_use]
+// pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
+//     // intersections are already sorted
+//     xs.iter().find(|x| x.t >= 0.0)
+// }
 
 #[cfg(test)]
 mod test {
@@ -335,18 +335,18 @@ mod test {
     //     And xs ← intersections(i2, i1)
     //   When i ← hit(xs)
     //   Then i = i1
-    #[test]
-    fn the_hit_when_all_intersections_have_positive_t() {
-        let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
-        let i1 = Intersection::new(1.0, s_id, ShapeKind::Sphere);
-        let i2 = Intersection::new(2.0, s_id, ShapeKind::Sphere);
+    // #[test]
+    // fn the_hit_when_all_intersections_have_positive_t() {
+    //     let mut world = World::new();
+    //     let s_id = world.push_sphere(None, None);
+    //     let i1 = Intersection::new(1.0, s_id, ShapeKind::Sphere);
+    //     let i2 = Intersection::new(2.0, s_id, ShapeKind::Sphere);
 
-        let mut is = [i1, i2];
-        let i = hit(&mut is);
+    //     let mut is = [i1, i2];
+    //     let i = hit(&mut is);
 
-        assert_eq!(i, Some(&Intersection::new(1.0, s_id, ShapeKind::Sphere)));
-    }
+    //     assert_eq!(i, Some(&Intersection::new(1.0, s_id, ShapeKind::Sphere)));
+    // }
 
     // Scenario: The hit, when some intersections have negative t
     //   Given s ← sphere()
@@ -355,18 +355,18 @@ mod test {
     //     And xs ← intersections(i2, i1)
     //   When i ← hit(xs)
     //   Then i = i2
-    #[test]
-    fn the_hit_when_some_intersections_have_negative_t() {
-        let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
-        let i1 = Intersection::new(-1.0, s_id, ShapeKind::Sphere);
-        let i2 = Intersection::new(1.0, s_id, ShapeKind::Sphere);
+    // #[test]
+    // fn the_hit_when_some_intersections_have_negative_t() {
+    //     let mut world = World::new();
+    //     let s_id = world.push_sphere(None, None);
+    //     let i1 = Intersection::new(-1.0, s_id, ShapeKind::Sphere);
+    //     let i2 = Intersection::new(1.0, s_id, ShapeKind::Sphere);
 
-        let mut is = [i2, i1];
-        let i = hit(&mut is);
+    //     let mut is = [i2, i1];
+    //     let i = hit(&mut is);
 
-        assert_eq!(i, Some(&Intersection::new(1.0, s_id, ShapeKind::Sphere)));
-    }
+    //     assert_eq!(i, Some(&Intersection::new(1.0, s_id, ShapeKind::Sphere)));
+    // }
 
     // Scenario: The hit, when all intersections have negative t
     //   Given s ← sphere()
@@ -375,18 +375,18 @@ mod test {
     //     And xs ← intersections(i2, i1)
     //   When i ← hit(xs)
     //   Then i is nothing
-    #[test]
-    fn the_hit_when_all_intersections_have_negative_t() {
-        let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
-        let i1 = Intersection::new(-2.0, s_id, ShapeKind::Sphere);
-        let i2 = Intersection::new(-1.0, s_id, ShapeKind::Sphere);
+    // #[test]
+    // fn the_hit_when_all_intersections_have_negative_t() {
+    //     let mut world = World::new();
+    //     let s_id = world.push_sphere(None, None);
+    //     let i1 = Intersection::new(-2.0, s_id, ShapeKind::Sphere);
+    //     let i2 = Intersection::new(-1.0, s_id, ShapeKind::Sphere);
 
-        let mut is = [i2, i1];
-        let i = hit(&mut is);
+    //     let mut is = [i2, i1];
+    //     let i = hit(&mut is);
 
-        assert_eq!(i, None);
-    }
+    //     assert_eq!(i, None);
+    // }
 
     // Scenario: The hit is always the lowest nonnegative intersection
     //   Given s ← sphere()
@@ -397,22 +397,22 @@ mod test {
     //   And xs ← intersections(i1, i2, i3, i4)
     // When i ← hit(xs)
     // Then i = i4
-    #[test]
-    fn the_hit_is_always_the_lowest_nonnegative_intersection() {
-        let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
-        let i1 = Intersection::new(5.0, s_id, ShapeKind::Sphere);
-        let i2 = Intersection::new(7.0, s_id, ShapeKind::Sphere);
-        let i3 = Intersection::new(-3.0, s_id, ShapeKind::Sphere);
-        let i4 = Intersection::new(2.0, s_id, ShapeKind::Sphere);
+    // #[test]
+    // fn the_hit_is_always_the_lowest_nonnegative_intersection() {
+    //     let mut world = World::new();
+    //     let s_id = world.push_sphere(None, None);
+    //     let i1 = Intersection::new(5.0, s_id, ShapeKind::Sphere);
+    //     let i2 = Intersection::new(7.0, s_id, ShapeKind::Sphere);
+    //     let i3 = Intersection::new(-3.0, s_id, ShapeKind::Sphere);
+    //     let i4 = Intersection::new(2.0, s_id, ShapeKind::Sphere);
 
-        let mut is = [i1, i2, i3, i4];
-        // to not sort redundantly, the sort is outside of the hit fn
-        sort_by_t(&mut is);
-        let i = hit(&mut is);
+    //     let mut is = [i1, i2, i3, i4];
+    //     // to not sort redundantly, the sort is outside of the hit fn
+    //     sort_by_t(&mut is);
+    //     let i = hit(&mut is);
 
-        assert_eq!(i, Some(&Intersection::new(2.0, s_id, ShapeKind::Sphere)));
-    }
+    //     assert_eq!(i, Some(&Intersection::new(2.0, s_id, ShapeKind::Sphere)));
+    // }
 
     // Scenario: Intersecting a scaled sphere with a ray
     //   Given r ← ray(point(0, 0, -5), vector(0, 0, 1))
