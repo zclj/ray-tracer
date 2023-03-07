@@ -11,4 +11,5 @@ pub mod shape;
 pub mod transformations;
 mod utils;
 pub mod vector;
+pub mod vector_simd;
 pub mod world;
