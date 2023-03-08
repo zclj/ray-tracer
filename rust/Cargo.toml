@@ -18,12 +18,16 @@ iai = "0.1"
 name = "rendering"
 harness = false
 
-[[bench]]
-name = "rendering_iai"
-harness = false
+# [[bench]]
+# name = "rendering_iai"
+# harness = false
 
 [[bench]]
 name = "raymark"
+harness = false
+
+[[bench]]
+name = "vectors"
 harness = false
 
 [[bench]]
