@@ -57,6 +57,10 @@ https://github.com/bitshifter/glam-rs
 
 - https://nexte.st/
 - https://github.com/flamegraph-rs/flamegraph#systems-performance-work-guided-by-flamegraphs
+- https://github.com/bheisler/iai
+- https://github.com/KDAB/hotspot
+- https://github.com/purpleprotocol/mimalloc_rust
+- https://github.com/SchrodingerZhu/snmalloc-rs
 
 ## SIMD
 
