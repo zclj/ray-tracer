@@ -64,9 +64,9 @@ impl Camera {
 
     #[must_use]
     pub fn render(&self, world: &World, reflection_limit: u8) -> Canvas {
-        if is_x86_feature_detected!("avx2") {
-            println!("AVX2 detected!");
-        }
+        // if is_x86_feature_detected!("avx2") {
+        //     println!("AVX2 detected!");
+        // }
 
         let start_time = Instant::now();
         let colors = (0..(self.vsize - 1))

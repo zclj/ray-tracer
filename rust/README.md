@@ -24,6 +24,8 @@ and back to default:
 
 Example of creating a flamegraph: `flamegraph -o flamegraph.svg -- ./target/release/chapter11`
 
+Perf with `sudo perf record --call-graph dwarf ./target/release/chapter11` and `perf report` to view the data
+
 ### Memory
 
 For cache behaviour use: `valgrind --tool=cachegrind ./target/<app>`
@@ -55,3 +57,13 @@ https://github.com/bitshifter/glam-rs
 
 - https://nexte.st/
 - https://github.com/flamegraph-rs/flamegraph#systems-performance-work-guided-by-flamegraphs
+
+## SIMD
+
+- https://doc.rust-lang.org/core/arch/index.html
+- https://lxjk.github.io/2017/09/03/Fast-4x4-Matrix-Inverse-with-SSE-SIMD-Explained.html
+- https://github.com/bitshifter/glam-rs/blob/main/src/f32/sse2/mat4.rs
+
+## Compilation
+
+- `RUSTFLAGS='-C target-cpu=native' cargo build --release`
