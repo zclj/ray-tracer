@@ -15,8 +15,7 @@
 // SIMD: AVX2 use 256 bit lanes = 32B
 // a vector is 4B * 3 = 12B = 12 * 8 = 96b
 use std::arch::x86_64::{
-    __m128, _mm_add_ps, _mm_cvtss_f32, _mm_dp_ps, _mm_extract_ps, _mm_mul_ps, _mm_set_ps,
-    _mm_shuffle_ps,
+    __m128, _mm_add_ps, _mm_cvtss_f32, _mm_mul_ps, _mm_set_ps, _mm_shuffle_ps,
 };
 
 // let's represent a vector as a union with SIMD types
@@ -28,6 +27,7 @@ pub union Vector {
 // @NOTE: vectors have w=0, points have w=1
 
 // basic example - multiply numbers
+#[allow(dead_code)]
 fn simd_multiply() -> __m128 {
     unsafe {
         let x = _mm_set_ps(1.0, 2.0, 3.0, 4.0);
@@ -38,7 +38,8 @@ fn simd_multiply() -> __m128 {
 }
 
 impl Vector {
-    #[inline(always)]
+    #[must_use]
+    #[inline]
     pub fn simd_dot(&self, rhs: &Vector) -> f32 {
         // lhs.xyzw * rhs.xyzw
         unsafe {
@@ -74,7 +75,7 @@ impl Vector {
 mod tests {
 
     use crate::vector_simd::{simd_multiply, Vector};
-    use std::arch::x86_64::{__m128, _mm_extract_ps, _mm_mul_ps, _mm_set_ps};
+    use std::arch::x86_64::_mm_extract_ps;
     use std::mem::transmute;
 
     // Scenario: The dot product of two tuples

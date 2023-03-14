@@ -115,7 +115,7 @@ impl std::cmp::PartialEq<Point> for Point {
 impl std::ops::Add<Vector> for Point {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     fn add(self, rhs: Vector) -> Point {
         Point::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
@@ -124,7 +124,7 @@ impl std::ops::Add<Vector> for Point {
 impl std::ops::Add<&Vector> for &Point {
     type Output = Point;
 
-    #[inline(always)]
+    #[inline]
     fn add(self, rhs: &Vector) -> Point {
         Point::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
@@ -133,7 +133,7 @@ impl std::ops::Add<&Vector> for &Point {
 impl std::ops::Sub<Point> for Point {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn sub(self, rhs: Point) -> Vector {
         Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
@@ -142,7 +142,7 @@ impl std::ops::Sub<Point> for Point {
 impl std::ops::Sub<&Point> for &Point {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn sub(self, rhs: &Point) -> Vector {
         Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
@@ -151,7 +151,7 @@ impl std::ops::Sub<&Point> for &Point {
 impl std::ops::Sub<Vector> for Point {
     type Output = Point;
 
-    #[inline(always)]
+    #[inline]
     fn sub(self, rhs: Vector) -> Point {
         Point::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
@@ -160,7 +160,7 @@ impl std::ops::Sub<Vector> for Point {
 impl std::ops::Sub<&Vector> for &Point {
     type Output = Point;
 
-    #[inline(always)]
+    #[inline]
     fn sub(self, rhs: &Vector) -> Point {
         Point::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
@@ -193,13 +193,13 @@ impl Vector {
 
 impl Vector {
     #[must_use]
-    #[inline(always)]
+    #[inline]
     pub fn mag(&self) -> f32 {
         (self.x.powi(2) + self.y.powi(2) + self.z.powi(2)).sqrt()
     }
 
     #[must_use]
-    #[inline(always)]
+    #[inline]
     pub fn norm(&self) -> Self {
         let m = self.mag();
 
@@ -207,13 +207,13 @@ impl Vector {
     }
 
     #[must_use]
-    #[inline(always)]
+    #[inline]
     pub fn dot(&self, rhs: &Vector) -> f32 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 
     #[must_use]
-    #[inline(always)]
+    #[inline]
     pub fn cross(&self, rhs: &Vector) -> Vector {
         Vector::new(
             self.y * rhs.z - self.z * rhs.y,
@@ -223,7 +223,7 @@ impl Vector {
     }
 
     #[must_use]
-    #[inline(always)]
+    #[inline]
     pub fn reflect(&self, normal: &Vector) -> Vector {
         self - &(normal * (2.0 * self.dot(normal)))
     }
@@ -232,7 +232,7 @@ impl Vector {
 impl std::ops::Add<Point> for Vector {
     type Output = Point;
 
-    #[inline(always)]
+    #[inline]
     fn add(self, rhs: Point) -> Point {
         Point::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
@@ -241,7 +241,7 @@ impl std::ops::Add<Point> for Vector {
 impl std::ops::Add<Vector> for Vector {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     fn add(self, rhs: Self) -> Self {
         Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
@@ -250,7 +250,7 @@ impl std::ops::Add<Vector> for Vector {
 impl std::ops::Add<&Vector> for &Vector {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn add(self, rhs: &Vector) -> Vector {
         Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
@@ -259,7 +259,7 @@ impl std::ops::Add<&Vector> for &Vector {
 impl std::ops::Add<&Vector> for Vector {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn add(self, rhs: &Vector) -> Vector {
         Vector::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z)
     }
@@ -268,7 +268,7 @@ impl std::ops::Add<&Vector> for Vector {
 impl std::ops::Sub<Vector> for Vector {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     fn sub(self, rhs: Vector) -> Self {
         Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
@@ -277,7 +277,7 @@ impl std::ops::Sub<Vector> for Vector {
 impl std::ops::Sub<&Vector> for &Vector {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn sub(self, rhs: &Vector) -> Vector {
         Vector::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z)
     }
@@ -286,7 +286,7 @@ impl std::ops::Sub<&Vector> for &Vector {
 impl std::ops::Neg for Vector {
     type Output = Self;
 
-    #[inline(always)]
+    #[inline]
     fn neg(self) -> Self {
         Vector {
             x: -self.x,
@@ -299,7 +299,7 @@ impl std::ops::Neg for Vector {
 impl std::ops::Neg for &Vector {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn neg(self) -> Vector {
         Vector {
             x: -self.x,
@@ -312,7 +312,7 @@ impl std::ops::Neg for &Vector {
 impl std::ops::Mul<f32> for &Vector {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn mul(self, rhs: f32) -> Vector {
         Vector::new(self.x * rhs, self.y * rhs, self.z * rhs)
     }
@@ -321,7 +321,7 @@ impl std::ops::Mul<f32> for &Vector {
 impl std::ops::Div<f32> for &Vector {
     type Output = Vector;
 
-    #[inline(always)]
+    #[inline]
     fn div(self, rhs: f32) -> Vector {
         Vector::new(self.x / rhs, self.y / rhs, self.z / rhs)
     }
