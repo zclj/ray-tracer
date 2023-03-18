@@ -1,5 +1,5 @@
 use crate::rays::Ray;
-use crate::shape::{Shape, ShapeKind};
+use crate::shape::ShapeKind;
 use crate::vector::{Point, Vector};
 use crate::world::World;
 
@@ -146,13 +146,6 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
     xs.sort_unstable_by(|a, b| a.t.partial_cmp(&b.t).unwrap());
 }
 
-pub fn intersect(shape: &Shape, r: &Ray, intersections: &mut Vec<Intersection>) {
-    // the ray transformed in local space
-    let obj_ray = r.transform(shape.transform_inverse());
-
-    shape.intersect(&obj_ray, intersections);
-}
-
 /// # Panics
 ///
 /// Will panic if intersection t value is NaN
@@ -218,10 +211,10 @@ mod test {
     fn a_ray_intersects_a_sphere_at_two_points() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let _s_id = world.push_sphere(None, None);
 
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 4.0);
@@ -239,10 +232,10 @@ mod test {
     fn a_ray_intersects_a_sphere_at_a_tangent() {
         let r = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let _s_id = world.push_sphere(None, None);
 
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 5.0);
@@ -258,10 +251,10 @@ mod test {
     fn a_ray_misses_a_sphere() {
         let r = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let _s_id = world.push_sphere(None, None);
 
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0);
     }
@@ -277,10 +270,10 @@ mod test {
     fn a_ray_originates_inside_a_sphere() {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let _s_id = world.push_sphere(None, None);
 
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, -1.0);
@@ -298,10 +291,10 @@ mod test {
     fn a_sphere_is_behind_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let _s_id = world.push_sphere(None, None);
 
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, -6.0);
@@ -321,7 +314,7 @@ mod test {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].object, s_id);
@@ -426,9 +419,9 @@ mod test {
     fn intersecting_a_scaled_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(Some(scaling(2.0, 2.0, 2.0)), None);
+        let _s_id = world.push_sphere(Some(scaling(2.0, 2.0, 2.0)), None);
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 3.0);
@@ -445,9 +438,9 @@ mod test {
     fn intersecting_a_translated_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
+        let _s_id = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
         let mut xs = vec![];
-        intersect(world.get_shape(s_id, &ShapeKind::Sphere), &r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0);
     }
@@ -556,11 +549,11 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let p = world.get_shape(p_id, &ShapeKind::Plane);
+        let _p = world.get_shape(p_id, &ShapeKind::Plane);
         let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
-        p.intersect(&r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0)
     }
@@ -575,11 +568,11 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let p = world.get_shape(p_id, &ShapeKind::Plane);
+        let _p = world.get_shape(p_id, &ShapeKind::Plane);
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
-        p.intersect(&r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0)
     }
@@ -596,11 +589,11 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let p = world.get_shape(p_id, &ShapeKind::Plane);
+        let _p = world.get_shape(p_id, &ShapeKind::Plane);
         let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
 
         let mut xs = vec![];
-        p.intersect(&r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);
@@ -619,11 +612,11 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let p = world.get_shape(p_id, &ShapeKind::Plane);
+        let _p = world.get_shape(p_id, &ShapeKind::Plane);
         let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
 
         let mut xs = vec![];
-        p.intersect(&r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);

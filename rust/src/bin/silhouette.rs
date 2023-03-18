@@ -1,6 +1,5 @@
 use ray_tracer::canvas::Canvas;
 use ray_tracer::color::Color;
-use ray_tracer::intersections::intersect;
 use ray_tracer::intersections::Intersection;
 use ray_tracer::rays::Ray;
 use ray_tracer::shape::{Shape, ShapeKind};
@@ -9,6 +8,39 @@ use ray_tracer::world::World;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+
+fn intersect(shape: &Shape, ray: &Ray, intersections: &mut Vec<Intersection>) {
+    match shape {
+        Shape::Sphere { id, .. } => {
+            let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
+
+            let a = ray.direction.dot(&ray.direction);
+            let b = 2.0 * ray.direction.dot(&sphere_to_ray);
+            let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
+
+            let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+            if discriminant < 0.0 {
+                return;
+            }
+
+            let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+            let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+            intersections.push(Intersection {
+                t: t1,
+                object: *id,
+                kind: ShapeKind::Sphere,
+            });
+            intersections.push(Intersection {
+                t: t2,
+                object: *id,
+                kind: ShapeKind::Sphere,
+            });
+        }
+        _ => panic!(),
+    }
+}
 
 pub fn hit(xs: &[Intersection]) -> Option<&Intersection> {
     // intersections are already sorted

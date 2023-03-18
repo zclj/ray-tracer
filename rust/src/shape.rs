@@ -1,8 +1,5 @@
-use crate::intersections::Intersection;
 use crate::materials::Material;
 use crate::matrices::M4x4;
-use crate::rays::Ray;
-use crate::utils::EPSILON;
 use crate::vector::{Point, Vector};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -43,48 +40,6 @@ impl Shape {
         let world_normal = self.transform_inverse_transpose() * &object_normal;
 
         world_normal.norm()
-    }
-
-    pub fn intersect(&self, ray: &Ray, intersections: &mut Vec<Intersection>) {
-        match self {
-            Shape::Sphere { id, .. } => {
-                let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
-
-                let a = ray.direction.dot(&ray.direction);
-                let b = 2.0 * ray.direction.dot(&sphere_to_ray);
-                let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
-
-                let discriminant = b.powf(2.0) - (4.0 * a * c);
-
-                if discriminant < 0.0 {
-                    return;
-                }
-
-                let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-                let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
-
-                intersections.push(Intersection {
-                    t: t1,
-                    object: *id,
-                    kind: ShapeKind::Sphere,
-                });
-                intersections.push(Intersection {
-                    t: t2,
-                    object: *id,
-                    kind: ShapeKind::Sphere,
-                });
-            }
-            Shape::Plane { id, .. } => {
-                if ray.direction.y.abs() < EPSILON {
-                    return;
-                }
-                intersections.push(Intersection::new(
-                    -ray.origin.y / ray.direction.y,
-                    *id,
-                    ShapeKind::Plane,
-                ));
-            }
-        }
     }
 
     #[must_use]

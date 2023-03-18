@@ -1,11 +1,10 @@
 use ray_tracer::canvas::Canvas;
 use ray_tracer::color::Color;
-use ray_tracer::intersections::intersect;
 use ray_tracer::intersections::Intersection;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::rays::Ray;
-use ray_tracer::shape::{Shape, ShapeKind};
+use ray_tracer::shape::ShapeKind;
 use ray_tracer::vector::Point;
 use ray_tracer::world::World;
 use std::fs::File;
@@ -32,7 +31,7 @@ fn shaded_sphere_canvas() -> Canvas {
     let to_world_x = |x: i32| -half + pixel_size * x as f32;
     let to_world_y = |y: i32| -half + pixel_size * y as f32;
 
-    let cast_on_pixel = |ctx: &World, x, y, shape: &Shape, light: &PointLight| -> Color {
+    let cast_on_pixel = |ctx: &World, x, y, light: &PointLight| -> Color {
         let world_x = to_world_x(x);
         let world_y = to_world_y(y);
 
@@ -40,7 +39,7 @@ fn shaded_sphere_canvas() -> Canvas {
         let ray_direction = (&position - &ray_origin).norm();
         let ray = Ray::new(Point::new(0.0, 0.0, -5.0), ray_direction);
         let mut xs = Vec::new();
-        intersect(shape, &ray, &mut xs);
+        ctx.intersect(&ray, &mut xs);
 
         let the_hit = hit(&xs);
 
@@ -63,14 +62,13 @@ fn shaded_sphere_canvas() -> Canvas {
         color: Color::new(1.0, 0.2, 1.0),
         ..Default::default()
     };
-    let sphere_id = world.push_sphere(None, Some(material));
-    let sphere = world.get_shape(sphere_id, &ShapeKind::Sphere);
+    let _sphere_id = world.push_sphere(None, Some(material));
 
     let light = PointLight::new(Point::new(-10.0, -10.0, -10.0), Color::new(1.0, 1.0, 1.0));
 
     for y in 0..(canvas_pixels - 1) {
         for x in 0..(canvas_pixels - 1) {
-            let p_color = cast_on_pixel(&world, x, y, sphere, &light);
+            let p_color = cast_on_pixel(&world, x, y, &light);
             canvas.write_pixel(x as usize, y as usize, p_color)
         }
     }
