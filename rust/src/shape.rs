@@ -3,7 +3,7 @@ use crate::matrices::M4x4;
 use crate::vector::{Point, Vector};
 
 #[derive(Debug, PartialEq, Clone)]
-pub enum ShapeKind {
+pub enum Kind {
     Sphere,
     Plane,
 }
@@ -106,7 +106,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(None, None);
 
-        let s_transform = world.get_shape(0, &ShapeKind::Sphere).transform();
+        let s_transform = world.get_shape(0, &Kind::Sphere).transform();
 
         assert_eq!(*s_transform, M4x4::IDENTITY)
     }
@@ -121,7 +121,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
 
-        let s_transform = world.get_shape(0, &ShapeKind::Sphere).transform();
+        let s_transform = world.get_shape(0, &Kind::Sphere).transform();
 
         assert_eq!(*s_transform, translation(2.0, 3.0, 4.0))
     }
@@ -134,7 +134,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_point_on_the_x_axis() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
 
@@ -149,7 +149,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_point_on_the_y_axis() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
 
@@ -164,7 +164,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_point_on_the_z_axis() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
 
@@ -179,7 +179,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_nonaxial_point() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
@@ -205,7 +205,7 @@ mod test {
     fn the_normal_is_a_normalized_vector() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
@@ -225,7 +225,7 @@ mod test {
     fn computing_the_normal_on_a_translated_sphere() {
         let mut world = World::new();
         let s_id = world.push_sphere(Some(translation(0.0, 1.0, 0.0)), None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
 
@@ -242,7 +242,7 @@ mod test {
     fn computing_the_normal_on_a_transformed_sphere() {
         let mut world = World::new();
         let s_id = world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
-        let s = world.get_shape(s_id, &ShapeKind::Sphere);
+        let s = world.get_shape(s_id, &Kind::Sphere);
 
         let n = s.normal_at(&Point::new(
             0.0,
@@ -262,7 +262,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
 
-        let s_material = world.get_shape(0, &ShapeKind::Sphere).material();
+        let s_material = world.get_shape(0, &Kind::Sphere).material();
 
         let material: Material = Default::default();
         assert_eq!(*s_material, material)
@@ -284,7 +284,7 @@ mod test {
             }),
         );
 
-        let s_material = world.get_shape(0, &ShapeKind::Sphere).material();
+        let s_material = world.get_shape(0, &Kind::Sphere).material();
 
         let material = Material {
             ambient: 1.0,
@@ -307,7 +307,7 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let p = world.get_shape(p_id, &ShapeKind::Plane);
+        let p = world.get_shape(p_id, &Kind::Plane);
 
         let n1 = p.normal_at(&Point::new(0.0, 0.0, 0.0));
         let n2 = p.normal_at(&Point::new(10.0, 0.0, -10.0));

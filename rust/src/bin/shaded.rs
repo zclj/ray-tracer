@@ -4,7 +4,7 @@ use ray_tracer::intersections::Intersection;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::rays::Ray;
-use ray_tracer::shape::ShapeKind;
+use ray_tracer::shape::Kind;
 use ray_tracer::vector::Point;
 use ray_tracer::world::World;
 use std::fs::File;
@@ -45,7 +45,7 @@ fn shaded_sphere_canvas() -> Canvas {
 
         match the_hit {
             Some(hit) => {
-                let shape = ctx.get_shape(hit.object, &ShapeKind::Sphere);
+                let shape = ctx.get_shape(hit.object, &Kind::Sphere);
                 let point = &ray.position(hit.t);
                 let normal = &shape.normal_at(point);
                 let eye = -&ray.direction;
