@@ -31,44 +31,29 @@ impl World {
         }
     }
 
-    #[allow(clippy::cast_possible_truncation)]
     pub fn push_sphere(
         &mut self,
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
     ) -> u32 {
-        let id = self.spheres.len() as u32;
-
-        let transform = match transform_option {
-            Some(t) => t,
-            None => M4x4::IDENTITY,
-        };
-
-        let material = match material_option {
-            Some(m) => m,
-            None => Material::default(),
-        };
-
-        let transform_inverse = transform.inverse();
-        self.spheres.push(Shape::Sphere {
-            id,
-            transform_inverse_transpose: transform_inverse.transpose(),
-            transform_inverse,
-            transform,
-            material,
-        });
-
-        id
+        self.push_shape(&Kind::Sphere, transform_option, material_option)
     }
 
-    #[allow(clippy::cast_possible_truncation)]
     pub fn push_plane(
         &mut self,
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
     ) -> u32 {
-        let id = self.planes.len() as u32;
+        self.push_shape(&Kind::Plane, transform_option, material_option)
+    }
 
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn push_shape(
+        &mut self,
+        kind: &Kind,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
         let transform = match transform_option {
             Some(t) => t,
             None => M4x4::IDENTITY,
@@ -80,15 +65,36 @@ impl World {
         };
 
         let transform_inverse = transform.inverse();
-        self.planes.push(Shape::Plane {
-            id,
-            transform_inverse_transpose: transform_inverse.transpose(),
-            transform_inverse,
-            transform,
-            material,
-        });
+        let transform_inverse_transpose = transform_inverse.transpose();
 
-        id
+        match kind {
+            Kind::Sphere => {
+                let id = self.spheres.len() as u32;
+
+                self.spheres.push(Shape::Sphere {
+                    id,
+                    transform_inverse_transpose,
+                    transform_inverse,
+                    transform,
+                    material,
+                });
+
+                id
+            }
+            Kind::Plane => {
+                let id = self.planes.len() as u32;
+
+                self.planes.push(Shape::Plane {
+                    id,
+                    transform_inverse_transpose,
+                    transform_inverse,
+                    transform,
+                    material,
+                });
+
+                id
+            }
+        }
     }
 
     #[must_use]
