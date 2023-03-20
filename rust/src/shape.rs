@@ -1,11 +1,13 @@
 use crate::materials::Material;
 use crate::matrices::M4x4;
+use crate::utils::EPSILON;
 use crate::vector::{Point, Vector};
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Kind {
     Sphere,
     Plane,
+    Cube,
 }
 
 #[derive(PartialEq, Debug)]
@@ -25,6 +27,14 @@ pub enum Shape {
         transform_inverse: M4x4,
         transform_inverse_transpose: M4x4,
     },
+
+    Cube {
+        id: u32,
+        transform: M4x4,
+        material: Material,
+        transform_inverse: M4x4,
+        transform_inverse_transpose: M4x4,
+    },
 }
 
 impl Shape {
@@ -35,6 +45,7 @@ impl Shape {
         let object_normal = match self {
             Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
+            &Shape::Cube { .. } => todo!(),
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -43,23 +54,48 @@ impl Shape {
     }
 
     #[must_use]
+    pub fn check_axis(&self, origin: f32, direction: f32) -> (f32, f32) {
+        let tmin_numerator = -1.0 - origin;
+        let tmax_numerator = 1.0 - origin;
+
+        let (tmin, tmax) = if f32::abs(direction) >= EPSILON {
+            (tmin_numerator / direction, tmax_numerator / direction)
+        } else {
+            (
+                tmin_numerator * f32::INFINITY,
+                tmax_numerator * f32::INFINITY,
+            )
+        };
+
+        if tmin > tmax {
+            (tmax, tmin)
+        } else {
+            (tmin, tmax)
+        }
+    }
+
+    #[must_use]
     pub fn material(&self) -> &Material {
         match self {
-            Shape::Sphere { material, .. } | Shape::Plane { material, .. } => material,
+            Shape::Sphere { material, .. }
+            | Shape::Plane { material, .. }
+            | Shape::Cube { material, .. } => material,
         }
     }
 
     #[must_use]
     pub fn id(&self) -> u32 {
         match self {
-            Shape::Sphere { id, .. } | Shape::Plane { id, .. } => *id,
+            Shape::Sphere { id, .. } | Shape::Plane { id, .. } | Shape::Cube { id, .. } => *id,
         }
     }
 
     #[must_use]
     pub fn transform(&self) -> &M4x4 {
         match self {
-            Shape::Sphere { transform, .. } | Shape::Plane { transform, .. } => transform,
+            Shape::Sphere { transform, .. }
+            | Shape::Plane { transform, .. }
+            | Shape::Cube { transform, .. } => transform,
         }
     }
 
@@ -70,6 +106,9 @@ impl Shape {
                 transform_inverse, ..
             }
             | Shape::Plane {
+                transform_inverse, ..
+            }
+            | Shape::Cube {
                 transform_inverse, ..
             } => transform_inverse,
         }
@@ -83,6 +122,10 @@ impl Shape {
                 ..
             }
             | Shape::Plane {
+                transform_inverse_transpose,
+                ..
+            }
+            | Shape::Cube {
                 transform_inverse_transpose,
                 ..
             } => transform_inverse_transpose,

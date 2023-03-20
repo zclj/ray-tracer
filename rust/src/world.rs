@@ -14,6 +14,7 @@ pub struct World {
     pub shadow_bias: f32,
     spheres: Vec<Shape>,
     planes: Vec<Shape>,
+    cubes: Vec<Shape>,
 }
 
 impl World {
@@ -23,6 +24,7 @@ impl World {
         World {
             spheres: Vec::new(),
             planes: Vec::new(),
+            cubes: Vec::new(),
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -45,6 +47,14 @@ impl World {
         material_option: Option<Material>,
     ) -> u32 {
         self.push_shape(&Kind::Plane, transform_option, material_option)
+    }
+
+    pub fn push_cube(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
+        self.push_shape(&Kind::Cube, transform_option, material_option)
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -81,10 +91,25 @@ impl World {
 
                 id
             }
+
             Kind::Plane => {
                 let id = self.planes.len() as u32;
 
                 self.planes.push(Shape::Plane {
+                    id,
+                    transform_inverse_transpose,
+                    transform_inverse,
+                    transform,
+                    material,
+                });
+
+                id
+            }
+
+            Kind::Cube => {
+                let id = self.cubes.len() as u32;
+
+                self.cubes.push(Shape::Cube {
                     id,
                     transform_inverse_transpose,
                     transform_inverse,
@@ -102,9 +127,11 @@ impl World {
         match kind {
             Kind::Sphere => &self.spheres[id as usize],
             Kind::Plane => &self.planes[id as usize],
+            Kind::Cube => &self.cubes[id as usize],
         }
     }
 
+    #[allow(clippy::similar_names)]
     pub fn intersect(
         &self,
         world_ray: &Ray,
@@ -152,6 +179,20 @@ impl World {
                     Kind::Plane,
                 ));
             }
+        });
+
+        self.cubes.iter().for_each(|c| {
+            let ray = world_ray.transform(c.transform_inverse());
+
+            let (xtmin, xtmax) = c.check_axis(ray.origin.x, ray.direction.x);
+            let (ytmin, ytmax) = c.check_axis(ray.origin.y, ray.direction.y);
+            let (ztmin, ztmax) = c.check_axis(ray.origin.z, ray.direction.z);
+
+            let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
+            let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
+
+            intersections.push(Intersection::new(tmin, c.id(), Kind::Cube));
+            intersections.push(Intersection::new(tmax, c.id(), Kind::Cube));
         });
 
         // Sort the intersections and return the index of the 'hit'

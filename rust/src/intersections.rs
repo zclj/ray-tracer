@@ -623,6 +623,37 @@ mod test {
         assert_eq!(xs[0].object, p_id)
     }
 
+    // Scenario Outline: A ray intersects a cube
+    //   Given c ← cube()
+    //     And r ← ray(<origin>, <direction>)
+    //   When xs ← local_intersect(c, r)
+    //   Then xs.count = 2
+    //     And xs[0].t = <t1>
+    //     And xs[1].t = <t2>
+
+    //   Examples:
+    //     |        | origin            | direction        | t1 | t2 |
+    //     | +x     | point(5, 0.5, 0)  | vector(-1, 0, 0) |  4 |  6 |
+    //     | -x     | point(-5, 0.5, 0) | vector(1, 0, 0)  |  4 |  6 |
+    //     | +y     | point(0.5, 5, 0)  | vector(0, -1, 0) |  4 |  6 |
+    //     | -y     | point(0.5, -5, 0) | vector(0, 1, 0)  |  4 |  6 |
+    //     | +z     | point(0.5, 0, 5)  | vector(0, 0, -1) |  4 |  6 |
+    //     | -z     | point(0.5, 0, -5) | vector(0, 0, 1)  |  4 |  6 |
+    //     | inside | point(0, 0.5, 0)  | vector(0, 0, 1)  | -1 |  1 |
+    #[test]
+    fn a_ray_intersects_a_cube() {
+        let mut world = World::new();
+        let _c_id = world.push_cube(None, None);
+
+        let r = Ray::new(Point::new(5.0, 0.5, 0.0), Vector::new(-1.0, 0.0, 0.0));
+        let mut xs = vec![];
+        world.intersect(&r, &mut xs);
+
+        assert_eq!(xs.len(), 2);
+        assert_eq!(xs[0].t, 4.0);
+        assert_eq!(xs[1].t, 6.0);
+    }
+
     // Scenario: Precomputing the reflection vector
     //   Given shape ← plane()
     //     And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))
