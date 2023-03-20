@@ -652,6 +652,34 @@ mod test {
         assert_eq!(xs.len(), 2);
         assert_eq!(xs[0].t, 4.0);
         assert_eq!(xs[1].t, 6.0);
+
+        let rays = [
+            Ray::new(Point::new(5.0, 0.5, 0.0), Vector::new(-1.0, 0.0, 0.0)),
+            Ray::new(Point::new(-5.0, 0.5, 0.0), Vector::new(1.0, 0.0, 0.0)),
+            Ray::new(Point::new(0.5, 5.0, 0.0), Vector::new(0.0, -1.0, 0.0)),
+            Ray::new(Point::new(0.5, -5.0, 0.0), Vector::new(0.0, 1.0, 0.0)),
+            Ray::new(Point::new(0.5, 0.0, 5.0), Vector::new(0.0, 0.0, -1.0)),
+            Ray::new(Point::new(0.5, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0)),
+            Ray::new(Point::new(0.0, 0.5, 0.0), Vector::new(0.0, 0.0, 1.0)),
+        ];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        assert_eq!(xss.len(), 7);
+        for i in 0..6 {
+            assert_eq!(xss[i][0].t, 4.0);
+            assert_eq!(xss[i][1].t, 6.0);
+        }
+
+        assert_eq!(xss[6][0].t, -1.0);
+        assert_eq!(xss[6][1].t, 1.0);
     }
 
     // Scenario: Precomputing the reflection vector
