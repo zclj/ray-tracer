@@ -645,14 +645,6 @@ mod test {
         let mut world = World::new();
         let _c_id = world.push_cube(None, None);
 
-        let r = Ray::new(Point::new(5.0, 0.5, 0.0), Vector::new(-1.0, 0.0, 0.0));
-        let mut xs = vec![];
-        world.intersect(&r, &mut xs);
-
-        assert_eq!(xs.len(), 2);
-        assert_eq!(xs[0].t, 4.0);
-        assert_eq!(xs[1].t, 6.0);
-
         let rays = [
             Ray::new(Point::new(5.0, 0.5, 0.0), Vector::new(-1.0, 0.0, 0.0)),
             Ray::new(Point::new(-5.0, 0.5, 0.0), Vector::new(1.0, 0.0, 0.0)),
@@ -680,6 +672,58 @@ mod test {
 
         assert_eq!(xss[6][0].t, -1.0);
         assert_eq!(xss[6][1].t, 1.0);
+    }
+
+    // Scenario Outline: A ray misses a cube
+    //   Given c ← cube()
+    //     And r ← ray(<origin>, <direction>)
+    //   When xs ← local_intersect(c, r)
+    //   Then xs.count = 0
+
+    //   Examples:
+    //     | origin           | direction                      |
+    //     | point(-2, 0, 0)  | vector(0.2673, 0.5345, 0.8018) |
+    //     | point(0, -2, 0)  | vector(0.8018, 0.2673, 0.5345) |
+    //     | point(0, 0, -2)  | vector(0.5345, 0.8018, 0.2673) |
+    //     | point(2, 0, 2)   | vector(0, 0, -1)               |
+    //     | point(0, 2, 2)   | vector(0, -1, 0)               |
+    //     | point(2, 2, 0)   | vector(-1, 0, 0)               |
+    #[test]
+    fn a_ray_misses_a_cube() {
+        let mut world = World::new();
+        let _c_id = world.push_cube(None, None);
+
+        let rays = [
+            Ray::new(
+                Point::new(-2.0, 0.0, 0.0),
+                Vector::new(0.2673, 0.5345, 0.8018),
+            ),
+            Ray::new(
+                Point::new(0.0, -2.0, 0.0),
+                Vector::new(0.8018, 0.2673, 0.5345),
+            ),
+            Ray::new(
+                Point::new(0.0, 0.0, -2.0),
+                Vector::new(0.5345, 0.8018, 0.2673),
+            ),
+            Ray::new(Point::new(2.0, 0.0, 2.0), Vector::new(0.0, 0.0, -1.0)),
+            Ray::new(Point::new(0.0, 2.0, 2.0), Vector::new(0.0, -1.0, 0.0)),
+            Ray::new(Point::new(2.0, 2.0, 0.0), Vector::new(-1.0, 0.0, 0.0)),
+        ];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        assert_eq!(xss.len(), 6);
+        for i in 0..6 {
+            assert_eq!(xss[i].len(), 0);
+        }
     }
 
     // Scenario: Precomputing the reflection vector

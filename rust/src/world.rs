@@ -191,8 +191,10 @@ impl World {
             let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
             let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
 
-            intersections.push(Intersection::new(tmin, c.id(), Kind::Cube));
-            intersections.push(Intersection::new(tmax, c.id(), Kind::Cube));
+            if tmax >= tmin {
+                intersections.push(Intersection::new(tmin, c.id(), Kind::Cube));
+                intersections.push(Intersection::new(tmax, c.id(), Kind::Cube));
+            }
         });
 
         // Sort the intersections and return the index of the 'hit'
