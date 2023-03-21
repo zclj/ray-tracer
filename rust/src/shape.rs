@@ -1,6 +1,6 @@
 use crate::materials::Material;
 use crate::matrices::M4x4;
-use crate::utils::EPSILON;
+use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::{Point, Vector};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -45,7 +45,20 @@ impl Shape {
         let object_normal = match self {
             Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
-            &Shape::Cube { .. } => todo!(),
+            &Shape::Cube { .. } => {
+                let maxc = f32::max(
+                    f32::max(f32::abs(object_point.x), f32::abs(object_point.y)),
+                    f32::abs(object_point.z),
+                );
+
+                if epsilon_eq(maxc, f32::abs(object_point.x)) {
+                    return Vector::new(object_point.x, 0.0, 0.0);
+                } else if epsilon_eq(maxc, f32::abs(object_point.y)) {
+                    return Vector::new(0.0, object_point.y, 0.0);
+                }
+
+                return Vector::new(0.0, 0.0, object_point.z);
+            }
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -359,5 +372,47 @@ mod test {
         assert_eq!(n1, Vector::new(0.0, 1.0, 0.0));
         assert_eq!(n2, Vector::new(0.0, 1.0, 0.0));
         assert_eq!(n3, Vector::new(0.0, 1.0, 0.0))
+    }
+
+    // Scenario Outline: The normal on the surface of a cube
+    //   Given c ← cube()
+    //     And p ← <point>
+    //   When normal ← local_normal_at(c, p)
+    //   Then normal = <normal>
+
+    //   Examples:
+    //     | point                | normal           |
+    //     | point(1, 0.5, -0.8)  | vector(1, 0, 0)  |
+    //     | point(-1, -0.2, 0.9) | vector(-1, 0, 0) |
+    //     | point(-0.4, 1, -0.1) | vector(0, 1, 0)  |
+    //     | point(0.3, -1, -0.7) | vector(0, -1, 0) |
+    //     | point(-0.6, 0.3, 1)  | vector(0, 0, 1)  |
+    //     | point(0.4, 0.4, -1)  | vector(0, 0, -1) |
+    //     | point(1, 1, 1)       | vector(1, 0, 0)  |
+    //     | point(-1, -1, -1)    | vector(-1, 0, 0) |
+    #[test]
+    fn the_normal_on_the_surface_of_a_cube() {
+        let mut world = World::new();
+        let c_id = world.push_cube(None, None);
+
+        let c = world.get_shape(c_id, &Kind::Cube);
+
+        let n1 = c.normal_at(&Point::new(1.0, 0.5, -0.8));
+        let n2 = c.normal_at(&Point::new(-1.0, -0.2, 0.9));
+        let n3 = c.normal_at(&Point::new(-0.4, 1.0, -0.1));
+        let n4 = c.normal_at(&Point::new(0.3, -1.0, -0.7));
+        let n5 = c.normal_at(&Point::new(-0.6, 0.3, 1.0));
+        let n6 = c.normal_at(&Point::new(0.4, 0.4, -1.0));
+        let n7 = c.normal_at(&Point::new(1.0, 1.0, 1.0));
+        let n8 = c.normal_at(&Point::new(-1.0, -1.0, -1.0));
+
+        assert_eq!(n1, Vector::new(1.0, 0.0, 0.0));
+        assert_eq!(n2, Vector::new(-1.0, 0.0, 0.0));
+        assert_eq!(n3, Vector::new(0.0, 1.0, 0.0));
+        assert_eq!(n4, Vector::new(0.0, -1.0, 0.0));
+        assert_eq!(n5, Vector::new(0.0, 0.0, 1.0));
+        assert_eq!(n6, Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(n7, Vector::new(1.0, 0.0, 0.0));
+        assert_eq!(n8, Vector::new(-1.0, 0.0, 0.0));
     }
 }
