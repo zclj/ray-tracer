@@ -6,15 +6,17 @@ use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::shape::Kind;
 use crate::shape::Shape;
-use crate::utils::EPSILON;
+use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
+#[derive(Debug)]
 pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
     spheres: Vec<Shape>,
     planes: Vec<Shape>,
     cubes: Vec<Shape>,
+    cylinders: Vec<Shape>,
 }
 
 impl World {
@@ -25,6 +27,7 @@ impl World {
             spheres: Vec::new(),
             planes: Vec::new(),
             cubes: Vec::new(),
+            cylinders: Vec::new(),
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -55,6 +58,14 @@ impl World {
         material_option: Option<Material>,
     ) -> u32 {
         self.push_shape(&Kind::Cube, transform_option, material_option)
+    }
+
+    pub fn push_cylinder(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
+        self.push_shape(&Kind::Cylinder, transform_option, material_option)
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -119,6 +130,20 @@ impl World {
 
                 id
             }
+
+            Kind::Cylinder => {
+                let id = self.cylinders.len() as u32;
+
+                self.cylinders.push(Shape::Cylinder {
+                    id,
+                    transform_inverse_transpose,
+                    transform_inverse,
+                    transform,
+                    material,
+                });
+
+                id
+            }
         }
     }
 
@@ -128,6 +153,7 @@ impl World {
             Kind::Sphere => &self.spheres[id as usize],
             Kind::Plane => &self.planes[id as usize],
             Kind::Cube => &self.cubes[id as usize],
+            Kind::Cylinder => &self.cylinders[id as usize],
         }
     }
 
@@ -195,6 +221,42 @@ impl World {
                 intersections.push(Intersection::new(tmin, c.id(), Kind::Cube));
                 intersections.push(Intersection::new(tmax, c.id(), Kind::Cube));
             }
+        });
+
+        self.cylinders.iter().for_each(|cy| {
+            let ray = world_ray.transform(cy.transform_inverse());
+
+            let a = (ray.direction.x * ray.direction.x) + (ray.direction.z * ray.direction.z);
+
+            // ray is parallel with the y axis
+            if epsilon_eq(a, 0.0) {
+                return;
+            };
+
+            let b = 2.0 * ray.origin.x * ray.direction.x + 2.0 * ray.origin.z * ray.direction.z;
+            let c = ray.origin.x * ray.origin.x + ray.origin.z * ray.origin.z - 1.0;
+
+            let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+            // ray does not intersect the cylinder
+            if discriminant < 0.0 {
+                return;
+            }
+
+            let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+            let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+            let id = cy.id();
+            intersections.push(Intersection {
+                t: t1,
+                object: id,
+                kind: Kind::Cylinder,
+            });
+            intersections.push(Intersection {
+                t: t2,
+                object: id,
+                kind: Kind::Cylinder,
+            });
         });
 
         // Sort the intersections and return the index of the 'hit'

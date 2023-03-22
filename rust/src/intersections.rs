@@ -726,6 +726,103 @@ mod test {
         }
     }
 
+    // Scenario Outline: A ray misses a cylinder
+    //   Given cyl ← cylinder()
+    //     And direction ← normalize(<direction>)
+    //     And r ← ray(<origin>, direction)
+    //   When xs ← local_intersect(cyl, r)
+    //   Then xs.count = 0
+
+    //   Examples:
+    //     | origin          | direction       |
+    //     | point(1, 0, 0)  | vector(0, 1, 0) |
+    //     | point(0, 0, 0)  | vector(0, 1, 0) |
+    //     | point(0, 0, -5) | vector(1, 1, 1) |
+    #[test]
+    fn a_ray_misses_a_cylinder() {
+        let mut world = World::new();
+        let _c_id = world.push_cylinder(None, None);
+
+        let rays = [
+            Ray::new(Point::new(1.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).norm()),
+            Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).norm()),
+            Ray::new(
+                Point::new(0.0, 0.0, -5.0),
+                Vector::new(1.0, 1.0, 1.0).norm(),
+            ),
+        ];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        assert_eq!(xss.len(), 3);
+        for i in 0..3 {
+            assert_eq!(xss[i].len(), 0);
+        }
+    }
+
+    // Scenario Outline: A ray strikes a cylinder
+    //   Given cyl ← cylinder()
+    //     And direction ← normalize(<direction>)
+    //     And r ← ray(<origin>, direction)
+    //   When xs ← local_intersect(cyl, r)
+    //   Then xs.count = 2
+    //     And xs[0].t = <t0>
+    //     And xs[1].t = <t1>
+
+    //   Examples:
+    //     | origin            | direction         | t0      | t1      |
+    //     | point(1, 0, -5)   | vector(0, 0, 1)   | 5       | 5       |
+    //     | point(0, 0, -5)   | vector(0, 0, 1)   | 4       | 6       |
+    //     | point(0.5, 0, -5) | vector(0.1, 1, 1) | 6.80798 | 7.08872 |
+    #[test]
+    fn a_ray_strikes_a_cylinder() {
+        let mut world = World::new();
+        let _c_id = world.push_cylinder(None, None);
+
+        let rays = [
+            Ray::new(
+                Point::new(1.0, 0.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 0.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.5, 0.0, -5.0),
+                Vector::new(0.1, 1.0, 1.0).norm(),
+            ),
+        ];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        assert_eq!(xss[0].len(), 2);
+        assert_eq!(xss[0][0].t, 5.0);
+        assert_eq!(xss[0][1].t, 5.0);
+
+        assert_eq!(xss[1].len(), 2);
+        assert_eq!(xss[1][0].t, 4.0);
+        assert_eq!(xss[1][1].t, 6.0);
+
+        assert_eq!(xss[2].len(), 2);
+        assert_eq!(true, epsilon_eq(xss[2][0].t, 6.80798));
+        assert_eq!(true, epsilon_eq(xss[2][1].t, 7.08872));
+    }
+
     // Scenario: Precomputing the reflection vector
     //   Given shape ← plane()
     //     And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))

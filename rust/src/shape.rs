@@ -8,6 +8,7 @@ pub enum Kind {
     Sphere,
     Plane,
     Cube,
+    Cylinder,
 }
 
 #[derive(PartialEq, Debug)]
@@ -35,6 +36,14 @@ pub enum Shape {
         transform_inverse: M4x4,
         transform_inverse_transpose: M4x4,
     },
+
+    Cylinder {
+        id: u32,
+        transform: M4x4,
+        material: Material,
+        transform_inverse: M4x4,
+        transform_inverse_transpose: M4x4,
+    },
 }
 
 impl Shape {
@@ -43,8 +52,8 @@ impl Shape {
         let object_point = self.transform_inverse() * world_point;
 
         let object_normal = match self {
-            Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
-            Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
+            &Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
+            &Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
             &Shape::Cube { .. } => {
                 let maxc = f32::max(
                     f32::max(f32::abs(object_point.x), f32::abs(object_point.y)),
@@ -59,6 +68,7 @@ impl Shape {
 
                 return Vector::new(0.0, 0.0, object_point.z);
             }
+            &Shape::Cylinder { .. } => todo!(),
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -92,6 +102,7 @@ impl Shape {
         match self {
             Shape::Sphere { material, .. }
             | Shape::Plane { material, .. }
+            | Shape::Cylinder { material, .. }
             | Shape::Cube { material, .. } => material,
         }
     }
@@ -99,7 +110,10 @@ impl Shape {
     #[must_use]
     pub fn id(&self) -> u32 {
         match self {
-            Shape::Sphere { id, .. } | Shape::Plane { id, .. } | Shape::Cube { id, .. } => *id,
+            Shape::Sphere { id, .. }
+            | Shape::Plane { id, .. }
+            | Shape::Cylinder { id, .. }
+            | Shape::Cube { id, .. } => *id,
         }
     }
 
@@ -108,6 +122,7 @@ impl Shape {
         match self {
             Shape::Sphere { transform, .. }
             | Shape::Plane { transform, .. }
+            | Shape::Cylinder { transform, .. }
             | Shape::Cube { transform, .. } => transform,
         }
     }
@@ -119,6 +134,9 @@ impl Shape {
                 transform_inverse, ..
             }
             | Shape::Plane {
+                transform_inverse, ..
+            }
+            | Shape::Cylinder {
                 transform_inverse, ..
             }
             | Shape::Cube {
@@ -135,6 +153,10 @@ impl Shape {
                 ..
             }
             | Shape::Plane {
+                transform_inverse_transpose,
+                ..
+            }
+            | Shape::Cylinder {
                 transform_inverse_transpose,
                 ..
             }
