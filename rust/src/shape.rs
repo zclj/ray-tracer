@@ -43,6 +43,8 @@ pub enum Shape {
         material: Material,
         transform_inverse: M4x4,
         transform_inverse_transpose: M4x4,
+        minimum: f32,
+        maximum: f32,
     },
 }
 
@@ -52,9 +54,9 @@ impl Shape {
         let object_point = self.transform_inverse() * world_point;
 
         let object_normal = match self {
-            &Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
-            &Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
-            &Shape::Cube { .. } => {
+            Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
+            Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
+            Shape::Cube { .. } => {
                 let maxc = f32::max(
                     f32::max(f32::abs(object_point.x), f32::abs(object_point.y)),
                     f32::abs(object_point.z),
@@ -68,7 +70,7 @@ impl Shape {
 
                 return Vector::new(0.0, 0.0, object_point.z);
             }
-            &Shape::Cylinder { .. } => Vector::new(object_point.x, 0.0, object_point.z),
+            Shape::Cylinder { .. } => Vector::new(object_point.x, 0.0, object_point.z),
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -164,6 +166,28 @@ impl Shape {
                 transform_inverse_transpose,
                 ..
             } => transform_inverse_transpose,
+        }
+    }
+
+    /// # Panics
+    ///
+    /// Will panic on any shape other than Cylinders
+    #[must_use]
+    pub fn minimum(&self) -> f32 {
+        match self {
+            Shape::Cylinder { minimum, .. } => *minimum,
+            _ => panic!("minimum only supported on Cylinders"),
+        }
+    }
+
+    /// # Panics
+    ///
+    /// Will panic on any shape other than Cylinders
+    #[must_use]
+    pub fn maximum(&self) -> f32 {
+        match self {
+            Shape::Cylinder { maximum, .. } => *maximum,
+            _ => panic!("maximum only supported on Cylinders"),
         }
     }
 }
@@ -452,7 +476,7 @@ mod test {
     #[test]
     fn normal_vector_on_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_cylinder(None, None);
+        let c_id = world.push_shape(&Kind::Cylinder, None, None);
 
         let c = world.get_shape(c_id, &Kind::Cylinder);
 
@@ -465,5 +489,20 @@ mod test {
         assert_eq!(n2, Vector::new(0.0, 0.0, -1.0));
         assert_eq!(n3, Vector::new(0.0, 0.0, 1.0));
         assert_eq!(n4, Vector::new(-1.0, 0.0, 0.0));
+    }
+
+    // Scenario: The default minimum and maximum for a cylinder
+    //   Given cyl ← cylinder()
+    //   Then cyl.minimum = -infinity
+    //     And cyl.maximum = infinity
+    #[test]
+    fn the_default_minimum_and_maximum_for_a_cylinder() {
+        let mut world = World::new();
+        let c_id = world.push_shape(&Kind::Cylinder, None, None);
+
+        let c = world.get_shape(c_id, &Kind::Cylinder);
+
+        assert_eq!(c.minimum(), -f32::INFINITY);
+        assert_eq!(c.maximum(), f32::INFINITY);
     }
 }

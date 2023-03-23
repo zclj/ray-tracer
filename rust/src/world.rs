@@ -60,12 +60,40 @@ impl World {
         self.push_shape(&Kind::Cube, transform_option, material_option)
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     pub fn push_cylinder(
         &mut self,
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
+        minimum: f32,
+        maximum: f32,
     ) -> u32 {
-        self.push_shape(&Kind::Cylinder, transform_option, material_option)
+        let transform = match transform_option {
+            Some(t) => t,
+            None => M4x4::IDENTITY,
+        };
+
+        let material = match material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        let transform_inverse = transform.inverse();
+        let transform_inverse_transpose = transform_inverse.transpose();
+
+        let id = self.cylinders.len() as u32;
+
+        self.cylinders.push(Shape::Cylinder {
+            id,
+            transform_inverse_transpose,
+            transform_inverse,
+            transform,
+            material,
+            minimum,
+            maximum,
+        });
+
+        id
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -140,6 +168,8 @@ impl World {
                     transform_inverse,
                     transform,
                     material,
+                    minimum: -f32::INFINITY,
+                    maximum: f32::INFINITY,
                 });
 
                 id

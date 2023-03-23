@@ -741,7 +741,7 @@ mod test {
     #[test]
     fn a_ray_misses_a_cylinder() {
         let mut world = World::new();
-        let _c_id = world.push_cylinder(None, None);
+        let _c_id = world.push_shape(&Kind::Cylinder, None, None);
 
         let rays = [
             Ray::new(Point::new(1.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).norm()),
@@ -784,7 +784,7 @@ mod test {
     #[test]
     fn a_ray_strikes_a_cylinder() {
         let mut world = World::new();
-        let _c_id = world.push_cylinder(None, None);
+        let _c_id = world.push_shape(&Kind::Cylinder, None, None);
 
         let rays = [
             Ray::new(
