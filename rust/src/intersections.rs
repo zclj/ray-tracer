@@ -823,6 +823,68 @@ mod test {
         assert_eq!(true, epsilon_eq(xss[2][1].t, 7.08872));
     }
 
+    // Scenario Outline: Intersecting a constrained cylinder
+    //   Given cyl ← cylinder()
+    //     And cyl.minimum ← 1
+    //     And cyl.maximum ← 2
+    //     And direction ← normalize(<direction>)
+    //     And r ← ray(<point>, direction)
+    //   When xs ← local_intersect(cyl, r)
+    //   Then xs.count = <count>
+
+    //   Examples:
+    //     |   | point             | direction         | count |
+    //     | 1 | point(0, 1.5, 0)  | vector(0.1, 1, 0) | 0     |
+    //     | 2 | point(0, 3, -5)   | vector(0, 0, 1)   | 0     |
+    //     | 3 | point(0, 0, -5)   | vector(0, 0, 1)   | 0     |
+    //     | 4 | point(0, 2, -5)   | vector(0, 0, 1)   | 0     |
+    //     | 5 | point(0, 1, -5)   | vector(0, 0, 1)   | 0     |
+    //     | 6 | point(0, 1.5, -2) | vector(0, 0, 1)   | 2     |
+    #[test]
+    fn intersecting_a_constrained_cylinder() {
+        let mut world = World::new();
+        let _c_id = world.push_cylinder(None, None, 1.0, 2.0);
+
+        let rays = [
+            Ray::new(Point::new(0.0, 1.5, 0.0), Vector::new(0.1, 1.0, 0.0).norm()),
+            Ray::new(
+                Point::new(0.0, 3.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 0.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 2.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 1.0, -5.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 1.5, -2.0),
+                Vector::new(0.0, 0.0, 1.0).norm(),
+            ),
+        ];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        for i in 0..5 {
+            assert_eq!(xss[i].len(), 0);
+        }
+
+        assert_eq!(xss[5].len(), 2);
+    }
+
     // Scenario: Precomputing the reflection vector
     //   Given shape ← plane()
     //     And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))

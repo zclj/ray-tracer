@@ -273,20 +273,28 @@ impl World {
                 return;
             }
 
-            let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-            let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+            let t0 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+            let t1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+            let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
 
             let id = cy.id();
-            intersections.push(Intersection {
-                t: t1,
-                object: id,
-                kind: Kind::Cylinder,
-            });
-            intersections.push(Intersection {
-                t: t2,
-                object: id,
-                kind: Kind::Cylinder,
-            });
+            let y0 = ray.origin.y + t0 * ray.direction.y;
+            if cy.minimum() < y0 && y0 < cy.maximum() {
+                intersections.push(Intersection {
+                    t: t0,
+                    object: id,
+                    kind: Kind::Cylinder,
+                });
+            }
+            let y1 = ray.origin.y + t1 * ray.direction.y;
+            if cy.minimum() < y1 && y1 < cy.maximum() {
+                intersections.push(Intersection {
+                    t: t1,
+                    object: id,
+                    kind: Kind::Cylinder,
+                });
+            }
         });
 
         // Sort the intersections and return the index of the 'hit'
