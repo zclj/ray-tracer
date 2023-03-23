@@ -68,7 +68,7 @@ impl Shape {
 
                 return Vector::new(0.0, 0.0, object_point.z);
             }
-            &Shape::Cylinder { .. } => todo!(),
+            &Shape::Cylinder { .. } => Vector::new(object_point.x, 0.0, object_point.z),
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -436,5 +436,34 @@ mod test {
         assert_eq!(n6, Vector::new(0.0, 0.0, -1.0));
         assert_eq!(n7, Vector::new(1.0, 0.0, 0.0));
         assert_eq!(n8, Vector::new(-1.0, 0.0, 0.0));
+    }
+
+    // Scenario Outline: Normal vector on a cylinder
+    //   Given cyl ← cylinder()
+    //   When n ← local_normal_at(cyl, <point>)
+    //   Then n = <normal>
+
+    //   Examples:
+    //     | point           | normal           |
+    //     | point(1, 0, 0)  | vector(1, 0, 0)  |
+    //     | point(0, 5, -1) | vector(0, 0, -1) |
+    //     | point(0, -2, 1) | vector(0, 0, 1)  |
+    //     | point(-1, 1, 0) | vector(-1, 0, 0) |
+    #[test]
+    fn normal_vector_on_a_cylinder() {
+        let mut world = World::new();
+        let c_id = world.push_cylinder(None, None);
+
+        let c = world.get_shape(c_id, &Kind::Cylinder);
+
+        let n1 = c.normal_at(&Point::new(1.0, 0.0, 0.0));
+        let n2 = c.normal_at(&Point::new(0.0, 5.0, -1.0));
+        let n3 = c.normal_at(&Point::new(0.0, -2.0, 1.0));
+        let n4 = c.normal_at(&Point::new(-1.0, 1.0, 0.0));
+
+        assert_eq!(n1, Vector::new(1.0, 0.0, 0.0));
+        assert_eq!(n2, Vector::new(0.0, 0.0, -1.0));
+        assert_eq!(n3, Vector::new(0.0, 0.0, 1.0));
+        assert_eq!(n4, Vector::new(-1.0, 0.0, 0.0));
     }
 }
