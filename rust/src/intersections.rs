@@ -843,7 +843,7 @@ mod test {
     #[test]
     fn intersecting_a_constrained_cylinder() {
         let mut world = World::new();
-        let _c_id = world.push_cylinder(None, None, 1.0, 2.0);
+        let _c_id = world.push_cylinder(None, None, 1.0, 2.0, false);
 
         let rays = [
             Ray::new(Point::new(0.0, 1.5, 0.0), Vector::new(0.1, 1.0, 0.0).norm()),

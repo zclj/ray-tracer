@@ -45,6 +45,10 @@ pub enum Shape {
         transform_inverse_transpose: M4x4,
         minimum: f32,
         maximum: f32,
+        // Typically, we don't want a bool in the struct, but our data
+        // show that there will be a very small number of Cylinders to
+        // justify another storage Vec ('closed_cylinders').
+        closed: bool,
     },
 }
 
@@ -188,6 +192,17 @@ impl Shape {
         match self {
             Shape::Cylinder { maximum, .. } => *maximum,
             _ => panic!("maximum only supported on Cylinders"),
+        }
+    }
+
+    /// # Panics
+    ///
+    /// Will panic on any shape other than Cylinders
+    #[must_use]
+    pub fn closed(&self) -> bool {
+        match self {
+            Shape::Cylinder { closed, .. } => *closed,
+            _ => panic!("closed only supported on Cylinders"),
         }
     }
 }
@@ -504,5 +519,18 @@ mod test {
 
         assert_eq!(c.minimum(), -f32::INFINITY);
         assert_eq!(c.maximum(), f32::INFINITY);
+    }
+
+    // Scenario: The default closed value for a cylinder
+    //   Given cyl ← cylinder()
+    //   Then cyl.closed = false
+    #[test]
+    fn the_default_closed_value_for_a_cylinder() {
+        let mut world = World::new();
+        let c_id = world.push_shape(&Kind::Cylinder, None, None);
+
+        let c = world.get_shape(c_id, &Kind::Cylinder);
+
+        assert_eq!(c.closed(), false);
     }
 }

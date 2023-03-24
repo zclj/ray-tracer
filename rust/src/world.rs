@@ -67,6 +67,7 @@ impl World {
         material_option: Option<Material>,
         minimum: f32,
         maximum: f32,
+        closed: bool,
     ) -> u32 {
         let transform = match transform_option {
             Some(t) => t,
@@ -91,6 +92,7 @@ impl World {
             material,
             minimum,
             maximum,
+            closed,
         });
 
         id
@@ -170,6 +172,7 @@ impl World {
                     material,
                     minimum: -f32::INFINITY,
                     maximum: f32::INFINITY,
+                    closed: false,
                 });
 
                 id
