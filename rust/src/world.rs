@@ -19,6 +19,39 @@ pub struct World {
     cylinders: Vec<Shape>,
 }
 
+fn check_cap(ray: &Ray, t: f64) -> bool {
+    let x = f64::from(ray.origin.x) + t * f64::from(ray.direction.x);
+    let z = f64::from(ray.origin.z) + t * f64::from(ray.direction.z);
+
+    (x * x + z * z) <= 1.0
+}
+
+fn intersect_caps(cyl: &Shape, ray: &Ray, xs: &mut Vec<Intersection>) {
+    // caps only matter if the cylinder is closed, and might possibly be
+    // intersected by the ray.
+    println!("Cylinder: {:?}", cyl);
+    println!("Ray: {:?}", ray);
+    if !cyl.closed() || epsilon_eq(ray.direction.y, 0.0) {
+        return
+    }
+
+    // check for an intersection with the lower end cap by intersecting
+    // the ray with the plane at y=cyl.minimum
+    let tmin = (f64::from(cyl.minimum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
+    if check_cap(&ray, tmin) {
+        println!("Min Cap!");
+        xs.push(Intersection::new(tmin as f32, cyl.id(), Kind::Cylinder))
+    }
+
+    // check for an intersection with the upper end cap by intersecting
+    // the ray with the plane at y=cyl.maximum
+    let tmax = (f64::from(cyl.maximum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
+    if check_cap(&ray, tmax) {
+        println!("Max Cap!");
+        xs.push(Intersection::new(tmax as f32, cyl.id(), Kind::Cylinder))
+    }
+}
+
 impl World {
     #[must_use]
     pub fn new() -> Self {
@@ -259,44 +292,58 @@ impl World {
         self.cylinders.iter().for_each(|cy| {
             let ray = world_ray.transform(cy.transform_inverse());
 
-            let a = (ray.direction.x * ray.direction.x) + (ray.direction.z * ray.direction.z);
+            let xd = f64::from(ray.direction.x);
+            let zd = f64::from(ray.direction.z);
+            let a:f64 = xd*xd + zd*zd;
 
             // ray is parallel with the y axis
-            if epsilon_eq(a, 0.0) {
-                return;
-            };
+            if (a - 0.0).abs() < 0.00001 {
+                println!("Ray is parallel with the y axis");
+                intersect_caps(&cy, &ray, intersections);
+                
+            } else {
 
-            let b = 2.0 * ray.origin.x * ray.direction.x + 2.0 * ray.origin.z * ray.direction.z;
-            let c = ray.origin.x * ray.origin.x + ray.origin.z * ray.origin.z - 1.0;
+                let xo = f64::from(ray.origin.x);
+                let zo = f64::from(ray.origin.z);
+            let b = (2.0 * xo * xd) + (2.0 * zo * zd);
+            let c = xo * xo + zo * zo - 1.0;
 
             let discriminant = b.powf(2.0) - (4.0 * a * c);
 
             // ray does not intersect the cylinder
             if discriminant < 0.0 {
+                println!("Ray do not intersect cylinder");
+                //intersect_caps(&cy, &ray, intersections);
                 return;
             }
 
-            let t0 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-            let t1 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+            let t0 = (-b - f64::sqrt(discriminant)) / (2.0 * a);
+            let t1 = (-b + f64::sqrt(discriminant)) / (2.0 * a);
 
             let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
 
             let id = cy.id();
-            let y0 = ray.origin.y + t0 * ray.direction.y;
-            if cy.minimum() < y0 && y0 < cy.maximum() {
+            let y0 = f64::from(ray.origin.y) + t0 * f64::from(ray.direction.y);
+            println!("y0: {:?}", y0);
+            if f64::from(cy.minimum()) < y0 && y0 < f64::from(cy.maximum()) {
                 intersections.push(Intersection {
-                    t: t0,
+                    t: t0 as f32,
                     object: id,
                     kind: Kind::Cylinder,
                 });
             }
-            let y1 = ray.origin.y + t1 * ray.direction.y;
-            if cy.minimum() < y1 && y1 < cy.maximum() {
+            let y1 = f64::from(ray.origin.y) + t1 * f64::from(ray.direction.y);
+            println!("y1: {:?}", y1);
+            if f64::from(cy.minimum()) < y1 && y1 < f64::from(cy.maximum()) {
                 intersections.push(Intersection {
-                    t: t1,
+                    t: t1 as f32,
                     object: id,
                     kind: Kind::Cylinder,
                 });
+            }
+
+            intersect_caps(&cy, &ray, intersections);
+                println!("Done with: {:?}", intersections.len());
             }
         });
 
