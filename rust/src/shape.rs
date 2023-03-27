@@ -74,7 +74,20 @@ impl Shape {
 
                 return Vector::new(0.0, 0.0, object_point.z);
             }
-            Shape::Cylinder { .. } => Vector::new(object_point.x, 0.0, object_point.z),
+            Shape::Cylinder { .. } => {
+                // compute the square of the distance from the y axis
+                let dist = object_point.x * object_point.x + object_point.z * object_point.z;
+
+                if dist < 1.0 && object_point.y >= self.maximum() - EPSILON {
+                    return Vector::new(0.0, 1.0, 0.0);
+                }
+
+                if dist < 1.0 && object_point.y <= self.minimum() + EPSILON {
+                    return Vector::new(0.0, -1.0, 0.0);
+                }
+
+                Vector::new(object_point.x, 0.0, object_point.z)
+            }
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -532,5 +545,43 @@ mod test {
         let c = world.get_shape(c_id, &Kind::Cylinder);
 
         assert_eq!(c.closed(), false);
+    }
+
+    // Scenario Outline: The normal vector on a cylinder's end caps
+    //   Given cyl ← cylinder()
+    //     And cyl.minimum ← 1
+    //     And cyl.maximum ← 2
+    //     And cyl.closed ← true
+    //   When n ← local_normal_at(cyl, <point>)
+    //   Then n = <normal>
+
+    //   Examples:
+    //     | point            | normal           |
+    //     | point(0, 1, 0)   | vector(0, -1, 0) |
+    //     | point(0.5, 1, 0) | vector(0, -1, 0) |
+    //     | point(0, 1, 0.5) | vector(0, -1, 0) |
+    //     | point(0, 2, 0)   | vector(0, 1, 0)  |
+    //     | point(0.5, 2, 0) | vector(0, 1, 0)  |
+    //     | point(0, 2, 0.5) | vector(0, 1, 0)  |
+    #[test]
+    fn the_normal_vector_on_a_cylinders_end_caps() {
+        let mut world = World::new();
+        let c_id = world.push_cylinder(None, None, 1.0, 2.0, true);
+
+        let c = world.get_shape(c_id, &Kind::Cylinder);
+
+        let n1 = c.normal_at(&Point::new(0.0, 1.0, 0.0));
+        let n2 = c.normal_at(&Point::new(0.5, 1.0, 0.0));
+        let n3 = c.normal_at(&Point::new(0.0, 1.0, 0.5));
+        let n4 = c.normal_at(&Point::new(0.0, 2.0, 0.0));
+        let n5 = c.normal_at(&Point::new(0.5, 2.0, 0.0));
+        let n6 = c.normal_at(&Point::new(0.0, 2.0, 0.5));
+
+        assert_eq!(n1, Vector::new(0.0, -1.0, 0.0));
+        assert_eq!(n2, Vector::new(0.0, -1.0, 0.0));
+        assert_eq!(n3, Vector::new(0.0, -1.0, 0.0));
+        assert_eq!(n4, Vector::new(0.0, 1.0, 0.0));
+        assert_eq!(n5, Vector::new(0.0, 1.0, 0.0));
+        assert_eq!(n6, Vector::new(0.0, 1.0, 0.0));
     }
 }
