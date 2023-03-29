@@ -17,6 +17,7 @@ pub struct World {
     planes: Vec<Shape>,
     cubes: Vec<Shape>,
     cylinders: Vec<Shape>,
+    cones: Vec<Shape>,
 }
 
 fn check_cap(ray: &Ray, t: f64) -> bool {
@@ -58,6 +59,7 @@ impl World {
             planes: Vec::new(),
             cubes: Vec::new(),
             cylinders: Vec::new(),
+            cones: Vec::new(),
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -115,6 +117,44 @@ impl World {
         let id = self.cylinders.len() as u32;
 
         self.cylinders.push(Shape::Cylinder {
+            id,
+            transform_inverse_transpose,
+            transform_inverse,
+            transform,
+            material,
+            minimum,
+            maximum,
+            closed,
+        });
+
+        id
+    }
+
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn push_cone(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+        minimum: f32,
+        maximum: f32,
+        closed: bool,
+    ) -> u32 {
+        let transform = match transform_option {
+            Some(t) => t,
+            None => M4x4::IDENTITY,
+        };
+
+        let material = match material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        let transform_inverse = transform.inverse();
+        let transform_inverse_transpose = transform_inverse.transpose();
+
+        let id = self.cones.len() as u32;
+
+        self.cones.push(Shape::Cylinder {
             id,
             transform_inverse_transpose,
             transform_inverse,
@@ -207,6 +247,23 @@ impl World {
 
                 id
             }
+
+            Kind::Cone => {
+                let id = self.cones.len() as u32;
+
+                self.cones.push(Shape::Cone {
+                    id,
+                    transform_inverse_transpose,
+                    transform_inverse,
+                    transform,
+                    material,
+                    minimum: -f32::INFINITY,
+                    maximum: f32::INFINITY,
+                    closed: false,
+                });
+
+                id
+            }
         }
     }
 
@@ -217,6 +274,7 @@ impl World {
             Kind::Plane => &self.planes[id as usize],
             Kind::Cube => &self.cubes[id as usize],
             Kind::Cylinder => &self.cylinders[id as usize],
+            Kind::Cone => &self.cones[id as usize],
         }
     }
 
@@ -332,6 +390,62 @@ impl World {
                 }
             }
             intersect_caps(cy, &ray, intersections);
+        });
+
+        self.cones.iter().for_each(|cy| {
+            let ray = world_ray.transform(cy.transform_inverse());
+
+            let xd = ray.direction.x;
+            let yd = ray.direction.y;
+            let zd = ray.direction.z;
+
+            let xo = ray.origin.x;
+            let yo = ray.origin.y;
+            let zo = ray.origin.z;
+
+            let a = xd * xd - yd * yd + zd * zd;
+            let b = (2.0 * xo * xd) - (2.0 * yo * yd) + (2.0 * zo * zd);
+            let c = xo * xo - yo * yo + zo * zo;
+
+            let id = cy.id();
+
+            if epsilon_eq(a, 0.0) && !epsilon_eq(b, 0.0) {
+                intersections.push(Intersection {
+                    t: -c / (2.0 * b),
+                    object: id,
+                    kind: Kind::Cone,
+                });
+            } else {
+                let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                // ray does intersect the cylinder
+                if discriminant >= (-EPSILON) {
+                    let sqrt_discriminant = f32::sqrt(f32::max(0.0, discriminant));
+                    let a2 = 2.0 * a;
+                    let t0 = (-b - sqrt_discriminant) / a2;
+                    let t1 = (-b + sqrt_discriminant) / a2;
+
+                    let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                    let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+                    if (cy.minimum()) < y0 && y0 < (cy.maximum()) {
+                        intersections.push(Intersection {
+                            t: t0,
+                            object: id,
+                            kind: Kind::Cone,
+                        });
+                    }
+                    let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+                    if (cy.minimum()) < y1 && y1 < (cy.maximum()) {
+                        intersections.push(Intersection {
+                            t: t1,
+                            object: id,
+                            kind: Kind::Cone,
+                        });
+                    }
+                }
+            }
+            //intersect_caps(cy, &ray, intersections);
         });
 
         // Sort the intersections and return the index of the 'hit'

@@ -9,6 +9,7 @@ pub enum Kind {
     Plane,
     Cube,
     Cylinder,
+    Cone,
 }
 
 #[derive(PartialEq, Debug)]
@@ -50,6 +51,20 @@ pub enum Shape {
         // justify another storage Vec ('closed_cylinders').
         closed: bool,
     },
+
+    Cone {
+        id: u32,
+        transform: M4x4,
+        material: Material,
+        transform_inverse: M4x4,
+        transform_inverse_transpose: M4x4,
+        minimum: f32,
+        maximum: f32,
+        // Typically, we don't want a bool in the struct, but our data
+        // show that there will be a very small number of Cones to
+        // justify another storage Vec ('closed_cones').
+        closed: bool,
+    },
 }
 
 impl Shape {
@@ -88,6 +103,8 @@ impl Shape {
 
                 Vector::new(object_point.x, 0.0, object_point.z)
             }
+
+            Shape::Cone { .. } => todo!(),
         };
 
         let world_normal = self.transform_inverse_transpose() * &object_normal;
@@ -122,6 +139,7 @@ impl Shape {
             Shape::Sphere { material, .. }
             | Shape::Plane { material, .. }
             | Shape::Cylinder { material, .. }
+            | Shape::Cone { material, .. }
             | Shape::Cube { material, .. } => material,
         }
     }
@@ -132,6 +150,7 @@ impl Shape {
             Shape::Sphere { id, .. }
             | Shape::Plane { id, .. }
             | Shape::Cylinder { id, .. }
+            | Shape::Cone { id, .. }
             | Shape::Cube { id, .. } => *id,
         }
     }
@@ -142,6 +161,7 @@ impl Shape {
             Shape::Sphere { transform, .. }
             | Shape::Plane { transform, .. }
             | Shape::Cylinder { transform, .. }
+            | Shape::Cone { transform, .. }
             | Shape::Cube { transform, .. } => transform,
         }
     }
@@ -156,6 +176,9 @@ impl Shape {
                 transform_inverse, ..
             }
             | Shape::Cylinder {
+                transform_inverse, ..
+            }
+            | Shape::Cone {
                 transform_inverse, ..
             }
             | Shape::Cube {
@@ -179,6 +202,10 @@ impl Shape {
                 transform_inverse_transpose,
                 ..
             }
+            | Shape::Cone {
+                transform_inverse_transpose,
+                ..
+            }
             | Shape::Cube {
                 transform_inverse_transpose,
                 ..
@@ -192,7 +219,7 @@ impl Shape {
     #[must_use]
     pub fn minimum(&self) -> f32 {
         match self {
-            Shape::Cylinder { minimum, .. } => *minimum,
+            Shape::Cylinder { minimum, .. } | Shape::Cone { minimum, .. } => *minimum,
             _ => panic!("minimum only supported on Cylinders"),
         }
     }
@@ -203,7 +230,7 @@ impl Shape {
     #[must_use]
     pub fn maximum(&self) -> f32 {
         match self {
-            Shape::Cylinder { maximum, .. } => *maximum,
+            Shape::Cylinder { maximum, .. } | Shape::Cone { maximum, .. } => *maximum,
             _ => panic!("maximum only supported on Cylinders"),
         }
     }
