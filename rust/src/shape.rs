@@ -237,12 +237,12 @@ impl Shape {
 
     /// # Panics
     ///
-    /// Will panic on any shape other than Cylinders
+    /// Will panic on any shape other than Cylinders or Cones
     #[must_use]
     pub fn closed(&self) -> bool {
         match self {
-            Shape::Cylinder { closed, .. } => *closed,
-            _ => panic!("closed only supported on Cylinders"),
+            Shape::Cylinder { closed, .. } | Shape::Cone { closed, .. } => *closed,
+            _ => panic!("closed only supported on Cylinders and Cones"),
         }
     }
 }

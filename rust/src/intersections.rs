@@ -1031,6 +1031,55 @@ mod test {
         assert_eq!(true, epsilon_eq(xss[0][0].t, 0.35355));
     }
 
+    // Scenario Outline: Intersecting a cone's end caps
+    //   Given shape ← cone()
+    //     And shape.minimum ← -0.5
+    //     And shape.maximum ← 0.5
+    //     And shape.closed ← true
+    //     And direction ← normalize(<direction>)
+    //     And r ← ray(<origin>, direction)
+    //   When xs ← local_intersect(shape, r)
+    //   Then xs.count = <count>
+
+    //   Examples:
+    //     | origin             | direction       | count |
+    //     | point(0, 0, -5)    | vector(0, 1, 0) | 0     |
+    //     | point(0, 0, -0.25) | vector(0, 1, 1) | 2     |
+    //     | point(0, 0, -0.25) | vector(0, 1, 0) | 4     |
+    #[test]
+    fn intersecting_a_cones_end_caps() {
+        let mut world = World::new();
+        let _c_id = world.push_cone(None, None, -0.5, 0.5, true);
+
+        let rays = [
+            Ray::new(
+                Point::new(0.0, 0.0, -5.0),
+                Vector::new(0.0, 1.0, 0.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 0.0, -0.25),
+                Vector::new(0.0, 1.0, 1.0).norm(),
+            ),
+            Ray::new(
+                Point::new(0.0, 0.0, -0.25),
+                Vector::new(0.0, 1.0, 0.0).norm(),
+            ),
+        ];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        assert_eq!(xss[0].len(), 0);
+        assert_eq!(xss[1].len(), 2);
+        assert_eq!(xss[2].len(), 4);
+    }
+
     // Scenario: Precomputing the reflection vector
     //   Given shape ← plane()
     //     And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))

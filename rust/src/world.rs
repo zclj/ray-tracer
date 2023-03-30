@@ -20,33 +20,45 @@ pub struct World {
     cones: Vec<Shape>,
 }
 
-fn check_cap(ray: &Ray, t: f64) -> bool {
+fn check_cap(ray: &Ray, t: f64, r: f64) -> bool {
     let x = f64::from(ray.origin.x) + t * f64::from(ray.direction.x);
     let z = f64::from(ray.origin.z) + t * f64::from(ray.direction.z);
 
-    (x * x + z * z) <= 1.0
+    (x * x + z * z) <= r * r
 }
 
 #[allow(clippy::cast_possible_truncation)]
-fn intersect_caps(cyl: &Shape, ray: &Ray, xs: &mut Vec<Intersection>) {
+fn intersect_caps(s: &Shape, ray: &Ray, xs: &mut Vec<Intersection>) {
     // caps only matter if the cylinder is closed, and might possibly be
     // intersected by the ray.
-    if !cyl.closed() || epsilon_eq(ray.direction.y, 0.0) {
+    if !s.closed() || epsilon_eq(ray.direction.y, 0.0) {
         return;
     }
 
+    let (id, kind, r_min, r_max) = match s {
+        Shape::Cylinder { id, .. } => (id, Kind::Cylinder, 1.0, 1.0),
+        Shape::Cone {
+            id,
+            minimum,
+            maximum,
+            ..
+        } => (id, Kind::Cone, *minimum, *maximum),
+        _ => panic!("Caps only supported for Cones and Cylinders"),
+    };
+
     // check for an intersection with the lower end cap by intersecting
-    // the ray with the plane at y=cyl.minimum
-    let tmin = (f64::from(cyl.minimum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
-    if check_cap(ray, tmin) {
-        xs.push(Intersection::new(tmin as f32, cyl.id(), Kind::Cylinder));
+    // the ray with the plane at y=s.minimum
+    let tmin = (f64::from(s.minimum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
+
+    if check_cap(ray, tmin, r_min.into()) {
+        xs.push(Intersection::new(tmin as f32, *id, kind.clone()));
     }
 
     // check for an intersection with the upper end cap by intersecting
-    // the ray with the plane at y=cyl.maximum
-    let tmax = (f64::from(cyl.maximum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
-    if check_cap(ray, tmax) {
-        xs.push(Intersection::new(tmax as f32, cyl.id(), Kind::Cylinder));
+    // the ray with the plane at y=s.maximum
+    let tmax = (f64::from(s.maximum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
+    if check_cap(ray, tmax, r_max.into()) {
+        xs.push(Intersection::new(tmax as f32, *id, kind));
     }
 }
 
@@ -154,7 +166,7 @@ impl World {
 
         let id = self.cones.len() as u32;
 
-        self.cones.push(Shape::Cylinder {
+        self.cones.push(Shape::Cone {
             id,
             transform_inverse_transpose,
             transform_inverse,
@@ -445,7 +457,8 @@ impl World {
                     }
                 }
             }
-            //intersect_caps(cy, &ray, intersections);
+
+            intersect_caps(cy, &ray, intersections);
         });
 
         // Sort the intersections and return the index of the 'hit'
