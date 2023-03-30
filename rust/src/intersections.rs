@@ -988,7 +988,6 @@ mod test {
             })
             .collect::<Vec<Vec<Intersection>>>();
 
-        println!("Intersections: {:?}", xss);
         assert_eq!(xss[0].len(), 2);
         assert_eq!(xss[0][0].t, 5.0);
         assert_eq!(xss[0][1].t, 5.0);
@@ -1000,6 +999,36 @@ mod test {
         assert_eq!(xss[2].len(), 2);
         assert_eq!(true, epsilon_eq(xss[2][0].t, 4.55006));
         assert_eq!(true, epsilon_eq(xss[2][1].t, 49.44994));
+    }
+
+    // Scenario: Intersecting a cone with a ray parallel to one of its halves
+    //   Given shape ← cone()
+    //     And direction ← normalize(vector(0, 1, 1))
+    //     And r ← ray(point(0, 0, -1), direction)
+    //   When xs ← local_intersect(shape, r)
+    //   Then xs.count = 1
+    //     And xs[0].t = 0.35355
+    #[test]
+    fn intersecting_a_cone_with_a_ray_parallel_to_one_of_its_halves() {
+        let mut world = World::new();
+        let _c_id = world.push_shape(&Kind::Cone, None, None);
+
+        let rays = [Ray::new(
+            Point::new(0.0, 0.0, -1.0),
+            Vector::new(0.0, 1.0, 1.0).norm(),
+        )];
+
+        let xss = rays
+            .iter()
+            .map(|r| {
+                let mut xs = vec![];
+                world.intersect(&r, &mut xs);
+                xs.clone()
+            })
+            .collect::<Vec<Vec<Intersection>>>();
+
+        assert_eq!(xss[0].len(), 1);
+        assert_eq!(true, epsilon_eq(xss[0][0].t, 0.35355));
     }
 
     // Scenario: Precomputing the reflection vector
