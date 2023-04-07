@@ -46,10 +46,10 @@ impl Intersection {
         ray: &Ray,
         intersections: &[Intersection],
         shadow_bias: f32,
-        containers: &mut Vec<(u32, Kind)>,
+        containers: &mut Vec<u32>,
     ) -> ComputedIntersection {
         let mut normalv = world
-            .get_shape(self.object, &self.kind)
+            .get_object(self.object)
             .normal_at(&ray.position(self.t));
 
         let eyev = -&ray.direction;
@@ -71,28 +71,23 @@ impl Intersection {
                     if containers.is_empty() {
                         n1 = 1.0;
                     } else {
-                        let (obj, k) = containers.last().unwrap();
-                        n1 = world.get_shape(*obj, k).material.refractive_index;
+                        let obj = containers.last().unwrap();
+                        n1 = world.get_object(*obj).material.refractive_index;
                     }
                 }
 
-                if containers.contains(&(i.object, i.kind.clone())) {
-                    containers.remove(
-                        containers
-                            .iter()
-                            .position(|(x, k)| *x == i.object && *k == i.kind)
-                            .unwrap(),
-                    );
+                if containers.contains(&i.object) {
+                    containers.remove(containers.iter().position(|x| *x == i.object).unwrap());
                 } else {
-                    containers.push((i.object, i.kind.clone()));
+                    containers.push(i.object);
                 }
 
                 if i == self {
                     if containers.is_empty() {
                         n2 = 1.0;
                     } else {
-                        let (obj, k) = containers.last().unwrap();
-                        n2 = world.get_shape(*obj, k).material.refractive_index;
+                        let obj = containers.last().unwrap();
+                        n2 = world.get_object(*obj).material.refractive_index;
                     }
 
                     break;

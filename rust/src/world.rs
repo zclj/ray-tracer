@@ -209,12 +209,6 @@ impl World {
         &self.objects[id as usize]
     }
 
-    // TODO Remove and use get_object
-    #[must_use]
-    pub fn get_shape(&self, id: u32, kind: &Kind) -> &RenderObject {
-        &self.objects[id as usize]
-    }
-
     #[allow(clippy::similar_names)]
     #[allow(clippy::too_many_lines)]
     pub fn intersect(
@@ -224,7 +218,6 @@ impl World {
     ) -> Option<usize> {
         intersections.clear();
 
-        //self.spheres.iter().for_each(|s| {
         self.objects.iter().for_each(|s| {
             match s.kind {
                 Shape::Sphere => {
@@ -397,9 +390,9 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<(u32, Kind)>,
+        containers: &mut Vec<u32>,
     ) -> Color {
-        let shape = &self.get_shape(comp.object, &comp.kind);
+        let shape = &self.get_object(comp.object);
         let m = &shape.material;
         let shadowed = self.is_shadowed(&comp.over_point, intersections);
 
@@ -429,7 +422,7 @@ impl World {
         ray: &Ray,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<(u32, Kind)>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         let the_hit = self.intersect(ray, intersections);
 
@@ -465,12 +458,12 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<(u32, Kind)>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
-        let shape = self.get_shape(comp.object, &comp.kind);
+        let shape = self.get_object(comp.object);
         if shape.material.reflective == 0.0 {
             Color::new(0.0, 0.0, 0.0)
         } else {
@@ -487,13 +480,13 @@ impl World {
         comp: &ComputedIntersection,
         remaining: u8,
         intersections: &mut Vec<Intersection>,
-        containers: &mut Vec<(u32, Kind)>,
+        containers: &mut Vec<u32>,
     ) -> Color {
         if remaining == 0 {
             return Color::new(0.0, 0.0, 0.0);
         }
 
-        let shape = self.get_shape(comp.object, &comp.kind);
+        let shape = self.get_object(comp.object);
 
         let n_ratio = comp.n1 / comp.n2;
         let cos_i = comp.cos_i; //comp.eyev.dot(&comp.normalv);

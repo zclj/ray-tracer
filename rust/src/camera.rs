@@ -73,7 +73,7 @@ impl Camera {
             .into_par_iter()
             .map(|y| {
                 let mut intersections = Vec::<Intersection>::with_capacity(100);
-                let mut containers = Vec::<(u32, Kind)>::with_capacity(20);
+                let mut containers = Vec::<u32>::with_capacity(20);
                 (0..(self.hsize - 1))
                     .map(|x| {
                         let ray = self.ray_for_pixel(x, y);
