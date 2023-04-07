@@ -1,7 +1,7 @@
 use crate::color::Color;
 use crate::lights::PointLight;
 use crate::matrices::M4x4;
-use crate::shape::Shape;
+use crate::shape::{RenderObject, Shape};
 use crate::vector::{Point, Vector};
 
 #[derive(Debug, PartialEq, Clone)]
@@ -46,7 +46,7 @@ impl Material {
     #[must_use]
     pub fn lighting(
         &self,
-        shape: &Shape,
+        shape: &RenderObject,
         light: &PointLight,
         position: &Point,
         eyev: &Vector,
@@ -179,8 +179,8 @@ impl Pattern {
         }
     }
 
-    fn pattern_at_shape(&self, shape: &Shape, world_point: &Point) -> Color {
-        let object_point = shape.transform_inverse() * world_point;
+    fn pattern_at_shape(&self, shape: &RenderObject, world_point: &Point) -> Color {
+        let object_point = &shape.transform_inverse * world_point;
         let pattern_point = &self.transform_inverse * &object_point;
 
         self.pattern_at(&pattern_point)

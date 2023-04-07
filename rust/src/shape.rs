@@ -3,6 +3,20 @@ use crate::matrices::M4x4;
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::{Point, Vector};
 
+#[derive(PartialEq, Debug)]
+pub struct RenderObject {
+    pub id: u32,
+    pub kind: Shape,
+    pub transform: M4x4,
+    pub material: Material,
+    pub transform_inverse: M4x4,
+    pub transform_inverse_transpose: M4x4,
+}
+
+// impl RenderObject {
+
+// }
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Kind {
     Sphere,
@@ -14,36 +28,10 @@ pub enum Kind {
 
 #[derive(PartialEq, Debug)]
 pub enum Shape {
-    Sphere {
-        id: u32,
-        transform: M4x4,
-        material: Material,
-        transform_inverse: M4x4,
-        transform_inverse_transpose: M4x4,
-    },
-
-    Plane {
-        id: u32,
-        transform: M4x4,
-        material: Material,
-        transform_inverse: M4x4,
-        transform_inverse_transpose: M4x4,
-    },
-
-    Cube {
-        id: u32,
-        transform: M4x4,
-        material: Material,
-        transform_inverse: M4x4,
-        transform_inverse_transpose: M4x4,
-    },
-
+    Sphere,
+    Plane,
+    Cube,
     Cylinder {
-        id: u32,
-        transform: M4x4,
-        material: Material,
-        transform_inverse: M4x4,
-        transform_inverse_transpose: M4x4,
         minimum: f32,
         maximum: f32,
         // Typically, we don't want a bool in the struct, but our data
@@ -53,11 +41,6 @@ pub enum Shape {
     },
 
     Cone {
-        id: u32,
-        transform: M4x4,
-        material: Material,
-        transform_inverse: M4x4,
-        transform_inverse_transpose: M4x4,
         minimum: f32,
         maximum: f32,
         // Typically, we don't want a bool in the struct, but our data
@@ -67,12 +50,12 @@ pub enum Shape {
     },
 }
 
-impl Shape {
+impl RenderObject {
     #[must_use]
     pub fn normal_at(&self, world_point: &Point) -> Vector {
-        let object_point = self.transform_inverse() * world_point;
+        let object_point = &self.transform_inverse * world_point;
 
-        let object_normal = match self {
+        let object_normal = match self.kind {
             Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
             Shape::Cube { .. } => {
@@ -127,7 +110,7 @@ impl Shape {
             }
         };
 
-        let world_normal = self.transform_inverse_transpose() * &object_normal;
+        let world_normal = &self.transform_inverse_transpose * &object_normal;
 
         world_normal.norm()
     }
@@ -153,93 +136,39 @@ impl Shape {
         }
     }
 
-    #[must_use]
-    pub fn material(&self) -> &Material {
-        match self {
-            Shape::Sphere { material, .. }
-            | Shape::Plane { material, .. }
-            | Shape::Cylinder { material, .. }
-            | Shape::Cone { material, .. }
-            | Shape::Cube { material, .. } => material,
-        }
-    }
+    // #[must_use]
+    // pub fn material(&self) -> &Material {
+    //     panic!("material bang bang")
 
-    #[must_use]
-    pub fn id(&self) -> u32 {
-        match self {
-            Shape::Sphere { id, .. }
-            | Shape::Plane { id, .. }
-            | Shape::Cylinder { id, .. }
-            | Shape::Cone { id, .. }
-            | Shape::Cube { id, .. } => *id,
-        }
-    }
+    // }
 
-    #[must_use]
-    pub fn transform(&self) -> &M4x4 {
-        match self {
-            Shape::Sphere { transform, .. }
-            | Shape::Plane { transform, .. }
-            | Shape::Cylinder { transform, .. }
-            | Shape::Cone { transform, .. }
-            | Shape::Cube { transform, .. } => transform,
-        }
-    }
+    // #[must_use]
+    // pub fn id(&self) -> u32 {
+    //     panic!("Id bang!")
+    // }
 
-    #[must_use]
-    pub fn transform_inverse(&self) -> &M4x4 {
-        match self {
-            Shape::Sphere {
-                transform_inverse, ..
-            }
-            | Shape::Plane {
-                transform_inverse, ..
-            }
-            | Shape::Cylinder {
-                transform_inverse, ..
-            }
-            | Shape::Cone {
-                transform_inverse, ..
-            }
-            | Shape::Cube {
-                transform_inverse, ..
-            } => transform_inverse,
-        }
-    }
+    // #[must_use]
+    // pub fn transform(&self) -> &M4x4 {
+    //     panic!("xf bang!")
+    // }
 
-    #[must_use]
-    pub fn transform_inverse_transpose(&self) -> &M4x4 {
-        match self {
-            Shape::Sphere {
-                transform_inverse_transpose,
-                ..
-            }
-            | Shape::Plane {
-                transform_inverse_transpose,
-                ..
-            }
-            | Shape::Cylinder {
-                transform_inverse_transpose,
-                ..
-            }
-            | Shape::Cone {
-                transform_inverse_transpose,
-                ..
-            }
-            | Shape::Cube {
-                transform_inverse_transpose,
-                ..
-            } => transform_inverse_transpose,
-        }
-    }
+    // #[must_use]
+    // pub fn transform_inverse(&self) -> &M4x4 {
+    //     panic!("xf_inv bang!")
+    // }
+
+    // #[must_use]
+    // pub fn transform_inverse_transpose(&self) -> &M4x4 {
+    //     panic!("refactor bang!")
+    // }
 
     /// # Panics
     ///
     /// Will panic on any shape other than Cylinders
     #[must_use]
     pub fn minimum(&self) -> f32 {
-        match self {
-            Shape::Cylinder { minimum, .. } | Shape::Cone { minimum, .. } => *minimum,
+        match self.kind {
+            Shape::Cylinder { minimum, .. } | Shape::Cone { minimum, .. } => minimum,
             _ => panic!("minimum only supported on Cylinders"),
         }
     }
@@ -249,8 +178,8 @@ impl Shape {
     /// Will panic on any shape other than Cylinders
     #[must_use]
     pub fn maximum(&self) -> f32 {
-        match self {
-            Shape::Cylinder { maximum, .. } | Shape::Cone { maximum, .. } => *maximum,
+        match self.kind {
+            Shape::Cylinder { maximum, .. } | Shape::Cone { maximum, .. } => maximum,
             _ => panic!("maximum only supported on Cylinders"),
         }
     }
@@ -260,8 +189,8 @@ impl Shape {
     /// Will panic on any shape other than Cylinders or Cones
     #[must_use]
     pub fn closed(&self) -> bool {
-        match self {
-            Shape::Cylinder { closed, .. } | Shape::Cone { closed, .. } => *closed,
+        match self.kind {
+            Shape::Cylinder { closed, .. } | Shape::Cone { closed, .. } => closed,
             _ => panic!("closed only supported on Cylinders and Cones"),
         }
     }

@@ -4,8 +4,7 @@ use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::Kind;
-use crate::shape::Shape;
+use crate::shape::{Kind, RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
@@ -13,7 +12,8 @@ use crate::vector::Point;
 pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
-    spheres: Vec<Shape>,
+    //spheres: Vec<Shape>,
+    objects: Vec<RenderObject>,
     planes: Vec<Shape>,
     cubes: Vec<Shape>,
     cylinders: Vec<Shape>,
@@ -28,21 +28,18 @@ fn check_cap(ray: &Ray, t: f64, r: f64) -> bool {
 }
 
 #[allow(clippy::cast_possible_truncation)]
-fn intersect_caps(s: &Shape, ray: &Ray, xs: &mut Vec<Intersection>) {
+fn intersect_caps(s: &RenderObject, ray: &Ray, xs: &mut Vec<Intersection>) {
     // caps only matter if the cylinder is closed, and might possibly be
     // intersected by the ray.
     if !s.closed() || epsilon_eq(ray.direction.y, 0.0) {
         return;
     }
 
-    let (id, kind, r_min, r_max) = match s {
-        Shape::Cylinder { id, .. } => (id, Kind::Cylinder, 1.0, 1.0),
+    let (id, kind, r_min, r_max) = match s.kind {
+        Shape::Cylinder { .. } => (s.id, Kind::Cylinder, 1.0, 1.0),
         Shape::Cone {
-            id,
-            minimum,
-            maximum,
-            ..
-        } => (id, Kind::Cone, *minimum, *maximum),
+            minimum, maximum, ..
+        } => (s.id, Kind::Cone, minimum, maximum),
         _ => panic!("Caps only supported for Cones and Cylinders"),
     };
 
@@ -51,23 +48,23 @@ fn intersect_caps(s: &Shape, ray: &Ray, xs: &mut Vec<Intersection>) {
     let tmin = (f64::from(s.minimum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
 
     if check_cap(ray, tmin, r_min.into()) {
-        xs.push(Intersection::new(tmin as f32, *id, kind.clone()));
+        xs.push(Intersection::new(tmin as f32, id, kind.clone()));
     }
 
     // check for an intersection with the upper end cap by intersecting
     // the ray with the plane at y=s.maximum
     let tmax = (f64::from(s.maximum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
     if check_cap(ray, tmax, r_max.into()) {
-        xs.push(Intersection::new(tmax as f32, *id, kind));
+        xs.push(Intersection::new(tmax as f32, id, kind));
     }
 }
 
 impl World {
     #[must_use]
     pub fn new() -> Self {
-        // @TODO - we could have knowledge about the capacity
         World {
-            spheres: Vec::new(),
+            //spheres: Vec::new(),
+            objects: Vec::new(),
             planes: Vec::new(),
             cubes: Vec::new(),
             cylinders: Vec::new(),
@@ -85,7 +82,7 @@ impl World {
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
     ) -> u32 {
-        self.push_shape(&Kind::Sphere, transform_option, material_option)
+        self.push_shape(Shape::Sphere, transform_option, material_option)
     }
 
     pub fn push_plane(
@@ -93,7 +90,7 @@ impl World {
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
     ) -> u32 {
-        self.push_shape(&Kind::Plane, transform_option, material_option)
+        self.push_shape(Shape::Plane, transform_option, material_option)
     }
 
     pub fn push_cube(
@@ -101,7 +98,7 @@ impl World {
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
     ) -> u32 {
-        self.push_shape(&Kind::Cube, transform_option, material_option)
+        self.push_shape(Shape::Cube, transform_option, material_option)
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -126,17 +123,20 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        let id = self.cylinders.len() as u32;
+        // start here
+        let id = self.objects.len() as u32;
 
-        self.cylinders.push(Shape::Cylinder {
+        self.objects.push(RenderObject {
             id,
+            kind: Shape::Cylinder {
+                minimum,
+                maximum,
+                closed,
+            },
             transform_inverse_transpose,
             transform_inverse,
             transform,
             material,
-            minimum,
-            maximum,
-            closed,
         });
 
         id
@@ -167,11 +167,6 @@ impl World {
         let id = self.cones.len() as u32;
 
         self.cones.push(Shape::Cone {
-            id,
-            transform_inverse_transpose,
-            transform_inverse,
-            transform,
-            material,
             minimum,
             maximum,
             closed,
@@ -183,7 +178,7 @@ impl World {
     #[allow(clippy::cast_possible_truncation)]
     pub fn push_shape(
         &mut self,
-        kind: &Kind,
+        kind: Shape,
         transform_option: Option<M4x4>,
         material_option: Option<Material>,
     ) -> u32 {
@@ -200,94 +195,115 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        match kind {
-            Kind::Sphere => {
-                let id = self.spheres.len() as u32;
+        // start here
+        let id = self.objects.len() as u32;
 
-                self.spheres.push(Shape::Sphere {
-                    id,
-                    transform_inverse_transpose,
-                    transform_inverse,
-                    transform,
-                    material,
-                });
+        self.objects.push(RenderObject {
+            id,
+            kind,
+            transform_inverse_transpose,
+            transform_inverse,
+            transform,
+            material,
+        });
 
-                id
-            }
+        id
+        //match kind // {
+        //     Kind::Sphere => {
+        //         let id = self.objects.len() as u32;
 
-            Kind::Plane => {
-                let id = self.planes.len() as u32;
+        //         // self.spheres.push(Shape::Sphere {
+        //         //     id,
+        //         //     transform_inverse_transpose,
+        //         //     transform_inverse,
+        //         //     transform,
+        //         //     material,
+        //         // });
 
-                self.planes.push(Shape::Plane {
-                    id,
-                    transform_inverse_transpose,
-                    transform_inverse,
-                    transform,
-                    material,
-                });
+        //         self.objects.push(RenderObject {
+        //             id,
+        //             kind: Kind::Sphere,
+        //             transform_inverse_transpose,
+        //             transform_inverse,
+        //             transform,
+        //             material,
+        //         });
 
-                id
-            }
+        //         id
+        //     }
 
-            Kind::Cube => {
-                let id = self.cubes.len() as u32;
+        //     Kind::Plane => {
+        //         let id = self.planes.len() as u32;
 
-                self.cubes.push(Shape::Cube {
-                    id,
-                    transform_inverse_transpose,
-                    transform_inverse,
-                    transform,
-                    material,
-                });
+        //         self.planes.push(Shape::Plane {
+        //             id,
+        //             transform_inverse_transpose,
+        //             transform_inverse,
+        //             transform,
+        //             material,
+        //         });
 
-                id
-            }
+        //         id
+        //     }
 
-            Kind::Cylinder => {
-                let id = self.cylinders.len() as u32;
+        //     Kind::Cube => {
+        //         let id = self.cubes.len() as u32;
 
-                self.cylinders.push(Shape::Cylinder {
-                    id,
-                    transform_inverse_transpose,
-                    transform_inverse,
-                    transform,
-                    material,
-                    minimum: -f32::INFINITY,
-                    maximum: f32::INFINITY,
-                    closed: false,
-                });
+        //         self.cubes.push(Shape::Cube {
+        //             id,
+        //             transform_inverse_transpose,
+        //             transform_inverse,
+        //             transform,
+        //             material,
+        //         });
 
-                id
-            }
+        //         id
+        //     }
 
-            Kind::Cone => {
-                let id = self.cones.len() as u32;
+        //     Kind::Cylinder => {
+        //         let id = self.cylinders.len() as u32;
 
-                self.cones.push(Shape::Cone {
-                    id,
-                    transform_inverse_transpose,
-                    transform_inverse,
-                    transform,
-                    material,
-                    minimum: -f32::INFINITY,
-                    maximum: f32::INFINITY,
-                    closed: false,
-                });
+        //         self.cylinders.push(Shape::Cylinder {
+        //             id,
+        //             transform_inverse_transpose,
+        //             transform_inverse,
+        //             transform,
+        //             material,
+        //             minimum: -f32::INFINITY,
+        //             maximum: f32::INFINITY,
+        //             closed: false,
+        //         });
 
-                id
-            }
-        }
+        //         id
+        //     }
+
+        //     Kind::Cone => {
+        //         let id = self.cones.len() as u32;
+
+        //         self.cones.push(Shape::Cone {
+        //             id,
+        //             transform_inverse_transpose,
+        //             transform_inverse,
+        //             transform,
+        //             material,
+        //             minimum: -f32::INFINITY,
+        //             maximum: f32::INFINITY,
+        //             closed: false,
+        //         });
+
+        //         id
+        //     }
+        // }
     }
 
+    pub fn get_object(&self, id: u32) -> &RenderObject {
+        &self.objects[id as usize]
+    }
+
+    // TODO Remove and use get_object
     #[must_use]
-    pub fn get_shape(&self, id: u32, kind: &Kind) -> &Shape {
-        match kind {
-            Kind::Sphere => &self.spheres[id as usize],
-            Kind::Plane => &self.planes[id as usize],
-            Kind::Cube => &self.cubes[id as usize],
-            Kind::Cylinder => &self.cylinders[id as usize],
-            Kind::Cone => &self.cones[id as usize],
-        }
+    pub fn get_shape(&self, id: u32, kind: &Kind) -> &RenderObject {
+        &self.objects[id as usize]
     }
 
     #[allow(clippy::similar_names)]
@@ -299,167 +315,165 @@ impl World {
     ) -> Option<usize> {
         intersections.clear();
 
-        self.spheres.iter().for_each(|s| {
-            let ray = world_ray.transform(s.transform_inverse());
-            let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
+        //self.spheres.iter().for_each(|s| {
+        self.objects.iter().for_each(|s| {
+            match s.kind {
+                Shape::Sphere => {
+                    let ray = world_ray.transform(&s.transform_inverse);
+                    let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
 
-            let a = ray.direction.dot(&ray.direction);
-            let b = 2.0 * ray.direction.dot(&sphere_to_ray);
-            let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
+                    let a = ray.direction.dot(&ray.direction);
+                    let b = 2.0 * ray.direction.dot(&sphere_to_ray);
+                    let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
 
-            let discriminant = b.powf(2.0) - (4.0 * a * c);
+                    let discriminant = b.powf(2.0) - (4.0 * a * c);
 
-            // invert?
-            if discriminant < 0.0 {
-                return;
-            }
-
-            let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
-            let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
-
-            let id = s.id();
-            intersections.push(Intersection {
-                t: t1,
-                object: id,
-                kind: Kind::Sphere,
-            });
-            intersections.push(Intersection {
-                t: t2,
-                object: id,
-                kind: Kind::Sphere,
-            });
-        });
-
-        self.planes.iter().for_each(|p| {
-            let ray = world_ray.transform(p.transform_inverse());
-            if ray.direction.y.abs() >= EPSILON {
-                intersections.push(Intersection::new(
-                    -ray.origin.y / ray.direction.y,
-                    p.id(),
-                    Kind::Plane,
-                ));
-            }
-        });
-
-        self.cubes.iter().for_each(|c| {
-            let ray = world_ray.transform(c.transform_inverse());
-
-            let (xtmin, xtmax) = c.check_axis(ray.origin.x, ray.direction.x);
-            let (ytmin, ytmax) = c.check_axis(ray.origin.y, ray.direction.y);
-            let (ztmin, ztmax) = c.check_axis(ray.origin.z, ray.direction.z);
-
-            let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
-            let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
-
-            if tmax >= tmin {
-                intersections.push(Intersection::new(tmin, c.id(), Kind::Cube));
-                intersections.push(Intersection::new(tmax, c.id(), Kind::Cube));
-            }
-        });
-
-        self.cylinders.iter().for_each(|cy| {
-            let ray = world_ray.transform(cy.transform_inverse());
-
-            let xd = ray.direction.x;
-            let zd = ray.direction.z;
-            let a = xd * xd + zd * zd;
-
-            // ray is NOT parallel with the y axis
-            if !epsilon_eq(a, 0.0) {
-                let xo = ray.origin.x;
-                let zo = ray.origin.z;
-                let b = (2.0 * xo * xd) + (2.0 * zo * zd);
-                let c = xo * xo + zo * zo - 1.0;
-
-                let discriminant = b.powf(2.0) - (4.0 * a * c);
-
-                // ray does intersect the cylinder
-                if discriminant >= 0.0 {
-                    let a2 = 2.0 * a;
-                    let t0 = (-b - f32::sqrt(discriminant)) / a2;
-                    let t1 = (-b + f32::sqrt(discriminant)) / a2;
-
-                    let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
-
-                    let id = cy.id();
-                    let y0 = (ray.origin.y) + t0 * (ray.direction.y);
-
-                    if (cy.minimum()) < y0 && y0 < (cy.maximum()) {
-                        intersections.push(Intersection {
-                            t: t0,
-                            object: id,
-                            kind: Kind::Cylinder,
-                        });
+                    // invert?
+                    if discriminant < 0.0 {
+                        return;
                     }
-                    let y1 = (ray.origin.y) + t1 * (ray.direction.y);
 
-                    if (cy.minimum()) < y1 && y1 < (cy.maximum()) {
-                        intersections.push(Intersection {
-                            t: t1,
-                            object: id,
-                            kind: Kind::Cylinder,
-                        });
+                    let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+                    let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+                    let id = s.id;
+                    intersections.push(Intersection {
+                        t: t1,
+                        object: id,
+                        kind: Kind::Sphere,
+                    });
+                    intersections.push(Intersection {
+                        t: t2,
+                        object: id,
+                        kind: Kind::Sphere,
+                    });
+                }
+                Shape::Plane => {
+                    let ray = world_ray.transform(&s.transform_inverse);
+                    if ray.direction.y.abs() >= EPSILON {
+                        intersections.push(Intersection::new(
+                            -ray.origin.y / ray.direction.y,
+                            s.id,
+                            Kind::Plane,
+                        ));
                     }
                 }
-            }
-            intersect_caps(cy, &ray, intersections);
-        });
+                Shape::Cube => {
+                    let ray = world_ray.transform(&s.transform_inverse);
 
-        self.cones.iter().for_each(|cy| {
-            let ray = world_ray.transform(cy.transform_inverse());
+                    let (xtmin, xtmax) = s.check_axis(ray.origin.x, ray.direction.x);
+                    let (ytmin, ytmax) = s.check_axis(ray.origin.y, ray.direction.y);
+                    let (ztmin, ztmax) = s.check_axis(ray.origin.z, ray.direction.z);
 
-            let xd = ray.direction.x;
-            let yd = ray.direction.y;
-            let zd = ray.direction.z;
+                    let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
+                    let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
 
-            let xo = ray.origin.x;
-            let yo = ray.origin.y;
-            let zo = ray.origin.z;
-
-            let a = xd * xd - yd * yd + zd * zd;
-            let b = (2.0 * xo * xd) - (2.0 * yo * yd) + (2.0 * zo * zd);
-            let c = xo * xo - yo * yo + zo * zo;
-
-            let id = cy.id();
-
-            if epsilon_eq(a, 0.0) && !epsilon_eq(b, 0.0) {
-                intersections.push(Intersection {
-                    t: -c / (2.0 * b),
-                    object: id,
-                    kind: Kind::Cone,
-                });
-            } else {
-                let discriminant = b.powf(2.0) - (4.0 * a * c);
-
-                // ray does intersect the cylinder
-                if discriminant >= (-EPSILON) {
-                    let sqrt_discriminant = f32::sqrt(f32::max(0.0, discriminant));
-                    let a2 = 2.0 * a;
-                    let t0 = (-b - sqrt_discriminant) / a2;
-                    let t1 = (-b + sqrt_discriminant) / a2;
-
-                    let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
-
-                    let y0 = (ray.origin.y) + t0 * (ray.direction.y);
-                    if (cy.minimum()) < y0 && y0 < (cy.maximum()) {
-                        intersections.push(Intersection {
-                            t: t0,
-                            object: id,
-                            kind: Kind::Cone,
-                        });
-                    }
-                    let y1 = (ray.origin.y) + t1 * (ray.direction.y);
-                    if (cy.minimum()) < y1 && y1 < (cy.maximum()) {
-                        intersections.push(Intersection {
-                            t: t1,
-                            object: id,
-                            kind: Kind::Cone,
-                        });
+                    if tmax >= tmin {
+                        intersections.push(Intersection::new(tmin, s.id, Kind::Cube));
+                        intersections.push(Intersection::new(tmax, s.id, Kind::Cube));
                     }
                 }
-            }
+                Shape::Cylinder { .. } => {
+                    let ray = world_ray.transform(&s.transform_inverse);
 
-            intersect_caps(cy, &ray, intersections);
+                    let xd = ray.direction.x;
+                    let zd = ray.direction.z;
+                    let a = xd * xd + zd * zd;
+
+                    // ray is NOT parallel with the y axis
+                    if !epsilon_eq(a, 0.0) {
+                        let xo = ray.origin.x;
+                        let zo = ray.origin.z;
+                        let b = (2.0 * xo * xd) + (2.0 * zo * zd);
+                        let c = xo * xo + zo * zo - 1.0;
+
+                        let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                        // ray does intersect the cylinder
+                        if discriminant >= 0.0 {
+                            let a2 = 2.0 * a;
+                            let t0 = (-b - f32::sqrt(discriminant)) / a2;
+                            let t1 = (-b + f32::sqrt(discriminant)) / a2;
+
+                            let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                            let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+
+                            if (s.minimum()) < y0 && y0 < (s.maximum()) {
+                                intersections.push(Intersection {
+                                    t: t0,
+                                    object: s.id,
+                                    kind: Kind::Cylinder,
+                                });
+                            }
+                            let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+
+                            if (s.minimum()) < y1 && y1 < (s.maximum()) {
+                                intersections.push(Intersection {
+                                    t: t1,
+                                    object: s.id,
+                                    kind: Kind::Cylinder,
+                                });
+                            }
+                        }
+                    }
+                    intersect_caps(s, &ray, intersections);
+                }
+                Shape::Cone { .. } => {
+                    let ray = world_ray.transform(&s.transform_inverse);
+
+                    let xd = ray.direction.x;
+                    let yd = ray.direction.y;
+                    let zd = ray.direction.z;
+
+                    let xo = ray.origin.x;
+                    let yo = ray.origin.y;
+                    let zo = ray.origin.z;
+
+                    let a = xd * xd - yd * yd + zd * zd;
+                    let b = (2.0 * xo * xd) - (2.0 * yo * yd) + (2.0 * zo * zd);
+                    let c = xo * xo - yo * yo + zo * zo;
+
+                    if epsilon_eq(a, 0.0) && !epsilon_eq(b, 0.0) {
+                        intersections.push(Intersection {
+                            t: -c / (2.0 * b),
+                            object: s.id,
+                            kind: Kind::Cone,
+                        });
+                    } else {
+                        let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                        // ray does intersect the cylinder
+                        if discriminant >= (-EPSILON) {
+                            let sqrt_discriminant = f32::sqrt(f32::max(0.0, discriminant));
+                            let a2 = 2.0 * a;
+                            let t0 = (-b - sqrt_discriminant) / a2;
+                            let t1 = (-b + sqrt_discriminant) / a2;
+
+                            let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                            let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+                            if (s.minimum()) < y0 && y0 < (s.maximum()) {
+                                intersections.push(Intersection {
+                                    t: t0,
+                                    object: s.id,
+                                    kind: Kind::Cone,
+                                });
+                            }
+                            let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+                            if (s.minimum()) < y1 && y1 < (s.maximum()) {
+                                intersections.push(Intersection {
+                                    t: t1,
+                                    object: s.id,
+                                    kind: Kind::Cone,
+                                });
+                            }
+                        }
+                    }
+
+                    intersect_caps(s, &ray, intersections);
+                }
+            }
         });
 
         // Sort the intersections and return the index of the 'hit'
@@ -477,7 +491,7 @@ impl World {
         containers: &mut Vec<(u32, Kind)>,
     ) -> Color {
         let shape = &self.get_shape(comp.object, &comp.kind);
-        let m = &shape.material();
+        let m = &shape.material;
         let shadowed = self.is_shadowed(&comp.over_point, intersections);
 
         let surface = m.lighting(
@@ -548,13 +562,13 @@ impl World {
             return Color::new(0.0, 0.0, 0.0);
         }
         let shape = self.get_shape(comp.object, &comp.kind);
-        if shape.material().reflective == 0.0 {
+        if shape.material.reflective == 0.0 {
             Color::new(0.0, 0.0, 0.0)
         } else {
             let reflect_ray = Ray::new(comp.over_point.clone(), comp.reflectv.clone());
             let color = self.color_at(&reflect_ray, remaining - 1, intersections, containers);
 
-            &color * shape.material().reflective
+            &color * shape.material.reflective
         }
     }
 
@@ -582,7 +596,7 @@ impl World {
             return Color::new(0.0, 0.0, 0.0);
         }
 
-        if shape.material().transparency == 0.0 {
+        if shape.material.transparency == 0.0 {
             Color::new(0.0, 0.0, 0.0)
         } else {
             let cos_t = f32::sqrt(1.0 - sin2_t);
@@ -593,7 +607,7 @@ impl World {
 
             // find the color of the refracted ray
             self.color_at(&refracted_ray, remaining - 1, intersections, containers)
-                * shape.material().transparency
+                * shape.material.transparency
         }
     }
 }

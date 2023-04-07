@@ -72,7 +72,7 @@ impl Intersection {
                         n1 = 1.0;
                     } else {
                         let (obj, k) = containers.last().unwrap();
-                        n1 = world.get_shape(*obj, k).material().refractive_index;
+                        n1 = world.get_shape(*obj, k).material.refractive_index;
                     }
                 }
 
@@ -92,7 +92,7 @@ impl Intersection {
                         n2 = 1.0;
                     } else {
                         let (obj, k) = containers.last().unwrap();
-                        n2 = world.get_shape(*obj, k).material().refractive_index;
+                        n2 = world.get_shape(*obj, k).material.refractive_index;
                     }
 
                     break;
