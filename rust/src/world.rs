@@ -12,12 +12,7 @@ use crate::vector::Point;
 pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
-    //spheres: Vec<Shape>,
     objects: Vec<RenderObject>,
-    planes: Vec<Shape>,
-    cubes: Vec<Shape>,
-    cylinders: Vec<Shape>,
-    cones: Vec<Shape>,
 }
 
 fn check_cap(ray: &Ray, t: f64, r: f64) -> bool {
@@ -63,12 +58,7 @@ impl World {
     #[must_use]
     pub fn new() -> Self {
         World {
-            //spheres: Vec::new(),
             objects: Vec::new(),
-            planes: Vec::new(),
-            cubes: Vec::new(),
-            cylinders: Vec::new(),
-            cones: Vec::new(),
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -123,7 +113,6 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        // start here
         let id = self.objects.len() as u32;
 
         self.objects.push(RenderObject {
@@ -164,12 +153,19 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        let id = self.cones.len() as u32;
+        let id = self.objects.len() as u32;
 
-        self.cones.push(Shape::Cone {
-            minimum,
-            maximum,
-            closed,
+        self.objects.push(RenderObject {
+            id,
+            kind: Shape::Cone {
+                minimum,
+                maximum,
+                closed,
+            },
+            transform_inverse_transpose,
+            transform_inverse,
+            transform,
+            material,
         });
 
         id
@@ -195,7 +191,6 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        // start here
         let id = self.objects.len() as u32;
 
         self.objects.push(RenderObject {
@@ -208,92 +203,6 @@ impl World {
         });
 
         id
-        //match kind // {
-        //     Kind::Sphere => {
-        //         let id = self.objects.len() as u32;
-
-        //         // self.spheres.push(Shape::Sphere {
-        //         //     id,
-        //         //     transform_inverse_transpose,
-        //         //     transform_inverse,
-        //         //     transform,
-        //         //     material,
-        //         // });
-
-        //         self.objects.push(RenderObject {
-        //             id,
-        //             kind: Kind::Sphere,
-        //             transform_inverse_transpose,
-        //             transform_inverse,
-        //             transform,
-        //             material,
-        //         });
-
-        //         id
-        //     }
-
-        //     Kind::Plane => {
-        //         let id = self.planes.len() as u32;
-
-        //         self.planes.push(Shape::Plane {
-        //             id,
-        //             transform_inverse_transpose,
-        //             transform_inverse,
-        //             transform,
-        //             material,
-        //         });
-
-        //         id
-        //     }
-
-        //     Kind::Cube => {
-        //         let id = self.cubes.len() as u32;
-
-        //         self.cubes.push(Shape::Cube {
-        //             id,
-        //             transform_inverse_transpose,
-        //             transform_inverse,
-        //             transform,
-        //             material,
-        //         });
-
-        //         id
-        //     }
-
-        //     Kind::Cylinder => {
-        //         let id = self.cylinders.len() as u32;
-
-        //         self.cylinders.push(Shape::Cylinder {
-        //             id,
-        //             transform_inverse_transpose,
-        //             transform_inverse,
-        //             transform,
-        //             material,
-        //             minimum: -f32::INFINITY,
-        //             maximum: f32::INFINITY,
-        //             closed: false,
-        //         });
-
-        //         id
-        //     }
-
-        //     Kind::Cone => {
-        //         let id = self.cones.len() as u32;
-
-        //         self.cones.push(Shape::Cone {
-        //             id,
-        //             transform_inverse_transpose,
-        //             transform_inverse,
-        //             transform,
-        //             material,
-        //             minimum: -f32::INFINITY,
-        //             maximum: f32::INFINITY,
-        //             closed: false,
-        //         });
-
-        //         id
-        //     }
-        // }
     }
 
     pub fn get_object(&self, id: u32) -> &RenderObject {
