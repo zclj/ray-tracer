@@ -291,6 +291,7 @@ impl World {
     }
 
     #[allow(clippy::similar_names)]
+    #[allow(clippy::too_many_lines)]
     pub fn intersect(
         &self,
         world_ray: &Ray,
