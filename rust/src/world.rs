@@ -100,35 +100,15 @@ impl World {
         maximum: f32,
         closed: bool,
     ) -> u32 {
-        let transform = match transform_option {
-            Some(t) => t,
-            None => M4x4::IDENTITY,
-        };
-
-        let material = match material_option {
-            Some(m) => m,
-            None => Material::default(),
-        };
-
-        let transform_inverse = transform.inverse();
-        let transform_inverse_transpose = transform_inverse.transpose();
-
-        let id = self.objects.len() as u32;
-
-        self.objects.push(RenderObject {
-            id,
-            kind: Shape::Cylinder {
+        self.push_shape(
+            Shape::Cylinder {
                 minimum,
                 maximum,
                 closed,
             },
-            transform_inverse_transpose,
-            transform_inverse,
-            transform,
-            material,
-        });
-
-        id
+            transform_option,
+            material_option,
+        )
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -140,35 +120,15 @@ impl World {
         maximum: f32,
         closed: bool,
     ) -> u32 {
-        let transform = match transform_option {
-            Some(t) => t,
-            None => M4x4::IDENTITY,
-        };
-
-        let material = match material_option {
-            Some(m) => m,
-            None => Material::default(),
-        };
-
-        let transform_inverse = transform.inverse();
-        let transform_inverse_transpose = transform_inverse.transpose();
-
-        let id = self.objects.len() as u32;
-
-        self.objects.push(RenderObject {
-            id,
-            kind: Shape::Cone {
+        self.push_shape(
+            Shape::Cone {
                 minimum,
                 maximum,
                 closed,
             },
-            transform_inverse_transpose,
-            transform_inverse,
-            transform,
-            material,
-        });
-
-        id
+            transform_option,
+            material_option,
+        )
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -196,15 +156,16 @@ impl World {
         self.objects.push(RenderObject {
             id,
             kind,
-            transform_inverse_transpose,
-            transform_inverse,
             transform,
             material,
+            transform_inverse,
+            transform_inverse_transpose,
         });
 
         id
     }
 
+    #[must_use]
     pub fn get_object(&self, id: u32) -> &RenderObject {
         &self.objects[id as usize]
     }
@@ -219,9 +180,10 @@ impl World {
         intersections.clear();
 
         self.objects.iter().for_each(|s| {
+            let ray = world_ray.transform(&s.transform_inverse);
+
             match s.kind {
                 Shape::Sphere => {
-                    let ray = world_ray.transform(&s.transform_inverse);
                     let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
 
                     let a = ray.direction.dot(&ray.direction);
@@ -251,7 +213,6 @@ impl World {
                     });
                 }
                 Shape::Plane => {
-                    let ray = world_ray.transform(&s.transform_inverse);
                     if ray.direction.y.abs() >= EPSILON {
                         intersections.push(Intersection::new(
                             -ray.origin.y / ray.direction.y,
@@ -261,8 +222,6 @@ impl World {
                     }
                 }
                 Shape::Cube => {
-                    let ray = world_ray.transform(&s.transform_inverse);
-
                     let (xtmin, xtmax) = s.check_axis(ray.origin.x, ray.direction.x);
                     let (ytmin, ytmax) = s.check_axis(ray.origin.y, ray.direction.y);
                     let (ztmin, ztmax) = s.check_axis(ray.origin.z, ray.direction.z);
@@ -276,8 +235,6 @@ impl World {
                     }
                 }
                 Shape::Cylinder { .. } => {
-                    let ray = world_ray.transform(&s.transform_inverse);
-
                     let xd = ray.direction.x;
                     let zd = ray.direction.z;
                     let a = xd * xd + zd * zd;
@@ -322,8 +279,6 @@ impl World {
                     intersect_caps(s, &ray, intersections);
                 }
                 Shape::Cone { .. } => {
-                    let ray = world_ray.transform(&s.transform_inverse);
-
                     let xd = ray.direction.x;
                     let yd = ray.direction.y;
                     let zd = ray.direction.z;

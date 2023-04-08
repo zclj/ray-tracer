@@ -1,7 +1,7 @@
 use crate::color::Color;
 use crate::lights::PointLight;
 use crate::matrices::M4x4;
-use crate::shape::{RenderObject, Shape};
+use crate::shape::RenderObject;
 use crate::vector::{Point, Vector};
 
 #[derive(Debug, PartialEq, Clone)]

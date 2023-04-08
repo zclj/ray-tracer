@@ -3,7 +3,6 @@ use crate::color::Color;
 use crate::intersections::Intersection;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::Kind;
 use crate::vector::Point;
 use crate::world::World;
 use rayon::prelude::*;
