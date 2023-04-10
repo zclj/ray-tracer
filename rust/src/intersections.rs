@@ -154,6 +154,7 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::shape::Shape;
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
@@ -544,7 +545,7 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let _p = world.get_shape(p_id, &Kind::Plane);
+        let _p = world.get_object(p_id);
         let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
@@ -563,7 +564,7 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let _p = world.get_shape(p_id, &Kind::Plane);
+        let _p = world.get_object(p_id);
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
@@ -584,7 +585,7 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let _p = world.get_shape(p_id, &Kind::Plane);
+        let _p = world.get_object(p_id);
         let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
 
         let mut xs = vec![];
@@ -607,7 +608,7 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let _p = world.get_shape(p_id, &Kind::Plane);
+        let _p = world.get_object(p_id);
         let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
 
         let mut xs = vec![];
@@ -736,7 +737,15 @@ mod test {
     #[test]
     fn a_ray_misses_a_cylinder() {
         let mut world = World::new();
-        let _c_id = world.push_shape(&Kind::Cylinder, None, None);
+        let _c_id = world.push_shape(
+            Shape::Cylinder {
+                minimum: f32::MIN,
+                maximum: f32::MAX,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
         let rays = [
             Ray::new(Point::new(1.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0).norm()),
@@ -779,7 +788,15 @@ mod test {
     #[test]
     fn a_ray_strikes_a_cylinder() {
         let mut world = World::new();
-        let _c_id = world.push_shape(&Kind::Cylinder, None, None);
+        let _c_id = world.push_shape(
+            Shape::Cylinder {
+                minimum: f32::MIN,
+                maximum: f32::MAX,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
         let rays = [
             Ray::new(
@@ -957,7 +974,15 @@ mod test {
     #[test]
     fn intersecting_a_cone_with_a_ray() {
         let mut world = World::new();
-        let _c_id = world.push_shape(&Kind::Cone, None, None);
+        let _c_id = world.push_shape(
+            Shape::Cone {
+                minimum: f32::MIN,
+                maximum: f32::MAX,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
         let rays = [
             Ray::new(
@@ -1006,7 +1031,15 @@ mod test {
     #[test]
     fn intersecting_a_cone_with_a_ray_parallel_to_one_of_its_halves() {
         let mut world = World::new();
-        let _c_id = world.push_shape(&Kind::Cone, None, None);
+        let _c_id = world.push_shape(
+            Shape::Cone {
+                minimum: f32::MIN,
+                maximum: f32::MAX,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
         let rays = [Ray::new(
             Point::new(0.0, 0.0, -1.0),

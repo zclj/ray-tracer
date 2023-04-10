@@ -212,9 +212,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(None, None);
 
-        let s_transform = world.get_shape(0, &Kind::Sphere).transform();
-
-        assert_eq!(*s_transform, M4x4::IDENTITY)
+        assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
     }
 
     // Scenario: Changing a sphere's transformation
@@ -227,9 +225,7 @@ mod test {
         let mut world = World::new();
         world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
 
-        let s_transform = world.get_shape(0, &Kind::Sphere).transform();
-
-        assert_eq!(*s_transform, translation(2.0, 3.0, 4.0))
+        assert_eq!(world.get_object(0).transform, translation(2.0, 3.0, 4.0))
     }
 
     // Scenario: The normal on a sphere at a point on the x axis
@@ -240,7 +236,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_point_on_the_x_axis() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
 
@@ -255,7 +251,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_point_on_the_y_axis() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
 
@@ -270,7 +266,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_point_on_the_z_axis() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
 
@@ -285,7 +281,7 @@ mod test {
     fn the_normal_on_a_sphere_at_a_nonaxial_point() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
@@ -311,7 +307,7 @@ mod test {
     fn the_normal_is_a_normalized_vector() {
         let mut world = World::new();
         let s_id = world.push_sphere(None, None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(
             f32::sqrt(3.0) / 3.0,
@@ -331,7 +327,7 @@ mod test {
     fn computing_the_normal_on_a_translated_sphere() {
         let mut world = World::new();
         let s_id = world.push_sphere(Some(translation(0.0, 1.0, 0.0)), None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
 
@@ -348,7 +344,7 @@ mod test {
     fn computing_the_normal_on_a_transformed_sphere() {
         let mut world = World::new();
         let s_id = world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
-        let s = world.get_shape(s_id, &Kind::Sphere);
+        let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(
             0.0,
@@ -368,10 +364,8 @@ mod test {
         let mut world = World::new();
         world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
 
-        let s_material = world.get_shape(0, &Kind::Sphere).material();
-
         let material: Material = Default::default();
-        assert_eq!(*s_material, material)
+        assert_eq!(world.get_object(0).material, material)
     }
     // Scenario: A sphere may be assigned a material
     //   Given s ← sphere()
@@ -390,14 +384,12 @@ mod test {
             }),
         );
 
-        let s_material = world.get_shape(0, &Kind::Sphere).material();
-
         let material = Material {
             ambient: 1.0,
             ..Default::default()
         };
 
-        assert_eq!(*s_material, material)
+        assert_eq!(world.get_object(0).material, material)
     }
 
     // Scenario: The normal of a plane is constant everywhere
@@ -413,7 +405,7 @@ mod test {
         let mut world = World::new();
         let p_id = world.push_plane(None, None);
 
-        let p = world.get_shape(p_id, &Kind::Plane);
+        let p = world.get_object(p_id);
 
         let n1 = p.normal_at(&Point::new(0.0, 0.0, 0.0));
         let n2 = p.normal_at(&Point::new(10.0, 0.0, -10.0));
@@ -445,7 +437,7 @@ mod test {
         let mut world = World::new();
         let c_id = world.push_cube(None, None);
 
-        let c = world.get_shape(c_id, &Kind::Cube);
+        let c = world.get_object(c_id);
 
         let n1 = c.normal_at(&Point::new(1.0, 0.5, -0.8));
         let n2 = c.normal_at(&Point::new(-1.0, -0.2, 0.9));
@@ -480,9 +472,17 @@ mod test {
     #[test]
     fn normal_vector_on_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_shape(&Kind::Cylinder, None, None);
+        let c_id = world.push_shape(
+            Shape::Cylinder {
+                minimum: -f32::INFINITY,
+                maximum: f32::INFINITY,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
-        let c = world.get_shape(c_id, &Kind::Cylinder);
+        let c = world.get_object(c_id);
 
         let n1 = c.normal_at(&Point::new(1.0, 0.0, 0.0));
         let n2 = c.normal_at(&Point::new(0.0, 5.0, -1.0));
@@ -502,9 +502,17 @@ mod test {
     #[test]
     fn the_default_minimum_and_maximum_for_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_shape(&Kind::Cylinder, None, None);
+        let c_id = world.push_shape(
+            Shape::Cylinder {
+                minimum: -f32::INFINITY,
+                maximum: f32::INFINITY,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
-        let c = world.get_shape(c_id, &Kind::Cylinder);
+        let c = world.get_object(c_id);
 
         assert_eq!(c.minimum(), -f32::INFINITY);
         assert_eq!(c.maximum(), f32::INFINITY);
@@ -516,9 +524,17 @@ mod test {
     #[test]
     fn the_default_closed_value_for_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_shape(&Kind::Cylinder, None, None);
+        let c_id = world.push_shape(
+            Shape::Cylinder {
+                minimum: -f32::INFINITY,
+                maximum: f32::INFINITY,
+                closed: false,
+            },
+            None,
+            None,
+        );
 
-        let c = world.get_shape(c_id, &Kind::Cylinder);
+        let c = world.get_object(c_id);
 
         assert_eq!(c.closed(), false);
     }
@@ -544,7 +560,7 @@ mod test {
         let mut world = World::new();
         let c_id = world.push_cylinder(None, None, 1.0, 2.0, true);
 
-        let c = world.get_shape(c_id, &Kind::Cylinder);
+        let c = world.get_object(c_id);
 
         let n1 = c.normal_at(&Point::new(0.0, 1.0, 0.0));
         let n2 = c.normal_at(&Point::new(0.5, 1.0, 0.0));

@@ -203,7 +203,7 @@ mod test {
     use super::*;
     use crate::color::Color;
     use crate::lights::PointLight;
-    use crate::shape::Kind;
+    use crate::shape::Shape;
     use crate::vector::{Point, Vector};
 
     // Scenario: The default material
@@ -241,8 +241,9 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -267,8 +268,9 @@ mod test {
         let eyev = Vector::new(0.0, f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -293,8 +295,9 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -320,8 +323,9 @@ mod test {
         let eyev = Vector::new(0.0, -f32::sqrt(2.0) / 2.0, -f32::sqrt(2.0) / 2.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -347,8 +351,9 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, 10.0), Color::new(1.0, 1.0, 1.0));
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -376,8 +381,9 @@ mod test {
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
         let in_shadow = true;
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -492,8 +498,9 @@ mod test {
         let eyev = Vector::new(0.0, 0.0, -1.0);
         let normalv = Vector::new(0.0, 0.0, -1.0);
         let light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        let shape = Shape::Sphere {
+        let shape = RenderObject {
             id: 1,
+            kind: Shape::Sphere,
             transform: M4x4::IDENTITY,
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
@@ -540,8 +547,8 @@ mod test {
             }),
         );
 
-        let sphere = world.get_shape(s_id, &Kind::Sphere);
-        let pattern = sphere.material().pattern.as_ref().unwrap();
+        let sphere = world.get_object(s_id);
+        let pattern = sphere.material.pattern.as_ref().unwrap();
 
         let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
 
@@ -569,8 +576,8 @@ mod test {
             }),
         );
 
-        let sphere = world.get_shape(s_id, &Kind::Sphere);
-        let pattern = sphere.material().pattern.as_ref().unwrap();
+        let sphere = world.get_object(s_id);
+        let pattern = sphere.material.pattern.as_ref().unwrap();
 
         let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
 
@@ -599,8 +606,8 @@ mod test {
             }),
         );
 
-        let sphere = world.get_shape(s_id, &Kind::Sphere);
-        let pattern = sphere.material().pattern.as_ref().unwrap();
+        let sphere = world.get_object(s_id);
+        let pattern = sphere.material.pattern.as_ref().unwrap();
 
         let c = pattern.pattern_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));
 

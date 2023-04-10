@@ -507,12 +507,9 @@ mod test {
         let mut ctx = World::new();
         ctx.push_sphere(None, None);
 
-        let s_id = match ctx.get_shape(0, &Kind::Sphere) {
-            Shape::Sphere { id, .. } => id,
-            _ => panic!(),
-        };
+        let s_id = ctx.get_object(0).id;
 
-        assert_eq!(*s_id, 0);
+        assert_eq!(s_id, 0);
     }
 
     // Scenario: The default world
@@ -530,13 +527,14 @@ mod test {
     #[test]
     fn the_default_world() {
         let w = test_default();
-        let s1 = w.get_shape(0, &Kind::Sphere);
-        let s2 = w.get_shape(1, &Kind::Sphere);
+        let s1 = w.get_object(0);
+        let s2 = w.get_object(1);
 
         assert_eq!(
             s1,
-            &Shape::Sphere {
+            &RenderObject {
                 id: 0,
+                kind: Shape::Sphere,
                 transform: M4x4::IDENTITY,
                 transform_inverse: M4x4::IDENTITY,
                 transform_inverse_transpose: M4x4::IDENTITY,
@@ -551,8 +549,9 @@ mod test {
 
         assert_eq!(
             s2,
-            &Shape::Sphere {
+            &RenderObject {
                 id: 1,
+                kind: Shape::Sphere,
                 transform: scaling(0.5, 0.5, 0.5),
                 material: Material::default(),
                 transform_inverse: scaling(0.5, 0.5, 0.5).inverse(),
@@ -717,7 +716,7 @@ mod test {
         let mut intersections = vec![];
         let c = w.color_at(&r, 1, &mut intersections, &mut containers);
 
-        assert_eq!(c, w.get_shape(inner_id, &Kind::Sphere).material().color)
+        assert_eq!(c, w.get_object(inner_id).material.color)
     }
 
     // Scenario: There is no shadow when nothing is collinear with point and light
