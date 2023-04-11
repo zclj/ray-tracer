@@ -13,19 +13,6 @@ pub struct RenderObject {
     pub transform_inverse_transpose: M4x4,
 }
 
-// impl RenderObject {
-
-// }
-
-#[derive(Debug, PartialEq, Clone)]
-pub enum Kind {
-    Sphere,
-    Plane,
-    Cube,
-    Cylinder,
-    Cone,
-}
-
 #[derive(PartialEq, Debug)]
 pub enum Shape {
     Sphere,

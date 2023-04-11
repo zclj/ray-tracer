@@ -4,7 +4,7 @@ use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::{Kind, RenderObject, Shape};
+use crate::shape::{RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
@@ -30,11 +30,11 @@ fn intersect_caps(s: &RenderObject, ray: &Ray, xs: &mut Vec<Intersection>) {
         return;
     }
 
-    let (id, kind, r_min, r_max) = match s.kind {
-        Shape::Cylinder { .. } => (s.id, Kind::Cylinder, 1.0, 1.0),
+    let (id, r_min, r_max) = match s.kind {
+        Shape::Cylinder { .. } => (s.id, 1.0, 1.0),
         Shape::Cone {
             minimum, maximum, ..
-        } => (s.id, Kind::Cone, minimum, maximum),
+        } => (s.id, minimum, maximum),
         _ => panic!("Caps only supported for Cones and Cylinders"),
     };
 
@@ -43,14 +43,14 @@ fn intersect_caps(s: &RenderObject, ray: &Ray, xs: &mut Vec<Intersection>) {
     let tmin = (f64::from(s.minimum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
 
     if check_cap(ray, tmin, r_min.into()) {
-        xs.push(Intersection::new(tmin as f32, id, kind.clone()));
+        xs.push(Intersection::new(tmin as f32, id));
     }
 
     // check for an intersection with the upper end cap by intersecting
     // the ray with the plane at y=s.maximum
     let tmax = (f64::from(s.maximum()) - f64::from(ray.origin.y)) / f64::from(ray.direction.y);
     if check_cap(ray, tmax, r_max.into()) {
-        xs.push(Intersection::new(tmax as f32, id, kind));
+        xs.push(Intersection::new(tmax as f32, id));
     }
 }
 
@@ -201,24 +201,13 @@ impl World {
                     let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
 
                     let id = s.id;
-                    intersections.push(Intersection {
-                        t: t1,
-                        object: id,
-                        kind: Kind::Sphere,
-                    });
-                    intersections.push(Intersection {
-                        t: t2,
-                        object: id,
-                        kind: Kind::Sphere,
-                    });
+                    intersections.push(Intersection { t: t1, object: id });
+                    intersections.push(Intersection { t: t2, object: id });
                 }
                 Shape::Plane => {
                     if ray.direction.y.abs() >= EPSILON {
-                        intersections.push(Intersection::new(
-                            -ray.origin.y / ray.direction.y,
-                            s.id,
-                            Kind::Plane,
-                        ));
+                        intersections
+                            .push(Intersection::new(-ray.origin.y / ray.direction.y, s.id));
                     }
                 }
                 Shape::Cube => {
@@ -230,8 +219,8 @@ impl World {
                     let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
 
                     if tmax >= tmin {
-                        intersections.push(Intersection::new(tmin, s.id, Kind::Cube));
-                        intersections.push(Intersection::new(tmax, s.id, Kind::Cube));
+                        intersections.push(Intersection::new(tmin, s.id));
+                        intersections.push(Intersection::new(tmax, s.id));
                     }
                 }
                 Shape::Cylinder { .. } => {
@@ -262,7 +251,6 @@ impl World {
                                 intersections.push(Intersection {
                                     t: t0,
                                     object: s.id,
-                                    kind: Kind::Cylinder,
                                 });
                             }
                             let y1 = (ray.origin.y) + t1 * (ray.direction.y);
@@ -271,7 +259,6 @@ impl World {
                                 intersections.push(Intersection {
                                     t: t1,
                                     object: s.id,
-                                    kind: Kind::Cylinder,
                                 });
                             }
                         }
@@ -295,7 +282,6 @@ impl World {
                         intersections.push(Intersection {
                             t: -c / (2.0 * b),
                             object: s.id,
-                            kind: Kind::Cone,
                         });
                     } else {
                         let discriminant = b.powf(2.0) - (4.0 * a * c);
@@ -314,7 +300,6 @@ impl World {
                                 intersections.push(Intersection {
                                     t: t0,
                                     object: s.id,
-                                    kind: Kind::Cone,
                                 });
                             }
                             let y1 = (ray.origin.y) + t1 * (ray.direction.y);
@@ -322,7 +307,6 @@ impl World {
                                 intersections.push(Intersection {
                                     t: t1,
                                     object: s.id,
-                                    kind: Kind::Cone,
                                 });
                             }
                         }
@@ -606,7 +590,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
         // first shape in test world has id 0
-        let i = Intersection::new(4.0, 0, Kind::Sphere);
+        let i = Intersection::new(4.0, 0);
 
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
@@ -635,7 +619,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         // second shape in test world has id 1
-        let i = Intersection::new(0.5, 1, Kind::Sphere);
+        let i = Intersection::new(0.5, 1);
 
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
@@ -800,7 +784,7 @@ mod test {
         let s2_id = w.push_sphere(Some(translation(0.0, 0.0, 10.0)), None);
 
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
-        let i = Intersection::new(4.0, s2_id, Kind::Sphere);
+        let i = Intersection::new(4.0, s2_id);
 
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
@@ -843,7 +827,7 @@ mod test {
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
-        let i = Intersection::new(1.0, sid, Kind::Sphere);
+        let i = Intersection::new(1.0, sid);
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
@@ -897,7 +881,7 @@ mod test {
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let i = Intersection::new(f32::sqrt(2.0), pid, Kind::Plane);
+        let i = Intersection::new(f32::sqrt(2.0), pid);
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
@@ -951,7 +935,7 @@ mod test {
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let i = Intersection::new(f32::sqrt(2.0), pid, Kind::Plane);
+        let i = Intersection::new(f32::sqrt(2.0), pid);
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
 
@@ -1049,7 +1033,7 @@ mod test {
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let i = Intersection::new(f32::sqrt(2.0), pid, Kind::Plane);
+        let i = Intersection::new(f32::sqrt(2.0), pid);
         let mut containers = vec![];
         let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
@@ -1090,10 +1074,7 @@ mod test {
 
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
-        let xs = [
-            Intersection::new(4.0, sid, Kind::Sphere),
-            Intersection::new(6.0, sid, Kind::Sphere),
-        ];
+        let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
         let mut containers = vec![];
         let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
@@ -1140,10 +1121,7 @@ mod test {
 
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
-        let xs = [
-            Intersection::new(4.0, sid, Kind::Sphere),
-            Intersection::new(6.0, sid, Kind::Sphere),
-        ];
+        let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
         let mut containers = vec![];
         let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
@@ -1196,8 +1174,8 @@ mod test {
         );
 
         let xs = [
-            Intersection::new(-f32::sqrt(2.0) / 2.0, sid, Kind::Sphere),
-            Intersection::new(f32::sqrt(2.0) / 2.0, sid, Kind::Sphere),
+            Intersection::new(-f32::sqrt(2.0) / 2.0, sid),
+            Intersection::new(f32::sqrt(2.0) / 2.0, sid),
         ];
         let mut containers = vec![];
         let comps = xs[1].compute(&w, &r, &xs, EPSILON, &mut containers);
@@ -1258,10 +1236,10 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.1), Vector::new(0.0, 1.0, 0.0));
 
         let xs = [
-            Intersection::new(-0.9899, aid, Kind::Sphere),
-            Intersection::new(-0.4899, bid, Kind::Sphere),
-            Intersection::new(0.4899, bid, Kind::Sphere),
-            Intersection::new(0.9899, aid, Kind::Sphere),
+            Intersection::new(-0.9899, aid),
+            Intersection::new(-0.4899, bid),
+            Intersection::new(0.4899, bid),
+            Intersection::new(0.9899, aid),
         ];
         let mut containers = vec![];
         let comps = xs[2].compute(&w, &r, &xs, EPSILON, &mut containers);
@@ -1338,7 +1316,7 @@ mod test {
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let xs = [Intersection::new(f32::sqrt(2.0), floor_id, Kind::Plane)];
+        let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
         let mut containers = vec![];
         let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
@@ -1416,7 +1394,7 @@ mod test {
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let xs = [Intersection::new(f32::sqrt(2.0), floor_id, Kind::Plane)];
+        let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
         let mut containers = vec![];
         let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
 
