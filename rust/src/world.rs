@@ -131,6 +131,20 @@ impl World {
         )
     }
 
+    pub fn push_group(
+        &mut self,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> u32 {
+        self.push_shape(
+            Shape::Group {
+                children: Vec::new(),
+            },
+            transform_option,
+            material_option,
+        )
+    }
+
     #[allow(clippy::cast_possible_truncation)]
     pub fn push_shape(
         &mut self,
@@ -183,6 +197,7 @@ impl World {
             let ray = world_ray.transform(&s.transform_inverse);
 
             match s.kind {
+                Shape::Group { .. } => todo!(),
                 Shape::Sphere => {
                     let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
 

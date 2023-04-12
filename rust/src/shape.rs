@@ -18,22 +18,20 @@ pub enum Shape {
     Sphere,
     Plane,
     Cube,
+    // There should probably be enums for ClosedCylinder and cone
+    // to get rid of the bool in the data
     Cylinder {
         minimum: f32,
         maximum: f32,
-        // Typically, we don't want a bool in the struct, but our data
-        // show that there will be a very small number of Cylinders to
-        // justify another storage Vec ('closed_cylinders').
         closed: bool,
     },
-
     Cone {
         minimum: f32,
         maximum: f32,
-        // Typically, we don't want a bool in the struct, but our data
-        // show that there will be a very small number of Cones to
-        // justify another storage Vec ('closed_cones').
         closed: bool,
+    },
+    Group {
+        children: Vec<u32>,
     },
 }
 
@@ -95,6 +93,7 @@ impl RenderObject {
                     object_point.z,
                 )
             }
+            Shape::Group { .. } => todo!(),
         };
 
         let world_normal = &self.transform_inverse_transpose * &object_normal;
@@ -592,4 +591,16 @@ mod test {
     //     assert_eq!(n2, Vector::new(1.0, -f32::sqrt(2.0), 1.0));
     //     assert_eq!(n3, Vector::new(-1.0, 1.0, 0.0));
     // }
+
+    // Scenario: Creating a new group
+    //   Given g ← group()
+    //   Then g.transform = identity_matrix
+    //     And g is empty
+    #[test]
+    fn creating_a_new_group() {
+        let mut world = World::new();
+        world.push_group(None, None);
+
+        assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
+    }
 }
