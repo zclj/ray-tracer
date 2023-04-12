@@ -603,4 +603,19 @@ mod test {
 
         assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
     }
+
+    // Scenario: Adding a child to a group
+    //   Given g ← group()
+    //     And s ← test_shape()
+    //   When add_child(g, s)
+    //   Then g is not empty
+    //     And g includes s
+    //     And s.parent = g
+    // #[test]
+    // fn adding_a_child_to_a_group() {
+    //     let mut world = World::new();
+    //     world.push_group(None, None);
+
+    //     assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
+    // }
 }

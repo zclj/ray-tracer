@@ -1103,6 +1103,25 @@ mod test {
         assert_eq!(xss[2].len(), 4);
     }
 
+    // Scenario: Intersecting a ray with an empty group
+    //   Given g ← group()
+    //     And r ← ray(point(0, 0, 0), vector(0, 0, 1))
+    //   When xs ← local_intersect(g, r)
+    //   Then xs is empty
+    #[test]
+    fn intersecting_a_ray_with_an_empty_group() {
+        let mut world = World::new();
+        let _g_id = world.push_group(None, None);
+
+        let mut xs = vec![];
+
+        let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0).norm());
+
+        world.intersect(&r, &mut xs);
+
+        assert_eq!(xs.len(), 0)
+    }
+
     // Scenario: Precomputing the reflection vector
     //   Given shape ← plane()
     //     And r ← ray(point(0, 1, -1), vector(0, -√2/2, √2/2))

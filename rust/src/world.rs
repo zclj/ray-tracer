@@ -197,7 +197,7 @@ impl World {
             let ray = world_ray.transform(&s.transform_inverse);
 
             match s.kind {
-                Shape::Group { .. } => todo!(),
+                Shape::Group { .. } => {}
                 Shape::Sphere => {
                     let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
 
