@@ -4,15 +4,40 @@ use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::{RenderObject, Shape};
+use crate::shape::{RenderObject, RenderObjectTemplate, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
+
+#[derive(Debug)]
+pub struct RenderGroup {
+    id: u32,
+    objects: Vec<RenderObject>,
+}
+
+impl RenderGroup {
+    #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn new(id: u32, objects: Vec<RenderObjectTemplate>) -> Self {
+        let render_objects = objects
+            .into_iter()
+            .enumerate()
+            .map(move |(i, o)| RenderObject::new(i as u32, o))
+            .collect::<Vec<RenderObject>>();
+
+        RenderGroup {
+            id,
+            objects: render_objects,
+        }
+    }
+}
 
 #[derive(Debug)]
 pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
     objects: Vec<RenderObject>,
+    //groups: HashMap<u32, Vec<u32>>,
+    groups: Vec<RenderGroup>,
 }
 
 fn check_cap(ray: &Ray, t: f64, r: f64) -> bool {
@@ -59,12 +84,22 @@ impl World {
     pub fn new() -> Self {
         World {
             objects: Vec::new(),
+            groups: Vec::new(),
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
             },
             shadow_bias: EPSILON,
         }
+    }
+
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn push_group(&mut self, objects: Vec<RenderObjectTemplate>) -> u32 {
+        let gid = self.groups.len() as u32;
+
+        self.groups.push(RenderGroup::new(gid, objects));
+
+        gid
     }
 
     pub fn push_sphere(
@@ -131,20 +166,6 @@ impl World {
         )
     }
 
-    pub fn push_group(
-        &mut self,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-    ) -> u32 {
-        self.push_shape(
-            Shape::Group {
-                children: Vec::new(),
-            },
-            transform_option,
-            material_option,
-        )
-    }
-
     #[allow(clippy::cast_possible_truncation)]
     pub fn push_shape(
         &mut self,
@@ -192,6 +213,11 @@ impl World {
         intersections: &mut Vec<Intersection>,
     ) -> Option<usize> {
         intersections.clear();
+
+        ////
+        // Groups
+        // - We want to check boundaries of groups
+        // - If we hit the group, check all objects in that group
 
         self.objects.iter().for_each(|s| {
             let ray = world_ray.transform(&s.transform_inverse);

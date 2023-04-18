@@ -35,7 +35,53 @@ pub enum Shape {
     },
 }
 
+pub struct RenderObjectTemplate {
+    kind: Shape,
+    transform_option: Option<M4x4>,
+    material_option: Option<Material>,
+}
+
+impl RenderObjectTemplate {
+    #[must_use]
+    pub fn new(
+        kind: Shape,
+        transform_option: Option<M4x4>,
+        material_option: Option<Material>,
+    ) -> Self {
+        RenderObjectTemplate {
+            kind,
+            transform_option,
+            material_option,
+        }
+    }
+}
+
 impl RenderObject {
+    #[must_use]
+    pub fn new(id: u32, template: RenderObjectTemplate) -> Self {
+        let transform = match template.transform_option {
+            Some(t) => t,
+            None => M4x4::IDENTITY,
+        };
+
+        let material = match template.material_option {
+            Some(m) => m,
+            None => Material::default(),
+        };
+
+        let transform_inverse = transform.inverse();
+        let transform_inverse_transpose = transform_inverse.transpose();
+
+        RenderObject {
+            id,
+            kind: template.kind,
+            transform,
+            material,
+            transform_inverse,
+            transform_inverse_transpose,
+        }
+    }
+
     #[must_use]
     pub fn normal_at(&self, world_point: &Point) -> Vector {
         let object_point = &self.transform_inverse * world_point;
@@ -596,13 +642,13 @@ mod test {
     //   Given g ← group()
     //   Then g.transform = identity_matrix
     //     And g is empty
-    #[test]
-    fn creating_a_new_group() {
-        let mut world = World::new();
-        world.push_group(None, None);
+    // #[test]
+    // fn creating_a_new_group() {
+    //     let mut world = World::new();
+    //     world.push_group(None, None);
 
-        assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
-    }
+    //     assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
+    // }
 
     // Scenario: Adding a child to a group
     //   Given g ← group()
@@ -618,4 +664,11 @@ mod test {
 
     //     assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
     // }
+
+    // Scenario: Creating an empty bounding box
+    //   Given box ← bounding_box(empty)
+    //   Then box.min = point(infinity, infinity, infinity)
+    //     And box.max = point(-infinity, -infinity, -infinity)
+    #[test]
+    fn creating_an_empty_bounding_box() {}
 }

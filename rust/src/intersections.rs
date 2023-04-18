@@ -149,7 +149,7 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::shape::Shape;
+    use crate::shape::{RenderObjectTemplate, Shape};
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
@@ -1111,8 +1111,8 @@ mod test {
     #[test]
     fn intersecting_a_ray_with_an_empty_group() {
         let mut world = World::new();
-        let _g_id = world.push_group(None, None);
-
+        
+        let _g_id = world.push_group(vec![]);
         let mut xs = vec![];
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0).norm());
@@ -1120,6 +1120,45 @@ mod test {
         world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 0)
+    }
+
+    // Scenario: Intersecting a ray with a nonempty group
+    //   Given g ← group()
+    //     And s1 ← sphere()
+    //     And s2 ← sphere()
+    //     And set_transform(s2, translation(0, 0, -3))
+    //     And s3 ← sphere()
+    //     And set_transform(s3, translation(5, 0, 0))
+    //     And add_child(g, s1)
+    //     And add_child(g, s2)
+    //     And add_child(g, s3)
+    //   When r ← ray(point(0, 0, -5), vector(0, 0, 1))
+    //     And xs ← local_intersect(g, r)
+    //   Then xs.count = 4
+    //     And xs[0].object = s2
+    //     And xs[1].object = s2
+    //     And xs[2].object = s1
+    //     And xs[3].object = s1
+    #[test]
+    fn intersecting_a_ray_with_a_nonempty_group() {
+        let mut world = World::new();
+        
+        // let s1 = world.push_sphere(None, None);
+        // let s2 = world.push_sphere(Some(translation(0.0, 0.0, -3.0)), None);
+        // let s3 = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
+
+        world.push_group(vec![RenderObjectTemplate::new(Shape::Sphere, None, None)]);
+
+        let mut xs = vec![];
+
+        let r = Ray::new(
+            Point::new(0.0, 0.0, -5.0),
+            Vector::new(0.0, 0.0, 1.0).norm(),
+        );
+
+        world.intersect(&r, &mut xs);
+
+        assert_eq!(xs.len(), 40)
     }
 
     // Scenario: Precomputing the reflection vector
