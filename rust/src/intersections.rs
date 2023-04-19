@@ -1111,7 +1111,7 @@ mod test {
     #[test]
     fn intersecting_a_ray_with_an_empty_group() {
         let mut world = World::new();
-        
+
         let _g_id = world.push_group(vec![]);
         let mut xs = vec![];
 
@@ -1142,12 +1142,16 @@ mod test {
     #[test]
     fn intersecting_a_ray_with_a_nonempty_group() {
         let mut world = World::new();
-        
+
         // let s1 = world.push_sphere(None, None);
         // let s2 = world.push_sphere(Some(translation(0.0, 0.0, -3.0)), None);
         // let s3 = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
 
-        world.push_group(vec![RenderObjectTemplate::new(Shape::Sphere, None, None)]);
+        world.push_group(vec![
+            RenderObjectTemplate::new(Shape::Sphere, None, None),
+            RenderObjectTemplate::new(Shape::Sphere, Some(translation(0.0, 0.0, -3.0)), None),
+            RenderObjectTemplate::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
+        ]);
 
         let mut xs = vec![];
 
@@ -1156,9 +1160,9 @@ mod test {
             Vector::new(0.0, 0.0, 1.0).norm(),
         );
 
-        world.intersect(&r, &mut xs);
+        world.intersect_2(&r, &mut xs);
 
-        assert_eq!(xs.len(), 40)
+        assert_eq!(xs.len(), 4)
     }
 
     // Scenario: Precomputing the reflection vector

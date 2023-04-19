@@ -21,7 +21,7 @@ impl RenderGroup {
         let render_objects = objects
             .into_iter()
             .enumerate()
-            .map(move |(i, o)| RenderObject::new(i as u32, o))
+            .map(|(i, o)| RenderObject::new(i as u32, o))
             .collect::<Vec<RenderObject>>();
 
         RenderGroup {
@@ -203,6 +203,164 @@ impl World {
     #[must_use]
     pub fn get_object(&self, id: u32) -> &RenderObject {
         &self.objects[id as usize]
+    }
+
+    pub fn intersect_2(
+        &self,
+        world_ray: &Ray,
+        intersections: &mut Vec<Intersection>,
+    ) -> Option<usize> {
+        intersections.clear();
+
+        ////
+        // Groups
+        // - We want to check boundaries of groups
+        // - If we hit the group, check all objects in that group
+
+        for g in &self.groups {
+            g.objects.iter().for_each(|s| {
+                let ray = world_ray.transform(&s.transform_inverse);
+
+                match s.kind {
+                    Shape::Group { .. } => {}
+                    Shape::Sphere => {
+                        let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
+
+                        let a = ray.direction.dot(&ray.direction);
+                        let b = 2.0 * ray.direction.dot(&sphere_to_ray);
+                        let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
+
+                        let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                        // invert?
+                        if discriminant < 0.0 {
+                            return;
+                        }
+
+                        let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+                        let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+                        let id = s.id;
+                        intersections.push(Intersection { t: t1, object: id });
+                        intersections.push(Intersection { t: t2, object: id });
+                    }
+                    Shape::Plane => {
+                        if ray.direction.y.abs() >= EPSILON {
+                            intersections
+                                .push(Intersection::new(-ray.origin.y / ray.direction.y, s.id));
+                        }
+                    }
+                    Shape::Cube => {
+                        let (xtmin, xtmax) = s.check_axis(ray.origin.x, ray.direction.x);
+                        let (ytmin, ytmax) = s.check_axis(ray.origin.y, ray.direction.y);
+                        let (ztmin, ztmax) = s.check_axis(ray.origin.z, ray.direction.z);
+
+                        let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
+                        let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
+
+                        if tmax >= tmin {
+                            intersections.push(Intersection::new(tmin, s.id));
+                            intersections.push(Intersection::new(tmax, s.id));
+                        }
+                    }
+                    Shape::Cylinder { .. } => {
+                        let xd = ray.direction.x;
+                        let zd = ray.direction.z;
+                        let a = xd * xd + zd * zd;
+
+                        // ray is NOT parallel with the y axis
+                        if !epsilon_eq(a, 0.0) {
+                            let xo = ray.origin.x;
+                            let zo = ray.origin.z;
+                            let b = (2.0 * xo * xd) + (2.0 * zo * zd);
+                            let c = xo * xo + zo * zo - 1.0;
+
+                            let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                            // ray does intersect the cylinder
+                            if discriminant >= 0.0 {
+                                let a2 = 2.0 * a;
+                                let t0 = (-b - f32::sqrt(discriminant)) / a2;
+                                let t1 = (-b + f32::sqrt(discriminant)) / a2;
+
+                                let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                                let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+
+                                if (s.minimum()) < y0 && y0 < (s.maximum()) {
+                                    intersections.push(Intersection {
+                                        t: t0,
+                                        object: s.id,
+                                    });
+                                }
+                                let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+
+                                if (s.minimum()) < y1 && y1 < (s.maximum()) {
+                                    intersections.push(Intersection {
+                                        t: t1,
+                                        object: s.id,
+                                    });
+                                }
+                            }
+                        }
+                        intersect_caps(s, &ray, intersections);
+                    }
+                    Shape::Cone { .. } => {
+                        let xd = ray.direction.x;
+                        let yd = ray.direction.y;
+                        let zd = ray.direction.z;
+
+                        let xo = ray.origin.x;
+                        let yo = ray.origin.y;
+                        let zo = ray.origin.z;
+
+                        let a = xd * xd - yd * yd + zd * zd;
+                        let b = (2.0 * xo * xd) - (2.0 * yo * yd) + (2.0 * zo * zd);
+                        let c = xo * xo - yo * yo + zo * zo;
+
+                        if epsilon_eq(a, 0.0) && !epsilon_eq(b, 0.0) {
+                            intersections.push(Intersection {
+                                t: -c / (2.0 * b),
+                                object: s.id,
+                            });
+                        } else {
+                            let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                            // ray does intersect the cylinder
+                            if discriminant >= (-EPSILON) {
+                                let sqrt_discriminant = f32::sqrt(f32::max(0.0, discriminant));
+                                let a2 = 2.0 * a;
+                                let t0 = (-b - sqrt_discriminant) / a2;
+                                let t1 = (-b + sqrt_discriminant) / a2;
+
+                                let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                                let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+                                if (s.minimum()) < y0 && y0 < (s.maximum()) {
+                                    intersections.push(Intersection {
+                                        t: t0,
+                                        object: s.id,
+                                    });
+                                }
+                                let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+                                if (s.minimum()) < y1 && y1 < (s.maximum()) {
+                                    intersections.push(Intersection {
+                                        t: t1,
+                                        object: s.id,
+                                    });
+                                }
+                            }
+                        }
+
+                        intersect_caps(s, &ray, intersections);
+                    }
+                }
+            })
+        }
+        // Sort the intersections and return the index of the 'hit'
+        sort_by_t(intersections);
+
+        intersections.iter().position(|x| x.t >= 0.0)
     }
 
     #[allow(clippy::similar_names)]
