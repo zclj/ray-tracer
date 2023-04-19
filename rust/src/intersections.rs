@@ -1160,7 +1160,7 @@ mod test {
             Vector::new(0.0, 0.0, 1.0).norm(),
         );
 
-        world.intersect_2(&r, &mut xs);
+        world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 4)
     }
