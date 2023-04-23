@@ -36,9 +36,9 @@ pub enum Shape {
 }
 
 pub struct RenderObjectTemplate {
-    kind: Shape,
-    transform_option: Option<M4x4>,
-    material_option: Option<Material>,
+    pub kind: Shape,
+    pub transform_option: Option<M4x4>,
+    pub material_option: Option<Material>,
 }
 
 impl RenderObjectTemplate {

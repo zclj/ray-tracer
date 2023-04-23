@@ -17,11 +17,25 @@ pub struct RenderGroup {
 impl RenderGroup {
     #[must_use]
     #[allow(clippy::cast_possible_truncation)]
-    pub fn new(id: u32, objects: Vec<RenderObjectTemplate>) -> Self {
+    pub fn new(id: u32, objects: Vec<RenderObjectTemplate>, transform: Option<M4x4>) -> Self {
         let render_objects = objects
             .into_iter()
             .enumerate()
-            .map(|(i, o)| RenderObject::new(i as u32, o))
+            .map(move |(i, o)| {
+                // apply the group transform
+                let t = match (&transform, &o.transform_option) {
+                    (Some(gt), Some(ot)) => Some(gt * ot),
+                    (Some(gt), None) => Some(gt).cloned(),
+                    (None, ot) => ot.clone(),
+                };
+
+                let updated = RenderObjectTemplate {
+                    transform_option: t,
+                    ..o
+                };
+
+                RenderObject::new(i as u32, updated)
+            })
             .collect::<Vec<RenderObject>>();
 
         RenderGroup {
@@ -81,7 +95,7 @@ impl World {
     #[must_use]
     pub fn new() -> Self {
         World {
-            groups: vec![RenderGroup::new(0, vec![])],
+            groups: vec![RenderGroup::new(0, vec![], None)],
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -91,10 +105,14 @@ impl World {
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    pub fn push_group(&mut self, objects: Vec<RenderObjectTemplate>) -> u32 {
+    pub fn push_group(
+        &mut self,
+        objects: Vec<RenderObjectTemplate>,
+        transform: Option<M4x4>,
+    ) -> u32 {
         let gid = self.groups.len() as u32;
 
-        self.groups.push(RenderGroup::new(gid, objects));
+        self.groups.push(RenderGroup::new(gid, objects, transform));
 
         gid
     }

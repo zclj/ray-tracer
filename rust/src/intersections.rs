@@ -1112,7 +1112,7 @@ mod test {
     fn intersecting_a_ray_with_an_empty_group() {
         let mut world = World::new();
 
-        let _g_id = world.push_group(vec![]);
+        let _g_id = world.push_group(vec![], None);
         let mut xs = vec![];
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0).norm());
@@ -1147,11 +1147,14 @@ mod test {
         // let s2 = world.push_sphere(Some(translation(0.0, 0.0, -3.0)), None);
         // let s3 = world.push_sphere(Some(translation(5.0, 0.0, 0.0)), None);
 
-        world.push_group(vec![
-            RenderObjectTemplate::new(Shape::Sphere, None, None),
-            RenderObjectTemplate::new(Shape::Sphere, Some(translation(0.0, 0.0, -3.0)), None),
-            RenderObjectTemplate::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
-        ]);
+        world.push_group(
+            vec![
+                RenderObjectTemplate::new(Shape::Sphere, None, None),
+                RenderObjectTemplate::new(Shape::Sphere, Some(translation(0.0, 0.0, -3.0)), None),
+                RenderObjectTemplate::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
+            ],
+            None,
+        );
 
         let mut xs = vec![];
 
@@ -1163,6 +1166,40 @@ mod test {
         world.intersect(&r, &mut xs);
 
         assert_eq!(xs.len(), 4)
+    }
+
+    // Scenario: Intersecting a transformed group
+    //   Given g ← group()
+    //     And set_transform(g, scaling(2, 2, 2))
+    //     And s ← sphere()
+    //     And set_transform(s, translation(5, 0, 0))
+    //     And add_child(g, s)
+    //   When r ← ray(point(10, 0, -10), vector(0, 0, 1))
+    //     And xs ← intersect(g, r)
+    //   Then xs.count = 2
+    #[test]
+    fn intersecting_a_transformed_group() {
+        let mut world = World::new();
+
+        world.push_group(
+            vec![RenderObjectTemplate::new(
+                Shape::Sphere,
+                Some(translation(5.0, 0.0, 0.0)),
+                None,
+            )],
+            Some(scaling(2.0, 2.0, 2.0)),
+        );
+
+        let mut xs = vec![];
+
+        let r = Ray::new(
+            Point::new(10.0, 0.0, -10.0),
+            Vector::new(0.0, 0.0, 1.0).norm(),
+        );
+
+        world.intersect(&r, &mut xs);
+
+        assert_eq!(xs.len(), 2)
     }
 
     // Scenario: Precomputing the reflection vector
