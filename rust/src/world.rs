@@ -4,52 +4,232 @@ use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::{RenderObject, RenderObjectTemplate, Shape};
+use crate::shape::{RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
 #[derive(Debug)]
 pub struct RenderGroup {
     id: u32,
-    objects: Vec<RenderObject>,
+    pub objects: Vec<RenderObject>,
+    pub transform: Option<M4x4>,
+    pub material: Option<Material>,
 }
 
 impl RenderGroup {
     #[must_use]
     #[allow(clippy::cast_possible_truncation)]
-    pub fn new(id: u32, objects: Vec<RenderObjectTemplate>, transform: Option<M4x4>) -> Self {
+    pub fn new(
+        id: u32,
+        objects: Vec<SceneObject>,
+        transform: Option<M4x4>,
+        material: Option<Material>,
+    ) -> Self {
         let render_objects = objects
             .into_iter()
             .enumerate()
-            .map(move |(i, o)| {
-                // apply the group transform
-                let t = match (&transform, &o.transform_option) {
-                    (Some(gt), Some(ot)) => Some(gt * ot),
-                    (Some(gt), None) => Some(gt).cloned(),
-                    (None, ot) => ot.clone(),
-                };
-
-                let updated = RenderObjectTemplate {
-                    transform_option: t,
-                    ..o
-                };
-
-                RenderObject::new(i as u32, updated)
-            })
+            .map(|(i, o)| RenderObject::new(i as u32, &o))
             .collect::<Vec<RenderObject>>();
 
         RenderGroup {
             id,
             objects: render_objects,
+            transform,
+            material,
         }
     }
 }
+
+////////////////////////////////////////
+// Scene creation
+
+// TODO: separate 'build time' from 'render time'
+//  Groups should work with IDs when we build. When the tree is ready
+//  it can be reified to render objects holding local content
+
+#[derive(Debug, Clone)]
+pub enum SceneNode {
+    Group {
+        children: Vec<u32>,
+        transform: Option<M4x4>,
+    },
+    Object {
+        kind: Shape,
+        transform: Option<M4x4>,
+        material: Option<Material>,
+    },
+}
+
+#[derive(Debug)]
+pub struct SceneTree {
+    arena: Vec<SceneNode>,
+}
+
+impl SceneTree {
+    #[must_use]
+    pub fn new() -> Self {
+        SceneTree { arena: Vec::new() }
+    }
+
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn insert_object(&mut self, object: SceneObject) -> u32 {
+        let id = self.arena.len() as u32;
+
+        self.arena.push(SceneNode::Object {
+            kind: object.kind,
+            transform: object.transform,
+            material: object.material,
+        });
+
+        id
+    }
+
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn insert_group(&mut self, group: SceneGroup) -> u32 {
+        let id = self.arena.len() as u32;
+
+        self.arena.push(SceneNode::Group {
+            children: group.children,
+            transform: group.transform,
+        });
+
+        id
+    }
+
+    pub fn apply_transforms(&mut self, current: u32, current_transform: &Option<M4x4>) {
+        // if this is an object, apply the transform
+        let current_node = self.arena[current as usize].clone();
+
+        match current_node {
+            SceneNode::Object {
+                transform,
+                kind,
+                material,
+            } => match (transform, current_transform) {
+                (Some(t), Some(ct)) => {
+                    self.arena[current as usize] = SceneNode::Object {
+                        kind,
+                        material,
+                        transform: Some(ct * &t),
+                    }
+                }
+                (None, Some(ct)) => {
+                    self.arena[current as usize] = SceneNode::Object {
+                        kind,
+                        material,
+                        transform: Some(ct.clone()),
+                    }
+                }
+                (_, _) => (),
+            },
+
+            SceneNode::Group {
+                transform,
+                children,
+            } => {
+                let group_transform = &transform;
+
+                let new_t = match (group_transform, current_transform) {
+                    (Some(t), Some(ct)) => {
+                        self.arena[current as usize] = SceneNode::Group {
+                            transform: Some(ct * t),
+                            children: children.clone(),
+                        };
+
+                        Some(ct * t)
+                    }
+                    (None, Some(ct)) => {
+                        self.arena[current as usize] = SceneNode::Group {
+                            transform: Some(ct.clone()),
+                            children: children.clone(),
+                        };
+
+                        Some(ct.clone())
+                    }
+                    (_, _) => transform,
+                };
+
+                // need to feed the new one down..
+                for c in children {
+                    self.apply_transforms(c, &new_t);
+                }
+            }
+        }
+    }
+
+    #[allow(clippy::cast_possible_truncation)]
+    #[must_use]
+    pub fn build(&self) -> RenderGroup {
+        let mut root = RenderGroup::new(0, vec![], None, None);
+
+        for i in 0..self.arena.len() {
+            match &self.arena[i] {
+                SceneNode::Group { transform, .. } => root.objects.push(RenderObject::new(
+                    i as u32,
+                    &SceneObject::new(Shape::Group { id: i as u32 }, transform.clone(), None),
+                )),
+                SceneNode::Object {
+                    kind,
+                    transform,
+                    material,
+                } => root.objects.push(RenderObject::new(
+                    i as u32,
+                    &SceneObject {
+                        kind: kind.clone(),
+                        transform: transform.clone(),
+                        material: material.clone(),
+                    },
+                )),
+            }
+        }
+
+        root
+    }
+}
+
+#[derive(Debug)]
+pub struct SceneGroup {
+    children: Vec<u32>,
+    pub transform: Option<M4x4>,
+    pub material: Option<Material>,
+}
+
+impl SceneGroup {
+    #[must_use]
+    pub fn new(children: Vec<u32>, transform: Option<M4x4>, material: Option<Material>) -> Self {
+        SceneGroup {
+            children,
+            transform,
+            material,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct SceneObject {
+    pub kind: Shape,
+    pub transform: Option<M4x4>,
+    pub material: Option<Material>,
+}
+
+impl SceneObject {
+    #[must_use]
+    pub fn new(kind: Shape, transform: Option<M4x4>, material: Option<Material>) -> Self {
+        SceneObject {
+            kind,
+            transform,
+            material,
+        }
+    }
+}
+
+////////////////////////////////////////
 
 #[derive(Debug)]
 pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
-    groups: Vec<RenderGroup>,
+    pub groups: Vec<RenderGroup>,
 }
 
 fn check_cap(ray: &Ray, t: f64, r: f64) -> bool {
@@ -95,7 +275,7 @@ impl World {
     #[must_use]
     pub fn new() -> Self {
         World {
-            groups: vec![RenderGroup::new(0, vec![], None)],
+            groups: vec![RenderGroup::new(0, vec![], None, None)],
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -105,14 +285,21 @@ impl World {
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    pub fn push_group(
-        &mut self,
-        objects: Vec<RenderObjectTemplate>,
-        transform: Option<M4x4>,
-    ) -> u32 {
+    pub fn push_group(&mut self, objects: Vec<SceneObject>, transform: Option<M4x4>) -> u32 {
         let gid = self.groups.len() as u32;
 
-        self.groups.push(RenderGroup::new(gid, objects, transform));
+        self.groups
+            .push(RenderGroup::new(gid, objects, transform, None));
+
+        // let mut pending = match transform {
+        //     Some(t) => self.update_group_transforms(gid, &t),
+        //     _ => Vec::new(),
+        // };
+
+        // for p in pending.clone() {
+        //     let current = pending.pop();
+        //     println!("current: {:?}", p)
+        // }
 
         gid
     }
@@ -236,7 +423,12 @@ impl World {
         // - If we hit the group, check all objects in that group
 
         for g in &self.groups {
+            println!("Groups transform: {:?}", g.transform);
+            println!("Group objects: {:?}", g.objects.len());
             g.objects.iter().for_each(|s| {
+                // TODO: in addition to the shapes transform, the ray must
+                //  be transform also by the groups transform. This must
+                //  consider that groups can be children of groups
                 let ray = world_ray.transform(&s.transform_inverse);
 
                 match s.kind {
@@ -1462,4 +1654,24 @@ mod test {
 
         assert_eq!(c, Color::new(0.93391, 0.69643, 0.69243))
     }
+
+    ////////////////////////////////////////
+    // Render group experiment
+
+    // #[test]
+    // fn creation_of_render_template() {
+    //     let mut scene = SceneTemplate::new();
+
+    //     let id_1 = scene.push_object(RenderObjectTemplate::new(Shape::Sphere, Some(scaling(2.0, 2.0, 2.0)), None));
+
+    //     let g_id1 = scene.push_group(vec![id_1], None, None);
+
+    //     let g_id2 = scene.push_group(vec![g_id1], Some(scaling(2.0, 2.0, 2.0)), None);
+
+    //     println!("Scene: {:#?}", scene);
+
+    //     let render_tree = scene.build();
+
+    //     assert_eq!(0, 1)
+    // }
 }

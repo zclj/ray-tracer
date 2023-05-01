@@ -2,6 +2,8 @@ use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::{Point, Vector};
+// TODO: sort out the deps
+use crate::world::SceneObject;
 
 #[derive(PartialEq, Debug)]
 pub struct RenderObject {
@@ -13,7 +15,8 @@ pub struct RenderObject {
     pub transform_inverse_transpose: M4x4,
 }
 
-#[derive(PartialEq, Debug)]
+// TODO: Remove Clone
+#[derive(PartialEq, Debug, Clone)]
 pub enum Shape {
     Sphere,
     Plane,
@@ -31,41 +34,20 @@ pub enum Shape {
         closed: bool,
     },
     Group {
-        children: Vec<u32>,
+        id: u32,
     },
-}
-
-pub struct RenderObjectTemplate {
-    pub kind: Shape,
-    pub transform_option: Option<M4x4>,
-    pub material_option: Option<Material>,
-}
-
-impl RenderObjectTemplate {
-    #[must_use]
-    pub fn new(
-        kind: Shape,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-    ) -> Self {
-        RenderObjectTemplate {
-            kind,
-            transform_option,
-            material_option,
-        }
-    }
 }
 
 impl RenderObject {
     #[must_use]
-    pub fn new(id: u32, template: RenderObjectTemplate) -> Self {
-        let transform = match template.transform_option {
-            Some(t) => t,
+    pub fn new(id: u32, template: &SceneObject) -> Self {
+        let transform = match &template.transform {
+            Some(t) => t.clone(),
             None => M4x4::IDENTITY,
         };
 
-        let material = match template.material_option {
-            Some(m) => m,
+        let material = match &template.material {
+            Some(m) => m.clone(),
             None => Material::default(),
         };
 
@@ -74,12 +56,21 @@ impl RenderObject {
 
         RenderObject {
             id,
-            kind: template.kind,
+            kind: template.kind.clone(),
             transform,
             material,
             transform_inverse,
             transform_inverse_transpose,
         }
+    }
+
+    pub fn update_transform(&mut self, new_transform: M4x4) {
+        let transform_inverse = new_transform.inverse();
+        let transform_inverse_transpose = transform_inverse.transpose();
+
+        self.transform_inverse = transform_inverse;
+        self.transform_inverse_transpose = transform_inverse_transpose;
+        self.transform = new_transform;
     }
 
     #[must_use]
@@ -226,13 +217,17 @@ impl RenderObject {
             _ => panic!("closed only supported on Cylinders and Cones"),
         }
     }
+
+    fn world_to_object(&self, world_point: &Point) -> Point {
+        &self.transform_inverse * world_point
+    }
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::materials::Material;
-    use crate::transformations::{rotation_z, scaling, translation};
+    use crate::transformations::{rotation_y, rotation_z, scaling, translation};
     use crate::world::World;
     use core::f32::consts::PI;
 
@@ -671,4 +666,46 @@ mod test {
     //     And box.max = point(-infinity, -infinity, -infinity)
     #[test]
     fn creating_an_empty_bounding_box() {}
+
+    // Scenario: Converting a point from world to object space
+    //   Given g1 ← group()
+    //     And set_transform(g1, rotation_y(π/2))
+    //     And g2 ← group()
+    //     And set_transform(g2, scaling(2, 2, 2))
+    //     And add_child(g1, g2)
+    //     And s ← sphere()
+    //     And set_transform(s, translation(5, 0, 0))
+    //     And add_child(g2, s)
+    //   When p ← world_to_object(s, point(-2, 0, -10))
+    //   Then p = point(0, 0, -1)
+    #[test]
+    fn converting_a_point_from_world_to_object_space() {
+        let mut world = World::new();
+
+        // let gid_1 = world.push_group(
+        //     vec![RenderObjectTemplate::new(
+        //         Shape::Sphere,
+        //         Some(translation(5.0, 0.0, 0.0)),
+        //         None,
+        //     )],
+        //     Some(scaling(2.0, 2.0, 2.0)),
+        // );
+
+        // let gid_2 = world.push_group(
+        //     vec![RenderObjectTemplate::new(
+        //         Shape::Group { id: gid_1 },
+        //         None,
+        //         None,
+        //     )],
+        //     Some(rotation_y(PI / 2.0)),
+        // );
+
+        //println!("{:#?}", world.groups);
+        //println!("{:#?}",world.groups[gid_1 as usize].objects[0]);
+        // let sphere_obj = &world.groups[gid_1 as usize].objects[0];
+        // let p = sphere_obj.world_to_object(&Point::new(-2.0, 0.0, 10.0));
+        // assert_eq!(Point::new(0.0, 0.0, -1.0), p)
+
+        //assert_eq!(0,1)
+    }
 }

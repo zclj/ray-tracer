@@ -149,11 +149,11 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::shape::{RenderObjectTemplate, Shape};
+    use crate::shape::Shape;
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
-    use crate::world::World;
+    use crate::world::{SceneObject, World};
 
     // Scenario: An intersection encapsulates t and object
     //   Given s ← sphere()
@@ -1149,9 +1149,9 @@ mod test {
 
         world.push_group(
             vec![
-                RenderObjectTemplate::new(Shape::Sphere, None, None),
-                RenderObjectTemplate::new(Shape::Sphere, Some(translation(0.0, 0.0, -3.0)), None),
-                RenderObjectTemplate::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
+                SceneObject::new(Shape::Sphere, None, None),
+                SceneObject::new(Shape::Sphere, Some(translation(0.0, 0.0, -3.0)), None),
+                SceneObject::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
             ],
             None,
         );
@@ -1177,18 +1177,36 @@ mod test {
     //   When r ← ray(point(10, 0, -10), vector(0, 0, 1))
     //     And xs ← intersect(g, r)
     //   Then xs.count = 2
+    use crate::world::{SceneGroup, SceneNode, SceneTree};
     #[test]
     fn intersecting_a_transformed_group() {
         let mut world = World::new();
 
-        world.push_group(
-            vec![RenderObjectTemplate::new(
-                Shape::Sphere,
-                Some(translation(5.0, 0.0, 0.0)),
-                None,
-            )],
+        let mut scene = SceneTree::new();
+        let id_1 = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(5.0, 0.0, 0.0)),
+            None,
+        ));
+
+        let g_id_1 = scene.insert_group(SceneGroup::new(vec![id_1], None, None));
+
+        let g_id = scene.insert_group(SceneGroup::new(
+            vec![g_id_1],
             Some(scaling(2.0, 2.0, 2.0)),
-        );
+            None,
+        ));
+
+        println!("{:#?}", scene);
+
+        scene.apply_transforms(g_id, &None);
+
+        println!("{:#?}", scene);
+
+        let scene_objects = scene.build();
+        println!("{:#?}", scene_objects);
+
+        world.groups = vec![scene_objects];
 
         let mut xs = vec![];
 
