@@ -73,6 +73,9 @@ impl RenderObject {
         self.transform = new_transform;
     }
 
+    /// # Panics
+    ///
+    /// Will panic if called on a Group
     #[must_use]
     pub fn normal_at(&self, world_point: &Point) -> Vector {
         let object_point = &self.transform_inverse * world_point;
@@ -130,7 +133,7 @@ impl RenderObject {
                     object_point.z,
                 )
             }
-            Shape::Group { .. } => todo!(),
+            Shape::Group { .. } => panic!("normal_at should not be called on Groups"),
         };
 
         let world_normal = &self.transform_inverse_transpose * &object_normal;
@@ -760,6 +763,50 @@ mod test {
             f32::sqrt(3.0 / 3.0),
             f32::sqrt(3.0 / 3.0),
         ));
+
+        assert_eq!(Vector::new(0.2857, 0.4286, -0.8571), p)
+    }
+
+    // Scenario: Finding the normal on a child object
+    //   Given g1 ← group()
+    //     And set_transform(g1, rotation_y(π/2))
+    //     And g2 ← group()
+    //     And set_transform(g2, scaling(1, 2, 3))
+    //     And add_child(g1, g2)
+    //     And s ← sphere()
+    //     And set_transform(s, translation(5, 0, 0))
+    //     And add_child(g2, s)
+    //   When n ← normal_at(s, point(1.7321, 1.1547, -5.5774))
+    //   Then n = vector(0.2857, 0.4286, -0.8571)
+    #[test]
+    fn finding_the_normal_on_a_child_object() {
+        let mut world = World::new();
+
+        let mut scene = SceneTree::new();
+
+        let o1_id = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(5.0, 0.0, 0.0)),
+            None,
+        ));
+
+        let g2_id = scene.insert_group(SceneGroup::new(
+            vec![o1_id],
+            Some(scaling(1.0, 2.0, 3.0)),
+            None,
+        ));
+
+        let g1_id = scene.insert_group(SceneGroup::new(
+            vec![g2_id],
+            Some(rotation_y(PI / 2.0)),
+            None,
+        ));
+
+        scene.apply_transforms(g1_id, &None);
+        let scene_objects = scene.build();
+        world.groups = vec![scene_objects];
+
+        let p = (world.get_object(o1_id)).normal_at(&Point::new(1.7321, 1.1547, -5.5774));
 
         assert_eq!(Vector::new(0.2857, 0.4286, -0.8571), p)
     }
