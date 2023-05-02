@@ -678,34 +678,37 @@ mod test {
     //     And add_child(g2, s)
     //   When p ← world_to_object(s, point(-2, 0, -10))
     //   Then p = point(0, 0, -1)
+    use crate::world::{SceneGroup, SceneTree};
     #[test]
     fn converting_a_point_from_world_to_object_space() {
         let mut world = World::new();
 
-        // let gid_1 = world.push_group(
-        //     vec![RenderObjectTemplate::new(
-        //         Shape::Sphere,
-        //         Some(translation(5.0, 0.0, 0.0)),
-        //         None,
-        //     )],
-        //     Some(scaling(2.0, 2.0, 2.0)),
-        // );
+        let mut scene = SceneTree::new();
 
-        // let gid_2 = world.push_group(
-        //     vec![RenderObjectTemplate::new(
-        //         Shape::Group { id: gid_1 },
-        //         None,
-        //         None,
-        //     )],
-        //     Some(rotation_y(PI / 2.0)),
-        // );
+        let o1_id = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(5.0, 0.0, 0.0)),
+            None,
+        ));
 
-        //println!("{:#?}", world.groups);
-        //println!("{:#?}",world.groups[gid_1 as usize].objects[0]);
-        // let sphere_obj = &world.groups[gid_1 as usize].objects[0];
-        // let p = sphere_obj.world_to_object(&Point::new(-2.0, 0.0, 10.0));
-        // assert_eq!(Point::new(0.0, 0.0, -1.0), p)
+        let g2_id = scene.insert_group(SceneGroup::new(
+            vec![o1_id],
+            Some(scaling(2.0, 2.0, 2.0)),
+            None,
+        ));
 
-        //assert_eq!(0,1)
+        let g1_id = scene.insert_group(SceneGroup::new(
+            vec![g2_id],
+            Some(rotation_y(PI / 2.0)),
+            None,
+        ));
+
+        scene.apply_transforms(g1_id, &None);
+        let scene_objects = scene.build();
+        world.groups = vec![scene_objects];
+
+        let p = (world.get_object(o1_id)).world_to_object(&Point::new(-2.0, 0.0, -10.0));
+
+        assert_eq!(Point::new(0.0, 0.0, -1.0), p)
     }
 }
