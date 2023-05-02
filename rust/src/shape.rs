@@ -221,6 +221,10 @@ impl RenderObject {
     fn world_to_object(&self, world_point: &Point) -> Point {
         &self.transform_inverse * world_point
     }
+
+    fn normal_to_world(&self, normal: &Vector) -> Vector {
+        (&self.transform_inverse.transpose() * normal).norm()
+    }
 }
 
 #[cfg(test)]
@@ -710,5 +714,53 @@ mod test {
         let p = (world.get_object(o1_id)).world_to_object(&Point::new(-2.0, 0.0, -10.0));
 
         assert_eq!(Point::new(0.0, 0.0, -1.0), p)
+    }
+
+    // Scenario: Converting a normal from object to world space
+    //   Given g1 ← group()
+    //     And set_transform(g1, rotation_y(π/2))
+    //     And g2 ← group()
+    //     And set_transform(g2, scaling(1, 2, 3))
+    //     And add_child(g1, g2)
+    //     And s ← sphere()
+    //     And set_transform(s, translation(5, 0, 0))
+    //     And add_child(g2, s)
+    //   When n ← normal_to_world(s, vector(√3/3, √3/3, √3/3))
+    //   Then n = vector(0.2857, 0.4286, -0.8571)
+    #[test]
+    fn converting_a_normal_from_object_to_world_space() {
+        let mut world = World::new();
+
+        let mut scene = SceneTree::new();
+
+        let o1_id = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(5.0, 0.0, 0.0)),
+            None,
+        ));
+
+        let g2_id = scene.insert_group(SceneGroup::new(
+            vec![o1_id],
+            Some(scaling(1.0, 2.0, 3.0)),
+            None,
+        ));
+
+        let g1_id = scene.insert_group(SceneGroup::new(
+            vec![g2_id],
+            Some(rotation_y(PI / 2.0)),
+            None,
+        ));
+
+        scene.apply_transforms(g1_id, &None);
+        let scene_objects = scene.build();
+        world.groups = vec![scene_objects];
+
+        let p = (world.get_object(o1_id)).normal_to_world(&Vector::new(
+            f32::sqrt(3.0 / 3.0),
+            f32::sqrt(3.0 / 3.0),
+            f32::sqrt(3.0 / 3.0),
+        ));
+
+        assert_eq!(Vector::new(0.2857, 0.4286, -0.8571), p)
     }
 }
