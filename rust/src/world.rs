@@ -423,8 +423,6 @@ impl World {
         // - If we hit the group, check all objects in that group
 
         for g in &self.groups {
-            println!("Groups transform: {:?}", g.transform);
-            println!("Group objects: {:?}", g.objects.len());
             g.objects.iter().for_each(|s| {
                 // TODO: in addition to the shapes transform, the ray must
                 //  be transform also by the groups transform. This must
