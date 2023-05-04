@@ -1177,7 +1177,7 @@ mod test {
     //   When r ← ray(point(10, 0, -10), vector(0, 0, 1))
     //     And xs ← intersect(g, r)
     //   Then xs.count = 2
-    use crate::world::{SceneGroup, SceneNode, SceneTree};
+    use crate::world::{SceneGroup, SceneTree};
     #[test]
     fn intersecting_a_transformed_group() {
         let mut world = World::new();

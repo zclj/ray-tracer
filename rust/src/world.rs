@@ -9,6 +9,7 @@ use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
 #[derive(Debug)]
+#[allow(dead_code)] // id is usefull for debug
 pub struct RenderGroup {
     id: u32,
     pub objects: Vec<RenderObject>,
@@ -63,6 +64,12 @@ pub enum SceneNode {
 #[derive(Debug)]
 pub struct SceneTree {
     arena: Vec<SceneNode>,
+}
+
+impl Default for SceneTree {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl SceneTree {

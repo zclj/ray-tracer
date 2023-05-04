@@ -221,13 +221,15 @@ impl RenderObject {
         }
     }
 
-    fn world_to_object(&self, world_point: &Point) -> Point {
-        &self.transform_inverse * world_point
-    }
+    // NOTE: seems these are redundant when applying the translations when
+    //  building the render tree
+    // fn world_to_object(&self, world_point: &Point) -> Point {
+    //     &self.transform_inverse * world_point
+    // }
 
-    fn normal_to_world(&self, normal: &Vector) -> Vector {
-        (&self.transform_inverse.transpose() * normal).norm()
-    }
+    // fn normal_to_world(&self, normal: &Vector) -> Vector {
+    //     (&self.transform_inverse.transpose() * normal).norm()
+    // }
 }
 
 #[cfg(test)]
@@ -685,39 +687,39 @@ mod test {
     //     And add_child(g2, s)
     //   When p ← world_to_object(s, point(-2, 0, -10))
     //   Then p = point(0, 0, -1)
-    use crate::world::{SceneGroup, SceneTree};
-    #[test]
-    fn converting_a_point_from_world_to_object_space() {
-        let mut world = World::new();
+    // use crate::world::{SceneGroup, SceneTree};
+    // #[test]
+    // fn converting_a_point_from_world_to_object_space() {
+    //     let mut world = World::new();
 
-        let mut scene = SceneTree::new();
+    //     let mut scene = SceneTree::new();
 
-        let o1_id = scene.insert_object(SceneObject::new(
-            Shape::Sphere,
-            Some(translation(5.0, 0.0, 0.0)),
-            None,
-        ));
+    //     let o1_id = scene.insert_object(SceneObject::new(
+    //         Shape::Sphere,
+    //         Some(translation(5.0, 0.0, 0.0)),
+    //         None,
+    //     ));
 
-        let g2_id = scene.insert_group(SceneGroup::new(
-            vec![o1_id],
-            Some(scaling(2.0, 2.0, 2.0)),
-            None,
-        ));
+    //     let g2_id = scene.insert_group(SceneGroup::new(
+    //         vec![o1_id],
+    //         Some(scaling(2.0, 2.0, 2.0)),
+    //         None,
+    //     ));
 
-        let g1_id = scene.insert_group(SceneGroup::new(
-            vec![g2_id],
-            Some(rotation_y(PI / 2.0)),
-            None,
-        ));
+    //     let g1_id = scene.insert_group(SceneGroup::new(
+    //         vec![g2_id],
+    //         Some(rotation_y(PI / 2.0)),
+    //         None,
+    //     ));
 
-        scene.apply_transforms(g1_id, &None);
-        let scene_objects = scene.build();
-        world.groups = vec![scene_objects];
+    //     scene.apply_transforms(g1_id, &None);
+    //     let scene_objects = scene.build();
+    //     world.groups = vec![scene_objects];
 
-        let p = (world.get_object(o1_id)).world_to_object(&Point::new(-2.0, 0.0, -10.0));
+    //     let p = (world.get_object(o1_id)).world_to_object(&Point::new(-2.0, 0.0, -10.0));
 
-        assert_eq!(Point::new(0.0, 0.0, -1.0), p)
-    }
+    //     assert_eq!(Point::new(0.0, 0.0, -1.0), p)
+    // }
 
     // Scenario: Converting a normal from object to world space
     //   Given g1 ← group()
@@ -730,42 +732,42 @@ mod test {
     //     And add_child(g2, s)
     //   When n ← normal_to_world(s, vector(√3/3, √3/3, √3/3))
     //   Then n = vector(0.2857, 0.4286, -0.8571)
-    #[test]
-    fn converting_a_normal_from_object_to_world_space() {
-        let mut world = World::new();
+    // #[test]
+    // fn converting_a_normal_from_object_to_world_space() {
+    //     let mut world = World::new();
 
-        let mut scene = SceneTree::new();
+    //     let mut scene = SceneTree::new();
 
-        let o1_id = scene.insert_object(SceneObject::new(
-            Shape::Sphere,
-            Some(translation(5.0, 0.0, 0.0)),
-            None,
-        ));
+    //     let o1_id = scene.insert_object(SceneObject::new(
+    //         Shape::Sphere,
+    //         Some(translation(5.0, 0.0, 0.0)),
+    //         None,
+    //     ));
 
-        let g2_id = scene.insert_group(SceneGroup::new(
-            vec![o1_id],
-            Some(scaling(1.0, 2.0, 3.0)),
-            None,
-        ));
+    //     let g2_id = scene.insert_group(SceneGroup::new(
+    //         vec![o1_id],
+    //         Some(scaling(1.0, 2.0, 3.0)),
+    //         None,
+    //     ));
 
-        let g1_id = scene.insert_group(SceneGroup::new(
-            vec![g2_id],
-            Some(rotation_y(PI / 2.0)),
-            None,
-        ));
+    //     let g1_id = scene.insert_group(SceneGroup::new(
+    //         vec![g2_id],
+    //         Some(rotation_y(PI / 2.0)),
+    //         None,
+    //     ));
 
-        scene.apply_transforms(g1_id, &None);
-        let scene_objects = scene.build();
-        world.groups = vec![scene_objects];
+    //     scene.apply_transforms(g1_id, &None);
+    //     let scene_objects = scene.build();
+    //     world.groups = vec![scene_objects];
 
-        let p = (world.get_object(o1_id)).normal_to_world(&Vector::new(
-            f32::sqrt(3.0 / 3.0),
-            f32::sqrt(3.0 / 3.0),
-            f32::sqrt(3.0 / 3.0),
-        ));
+    //     let p = (world.get_object(o1_id)).normal_to_world(&Vector::new(
+    //         f32::sqrt(3.0 / 3.0),
+    //         f32::sqrt(3.0 / 3.0),
+    //         f32::sqrt(3.0 / 3.0),
+    //     ));
 
-        assert_eq!(Vector::new(0.2857, 0.4286, -0.8571), p)
-    }
+    //     assert_eq!(Vector::new(0.2857, 0.4286, -0.8571), p)
+    // }
 
     // Scenario: Finding the normal on a child object
     //   Given g1 ← group()
@@ -778,6 +780,7 @@ mod test {
     //     And add_child(g2, s)
     //   When n ← normal_at(s, point(1.7321, 1.1547, -5.5774))
     //   Then n = vector(0.2857, 0.4286, -0.8571)
+    use crate::world::{SceneGroup, SceneTree};
     #[test]
     fn finding_the_normal_on_a_child_object() {
         let mut world = World::new();
