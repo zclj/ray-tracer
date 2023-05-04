@@ -1,4 +1,5 @@
 #![warn(clippy::all, clippy::pedantic)]
+mod bounds;
 pub mod camera;
 pub mod canvas;
 pub mod color;

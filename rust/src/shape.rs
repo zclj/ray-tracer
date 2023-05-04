@@ -669,13 +669,6 @@ mod test {
     //     assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
     // }
 
-    // Scenario: Creating an empty bounding box
-    //   Given box ← bounding_box(empty)
-    //   Then box.min = point(infinity, infinity, infinity)
-    //     And box.max = point(-infinity, -infinity, -infinity)
-    #[test]
-    fn creating_an_empty_bounding_box() {}
-
     // Scenario: Converting a point from world to object space
     //   Given g1 ← group()
     //     And set_transform(g1, rotation_y(π/2))
