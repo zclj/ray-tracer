@@ -3,7 +3,9 @@ use crate::matrices::M4x4;
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::{Point, Vector};
 // TODO: sort out the deps
+use crate::bounds::BoundingBox;
 use crate::world::SceneObject;
+use std::f32::{INFINITY, NEG_INFINITY};
 
 #[derive(PartialEq, Debug)]
 pub struct RenderObject {
@@ -221,6 +223,59 @@ impl RenderObject {
         }
     }
 
+    #[must_use]
+    pub fn bounds(&self) -> BoundingBox {
+        match self.kind {
+            Shape::Sphere => {
+                BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
+            }
+            Shape::Plane => BoundingBox::new(
+                Point::new(NEG_INFINITY, 0.0, NEG_INFINITY),
+                Point::new(INFINITY, 0.0, INFINITY),
+            ),
+            Shape::Cube => {
+                BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
+            }
+            Shape::Cylinder {
+                closed,
+                minimum,
+                maximum,
+            } => {
+                if closed {
+                    BoundingBox::new(
+                        Point::new(-1.0, minimum, -1.0),
+                        Point::new(1.0, maximum, 1.0),
+                    )
+                } else {
+                    BoundingBox::new(
+                        Point::new(-1.0, NEG_INFINITY, -1.0),
+                        Point::new(1.0, INFINITY, 1.0),
+                    )
+                }
+            }
+            Shape::Cone {
+                closed,
+                minimum,
+                maximum,
+            } => {
+                if closed {
+                    let limit = f32::max(f32::abs(minimum), f32::abs(maximum));
+
+                    BoundingBox::new(
+                        Point::new(-limit, minimum, -limit),
+                        Point::new(limit, maximum, limit),
+                    )
+                } else {
+                    BoundingBox::new(
+                        Point::new(NEG_INFINITY, NEG_INFINITY, NEG_INFINITY),
+                        Point::new(INFINITY, INFINITY, INFINITY),
+                    )
+                }
+            }
+            Shape::Group { .. } => todo!(),
+        }
+    }
+
     // NOTE: seems these are redundant when applying the translations when
     //  building the render tree
     // fn world_to_object(&self, world_point: &Point) -> Point {
@@ -235,10 +290,12 @@ impl RenderObject {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::bounds::BoundingBox;
     use crate::materials::Material;
     use crate::transformations::{rotation_y, rotation_z, scaling, translation};
     use crate::world::World;
     use core::f32::consts::PI;
+    use std::f32::{INFINITY, NEG_INFINITY};
 
     // Scenario: A sphere's default transformation
     //   Given s ← sphere()
@@ -426,6 +483,137 @@ mod test {
         };
 
         assert_eq!(world.get_object(0).material, material)
+    }
+
+    // Scenario: A sphere has a bounding box
+    //   Given shape ← sphere()
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-1, -1, -1)
+    //     And box.max = point(1, 1, 1)
+    #[test]
+    fn a_sphere_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_sphere(None, None);
+
+        assert_eq!(
+            world.get_object(0).bounds(),
+            BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
+        )
+    }
+
+    // Scenario: A plane has a bounding box
+    //   Given shape ← plane()
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-infinity, 0, -infinity)
+    //     And box.max = point(infinity, 0, infinity)
+    #[test]
+    fn a_plane_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_plane(None, None);
+
+        let bounds = world.get_object(0).bounds();
+
+        assert_eq!(bounds.min.x, NEG_INFINITY);
+        assert_eq!(bounds.min.y, 0.0);
+        assert_eq!(bounds.min.z, NEG_INFINITY);
+
+        assert_eq!(bounds.max.x, INFINITY);
+        assert_eq!(bounds.max.y, 0.0);
+        assert_eq!(bounds.max.z, INFINITY);
+    }
+
+    // Scenario: A cube has a bounding box
+    //   Given shape ← cube()
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-1, -1, -1)
+    //     And box.max = point(1, 1, 1)
+    #[test]
+    fn a_cube_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_cube(None, None);
+
+        assert_eq!(
+            world.get_object(0).bounds(),
+            BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
+        )
+    }
+
+    // Scenario: An unbounded cylinder has a bounding box
+    //   Given shape ← cylinder()
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-1, -infinity, -1)
+    //     And box.max = point(1, infinity, 1)
+    #[test]
+    fn an_unbounded_cylinder_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_cylinder(None, None, -f32::INFINITY, f32::INFINITY, false);
+
+        let bounds = world.get_object(0).bounds();
+
+        assert_eq!(bounds.min.x, -1.0);
+        assert_eq!(bounds.min.y, NEG_INFINITY);
+        assert_eq!(bounds.min.z, -1.0);
+
+        assert_eq!(bounds.max.x, 1.0);
+        assert_eq!(bounds.max.y, INFINITY);
+        assert_eq!(bounds.max.z, 1.0);
+    }
+
+    // Scenario: A bounded cylinder has a bounding box
+    //   Given shape ← cylinder()
+    //     And shape.minimum ← -5
+    //     And shape.maximum ← 3
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-1, -5, -1)
+    //     And box.max = point(1, 3, 1)
+    #[test]
+    fn a_bounded_cylinder_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_cylinder(None, None, -5.0, 3.0, true);
+
+        assert_eq!(
+            world.get_object(0).bounds(),
+            BoundingBox::new(Point::new(-1.0, -5.0, -1.0), Point::new(1.0, 3.0, 1.0))
+        )
+    }
+
+    // Scenario: An unbounded cone has a bounding box
+    //   Given shape ← cone()
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-infinity, -infinity, -infinity)
+    //     And box.max = point(infinity, infinity, infinity)
+    #[test]
+    fn an_unbounded_cone_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_cone(None, None, -f32::INFINITY, f32::INFINITY, false);
+
+        let bounds = world.get_object(0).bounds();
+
+        assert_eq!(bounds.min.x, NEG_INFINITY);
+        assert_eq!(bounds.min.y, NEG_INFINITY);
+        assert_eq!(bounds.min.z, NEG_INFINITY);
+
+        assert_eq!(bounds.max.x, INFINITY);
+        assert_eq!(bounds.max.y, INFINITY);
+        assert_eq!(bounds.max.z, INFINITY);
+    }
+
+    // Scenario: A bounded cone has a bounding box
+    //   Given shape ← cone()
+    //     And shape.minimum ← -5
+    //     And shape.maximum ← 3
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-5, -5, -5)
+    //     And box.max = point(5, 3, 5)
+    #[test]
+    fn a_bounded_cone_has_a_bounding_box() {
+        let mut world = World::new();
+        world.push_cone(None, None, -5.0, 3.0, true);
+
+        assert_eq!(
+            world.get_object(0).bounds(),
+            BoundingBox::new(Point::new(-5.0, -5.0, -5.0), Point::new(5.0, 3.0, 5.0))
+        )
     }
 
     // Scenario: The normal of a plane is constant everywhere

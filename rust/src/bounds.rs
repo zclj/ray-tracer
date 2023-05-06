@@ -1,9 +1,10 @@
 use crate::vector::Point;
 use std::f32::{INFINITY, NEG_INFINITY};
 
-struct BoundingBox {
-    min: Point,
-    max: Point,
+#[derive(PartialEq, Debug)]
+pub struct BoundingBox {
+    pub min: Point,
+    pub max: Point,
 }
 
 impl Default for BoundingBox {
