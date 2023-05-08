@@ -21,19 +21,31 @@ impl BoundingBox {
         BoundingBox { min, max }
     }
 
-    pub fn add_point(&self, p: &Point) -> BoundingBox {
-        let min_x = if p.x < self.min.x { p.x } else { self.min.x };
-        let min_y = if p.y < self.min.y { p.y } else { self.min.y };
-        let min_z = if p.z < self.min.z { p.z } else { self.min.z };
+    pub fn add_point(&mut self, p: &Point) {
+        if p.x < self.min.x {
+            self.min.x = p.x;
+        };
+        if p.y < self.min.y {
+            self.min.y = p.y;
+        };
+        if p.z < self.min.z {
+            self.min.z = p.z;
+        };
 
-        let max_x = if p.x > self.max.x { p.x } else { self.max.x };
-        let max_y = if p.y > self.max.y { p.y } else { self.max.y };
-        let max_z = if p.z > self.max.z { p.z } else { self.max.z };
+        if p.x > self.max.x {
+            self.max.x = p.x;
+        };
+        if p.y > self.max.y {
+            self.max.y = p.y;
+        };
+        if p.z > self.max.z {
+            self.max.z = p.z;
+        };
+    }
 
-        BoundingBox::new(
-            Point::new(min_x, min_y, min_z),
-            Point::new(max_x, max_y, max_z),
-        )
+    pub fn merge(&mut self, b: &BoundingBox) {
+        self.add_point(&b.min);
+        self.add_point(&b.max);
     }
 }
 
@@ -82,15 +94,32 @@ mod test {
     //     And box.max = point(7, 2, 0)
     #[test]
     fn adding_points_to_an_empty_bounding_box() {
-        let bbox = BoundingBox::default();
+        let mut bbox = BoundingBox::default();
 
         let p1 = Point::new(-5.0, 2.0, 0.0);
         let p2 = Point::new(7.0, 0.0, -3.0);
 
-        let new_box_1 = bbox.add_point(&p1);
-        let new_box_2 = new_box_1.add_point(&p2);
+        bbox.add_point(&p1);
+        bbox.add_point(&p2);
 
-        assert_eq!(new_box_2.min, Point::new(-5.0, 0.0, -3.0));
-        assert_eq!(new_box_2.max, Point::new(7.0, 2.0, 0.0));
+        assert_eq!(bbox.min, Point::new(-5.0, 0.0, -3.0));
+        assert_eq!(bbox.max, Point::new(7.0, 2.0, 0.0));
+    }
+
+    // Scenario: Adding one bounding box to another
+    //   Given box1 ← bounding_box(min=point(-5, -2, 0) max=point(7, 4, 4))
+    //     And box2 ← bounding_box(min=point(8, -7, -2) max=point(14, 2, 8))
+    //   When box2 is added to box1
+    //   Then box1.min = point(-5, -7, -2)
+    //     And box1.max = point(14, 4, 8)
+    #[test]
+    fn adding_one_bounding_box_to_another() {
+        let mut bbox_1 = BoundingBox::new(Point::new(-5.0, -2.0, 0.0), Point::new(7.0, 4.0, 4.0));
+        let bbox_2 = BoundingBox::new(Point::new(8.0, -7.0, -2.0), Point::new(14.0, 2.0, 8.0));
+
+        bbox_1.merge(&bbox_2);
+
+        assert_eq!(bbox_1.min, Point::new(-5.0, -7.0, -2.0));
+        assert_eq!(bbox_1.max, Point::new(14.0, 4.0, 8.0));
     }
 }
