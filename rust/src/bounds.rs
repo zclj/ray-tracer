@@ -47,6 +47,19 @@ impl BoundingBox {
         self.add_point(&b.min);
         self.add_point(&b.max);
     }
+
+    pub fn contains_point(&self, p: &Point) -> bool {
+        self.min.x <= p.x
+            && p.x <= self.max.x
+            && self.min.y <= p.y
+            && p.y <= self.max.y
+            && self.min.z <= p.z
+            && p.z <= self.max.z
+    }
+
+    pub fn contains_box(&self, b: &BoundingBox) -> bool {
+        self.contains_point(&b.min) && self.contains_point(&b.max)
+    }
 }
 
 #[cfg(test)]
@@ -121,5 +134,72 @@ mod test {
 
         assert_eq!(bbox_1.min, Point::new(-5.0, -7.0, -2.0));
         assert_eq!(bbox_1.max, Point::new(14.0, 4.0, 8.0));
+    }
+
+    // Scenario Outline: Checking to see if a box contains a given point
+    //   Given box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))
+    //     And p ← <point>
+    //   Then box_contains_point(box, p) is <result>
+
+    //   Examples:
+    //     | point           | result |
+    //     | point(5, -2, 0) | true   |
+    //     | point(11, 4, 7) | true   |
+    //     | point(8, 1, 3)  | true   |
+    //     | point(3, 0, 3)  | false  |
+    //     | point(8, -4, 3) | false  |
+    //     | point(8, 1, -1) | false  |
+    //     | point(13, 1, 3) | false  |
+    //     | point(8, 5, 3)  | false  |
+    //     | point(8, 1, 8)  | false  |
+    #[test]
+    fn checking_to_see_if_a_box_contains_a_given_point() {
+        let bbox = BoundingBox::new(Point::new(5.0, -2.0, 0.0), Point::new(11.0, 4.0, 7.0));
+
+        let points = vec![
+            Point::new(5.0, -2.0, 0.0),
+            Point::new(11.0, 4.0, 7.0),
+            Point::new(8.0, 1.0, 3.0),
+            Point::new(3.0, 0.0, 3.0),
+            Point::new(8.0, -4.0, 3.0),
+            Point::new(8.0, 1.0, -1.0),
+            Point::new(13.0, 1.0, 3.0),
+            Point::new(8.0, 5.0, 3.0),
+            Point::new(8.0, 1.0, 8.0),
+        ];
+
+        let results: Vec<bool> = points.iter().map(|p| bbox.contains_point(p)).collect();
+        let expected = vec![true, true, true, false, false, false, false, false, false];
+
+        assert_eq!(results, expected)
+    }
+
+    // Scenario Outline: Checking to see if a box contains a given box
+    //   Given box ← bounding_box(min=point(5, -2, 0) max=point(11, 4, 7))
+    //     And box2 ← bounding_box(min=<min> max=<max>)
+    //   Then box_contains_box(box, box2) is <result>
+
+    //   Examples:
+    //     | min              | max             | result |
+    //     | point(5, -2, 0)  | point(11, 4, 7) | true   |
+    //     | point(6, -1, 1)  | point(10, 3, 6) | true   |
+    //     | point(4, -3, -1) | point(10, 3, 6) | false  |
+    //     | point(6, -1, 1)  | point(12, 5, 8) | false  |
+    #[test]
+    fn checking_to_see_if_a_box_contains_a_given_box() {
+        let bbox = BoundingBox::new(Point::new(5.0, -2.0, 0.0), Point::new(11.0, 4.0, 7.0));
+
+        let boxes = vec![
+            BoundingBox::new(Point::new(5.0, -2.0, 0.0), Point::new(11.0, 4.0, 7.0)),
+            BoundingBox::new(Point::new(6.0, -1.0, 1.0), Point::new(10.0, 3.0, 6.0)),
+            BoundingBox::new(Point::new(4.0, -3.0, -1.0), Point::new(10.0, 3.0, 6.0)),
+            BoundingBox::new(Point::new(6.0, -1.0, 1.0), Point::new(12.0, 5.0, 8.0)),
+        ];
+
+        let results: Vec<bool> = boxes.iter().map(|b| bbox.contains_box(b)).collect();
+
+        let expected = vec![true, true, false, false];
+
+        assert_eq!(results, expected)
     }
 }
