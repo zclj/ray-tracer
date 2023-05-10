@@ -1,3 +1,4 @@
+use crate::matrices::M4x4;
 use crate::vector::Point;
 use std::f32::{INFINITY, NEG_INFINITY};
 
@@ -60,12 +61,31 @@ impl BoundingBox {
     pub fn contains_box(&self, b: &BoundingBox) -> bool {
         self.contains_point(&b.min) && self.contains_point(&b.max)
     }
+
+    pub fn transform(&self, transform: &M4x4) -> Self {
+        let mut transformed_box = BoundingBox::default();
+
+        // transform the points at all eight corners of the cube
+        transformed_box.add_point(&(transform * &self.min));
+        transformed_box.add_point(&(transform * &Point::new(self.min.x, self.min.y, self.max.z)));
+
+        transformed_box.add_point(&(transform * &Point::new(self.min.x, self.max.y, self.min.z)));
+        transformed_box.add_point(&(transform * &Point::new(self.min.x, self.max.y, self.max.z)));
+        transformed_box.add_point(&(transform * &Point::new(self.max.x, self.min.y, self.min.z)));
+        transformed_box.add_point(&(transform * &Point::new(self.max.x, self.min.y, self.max.z)));
+        transformed_box.add_point(&(transform * &Point::new(self.max.x, self.max.y, self.min.z)));
+        transformed_box.add_point(&(transform * &self.max));
+
+        transformed_box
+    }
 }
 
 #[cfg(test)]
 mod test {
     use crate::bounds::BoundingBox;
+    use crate::transformations::{rotation_x, rotation_y};
     use crate::vector::Point;
+    use std::f32::consts::PI;
     use std::f32::{INFINITY, NEG_INFINITY};
 
     // Scenario: Creating an empty bounding box
@@ -201,5 +221,21 @@ mod test {
         let expected = vec![true, true, false, false];
 
         assert_eq!(results, expected)
+    }
+
+    // Scenario: Transforming a bounding box
+    //   Given box ← bounding_box(min=point(-1, -1, -1) max=point(1, 1, 1))
+    //     And matrix ← rotation_x(π / 4) * rotation_y(π / 4)
+    //   When box2 ← transform(box, matrix)
+    //   Then box2.min = point(-1.4142, -1.7071, -1.7071)
+    //     And box2.max = point(1.4142, 1.7071, 1.7071)
+    #[test]
+    fn transforming_a_bounding_box() {
+        let bbox = BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0));
+
+        let bbox_2 = bbox.transform(&rotation_x(PI / 4.0) * &rotation_y(PI / 4.0));
+
+        assert_eq!(bbox_2.min, Point::new(-1.4142, -1.7071, -1.7071));
+        assert_eq!(bbox_2.max, Point::new(1.4142, 1.7071, 1.7071))
     }
 }
