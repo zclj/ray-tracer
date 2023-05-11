@@ -15,6 +15,7 @@ pub struct RenderObject {
     pub material: Material,
     pub transform_inverse: M4x4,
     pub transform_inverse_transpose: M4x4,
+    pub bounding_box: BoundingBox,
 }
 
 // TODO: Remove Clone
@@ -56,6 +57,8 @@ impl RenderObject {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
+        let bounding_box = (shape_bounds(&template.kind)).transform(&transform);
+
         RenderObject {
             id,
             kind: template.kind.clone(),
@@ -63,6 +66,7 @@ impl RenderObject {
             material,
             transform_inverse,
             transform_inverse_transpose,
+            bounding_box,
         }
     }
 
@@ -223,59 +227,6 @@ impl RenderObject {
         }
     }
 
-    #[must_use]
-    pub fn bounds(&self) -> BoundingBox {
-        match self.kind {
-            Shape::Sphere => {
-                BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
-            }
-            Shape::Plane => BoundingBox::new(
-                Point::new(NEG_INFINITY, 0.0, NEG_INFINITY),
-                Point::new(INFINITY, 0.0, INFINITY),
-            ),
-            Shape::Cube => {
-                BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
-            }
-            Shape::Cylinder {
-                closed,
-                minimum,
-                maximum,
-            } => {
-                if closed {
-                    BoundingBox::new(
-                        Point::new(-1.0, minimum, -1.0),
-                        Point::new(1.0, maximum, 1.0),
-                    )
-                } else {
-                    BoundingBox::new(
-                        Point::new(-1.0, NEG_INFINITY, -1.0),
-                        Point::new(1.0, INFINITY, 1.0),
-                    )
-                }
-            }
-            Shape::Cone {
-                closed,
-                minimum,
-                maximum,
-            } => {
-                if closed {
-                    let limit = f32::max(f32::abs(minimum), f32::abs(maximum));
-
-                    BoundingBox::new(
-                        Point::new(-limit, minimum, -limit),
-                        Point::new(limit, maximum, limit),
-                    )
-                } else {
-                    BoundingBox::new(
-                        Point::new(NEG_INFINITY, NEG_INFINITY, NEG_INFINITY),
-                        Point::new(INFINITY, INFINITY, INFINITY),
-                    )
-                }
-            }
-            Shape::Group { .. } => todo!(),
-        }
-    }
-
     // NOTE: seems these are redundant when applying the translations when
     //  building the render tree
     // fn world_to_object(&self, world_point: &Point) -> Point {
@@ -285,6 +236,55 @@ impl RenderObject {
     // fn normal_to_world(&self, normal: &Vector) -> Vector {
     //     (&self.transform_inverse.transpose() * normal).norm()
     // }
+}
+
+#[must_use]
+pub fn shape_bounds(kind: &Shape) -> BoundingBox {
+    match kind {
+        Shape::Sphere => BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0)),
+        Shape::Plane => BoundingBox::new(
+            Point::new(NEG_INFINITY, 0.0, NEG_INFINITY),
+            Point::new(INFINITY, 0.0, INFINITY),
+        ),
+        Shape::Cube => BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0)),
+        Shape::Cylinder {
+            closed,
+            minimum,
+            maximum,
+        } => {
+            if *closed {
+                BoundingBox::new(
+                    Point::new(-1.0, *minimum, -1.0),
+                    Point::new(1.0, *maximum, 1.0),
+                )
+            } else {
+                BoundingBox::new(
+                    Point::new(-1.0, NEG_INFINITY, -1.0),
+                    Point::new(1.0, INFINITY, 1.0),
+                )
+            }
+        }
+        Shape::Cone {
+            closed,
+            minimum,
+            maximum,
+        } => {
+            if *closed {
+                let limit = f32::max(f32::abs(*minimum), f32::abs(*maximum));
+
+                BoundingBox::new(
+                    Point::new(-limit, *minimum, -limit),
+                    Point::new(limit, *maximum, limit),
+                )
+            } else {
+                BoundingBox::new(
+                    Point::new(NEG_INFINITY, NEG_INFINITY, NEG_INFINITY),
+                    Point::new(INFINITY, INFINITY, INFINITY),
+                )
+            }
+        }
+        Shape::Group { .. } => todo!(),
+    }
 }
 
 #[cfg(test)]
@@ -496,7 +496,7 @@ mod test {
         world.push_sphere(None, None);
 
         assert_eq!(
-            world.get_object(0).bounds(),
+            shape_bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
         )
     }
@@ -511,7 +511,7 @@ mod test {
         let mut world = World::new();
         world.push_plane(None, None);
 
-        let bounds = world.get_object(0).bounds();
+        let bounds = shape_bounds(&world.get_object(0).kind);
 
         assert_eq!(bounds.min.x, NEG_INFINITY);
         assert_eq!(bounds.min.y, 0.0);
@@ -533,7 +533,7 @@ mod test {
         world.push_cube(None, None);
 
         assert_eq!(
-            world.get_object(0).bounds(),
+            shape_bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
         )
     }
@@ -548,7 +548,7 @@ mod test {
         let mut world = World::new();
         world.push_cylinder(None, None, -f32::INFINITY, f32::INFINITY, false);
 
-        let bounds = world.get_object(0).bounds();
+        let bounds = shape_bounds(&world.get_object(0).kind);
 
         assert_eq!(bounds.min.x, -1.0);
         assert_eq!(bounds.min.y, NEG_INFINITY);
@@ -572,7 +572,7 @@ mod test {
         world.push_cylinder(None, None, -5.0, 3.0, true);
 
         assert_eq!(
-            world.get_object(0).bounds(),
+            shape_bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-1.0, -5.0, -1.0), Point::new(1.0, 3.0, 1.0))
         )
     }
@@ -587,7 +587,7 @@ mod test {
         let mut world = World::new();
         world.push_cone(None, None, -f32::INFINITY, f32::INFINITY, false);
 
-        let bounds = world.get_object(0).bounds();
+        let bounds = shape_bounds(&world.get_object(0).kind);
 
         assert_eq!(bounds.min.x, NEG_INFINITY);
         assert_eq!(bounds.min.y, NEG_INFINITY);
@@ -611,7 +611,7 @@ mod test {
         world.push_cone(None, None, -5.0, 3.0, true);
 
         assert_eq!(
-            world.get_object(0).bounds(),
+            shape_bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-5.0, -5.0, -5.0), Point::new(5.0, 3.0, 5.0))
         )
     }
@@ -993,5 +993,36 @@ mod test {
         let p = (world.get_object(o1_id)).normal_at(&Point::new(1.7321, 1.1547, -5.5774));
 
         assert_eq!(Vector::new(0.2857, 0.4286, -0.8571), p)
+    }
+
+    // Scenario: Querying a shape's bounding box in its parent's space
+    //   Given shape ← sphere()
+    //     And set_transform(shape, translation(1, -3, 5) * scaling(0.5, 2, 4))
+    //   When box ← parent_space_bounds_of(shape)
+    //   Then box.min = point(0.5, -5, 1)
+    //     And box.max = point(1.5, -1, 9)
+    #[test]
+    fn querying_a_shapes_bounding_box_in_its_parents_space() {
+        let mut world = World::new();
+
+        let mut scene = SceneTree::new();
+
+        let o1_id = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(&translation(1.0, -3.0, 5.0) * &scaling(0.5, 2.0, 4.0)),
+            None,
+        ));
+
+        scene.apply_transforms(o1_id, &None);
+
+        let scene_objects = scene.build();
+        world.groups = vec![scene_objects];
+
+        println!("{:#?}", world);
+
+        let bbox = &(world.get_object(o1_id)).bounding_box;
+
+        assert_eq!(bbox.min, Point::new(0.5, -5.0, 1.0));
+        assert_eq!(bbox.max, Point::new(1.5, -1.0, 9.0))
     }
 }

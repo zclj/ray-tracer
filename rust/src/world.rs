@@ -1,10 +1,11 @@
+use crate::bounds::BoundingBox;
 use crate::color::Color;
 use crate::intersections::{sort_by_t, ComputedIntersection, Intersection};
 use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::{RenderObject, Shape};
+use crate::shape::{shape_bounds, RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
@@ -376,6 +377,7 @@ impl World {
     }
 
     #[allow(clippy::cast_possible_truncation)]
+    // TODO: this looks very much like the new for shape..
     pub fn push_shape(
         &mut self,
         kind: Shape,
@@ -395,6 +397,8 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
+        let bounding_box = (shape_bounds(&kind)).transform(&transform);
+
         // TODO: add const for default group id
         let id = self.groups[0].objects.len() as u32;
 
@@ -405,6 +409,7 @@ impl World {
             material,
             transform_inverse,
             transform_inverse_transpose,
+            bounding_box,
         });
 
         id
@@ -784,6 +789,10 @@ mod test {
                     specular: 0.2,
                     ..Default::default()
                 },
+                bounding_box: BoundingBox::new(
+                    Point::new(-1.0, -1.0, -1.0),
+                    Point::new(1.0, 1.0, 1.0)
+                ),
             }
         );
 
@@ -796,6 +805,10 @@ mod test {
                 material: Material::default(),
                 transform_inverse: scaling(0.5, 0.5, 0.5).inverse(),
                 transform_inverse_transpose: scaling(0.5, 0.5, 0.5).inverse().transpose(),
+                bounding_box: BoundingBox::new(
+                    Point::new(-0.5, -0.5, -0.5),
+                    Point::new(0.5, 0.5, 0.5)
+                ),
             }
         );
 

@@ -201,6 +201,7 @@ impl Default for Pattern {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::bounds::BoundingBox;
     use crate::color::Color;
     use crate::lights::PointLight;
     use crate::shape::Shape;
@@ -248,6 +249,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
 
@@ -275,6 +277,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
 
@@ -302,6 +305,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
 
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
@@ -330,6 +334,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
 
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
@@ -358,6 +363,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
 
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
@@ -388,6 +394,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
 
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, in_shadow);
@@ -505,6 +512,7 @@ mod test {
             transform_inverse: M4x4::IDENTITY,
             transform_inverse_transpose: M4x4::IDENTITY,
             material: Material::default(),
+            bounding_box: BoundingBox::default(),
         };
 
         let c1 = m.lighting(

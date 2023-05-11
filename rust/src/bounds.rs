@@ -233,7 +233,7 @@ mod test {
     fn transforming_a_bounding_box() {
         let bbox = BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0));
 
-        let bbox_2 = bbox.transform(&rotation_x(PI / 4.0) * &rotation_y(PI / 4.0));
+        let bbox_2 = bbox.transform(&(&rotation_x(PI / 4.0) * &rotation_y(PI / 4.0)));
 
         assert_eq!(bbox_2.min, Point::new(-1.4142, -1.7071, -1.7071));
         assert_eq!(bbox_2.max, Point::new(1.4142, 1.7071, 1.7071))
