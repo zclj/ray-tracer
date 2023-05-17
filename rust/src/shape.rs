@@ -57,8 +57,6 @@ impl RenderObject {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        let bounding_box = (shape_bounds(&template.kind)).transform(&transform);
-
         RenderObject {
             id,
             kind: template.kind.clone(),
@@ -66,7 +64,7 @@ impl RenderObject {
             material,
             transform_inverse,
             transform_inverse_transpose,
-            bounding_box,
+            bounding_box: template.bounding_box.clone(),
         }
     }
 
@@ -283,7 +281,8 @@ pub fn shape_bounds(kind: &Shape) -> BoundingBox {
                 )
             }
         }
-        Shape::Group { .. } => todo!(),
+        Shape::Group { .. } => BoundingBox::default(),
+            //todo!(),
     }
 }
 
@@ -1024,5 +1023,53 @@ mod test {
 
         assert_eq!(bbox.min, Point::new(0.5, -5.0, 1.0));
         assert_eq!(bbox.max, Point::new(1.5, -1.0, 9.0))
+    }
+
+    // Scenario: A group has a bounding box that contains its children
+    //   Given s ← sphere()
+    //     And set_transform(s, translation(2, 5, -3) * scaling(2, 2, 2))
+    //     And c ← cylinder()
+    //     And c.minimum ← -2
+    //     And c.maximum ← 2
+    //     And set_transform(c, translation(-4, -1, 4) * scaling(0.5, 1, 0.5))
+    //     And shape ← group()
+    //     And add_child(shape, s)
+    //     And add_child(shape, c)
+    //   When box ← bounds_of(shape)
+    //   Then box.min = point(-4.5, -3, -5)
+    //     And box.max = point(4, 7, 4.5)
+    #[test]
+    fn a_group_has_a_bounding_box_that_contains_its_children() {
+        let mut world = World::new();
+
+        let mut scene = SceneTree::new();
+
+        let s_id = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(&translation(2.0, 5.0, -3.0) * &scaling(2.0, 2.0, 2.0)),
+            None,
+        ));
+
+        let c_id = scene.insert_object(SceneObject::new(
+            Shape::Cylinder {
+                minimum: -2.0,
+                maximum: 2.0,
+                closed: true,
+            },
+            Some(&translation(-4.0, -1.0, 4.0) * &scaling(0.5, 1.0, 0.5)),
+            None,
+        ));
+
+        let g1_id = scene.insert_group(SceneGroup::new(vec![s_id, c_id], None, None));
+
+        scene.apply_transforms(g1_id, &None);
+        scene.apply_bounds(g1_id, &mut BoundingBox::default());
+        let scene_objects = scene.build();
+        world.groups = vec![scene_objects];
+
+        let bbox = &(world.get_object(g1_id)).bounding_box;
+
+        assert_eq!(bbox.min, Point::new(-4.5, -3.0, -5.0));
+        assert_eq!(bbox.max, Point::new(4.0, 7.0, 4.5))
     }
 }

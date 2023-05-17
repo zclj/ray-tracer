@@ -2,7 +2,7 @@ use crate::matrices::M4x4;
 use crate::vector::Point;
 use std::f32::{INFINITY, NEG_INFINITY};
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct BoundingBox {
     pub min: Point,
     pub max: Point,

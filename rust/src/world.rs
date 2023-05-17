@@ -54,11 +54,13 @@ pub enum SceneNode {
     Group {
         children: Vec<u32>,
         transform: Option<M4x4>,
+        bounding_box: BoundingBox,
     },
     Object {
         kind: Shape,
         transform: Option<M4x4>,
         material: Option<Material>,
+        bounding_box: BoundingBox,
     },
 }
 
@@ -84,9 +86,10 @@ impl SceneTree {
         let id = self.arena.len() as u32;
 
         self.arena.push(SceneNode::Object {
-            kind: object.kind,
             transform: object.transform,
             material: object.material,
+            bounding_box: shape_bounds(&object.kind),
+            kind: object.kind,
         });
 
         id
@@ -99,6 +102,7 @@ impl SceneTree {
         self.arena.push(SceneNode::Group {
             children: group.children,
             transform: group.transform,
+            bounding_box: shape_bounds(&Shape::Group { id }),
         });
 
         id
@@ -113,12 +117,14 @@ impl SceneTree {
                 transform,
                 kind,
                 material,
+                bounding_box,
             } => match (transform, current_transform) {
                 (Some(t), Some(ct)) => {
                     self.arena[current as usize] = SceneNode::Object {
                         kind,
                         material,
                         transform: Some(ct * &t),
+                        bounding_box,
                     }
                 }
                 (None, Some(ct)) => {
@@ -126,6 +132,7 @@ impl SceneTree {
                         kind,
                         material,
                         transform: Some(ct.clone()),
+                        bounding_box,
                     }
                 }
                 (_, _) => (),
@@ -134,6 +141,7 @@ impl SceneTree {
             SceneNode::Group {
                 transform,
                 children,
+                bounding_box,
             } => {
                 let group_transform = &transform;
 
@@ -142,6 +150,7 @@ impl SceneTree {
                         self.arena[current as usize] = SceneNode::Group {
                             transform: Some(ct * t),
                             children: children.clone(),
+                            bounding_box,
                         };
 
                         Some(ct * t)
@@ -150,6 +159,7 @@ impl SceneTree {
                         self.arena[current as usize] = SceneNode::Group {
                             transform: Some(ct.clone()),
                             children: children.clone(),
+                            bounding_box,
                         };
 
                         Some(ct.clone())
@@ -165,27 +175,111 @@ impl SceneTree {
         }
     }
 
+    pub fn apply_bounds(&mut self, current: u32, current_bounds: &mut BoundingBox) {
+        // if this is an object, apply the transform
+        let current_node = self.arena[current as usize].clone();
+
+        match current_node {
+            SceneNode::Object {
+                transform,
+                kind,
+                material,
+                bounding_box,
+            } => {
+                // for objects, add the shapes bounds
+    
+                println!("kind: {:?}", kind);
+                let bbox = bounding_box.transform(&transform.as_ref().unwrap());
+                // merge with the current group box
+                current_bounds.merge(&bbox);
+                
+                self.arena[current as usize] = SceneNode::Object {
+                    kind,
+                    material,
+                    transform,
+                    bounding_box: bbox,
+                }
+            }
+            SceneNode::Group {
+                transform,
+                children,
+                bounding_box,
+            } => {
+                let group_transform = &transform;                
+                
+                let mut group_box = BoundingBox::default();
+                // need to feed the new one down..
+                for c in &children {
+                    println!("apply child: {:?}", *c);
+                    self.apply_bounds(*c, &mut group_box);
+                }
+
+                println!("group box: {:?}", group_box);
+                
+                self.arena[current as usize] = SceneNode::Group {
+                            transform,
+                    children: children,
+                    bounding_box: group_box,
+                };
+                                
+            }
+        }
+    }
+
     #[allow(clippy::cast_possible_truncation)]
     #[must_use]
     pub fn build(&self) -> RenderGroup {
         let mut root = RenderGroup::new(0, vec![], None, None);
 
+        // Need to set bounding box of the groups.
+        // The groups box is a sum of the childrens.
+        // At this point, assume transforms are applied
         for i in 0..self.arena.len() {
             match &self.arena[i] {
-                SceneNode::Group { transform, .. } => root.objects.push(RenderObject::new(
-                    i as u32,
-                    &SceneObject::new(Shape::Group { id: i as u32 }, transform.clone(), None),
-                )),
+                SceneNode::Group {
+                    transform,
+                    children,
+                    bounding_box,
+                } => {
+                    println!("my children are: {:?}", children);
+                    // let bbox = BoundingBox::default();
+                    // let gtransform = match transform {
+                    //     Some(t) => t,
+                    //     None => &M4x4::IDENTITY,
+                    // };
+
+                    // for c in children {
+                    //     let shape = match &self.arena[*c as usize] {
+                    //         SceneObject(kind, ..) => kind,
+                    //         // groups.. what about groups?
+                    //         _ => continue
+                    //     }
+                    //     bbox.merge(&shape_bounds(&self.arena[*c as usize].kind).transform(gtransform))
+                    // }
+
+                    //println!("my bbox is: {:?}", bbox);
+
+                    root.objects.push(RenderObject::new(
+                        i as u32,
+                        &SceneObject {
+                            kind:Shape::Group { id: i as u32 },
+                            transform: transform.clone(),
+                            material: None,
+                            bounding_box: bounding_box.clone()}),
+                    )
+                }
                 SceneNode::Object {
                     kind,
                     transform,
                     material,
+                    bounding_box,
                 } => root.objects.push(RenderObject::new(
                     i as u32,
                     &SceneObject {
                         kind: kind.clone(),
                         transform: transform.clone(),
                         material: material.clone(),
+                        bounding_box: bounding_box.clone(),
                     },
                 )),
             }
@@ -218,15 +312,17 @@ pub struct SceneObject {
     pub kind: Shape,
     pub transform: Option<M4x4>,
     pub material: Option<Material>,
+    pub bounding_box: BoundingBox,
 }
 
 impl SceneObject {
     #[must_use]
     pub fn new(kind: Shape, transform: Option<M4x4>, material: Option<Material>) -> Self {
         SceneObject {
-            kind,
             transform,
             material,
+            bounding_box: shape_bounds(&kind),
+            kind,
         }
     }
 }
