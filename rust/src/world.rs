@@ -108,7 +108,12 @@ impl SceneTree {
         id
     }
 
-    pub fn apply_transforms(&mut self, current: u32, current_transform: &Option<M4x4>) {
+    pub fn apply_transforms(
+        &mut self,
+        current: u32,
+        current_transform: &Option<M4x4>,
+        current_bounds: &mut BoundingBox,
+    ) {
         // if this is an object, apply the transform
         let current_node = self.arena[current as usize].clone();
 
@@ -120,22 +125,36 @@ impl SceneTree {
                 bounding_box,
             } => match (transform, current_transform) {
                 (Some(t), Some(ct)) => {
+                    println!("kind: {:?}", kind);
+                    let bbox = bounding_box.transform(&(ct * &t));
+                    // merge with the current group box
+                    current_bounds.merge(&bbox);
+
                     self.arena[current as usize] = SceneNode::Object {
                         kind,
                         material,
                         transform: Some(ct * &t),
-                        bounding_box,
+                        bounding_box: bbox,
                     }
                 }
                 (None, Some(ct)) => {
+                    println!("kind 2: {:?}", kind);
+                    let bbox = bounding_box.transform(&ct);
+                    // merge with the current group box
+                    current_bounds.merge(&bbox);
+
                     self.arena[current as usize] = SceneNode::Object {
                         kind,
                         material,
                         transform: Some(ct.clone()),
-                        bounding_box,
+                        bounding_box: bbox,
                     }
                 }
-                (_, _) => (),
+                (Some(t), None) => {
+                    println!("kind 3: {:?}", kind);
+                    current_bounds.merge(&bounding_box.transform(&t))
+                }
+                (_, _) => current_bounds.merge(&bounding_box),
             },
 
             SceneNode::Group {
@@ -145,22 +164,24 @@ impl SceneTree {
             } => {
                 let group_transform = &transform;
 
+                let mut group_box = BoundingBox::default();
+
                 let new_t = match (group_transform, current_transform) {
                     (Some(t), Some(ct)) => {
-                        self.arena[current as usize] = SceneNode::Group {
-                            transform: Some(ct * t),
-                            children: children.clone(),
-                            bounding_box,
-                        };
+                        // self.arena[current as usize] = SceneNode::Group {
+                        //     transform: Some(ct * t),
+                        //     children: children.clone(),
+                        //     bounding_box,
+                        // };
 
                         Some(ct * t)
                     }
                     (None, Some(ct)) => {
-                        self.arena[current as usize] = SceneNode::Group {
-                            transform: Some(ct.clone()),
-                            children: children.clone(),
-                            bounding_box,
-                        };
+                        // self.arena[current as usize] = SceneNode::Group {
+                        //     transform: Some(ct.clone()),
+                        //     children: children.clone(),
+                        //     bounding_box,
+                        // };
 
                         Some(ct.clone())
                     }
@@ -168,9 +189,15 @@ impl SceneTree {
                 };
 
                 // need to feed the new one down..
-                for c in children {
-                    self.apply_transforms(c, &new_t);
+                for c in &children {
+                    self.apply_transforms(*c, &new_t, &mut group_box);
                 }
+
+                self.arena[current as usize] = SceneNode::Group {
+                    transform: new_t,
+                    children: children,
+                    bounding_box: group_box,
+                };
             }
         }
     }
@@ -187,12 +214,12 @@ impl SceneTree {
                 bounding_box,
             } => {
                 // for objects, add the shapes bounds
-    
+
                 println!("kind: {:?}", kind);
                 let bbox = bounding_box.transform(&transform.as_ref().unwrap());
                 // merge with the current group box
                 current_bounds.merge(&bbox);
-                
+
                 self.arena[current as usize] = SceneNode::Object {
                     kind,
                     material,
@@ -205,8 +232,8 @@ impl SceneTree {
                 children,
                 bounding_box,
             } => {
-                let group_transform = &transform;                
-                
+                let group_transform = &transform;
+
                 let mut group_box = BoundingBox::default();
                 // need to feed the new one down..
                 for c in &children {
@@ -215,13 +242,12 @@ impl SceneTree {
                 }
 
                 println!("group box: {:?}", group_box);
-                
+
                 self.arena[current as usize] = SceneNode::Group {
-                            transform,
+                    transform,
                     children: children,
                     bounding_box: group_box,
                 };
-                                
             }
         }
     }
@@ -262,11 +288,12 @@ impl SceneTree {
                     root.objects.push(RenderObject::new(
                         i as u32,
                         &SceneObject {
-                            kind:Shape::Group { id: i as u32 },
+                            kind: Shape::Group { id: i as u32 },
                             transform: transform.clone(),
                             material: None,
-                            bounding_box: bounding_box.clone()}),
-                    )
+                            bounding_box: bounding_box.clone(),
+                        },
+                    ))
                 }
                 SceneNode::Object {
                     kind,

@@ -149,6 +149,7 @@ pub fn sort_by_t(xs: &mut [Intersection]) {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::bounds::BoundingBox;
     use crate::shape::Shape;
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
@@ -1199,7 +1200,7 @@ mod test {
 
         println!("{:#?}", scene);
 
-        scene.apply_transforms(g_id, &None);
+        scene.apply_transforms(g_id, &None, &mut BoundingBox::default());
 
         println!("{:#?}", scene);
 

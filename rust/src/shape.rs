@@ -282,7 +282,7 @@ pub fn shape_bounds(kind: &Shape) -> BoundingBox {
             }
         }
         Shape::Group { .. } => BoundingBox::default(),
-            //todo!(),
+        //todo!(),
     }
 }
 
@@ -985,7 +985,7 @@ mod test {
             None,
         ));
 
-        scene.apply_transforms(g1_id, &None);
+        scene.apply_transforms(g1_id, &None, &mut BoundingBox::default());
         let scene_objects = scene.build();
         world.groups = vec![scene_objects];
 
@@ -1012,7 +1012,7 @@ mod test {
             None,
         ));
 
-        scene.apply_transforms(o1_id, &None);
+        scene.apply_transforms(o1_id, &None, &mut BoundingBox::default());
 
         let scene_objects = scene.build();
         world.groups = vec![scene_objects];
@@ -1062,8 +1062,8 @@ mod test {
 
         let g1_id = scene.insert_group(SceneGroup::new(vec![s_id, c_id], None, None));
 
-        scene.apply_transforms(g1_id, &None);
-        scene.apply_bounds(g1_id, &mut BoundingBox::default());
+        scene.apply_transforms(g1_id, &None, &mut BoundingBox::default());
+
         let scene_objects = scene.build();
         world.groups = vec![scene_objects];
 

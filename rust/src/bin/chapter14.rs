@@ -1,9 +1,8 @@
+use ray_tracer::bounds::BoundingBox;
 use ray_tracer::camera::Camera;
 use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
-//use ray_tracer::materials::{Material, Pattern, PatternKind};
-//use ray_tracer::matrices::M4x4;
 use ray_tracer::shape::*;
 use ray_tracer::transformations::{
     rotation_y, rotation_z, scaling, transform, translation, view_transform,
@@ -102,7 +101,7 @@ fn main() {
         None,
     ));
 
-    scene.apply_transforms(hexagon, &None);
+    scene.apply_transforms(hexagon, &None, &mut BoundingBox::default());
     let scene_objects = scene.build();
     world.groups = vec![scene_objects];
 
