@@ -1017,8 +1017,6 @@ mod test {
         let scene_objects = scene.build();
         world.groups = vec![scene_objects];
 
-        println!("{:#?}", world);
-
         let bbox = &(world.get_object(o1_id)).bounding_box;
 
         assert_eq!(bbox.min, Point::new(0.5, -5.0, 1.0));

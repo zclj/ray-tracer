@@ -152,7 +152,14 @@ impl SceneTree {
                 }
                 (Some(t), None) => {
                     println!("kind 3: {:?}", kind);
-                    current_bounds.merge(&bounding_box.transform(&t))
+                    let bbox = bounding_box.transform(&t);
+                    current_bounds.merge(&bbox);
+                    self.arena[current as usize] = SceneNode::Object {
+                        kind,
+                        material,
+                        transform: Some(t.clone()),
+                        bounding_box: bbox,
+                    }
                 }
                 (_, _) => current_bounds.merge(&bounding_box),
             },
