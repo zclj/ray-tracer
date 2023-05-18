@@ -114,7 +114,6 @@ impl SceneTree {
         current_transform: &Option<M4x4>,
         current_bounds: &mut BoundingBox,
     ) {
-        // if this is an object, apply the transform
         let current_node = self.arena[current as usize].clone();
 
         match current_node {
@@ -124,66 +123,50 @@ impl SceneTree {
                 material,
                 bounding_box,
             } => {
-                let changes = match (transform, current_transform) {
-                    (Some(t), Some(ct)) => {
-                        let new_transform = ct * &t;
-                        let bbox = bounding_box.transform(&new_transform);
-                        current_bounds.merge(&bbox);
-                        Some((new_transform, bbox))
-                    }
-                    (None, Some(ct)) => {
-                        let new_transform = ct;
-                        let bbox = bounding_box.transform(&new_transform);
-
-                        current_bounds.merge(&bbox);
-
-                        Some((new_transform.clone(), bbox))
-                    }
-                    (Some(t), None) => {
-                        let new_transform = t;
-                        let bbox = bounding_box.transform(&new_transform);
-                        current_bounds.merge(&bbox);
-                        Some((new_transform, bbox))
-                    }
-                    (_, _) => {
-                        current_bounds.merge(&bounding_box);
-                        None
-                    }
+                let new_transform = match (transform, current_transform) {
+                    (Some(t), Some(ct)) => Some(ct * &t),
+                    (None, Some(ct)) => Some(ct.clone()),
+                    (Some(t), None) => Some(t),
+                    (_, _) => None,
                 };
 
-                if let Some((transform, bounding_box)) = changes {
+                // if the transform was changed, we need to update the
+                // object and also transform the bounding box.
+                // If not, just add the shapes bounds to the total
+                if let Some(new_transform) = new_transform {
+                    let bbox = bounding_box.transform(&new_transform);
+                    current_bounds.merge(&bbox);
+
                     self.arena[current as usize] = SceneNode::Object {
                         kind,
                         material,
-                        transform: Some(transform),
-                        bounding_box,
+                        transform: Some(new_transform),
+                        bounding_box: bbox,
                     }
-                };
+                } else {
+                    current_bounds.merge(&bounding_box);
+                }
             }
             SceneNode::Group {
                 transform,
                 children,
-                bounding_box,
+                mut bounding_box,
             } => {
-                let group_transform = &transform;
-
-                let mut group_box = BoundingBox::default();
-
-                let new_t = match (group_transform, current_transform) {
+                let new_transform = match (&transform, current_transform) {
                     (Some(t), Some(ct)) => Some(ct * t),
                     (None, Some(ct)) => Some(ct.clone()),
                     (_, _) => transform,
                 };
 
-                // need to feed the new one down..
+                // apply transforms and merge bounds for the groups children
                 for c in &children {
-                    self.apply_transforms(*c, &new_t, &mut group_box);
+                    self.apply_transforms(*c, &new_transform, &mut bounding_box);
                 }
 
                 self.arena[current as usize] = SceneNode::Group {
-                    transform: new_t,
-                    children: children,
-                    bounding_box: group_box,
+                    transform: new_transform,
+                    children,
+                    bounding_box,
                 };
             }
         }
