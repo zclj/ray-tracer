@@ -177,44 +177,21 @@ impl SceneTree {
     pub fn build(&self) -> RenderGroup {
         let mut root = RenderGroup::new(0, vec![], None, None);
 
-        // Need to set bounding box of the groups.
-        // The groups box is a sum of the childrens.
-        // At this point, assume transforms are applied
         for i in 0..self.arena.len() {
             match &self.arena[i] {
                 SceneNode::Group {
                     transform,
                     children,
                     bounding_box,
-                } => {
-                    println!("my children are: {:?}", children);
-                    // let bbox = BoundingBox::default();
-                    // let gtransform = match transform {
-                    //     Some(t) => t,
-                    //     None => &M4x4::IDENTITY,
-                    // };
-
-                    // for c in children {
-                    //     let shape = match &self.arena[*c as usize] {
-                    //         SceneObject(kind, ..) => kind,
-                    //         // groups.. what about groups?
-                    //         _ => continue
-                    //     }
-                    //     bbox.merge(&shape_bounds(&self.arena[*c as usize].kind).transform(gtransform))
-                    // }
-
-                    //println!("my bbox is: {:?}", bbox);
-
-                    root.objects.push(RenderObject::new(
-                        i as u32,
-                        &SceneObject {
-                            kind: Shape::Group { id: i as u32 },
-                            transform: transform.clone(),
-                            material: None,
-                            bounding_box: bounding_box.clone(),
-                        },
-                    ))
-                }
+                } => root.objects.push(RenderObject::new(
+                    i as u32,
+                    &SceneObject {
+                        kind: Shape::Group { id: i as u32 },
+                        transform: transform.clone(),
+                        material: None,
+                        bounding_box: bounding_box.clone(),
+                    },
+                )),
                 SceneNode::Object {
                     kind,
                     transform,
