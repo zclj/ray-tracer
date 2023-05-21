@@ -18,6 +18,7 @@ impl Default for BoundingBox {
 }
 
 impl BoundingBox {
+    #[must_use]
     pub fn new(min: Point, max: Point) -> Self {
         BoundingBox { min, max }
     }
@@ -49,6 +50,7 @@ impl BoundingBox {
         self.add_point(&b.max);
     }
 
+    #[must_use]
     pub fn contains_point(&self, p: &Point) -> bool {
         self.min.x <= p.x
             && p.x <= self.max.x
@@ -58,10 +60,12 @@ impl BoundingBox {
             && p.z <= self.max.z
     }
 
+    #[must_use]
     pub fn contains_box(&self, b: &BoundingBox) -> bool {
         self.contains_point(&b.min) && self.contains_point(&b.max)
     }
 
+    #[must_use]
     pub fn transform(&self, transform: &M4x4) -> Self {
         let mut transformed_box = BoundingBox::default();
 

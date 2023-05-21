@@ -237,7 +237,7 @@ impl RenderObject {
 }
 
 #[must_use]
-pub fn shape_bounds(kind: &Shape) -> BoundingBox {
+pub fn bounds(kind: &Shape) -> BoundingBox {
     match kind {
         Shape::Sphere => BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0)),
         Shape::Plane => BoundingBox::new(
@@ -495,7 +495,7 @@ mod test {
         world.push_sphere(None, None);
 
         assert_eq!(
-            shape_bounds(&world.get_object(0).kind),
+            bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
         )
     }
@@ -510,7 +510,7 @@ mod test {
         let mut world = World::new();
         world.push_plane(None, None);
 
-        let bounds = shape_bounds(&world.get_object(0).kind);
+        let bounds = bounds(&world.get_object(0).kind);
 
         assert_eq!(bounds.min.x, NEG_INFINITY);
         assert_eq!(bounds.min.y, 0.0);
@@ -532,7 +532,7 @@ mod test {
         world.push_cube(None, None);
 
         assert_eq!(
-            shape_bounds(&world.get_object(0).kind),
+            bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
         )
     }
@@ -547,7 +547,7 @@ mod test {
         let mut world = World::new();
         world.push_cylinder(None, None, -f32::INFINITY, f32::INFINITY, false);
 
-        let bounds = shape_bounds(&world.get_object(0).kind);
+        let bounds = bounds(&world.get_object(0).kind);
 
         assert_eq!(bounds.min.x, -1.0);
         assert_eq!(bounds.min.y, NEG_INFINITY);
@@ -571,7 +571,7 @@ mod test {
         world.push_cylinder(None, None, -5.0, 3.0, true);
 
         assert_eq!(
-            shape_bounds(&world.get_object(0).kind),
+            bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-1.0, -5.0, -1.0), Point::new(1.0, 3.0, 1.0))
         )
     }
@@ -586,7 +586,7 @@ mod test {
         let mut world = World::new();
         world.push_cone(None, None, -f32::INFINITY, f32::INFINITY, false);
 
-        let bounds = shape_bounds(&world.get_object(0).kind);
+        let bounds = bounds(&world.get_object(0).kind);
 
         assert_eq!(bounds.min.x, NEG_INFINITY);
         assert_eq!(bounds.min.y, NEG_INFINITY);
@@ -610,7 +610,7 @@ mod test {
         world.push_cone(None, None, -5.0, 3.0, true);
 
         assert_eq!(
-            shape_bounds(&world.get_object(0).kind),
+            bounds(&world.get_object(0).kind),
             BoundingBox::new(Point::new(-5.0, -5.0, -5.0), Point::new(5.0, 3.0, 5.0))
         )
     }

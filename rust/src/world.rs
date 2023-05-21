@@ -5,7 +5,7 @@ use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::{shape_bounds, RenderObject, Shape};
+use crate::shape::{bounds, RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
@@ -88,7 +88,7 @@ impl SceneTree {
         self.arena.push(SceneNode::Object {
             transform: object.transform,
             material: object.material,
-            bounding_box: shape_bounds(&object.kind),
+            bounding_box: bounds(&object.kind),
             kind: object.kind,
         });
 
@@ -102,7 +102,7 @@ impl SceneTree {
         self.arena.push(SceneNode::Group {
             children: group.children,
             transform: group.transform,
-            bounding_box: shape_bounds(&Shape::Group { id }),
+            bounding_box: bounds(&Shape::Group { id }),
         });
 
         id
@@ -181,8 +181,8 @@ impl SceneTree {
             match &self.arena[i] {
                 SceneNode::Group {
                     transform,
-                    children,
                     bounding_box,
+                    ..
                 } => root.objects.push(RenderObject::new(
                     i as u32,
                     &SceneObject {
@@ -245,7 +245,7 @@ impl SceneObject {
         SceneObject {
             transform,
             material,
-            bounding_box: shape_bounds(&kind),
+            bounding_box: bounds(&kind),
             kind,
         }
     }
@@ -417,7 +417,7 @@ impl World {
         let transform_inverse = transform.inverse();
         let transform_inverse_transpose = transform_inverse.transpose();
 
-        let bounding_box = (shape_bounds(&kind)).transform(&transform);
+        let bounding_box = (bounds(&kind)).transform(&transform);
 
         // TODO: add const for default group id
         let id = self.groups[0].objects.len() as u32;
