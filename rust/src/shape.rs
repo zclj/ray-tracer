@@ -41,6 +41,27 @@ pub enum Shape {
     },
 }
 
+#[must_use]
+pub fn check_axis(origin: f32, direction: f32) -> (f32, f32) {
+    let tmin_numerator = -1.0 - origin;
+    let tmax_numerator = 1.0 - origin;
+
+    let (tmin, tmax) = if f32::abs(direction) >= EPSILON {
+        (tmin_numerator / direction, tmax_numerator / direction)
+    } else {
+        (
+            tmin_numerator * f32::INFINITY,
+            tmax_numerator * f32::INFINITY,
+        )
+    };
+
+    if tmin > tmax {
+        (tmax, tmin)
+    } else {
+        (tmin, tmax)
+    }
+}
+
 impl RenderObject {
     #[must_use]
     pub fn new(id: u32, template: &SceneObject) -> Self {
@@ -143,27 +164,6 @@ impl RenderObject {
         let world_normal = &self.transform_inverse_transpose * &object_normal;
 
         world_normal.norm()
-    }
-
-    #[must_use]
-    pub fn check_axis(&self, origin: f32, direction: f32) -> (f32, f32) {
-        let tmin_numerator = -1.0 - origin;
-        let tmax_numerator = 1.0 - origin;
-
-        let (tmin, tmax) = if f32::abs(direction) >= EPSILON {
-            (tmin_numerator / direction, tmax_numerator / direction)
-        } else {
-            (
-                tmin_numerator * f32::INFINITY,
-                tmax_numerator * f32::INFINITY,
-            )
-        };
-
-        if tmin > tmax {
-            (tmax, tmin)
-        } else {
-            (tmin, tmax)
-        }
     }
 
     // #[must_use]
@@ -1063,6 +1063,7 @@ mod test {
         scene.apply_transforms(g1_id, &None, &mut BoundingBox::default());
 
         let scene_objects = scene.build();
+        println!("Scene objects: {:#?}", scene_objects);
         world.groups = vec![scene_objects];
 
         let bbox = &(world.get_object(g1_id)).bounding_box;

@@ -5,7 +5,7 @@ use crate::lights::PointLight;
 use crate::materials::Material;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
-use crate::shape::{bounds, RenderObject, Shape};
+use crate::shape::{bounds, check_axis, RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 
@@ -177,21 +177,31 @@ impl SceneTree {
     pub fn build(&self) -> RenderGroup {
         let mut root = RenderGroup::new(0, vec![], None, None);
 
+        // https://www.pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies
+        // TODO: Nodes should be pushed into their group, not all nodes
+        //  should be put in the root group
+        // - NOTE: it might be better to just use the bounding boxes as
+        //   hierarchy?
+        // A bounding box includes its bounds and either a list of contained
+        // children boxes, or, no children but a list of primitives
         for i in 0..self.arena.len() {
             match &self.arena[i] {
                 SceneNode::Group {
                     transform,
                     bounding_box,
-                    ..
-                } => root.objects.push(RenderObject::new(
-                    i as u32,
-                    &SceneObject {
-                        kind: Shape::Group { id: i as u32 },
-                        transform: transform.clone(),
-                        material: None,
-                        bounding_box: bounding_box.clone(),
-                    },
-                )),
+                    children,
+                } => {
+                    //println!("children: {:?}", children);
+                    root.objects.push(RenderObject::new(
+                        i as u32,
+                        &SceneObject {
+                            kind: Shape::Group { id: i as u32 },
+                            transform: transform.clone(),
+                            material: None,
+                            bounding_box: bounding_box.clone(),
+                        },
+                    ))
+                }
                 SceneNode::Object {
                     kind,
                     transform,
@@ -441,6 +451,18 @@ impl World {
     }
 
     #[allow(clippy::similar_names)]
+    pub fn intersect_bounding_box(&self, bbox: &BoundingBox, ray: &Ray) -> bool {
+        let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x);
+        let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y);
+        let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z);
+
+        let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
+        let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
+
+        tmax >= tmin
+    }
+
+    #[allow(clippy::similar_names)]
     #[allow(clippy::too_many_lines)]
     pub fn intersect(
         &self,
@@ -456,9 +478,7 @@ impl World {
 
         for g in &self.groups {
             g.objects.iter().for_each(|s| {
-                // TODO: in addition to the shapes transform, the ray must
-                //  be transform also by the groups transform. This must
-                //  consider that groups can be children of groups
+                println!("intersecting object: {s:#?}");
                 let ray = world_ray.transform(&s.transform_inverse);
 
                 match s.kind {
@@ -491,9 +511,9 @@ impl World {
                         }
                     }
                     Shape::Cube => {
-                        let (xtmin, xtmax) = s.check_axis(ray.origin.x, ray.direction.x);
-                        let (ytmin, ytmax) = s.check_axis(ray.origin.y, ray.direction.y);
-                        let (ztmin, ztmax) = s.check_axis(ray.origin.z, ray.direction.z);
+                        let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x);
+                        let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y);
+                        let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z);
 
                         let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
                         let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);

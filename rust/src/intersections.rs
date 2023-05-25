@@ -1465,4 +1465,63 @@ mod test {
 
         assert_eq!(epsilon_eq(reflectance, 0.48873), true)
     }
+
+    // Scenario Outline: Intersecting a ray with a bounding box at the origin
+    //   Given box ← bounding_box(min=point(-1, -1, -1) max=point(1, 1, 1))
+    //     And direction ← normalize(<direction>)
+    //     And r ← ray(<origin>, direction)
+    //   Then intersects(box, r) is <result>
+
+    //   Examples:
+    //     | origin            | direction        | result |
+    //     | point(5, 0.5, 0)  | vector(-1, 0, 0) | true   |
+    //     | point(-5, 0.5, 0) | vector(1, 0, 0)  | true   |
+    //     | point(0.5, 5, 0)  | vector(0, -1, 0) | true   |
+    //     | point(0.5, -5, 0) | vector(0, 1, 0)  | true   |
+    //     | point(0.5, 0, 5)  | vector(0, 0, -1) | true   |
+    //     | point(0.5, 0, -5) | vector(0, 0, 1)  | true   |
+    //     | point(0, 0.5, 0)  | vector(0, 0, 1)  | true   |
+    //     | point(-2, 0, 0)   | vector(2, 4, 6)  | false  |
+    //     | point(0, -2, 0)   | vector(6, 2, 4)  | false  |
+    //     | point(0, 0, -2)   | vector(4, 6, 2)  | false  |
+    //     | point(2, 0, 2)    | vector(0, 0, -1) | false  |
+    //     | point(0, 2, 2)    | vector(0, -1, 0) | false  |
+    //     | point(2, 2, 0)    | vector(-1, 0, 0) | false  |
+    #[test]
+    fn intersecting_a_ray_with_a_bounding_box_at_the_origin() {
+        let mut world = World::new();
+
+        let bbox = BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0));
+
+        let rays = vec![
+            (Point::new(5.0, 0.5, 0.0), Vector::new(-1.0, 0.0, 0.0)),
+            (Point::new(-5.0, 0.5, 0.0), Vector::new(1.0, 0.0, 0.0)),
+            (Point::new(0.5, 5.0, 0.0), Vector::new(0.0, -1.0, 0.0)),
+            (Point::new(0.5, -5.0, 0.0), Vector::new(0.0, 1.0, 0.0)),
+            (Point::new(0.5, 0.0, 5.0), Vector::new(0.0, 0.0, -1.0)),
+            (Point::new(0.5, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0)),
+            (Point::new(0.0, 0.5, 0.0), Vector::new(0.0, 0.0, 1.0)),
+            (Point::new(-2.0, 0.0, 0.0), Vector::new(2.0, 4.0, 6.0)),
+            (Point::new(0.0, -2.0, 0.0), Vector::new(6.0, 2.0, 4.0)),
+            (Point::new(0.0, 0.0, -2.0), Vector::new(4.0, 6.0, 2.0)),
+            (Point::new(2.0, 0.0, 2.0), Vector::new(0.0, 0.0, -1.0)),
+            (Point::new(0.0, 2.0, 2.0), Vector::new(0.0, -1.0, 0.0)),
+            (Point::new(2.0, 2.0, 0.0), Vector::new(-1.0, 0.0, 0.0)),
+        ]
+        .into_iter()
+        .map(|(o, d)| Ray::new(o, d))
+        .collect::<Vec<Ray>>();
+
+        let is = rays
+            .iter()
+            .map(|r| world.intersect_bounding_box(&bbox, r))
+            .collect::<Vec<bool>>();
+
+        assert_eq!(
+            vec![
+                true, true, true, true, true, true, true, false, false, false, false, false, false
+            ],
+            is
+        )
+    }
 }
