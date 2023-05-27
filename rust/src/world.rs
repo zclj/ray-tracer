@@ -452,9 +452,9 @@ impl World {
 
     #[allow(clippy::similar_names)]
     pub fn intersect_bounding_box(&self, bbox: &BoundingBox, ray: &Ray) -> bool {
-        let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x);
-        let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y);
-        let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z);
+        let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x, bbox.min.x, bbox.max.x);
+        let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y, bbox.min.y, bbox.max.y);
+        let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z, bbox.min.z, bbox.max.z);
 
         let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
         let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
@@ -511,9 +511,9 @@ impl World {
                         }
                     }
                     Shape::Cube => {
-                        let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x);
-                        let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y);
-                        let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z);
+                        let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x, -1.0, 1.0);
+                        let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y, -1.0, 1.0);
+                        let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z, -1.0, 1.0);
 
                         let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
                         let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);

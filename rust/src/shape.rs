@@ -42,9 +42,9 @@ pub enum Shape {
 }
 
 #[must_use]
-pub fn check_axis(origin: f32, direction: f32) -> (f32, f32) {
-    let tmin_numerator = -1.0 - origin;
-    let tmax_numerator = 1.0 - origin;
+pub fn check_axis(origin: f32, direction: f32, min: f32, max: f32) -> (f32, f32) {
+    let tmin_numerator = min - origin;
+    let tmax_numerator = max - origin;
 
     let (tmin, tmax) = if f32::abs(direction) >= EPSILON {
         (tmin_numerator / direction, tmax_numerator / direction)
