@@ -1583,4 +1583,37 @@ mod test {
             is
         )
     }
+
+    // Scenario: Intersecting ray+group doesn't test children if box is missed
+    //   Given child ← test_shape()
+    //     And shape ← group()
+    //     And add_child(shape, child)
+    //     And r ← ray(point(0, 0, -5), vector(0, 1, 0))
+    //   When xs ← intersect(shape, r)
+    //   Then child.saved_ray is unset
+    // #[test]
+    // fn intersecting_ray_group_doesnt_test_children_if_box_is_missed() {
+    //     let mut world = World::new();
+
+    //     let mut scene = SceneTree::new();
+
+    //     let s_id = scene.insert_object(SceneObject::new(Shape::Sphere, None, None));
+
+    //     let g_id = scene.insert_group(SceneGroup::new(vec![s_id], None, None));
+
+    //     scene.apply_transforms(g_id, &None, &mut BoundingBox::default());
+
+    //     let scene_objects = scene.build();
+    //     //println!("Scene objects: {:#?}", scene_objects);
+    //     world.groups = vec![scene_objects];
+
+    //     let mut intersections = vec![];
+
+    //     world.intersect(
+    //         &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
+    //         &mut intersections,
+    //     );
+
+    //     assert_eq!(55, intersections.len())
+    // }
 }
