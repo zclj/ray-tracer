@@ -102,7 +102,7 @@ impl SceneTree {
         self.arena.push(SceneNode::Group {
             children: group.children,
             transform: group.transform,
-            bounding_box: bounds(&Shape::Group { id }),
+            bounding_box: BoundingBox::default(),
         });
 
         id
@@ -195,7 +195,8 @@ impl SceneTree {
                     root.objects.push(RenderObject::new(
                         i as u32,
                         &SceneObject {
-                            kind: Shape::Group { id: i as u32 },
+                            // TODO: TEMP!
+                            kind: Shape::Cube,
                             transform: transform.clone(),
                             material: None,
                             bounding_box: bounding_box.clone(),
@@ -482,7 +483,6 @@ impl World {
                 let ray = world_ray.transform(&s.transform_inverse);
 
                 match s.kind {
-                    Shape::Group { .. } => {}
                     Shape::Sphere => {
                         let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
 

@@ -36,9 +36,9 @@ pub enum Shape {
         maximum: f32,
         closed: bool,
     },
-    Group {
-        id: u32,
-    },
+    // Group {
+    //     id: u32,
+    // },
 }
 
 #[must_use]
@@ -158,7 +158,6 @@ impl RenderObject {
                     object_point.z,
                 )
             }
-            Shape::Group { .. } => panic!("normal_at should not be called on Groups"),
         };
 
         let world_normal = &self.transform_inverse_transpose * &object_normal;
@@ -281,8 +280,6 @@ pub fn bounds(kind: &Shape) -> BoundingBox {
                 )
             }
         }
-        Shape::Group { .. } => BoundingBox::default(),
-        //todo!(),
     }
 }
 
