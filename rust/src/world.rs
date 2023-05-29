@@ -42,6 +42,15 @@ impl RenderGroup {
     }
 }
 
+pub enum BoundingVolume {
+    BoundingVolumeNode {
+        children: Vec<BoundingVolume>
+    },
+    BoundingVolumePrimitive {
+        id: u32
+    }
+}
+
 ////////////////////////////////////////
 // Scene creation
 
