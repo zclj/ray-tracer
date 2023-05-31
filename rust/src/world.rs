@@ -687,38 +687,211 @@ impl World {
         intersections: &mut Vec<Intersection>,
         bounding_nodes: &[LinearBVHNode],
     ) -> Option<usize> {
+        // TODO: This might be reduntant, check with intersect_primitives
         intersections.clear();
 
-        let mut currentNodeIndex = 0;
+        println!("Intersection of BVH");
+        let mut current_node_index = 0;
         // TODO: consider Vec vs array
         //let mut nodesToVisit: [usize; 64] = [0; 64];
-        let mut nodesToVisit: Vec<usize> = Vec::with_capacity(64);
-        
-        loop {
+        let mut nodes_to_visit: Vec<usize> = Vec::with_capacity(64);
 
-            let n = &bounding_nodes[currentNodeIndex];
-            
+        loop {
+            let n = &bounding_nodes[current_node_index];
+
             match n {
                 LinearBVHNode::Node { children, bounds } => {
+                    println!("Check bounds of Node: {:?}", current_node_index);
                     if self.intersect_bounding_box(&bounds, &world_ray) {
+                        println!("Hit bounds of Node: {:?}", current_node_index);
                         // we hit this node, check children
+                        nodes_to_visit.extend(children);
+                        current_node_index = children[0];
+
+                        continue;
                     } else {
+                        println!("Missed bounds of Node: {:?}", current_node_index);
                         // we missed this node, move on
+                        current_node_index += 1;
                     }
                 }
                 LinearBVHNode::Primitive { bounds, offset } => {
                     if self.intersect_bounding_box(&bounds, &world_ray) {
+                        println!("Check bounds of Primitive: {:?}", current_node_index);
                         // we hit this primitive, check the primitive
+                        return self.intersect_primitive(
+                            world_ray,
+                            intersections,
+                            &self.render_primitives[*offset],
+                        );
                     } else {
+                        println!("Missed bounds of Primitive: {:?}", current_node_index);
                         // we missed this primitive, move on
+                        current_node_index += 1;
                     }
                 }
             }
 
-            // FIX
-            break;
+            println!("nodestovisit: {:?}", nodes_to_visit);
+            println!("currentnodeindex: {:?}", current_node_index);
+
+            if nodes_to_visit.is_empty() {
+                break;
+            }
         }
-        
+
+        sort_by_t(intersections);
+
+        intersections.iter().position(|x| x.t >= 0.0)
+    }
+
+    #[allow(clippy::similar_names)]
+    #[allow(clippy::too_many_lines)]
+    fn intersect_primitive(
+        &self,
+        world_ray: &Ray,
+        intersections: &mut Vec<Intersection>,
+        s: &RenderObject,
+    ) -> Option<usize> {
+        intersections.clear();
+
+        println!("intersecting object: {s:#?}");
+        let ray = world_ray.transform(&s.transform_inverse);
+
+        match s.kind {
+            Shape::Sphere => {
+                let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
+
+                let a = ray.direction.dot(&ray.direction);
+                let b = 2.0 * ray.direction.dot(&sphere_to_ray);
+                let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
+
+                let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                // invert?
+                if discriminant < 0.0 {
+                    return None;
+                }
+
+                let t1 = (-b - f32::sqrt(discriminant)) / (2.0 * a);
+                let t2 = (-b + f32::sqrt(discriminant)) / (2.0 * a);
+
+                let id = s.id;
+                intersections.push(Intersection { t: t1, object: id });
+                intersections.push(Intersection { t: t2, object: id });
+            }
+            Shape::Plane => {
+                if ray.direction.y.abs() >= EPSILON {
+                    intersections.push(Intersection::new(-ray.origin.y / ray.direction.y, s.id));
+                }
+            }
+            Shape::Cube => {
+                let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x, -1.0, 1.0);
+                let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y, -1.0, 1.0);
+                let (ztmin, ztmax) = check_axis(ray.origin.z, ray.direction.z, -1.0, 1.0);
+
+                let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
+                let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
+
+                if tmax >= tmin {
+                    intersections.push(Intersection::new(tmin, s.id));
+                    intersections.push(Intersection::new(tmax, s.id));
+                }
+            }
+            Shape::Cylinder { .. } => {
+                let xd = ray.direction.x;
+                let zd = ray.direction.z;
+                let a = xd * xd + zd * zd;
+
+                // ray is NOT parallel with the y axis
+                if !epsilon_eq(a, 0.0) {
+                    let xo = ray.origin.x;
+                    let zo = ray.origin.z;
+                    let b = (2.0 * xo * xd) + (2.0 * zo * zd);
+                    let c = xo * xo + zo * zo - 1.0;
+
+                    let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                    // ray does intersect the cylinder
+                    if discriminant >= 0.0 {
+                        let a2 = 2.0 * a;
+                        let t0 = (-b - f32::sqrt(discriminant)) / a2;
+                        let t1 = (-b + f32::sqrt(discriminant)) / a2;
+
+                        let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                        let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+
+                        if (s.minimum()) < y0 && y0 < (s.maximum()) {
+                            intersections.push(Intersection {
+                                t: t0,
+                                object: s.id,
+                            });
+                        }
+                        let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+
+                        if (s.minimum()) < y1 && y1 < (s.maximum()) {
+                            intersections.push(Intersection {
+                                t: t1,
+                                object: s.id,
+                            });
+                        }
+                    }
+                }
+                intersect_caps(s, &ray, intersections);
+            }
+            Shape::Cone { .. } => {
+                let xd = ray.direction.x;
+                let yd = ray.direction.y;
+                let zd = ray.direction.z;
+
+                let xo = ray.origin.x;
+                let yo = ray.origin.y;
+                let zo = ray.origin.z;
+
+                let a = xd * xd - yd * yd + zd * zd;
+                let b = (2.0 * xo * xd) - (2.0 * yo * yd) + (2.0 * zo * zd);
+                let c = xo * xo - yo * yo + zo * zo;
+
+                if epsilon_eq(a, 0.0) && !epsilon_eq(b, 0.0) {
+                    intersections.push(Intersection {
+                        t: -c / (2.0 * b),
+                        object: s.id,
+                    });
+                } else {
+                    let discriminant = b.powf(2.0) - (4.0 * a * c);
+
+                    // ray does intersect the cylinder
+                    if discriminant >= (-EPSILON) {
+                        let sqrt_discriminant = f32::sqrt(f32::max(0.0, discriminant));
+                        let a2 = 2.0 * a;
+                        let t0 = (-b - sqrt_discriminant) / a2;
+                        let t1 = (-b + sqrt_discriminant) / a2;
+
+                        let (t0, t1) = if t0 > t1 { (t1, t0) } else { (t0, t1) };
+
+                        let y0 = (ray.origin.y) + t0 * (ray.direction.y);
+                        if (s.minimum()) < y0 && y0 < (s.maximum()) {
+                            intersections.push(Intersection {
+                                t: t0,
+                                object: s.id,
+                            });
+                        }
+                        let y1 = (ray.origin.y) + t1 * (ray.direction.y);
+                        if (s.minimum()) < y1 && y1 < (s.maximum()) {
+                            intersections.push(Intersection {
+                                t: t1,
+                                object: s.id,
+                            });
+                        }
+                    }
+                }
+
+                intersect_caps(s, &ray, intersections);
+            }
+        }
+
+        // Sort the intersections and return the index of the 'hit'
         sort_by_t(intersections);
 
         intersections.iter().position(|x| x.t >= 0.0)
@@ -1977,61 +2150,61 @@ mod test {
     ////////////////////////////////////////
     // Render group experiment
 
-    #[test]
-    fn creation_of_render_template() {
-        let mut world = World::new();
-        let mut scene = SceneTree::new();
+    // #[test]
+    // fn creation_of_render_template() {
+    //     let mut world = World::new();
+    //     let mut scene = SceneTree::new();
 
-        let id_1 = scene.insert_object(SceneObject::new(
-            Shape::Sphere,
-            Some(scaling(2.0, 2.0, 2.0)),
-            None,
-        ));
+    //     let id_1 = scene.insert_object(SceneObject::new(
+    //         Shape::Sphere,
+    //         Some(scaling(2.0, 2.0, 2.0)),
+    //         None,
+    //     ));
 
-        let g_id1 = scene.insert_group(SceneGroup::new(vec![id_1], None, None));
+    //     let g_id1 = scene.insert_group(SceneGroup::new(vec![id_1], None, None));
 
-        let g_id2 = scene.insert_group(SceneGroup::new(
-            vec![g_id1],
-            Some(scaling(2.0, 2.0, 2.0)),
-            None,
-        ));
+    //     let g_id2 = scene.insert_group(SceneGroup::new(
+    //         vec![g_id1],
+    //         Some(scaling(2.0, 2.0, 2.0)),
+    //         None,
+    //     ));
 
-        let mut bvh = BoundingVolume::BoundingVolumeNode {
-            children: vec![],
-            bounds: BoundingBox::new(
-                Point::new(-9.0, -10.0, -11.0),
-                Point::new(-9.0, -10.0, -11.0),
-            ),
-        };
+    //     let mut bvh = BoundingVolume::BoundingVolumeNode {
+    //         children: vec![],
+    //         bounds: BoundingBox::new(
+    //             Point::new(-9.0, -10.0, -11.0),
+    //             Point::new(-9.0, -10.0, -11.0),
+    //         ),
+    //     };
 
-        scene.apply_transforms_2(
-            &mut world,
-            g_id2,
-            &None,
-            &mut BoundingBox::default(),
-            &mut bvh,
-        );
-        //println!("Scene: {:#?}", scene);
+    //     scene.apply_transforms_2(
+    //         &mut world,
+    //         g_id2,
+    //         &None,
+    //         &mut BoundingBox::default(),
+    //         &mut bvh,
+    //     );
+    //     //println!("Scene: {:#?}", scene);
 
-        let scene_objects = scene.build();
-        //println!("Scene objects: {:#?}", scene_objects);
-        println!("World render primitives: {:?}", world.render_primitives);
-        println!("Final BVH: {:#?}", bvh);
-        world.groups = vec![scene_objects];
+    //     let scene_objects = scene.build();
+    //     //println!("Scene objects: {:#?}", scene_objects);
+    //     println!("World render primitives: {:?}", world.render_primitives);
+    //     println!("Final BVH: {:#?}", bvh);
+    //     world.groups = vec![scene_objects];
 
-        let mut nodes = vec![];
-        let linear = bvh.flatten(&mut nodes);
+    //     let mut nodes = vec![];
+    //     let linear = bvh.flatten(&mut nodes);
 
-        println!("Flatten: {:#?}", nodes);
+    //     println!("Flatten: {:#?}", nodes);
 
-        let mut intersections: Vec<Intersection> = vec![];
+    //     let mut intersections: Vec<Intersection> = vec![];
 
-        world.intersect_bvh(
-            &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
-            &mut intersections,
-            &nodes,
-        );
-        
-        assert_eq!(0, 1)
-    }
+    //     world.intersect_bvh(
+    //         &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
+    //         &mut intersections,
+    //         &nodes,
+    //     );
+
+    //     assert_eq!(0, 1)
+    // }
 }
