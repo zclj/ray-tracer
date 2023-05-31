@@ -154,7 +154,7 @@ mod test {
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
-    use crate::world::{SceneObject, World};
+    use crate::world::{BoundingVolume, SceneObject, World};
 
     // Scenario: An intersection encapsulates t and object
     //   Given s ← sphere()
@@ -1591,29 +1591,41 @@ mod test {
     //     And r ← ray(point(0, 0, -5), vector(0, 1, 0))
     //   When xs ← intersect(shape, r)
     //   Then child.saved_ray is unset
-    // #[test]
-    // fn intersecting_ray_group_doesnt_test_children_if_box_is_missed() {
-    //     let mut world = World::new();
+    #[test]
+    fn intersecting_ray_group_doesnt_test_children_if_box_is_missed() {
+        let mut world = World::new();
 
-    //     let mut scene = SceneTree::new();
+        let mut scene = SceneTree::new();
 
-    //     let s_id = scene.insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let s_id = scene.insert_object(SceneObject::new(Shape::Sphere, None, None));
 
-    //     let g_id = scene.insert_group(SceneGroup::new(vec![s_id], None, None));
+        let g_id = scene.insert_group(SceneGroup::new(vec![s_id], None, None));
 
-    //     scene.apply_transforms(g_id, &None, &mut BoundingBox::default());
+        let mut bvh = BoundingVolume::BoundingVolumeNode {
+            children: vec![],
+            bounds: BoundingBox::default(),
+        };
 
-    //     let scene_objects = scene.build();
-    //     //println!("Scene objects: {:#?}", scene_objects);
-    //     world.groups = vec![scene_objects];
+        scene.apply_transforms_2(
+            &mut world,
+            g_id,
+            &None,
+            &mut BoundingBox::default(),
+            &mut bvh,
+        );
 
-    //     let mut intersections = vec![];
+        let scene_objects = scene.build();
+        //println!("Scene objects: {:#?}", scene_objects);
+        world.groups = vec![scene_objects];
 
-    //     world.intersect(
-    //         &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
-    //         &mut intersections,
-    //     );
+        //let mut intersections = vec![];
 
-    //     assert_eq!(55, intersections.len())
-    // }
+        // world.intersect_bvh(
+        //     &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
+        //     &mut intersections,
+        //     bvh,
+        // );
+
+        //assert_eq!(55, intersections.len())
+    }
 }

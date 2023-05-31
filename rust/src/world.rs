@@ -42,13 +42,82 @@ impl RenderGroup {
     }
 }
 
+#[derive(Debug)]
 pub enum BoundingVolume {
     BoundingVolumeNode {
-        children: Vec<BoundingVolume>
+        children: Vec<BoundingVolume>,
+        bounds: BoundingBox,
     },
     BoundingVolumePrimitive {
-        id: u32
+        id: u32,
+        bounds: BoundingBox,
+    },
+}
+
+impl BoundingVolume {
+    pub fn push_child(&mut self, child: BoundingVolume) {
+        match self {
+            BoundingVolume::BoundingVolumeNode { children, .. } => children.push(child),
+            _ => panic!("'push_child' can only be performed on BoundingVolumeNode"),
+        }
     }
+
+    pub fn set_bounds(&mut self, new_bounds: BoundingBox) {
+        match self {
+            BoundingVolume::BoundingVolumeNode { bounds, .. } => *bounds = new_bounds,
+            BoundingVolume::BoundingVolumePrimitive { bounds, .. } => *bounds = new_bounds,
+        }
+    }
+
+    pub fn flatten(&self, nodes: &mut Vec<LinearBVHNode>) -> usize {
+        match self {
+            BoundingVolume::BoundingVolumeNode { bounds, children } => {
+                let offset = nodes.len();
+
+                nodes.push(LinearBVHNode::Node {
+                    bounds: bounds.clone(),
+                    children: children
+                        .iter()
+                        .enumerate()
+                        .map(|(i, _)| i + offset + 1)
+                        .collect::<Vec<usize>>(),
+                });
+
+                // TODO: currently we order the nodes first then the primitives
+                //  below is the opposite. Evaluate
+                // let children_offsets = children
+                //     .iter()
+                //     .map(|c| c.flatten(nodes))
+                //     .collect::<Vec<usize>>();
+
+                for c in children {
+                    c.flatten(nodes);
+                }
+
+                offset
+            }
+            BoundingVolume::BoundingVolumePrimitive { bounds, id } => {
+                nodes.push(LinearBVHNode::Primitive {
+                    bounds: bounds.clone(),
+                    offset: *id as usize,
+                });
+
+                *id as usize
+            }
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum LinearBVHNode {
+    Node {
+        children: Vec<usize>,
+        bounds: BoundingBox,
+    },
+    Primitive {
+        offset: usize,
+        bounds: BoundingBox,
+    },
 }
 
 ////////////////////////////////////////
@@ -117,6 +186,141 @@ impl SceneTree {
         id
     }
 
+    // we want to end up with a BVH
+    // start with a basic one
+    pub fn apply_transforms_2(
+        &mut self,
+        world: &mut World,
+        current: u32,
+        current_transform: &Option<M4x4>,
+        current_bounds: &mut BoundingBox,
+        bvh: &mut BoundingVolume,
+    ) {
+        let current_node = self.arena[current as usize].clone();
+        println!("apply transforms current: {:?}", current);
+        match current_node {
+            SceneNode::Object {
+                transform,
+                kind,
+                material,
+                bounding_box,
+            } => {
+                //println!("Transform object: {:?}", current);
+                let new_transform = match (transform, current_transform) {
+                    (Some(t), Some(ct)) => Some(ct * &t),
+                    (None, Some(ct)) => Some(ct.clone()),
+                    (Some(t), None) => Some(t),
+                    (_, _) => None,
+                };
+
+                // Add this primitive to the know list of primitives
+                let id = world.render_primitives.len();
+
+                // if the transform was changed, we need to update the
+                // object and also transform the bounding box.
+                // If not, just add the shapes bounds to the total
+                if let Some(new_transform) = new_transform {
+                    let bbox = bounding_box.transform(&new_transform);
+                    current_bounds.merge(&bbox);
+                    bvh.set_bounds(current_bounds.clone());
+
+                    bvh.push_child(BoundingVolume::BoundingVolumePrimitive {
+                        id: id as u32,
+                        bounds: bbox.clone(),
+                    });
+
+                    world.render_primitives.push(RenderObject::new(
+                        id as u32,
+                        &SceneObject {
+                            // TODO: TEMP!
+                            kind: kind.clone(),
+                            transform: Some(new_transform.clone()),
+                            material: material.clone(),
+                            bounding_box: bbox.clone(),
+                        },
+                    ));
+
+                    self.arena[current as usize] = SceneNode::Object {
+                        kind,
+                        material,
+                        transform: Some(new_transform),
+                        bounding_box: bbox,
+                    }
+                } else {
+                    current_bounds.merge(&bounding_box);
+                    //bvh.set_bounds(current_bounds.clone());
+
+                    bvh.push_child(BoundingVolume::BoundingVolumePrimitive {
+                        id: id as u32,
+                        bounds: bounding_box.clone(),
+                    });
+
+                    world.render_primitives.push(RenderObject::new(
+                        id as u32,
+                        &SceneObject {
+                            // TODO: TEMP!
+                            kind: kind.clone(),
+                            transform: new_transform.clone(),
+                            material: material.clone(),
+                            bounding_box: bounding_box.clone(),
+                        },
+                    ));
+                }
+            }
+            SceneNode::Group {
+                transform,
+                children,
+                mut bounding_box,
+            } => {
+                //println!("Transform group");
+                let new_transform = match (&transform, current_transform) {
+                    (Some(t), Some(ct)) => Some(ct * t),
+                    (None, Some(ct)) => Some(ct.clone()),
+                    (_, _) => transform,
+                };
+
+                let mut new_bvh_branch = BoundingVolume::BoundingVolumeNode {
+                    children: vec![],
+                    bounds: BoundingBox::default(),
+                };
+
+                // apply transforms and merge bounds for the groups children
+                // println!("children: {:?}", children.len());
+                // println!("bounds going in: {:?}", bounding_box);
+                // println!("current bounds in: {:?}", current_bounds);
+                for c in &children {
+                    self.apply_transforms_2(
+                        world,
+                        *c,
+                        &new_transform,
+                        &mut bounding_box,
+                        &mut new_bvh_branch,
+                    );
+                }
+
+                // merge the groups bounds into parent
+                current_bounds.merge(&bounding_box);
+
+                // Add BVH node
+                //println!("bounds coming out: {:?}", bounding_box);
+                //println!("current bounds out: {:?}", current_bounds);
+
+                bvh.push_child(new_bvh_branch);
+                //println!("bvh: {:#?}", bvh);
+                //bvh.set_bounds(bounding_box.clone());
+                bvh.set_bounds(current_bounds.clone());
+
+                //println!("bvh: {:#?}", bvh);
+
+                self.arena[current as usize] = SceneNode::Group {
+                    transform: new_transform,
+                    children,
+                    bounding_box,
+                };
+            }
+        }
+    }
+
     pub fn apply_transforms(
         &mut self,
         current: u32,
@@ -124,7 +328,7 @@ impl SceneTree {
         current_bounds: &mut BoundingBox,
     ) {
         let current_node = self.arena[current as usize].clone();
-
+        println!("apply transforms current: {:?}", current);
         match current_node {
             SceneNode::Object {
                 transform,
@@ -194,6 +398,7 @@ impl SceneTree {
         // A bounding box includes its bounds and either a list of contained
         // children boxes, or, no children but a list of primitives
         for i in 0..self.arena.len() {
+            println!("Build item: {:?}", i);
             match &self.arena[i] {
                 SceneNode::Group {
                     transform,
@@ -278,6 +483,7 @@ pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
     pub groups: Vec<RenderGroup>,
+    pub render_primitives: Vec<RenderObject>,
 }
 
 fn check_cap(ray: &Ray, t: f64, r: f64) -> bool {
@@ -324,6 +530,7 @@ impl World {
     pub fn new() -> Self {
         World {
             groups: vec![RenderGroup::new(0, vec![], None, None)],
+            render_primitives: vec![],
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
                 intensity: Color::new(1.0, 1.0, 1.0),
@@ -470,6 +677,51 @@ impl World {
         let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
 
         tmax >= tmin
+    }
+
+    #[allow(clippy::similar_names)]
+    #[allow(clippy::too_many_lines)]
+    pub fn intersect_bvh(
+        &self,
+        world_ray: &Ray,
+        intersections: &mut Vec<Intersection>,
+        bounding_nodes: &[LinearBVHNode],
+    ) -> Option<usize> {
+        intersections.clear();
+
+        let mut currentNodeIndex = 0;
+        // TODO: consider Vec vs array
+        //let mut nodesToVisit: [usize; 64] = [0; 64];
+        let mut nodesToVisit: Vec<usize> = Vec::with_capacity(64);
+        
+        loop {
+
+            let n = &bounding_nodes[currentNodeIndex];
+            
+            match n {
+                LinearBVHNode::Node { children, bounds } => {
+                    if self.intersect_bounding_box(&bounds, &world_ray) {
+                        // we hit this node, check children
+                    } else {
+                        // we missed this node, move on
+                    }
+                }
+                LinearBVHNode::Primitive { bounds, offset } => {
+                    if self.intersect_bounding_box(&bounds, &world_ray) {
+                        // we hit this primitive, check the primitive
+                    } else {
+                        // we missed this primitive, move on
+                    }
+                }
+            }
+
+            // FIX
+            break;
+        }
+        
+        sort_by_t(intersections);
+
+        intersections.iter().position(|x| x.t >= 0.0)
     }
 
     #[allow(clippy::similar_names)]
@@ -1725,20 +1977,61 @@ mod test {
     ////////////////////////////////////////
     // Render group experiment
 
-    // #[test]
-    // fn creation_of_render_template() {
-    //     let mut scene = SceneTemplate::new();
+    #[test]
+    fn creation_of_render_template() {
+        let mut world = World::new();
+        let mut scene = SceneTree::new();
 
-    //     let id_1 = scene.push_object(RenderObjectTemplate::new(Shape::Sphere, Some(scaling(2.0, 2.0, 2.0)), None));
+        let id_1 = scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(scaling(2.0, 2.0, 2.0)),
+            None,
+        ));
 
-    //     let g_id1 = scene.push_group(vec![id_1], None, None);
+        let g_id1 = scene.insert_group(SceneGroup::new(vec![id_1], None, None));
 
-    //     let g_id2 = scene.push_group(vec![g_id1], Some(scaling(2.0, 2.0, 2.0)), None);
+        let g_id2 = scene.insert_group(SceneGroup::new(
+            vec![g_id1],
+            Some(scaling(2.0, 2.0, 2.0)),
+            None,
+        ));
 
-    //     println!("Scene: {:#?}", scene);
+        let mut bvh = BoundingVolume::BoundingVolumeNode {
+            children: vec![],
+            bounds: BoundingBox::new(
+                Point::new(-9.0, -10.0, -11.0),
+                Point::new(-9.0, -10.0, -11.0),
+            ),
+        };
 
-    //     let render_tree = scene.build();
+        scene.apply_transforms_2(
+            &mut world,
+            g_id2,
+            &None,
+            &mut BoundingBox::default(),
+            &mut bvh,
+        );
+        //println!("Scene: {:#?}", scene);
 
-    //     assert_eq!(0, 1)
-    // }
+        let scene_objects = scene.build();
+        //println!("Scene objects: {:#?}", scene_objects);
+        println!("World render primitives: {:?}", world.render_primitives);
+        println!("Final BVH: {:#?}", bvh);
+        world.groups = vec![scene_objects];
+
+        let mut nodes = vec![];
+        let linear = bvh.flatten(&mut nodes);
+
+        println!("Flatten: {:#?}", nodes);
+
+        let mut intersections: Vec<Intersection> = vec![];
+
+        world.intersect_bvh(
+            &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
+            &mut intersections,
+            &nodes,
+        );
+        
+        assert_eq!(0, 1)
+    }
 }
