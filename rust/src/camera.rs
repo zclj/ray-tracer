@@ -1,10 +1,11 @@
+use crate::bounds::BoundingBox;
 use crate::canvas::Canvas;
 use crate::color::Color;
 use crate::intersections::Intersection;
 use crate::matrices::M4x4;
 use crate::rays::Ray;
 use crate::vector::Point;
-use crate::world::World;
+use crate::world::{BoundingVolume, World};
 use rayon::prelude::*;
 use std::time::Instant;
 
@@ -69,7 +70,7 @@ impl Camera {
 
         let start_time = Instant::now();
         let colors = (0..(self.vsize - 1))
-            .into_par_iter()
+            //.into_par_iter()
             .map(|y| {
                 let mut intersections = Vec::<Intersection>::with_capacity(100);
                 let mut containers = Vec::<u32>::with_capacity(20);

@@ -1514,7 +1514,7 @@ mod test {
 
         let is = rays
             .iter()
-            .map(|r| world.intersect_bounding_box(&bbox, r))
+            .map(|r| world.intersect_bounding_box(&bbox, r, &mut vec![], 0))
             .collect::<Vec<bool>>();
 
         assert_eq!(
@@ -1573,7 +1573,7 @@ mod test {
 
         let is = rays
             .iter()
-            .map(|r| world.intersect_bounding_box(&bbox, r))
+            .map(|r| world.intersect_bounding_box(&bbox, r, &mut vec![], 0))
             .collect::<Vec<bool>>();
 
         assert_eq!(
@@ -1595,38 +1595,42 @@ mod test {
     fn intersecting_ray_group_doesnt_test_children_if_box_is_missed() {
         let mut world = World::new();
 
-        let mut scene = SceneTree::new();
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
 
-        let s_id = scene.insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let g_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s_id], None, None));
 
-        let g_id = scene.insert_group(SceneGroup::new(vec![s_id], None, None));
+        // let mut bvh = BoundingVolume::BoundingVolumeNode {
+        //     children: vec![],
+        //     bounds: BoundingBox::default(),
+        // };
 
-        let mut bvh = BoundingVolume::BoundingVolumeNode {
-            children: vec![],
-            bounds: BoundingBox::default(),
-        };
+        // scene.apply_transforms_2(
+        //     &mut world.render_primitives,
+        //     g_id,
+        //     &None,
+        //     &mut BoundingBox::default(),
+        //     &mut bvh,
+        // );
 
-        scene.apply_transforms_2(
-            &mut world,
-            g_id,
-            &None,
-            &mut BoundingBox::default(),
-            &mut bvh,
-        );
+        // let scene_objects = scene.build();
+        // //println!("Scene objects: {:#?}", scene_objects);
+        // world.groups = vec![scene_objects];
 
-        let scene_objects = scene.build();
-        //println!("Scene objects: {:#?}", scene_objects);
-        world.groups = vec![scene_objects];
+        // let mut nodes = vec![];
+        // let linear = bvh.flatten(&mut nodes);
 
-        let mut nodes = vec![];
-        let linear = bvh.flatten(&mut nodes);
+        world.root_group_id = g_id;
+        world.build();
 
         let mut intersections = vec![];
 
         world.intersect_bvh(
             &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 1.0, 0.0)),
             &mut intersections,
-            &nodes,
         );
 
         assert_eq!(0, intersections.len())
@@ -1643,38 +1647,22 @@ mod test {
     fn intersecting_ray_group_tests_children_if_box_is_hit() {
         let mut world = World::new();
 
-        let mut scene = SceneTree::new();
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
 
-        let s_id = scene.insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let g_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s_id], None, None));
 
-        let g_id = scene.insert_group(SceneGroup::new(vec![s_id], None, None));
-
-        let mut bvh = BoundingVolume::BoundingVolumeNode {
-            children: vec![],
-            bounds: BoundingBox::default(),
-        };
-
-        scene.apply_transforms_2(
-            &mut world,
-            g_id,
-            &None,
-            &mut BoundingBox::default(),
-            &mut bvh,
-        );
-
-        let scene_objects = scene.build();
-        //println!("Scene objects: {:#?}", scene_objects);
-        world.groups = vec![scene_objects];
-
-        let mut nodes = vec![];
-        let linear = bvh.flatten(&mut nodes);
+        world.root_group_id = g_id;
+        world.build();
 
         let mut intersections = vec![];
 
         world.intersect_bvh(
             &Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0)),
             &mut intersections,
-            &nodes,
         );
 
         assert_eq!(2, intersections.len())
