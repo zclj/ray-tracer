@@ -24,12 +24,6 @@ fn hex_corner(scene: &mut SceneTree) -> u32 {
         Some(Material {
             color: Color::new(0.8, 0.5, 0.3),
             shininess: 50.0,
-            // pattern: Some(Pattern::new(
-            //     Color::new(0.1, 1.0, 0.5),
-            //     Color::new(1.0, 0.1, 0.5),
-            //     PatternKind::Ring,
-            //     &scaling(0.2, 0.2, 0.2) * &rotation_x(PI / 4.0),
-            // )),
             ..Material::default()
         }),
     ))
@@ -40,7 +34,7 @@ fn hex_edge(scene: &mut SceneTree) -> u32 {
         Shape::Cylinder {
             minimum: 0.0,
             maximum: 1.0,
-            closed: false,
+            closed: true,
         },
         Some(transform(&[
             scaling(0.25, 1.0, 0.25),
@@ -51,12 +45,6 @@ fn hex_edge(scene: &mut SceneTree) -> u32 {
         Some(Material {
             color: Color::new(0.8, 0.5, 0.3),
             shininess: 50.0,
-            // pattern: Some(Pattern::new(
-            //     Color::new(0.1, 1.0, 0.5),
-            //     Color::new(1.0, 0.1, 0.5),
-            //     PatternKind::Ring,
-            //     &scaling(0.2, 0.2, 0.2) * &rotation_x(PI / 4.0),
-            // )),
             ..Material::default()
         }),
     ))
@@ -84,15 +72,11 @@ fn main() {
 
     world.shadow_bias = 0.0001;
 
-    ////////////////////////////////////////
-    // Setup scene
-    let mut scene = SceneTree::new();
-
     let ids = (0..6)
-        .map(|i| hex_side(&mut scene, i))
+        .map(|i| hex_side(&mut world.scene, i))
         .collect::<Vec<u32>>();
 
-    let hexagon = scene.insert_group(SceneGroup::new(
+    let hexagon = world.scene.insert_group(SceneGroup::new(
         ids,
         Some(transform(&[
             rotation_z(PI / 3.0),
@@ -101,9 +85,8 @@ fn main() {
         None,
     ));
 
-    scene.apply_transforms(hexagon, &None, &mut BoundingBox::default());
-    let scene_objects = scene.build();
-    world.groups = vec![scene_objects];
+    world.root_group_id = hexagon;
+    world.build();
 
     ////////////////////////////////////////
     // Camera and rendering
