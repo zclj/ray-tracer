@@ -75,6 +75,8 @@ impl BoundingVolume {
         }
     }
 
+    //pub fn children(&self) ->
+
     pub fn flatten(
         &self,
         nodes: &mut VecDeque<LinearBVHNode>,
@@ -82,49 +84,41 @@ impl BoundingVolume {
     ) -> usize {
         println!("offset: {:?}", current_offset);
 
+        // increase the current index used to index into nodes
+        *current_offset += 1;
         match self {
             BoundingVolume::BoundingVolumeNode { bounds, children } => {
-                //let offset = nodes.len();
+                // Add the node, put its children next to it.
+                // Set the nodes childrens indexs
 
-                // TODO: currently we order the nodes first then the primitives
-                //  below is the opposite. Evaluate
-                // let children_offsets = children
-                //     .iter()
-                //     .map(|c| c.flatten(nodes))
-                //     .collect::<Vec<usize>>();
-
-                //let my_index = current_offset;
                 let mut child_offsets = Vec::with_capacity(children.len());
-                //let mut offset_index = current_offset;
-                //let position = nodes.len();
-                *current_offset += 1;
+                let node_idx = nodes.len();
+
+                nodes.push_back(LinearBVHNode::Node {
+                    bounds: bounds.clone(),
+                    children: vec![],
+                });
+
                 for c in children {
-                    //*current_offset += 1;
                     child_offsets.push(*current_offset);
                     c.flatten(nodes, current_offset);
-
-                    // println!("Nodes: {:?}", nodes.len());
-                    // println!("offset index: {:?}", offset_index);
                 }
 
-                //println!("my_index: {:?}", my_index);
-                nodes.push_front(LinearBVHNode::Node {
-                    bounds: bounds.clone(),
-                    children: child_offsets,
-                    //.iter().map(|i| nodes.len() - i).collect(),
+                child_offsets.iter().for_each(|c| {
+                    nodes[node_idx].push_child(*c);
                 });
 
                 0
             }
             BoundingVolume::BoundingVolumePrimitive { bounds, id } => {
                 let position = nodes.len();
-                nodes.push_front(LinearBVHNode::Primitive {
+                nodes.push_back(LinearBVHNode::Primitive {
                     bounds: bounds.clone(),
                     offset: *id as usize,
                 });
 
                 //*id as usize
-                *current_offset += 1;
+                //*current_offset += 1;
                 0 //position
             }
         }
@@ -141,6 +135,19 @@ pub enum LinearBVHNode {
         offset: usize,
         bounds: BoundingBox,
     },
+}
+
+impl LinearBVHNode {
+    pub fn push_child(&mut self, child: usize) -> usize {
+        match self {
+            LinearBVHNode::Node { children, .. } => {
+                let idx = children.len();
+                children.push(child);
+                idx
+            }
+            _ => panic!("Can only add child to Node"),
+        }
+    }
 }
 
 ////////////////////////////////////////
@@ -783,13 +790,13 @@ impl World {
         let tmin = f32::max(f32::max(xtmin, ytmin), ztmin);
         let tmax = f32::min(f32::min(xtmax, ytmax), ztmax);
 
-        //TEMP: to try and visualize
-        if index == 8 {
-            if tmax >= tmin {
-                intersections.push(Intersection::new(tmin, 0));
-                intersections.push(Intersection::new(tmax, 0));
-            }
-        }
+        // NOTE: use to visualize bounding boxes
+        // if index == 4 {
+        //     if tmax >= tmin {
+        //         intersections.push(Intersection::new(tmin, 0));
+        //         intersections.push(Intersection::new(tmax, 0));
+        //     }
+        // }
 
         tmax >= tmin
     }
@@ -1367,8 +1374,8 @@ mod test {
     use crate::shape::Shape;
     use crate::transformations::{rotation_y, rotation_z, scaling, transform, translation};
     use crate::vector::{Point, Vector};
-    use std::f32::consts::PI;
     use crate::world::LinearBVHNode::*;
+    use std::f32::consts::PI;
 
     fn test_default() -> World {
         let mut w = World::new();
@@ -2463,54 +2470,24 @@ mod test {
                     children: vec![3, 4,],
                     bounds: BoundingBox {
                         min: Point {
-                            x: -0.32027224,
-                            y: -0.17075324,
-                            z: -1.2165064,
+                            x: 0.15849364,
+                            y: 0.65849364,
+                            z: -1.25,
                         },
                         max: Point {
-                            x: 0.77900636,
-                            y: 1.2332531,
-                            z: -0.15849361,
-                        },
-                    },
-                },
-                Primitive {
-                    offset: 3,
-                    bounds: BoundingBox {
-                        min: Point {
-                            x: -0.32027224,
-                            y: -0.17075324,
-                            z: -0.84150636,
-                        },
-                        max: Point {
-                            x: 0.45424685,
-                            y: 0.6707531,
-                            z: -0.15849361,
-                        },
-                    },
-                },
-                Primitive {
-                    offset: 2,
-                    bounds: BoundingBox {
-                        min: Point {
-                            x: -0.21201906,
-                            y: 0.01674676,
-                            z: -1.2165064,
-                        },
-                        max: Point {
-                            x: 0.77900636,
-                            y: 1.2332531,
+                            x: 1.2120191,
+                            y: 1.9832532,
                             z: -0.28349364,
                         },
                     },
                 },
-                Node {
-                    children: vec![6, 7,],
+                Primitive {
+                    offset: 0,
                     bounds: BoundingBox {
                         min: Point {
-                            x: 0.15849364,
-                            y: 0.65849364,
-                            z: -1.25,
+                            x: 0.22099364,
+                            y: 0.7667468,
+                            z: -1.2165064,
                         },
                         max: Point {
                             x: 1.2120191,
@@ -2534,18 +2511,48 @@ mod test {
                         },
                     },
                 },
-                Primitive {
-                    offset: 0,
+                Node {
+                    children: vec![6, 7,],
                     bounds: BoundingBox {
                         min: Point {
-                            x: 0.22099364,
-                            y: 0.7667468,
+                            x: -0.32027224,
+                            y: -0.17075324,
                             z: -1.2165064,
                         },
                         max: Point {
-                            x: 1.2120191,
-                            y: 1.9832532,
+                            x: 0.77900636,
+                            y: 1.2332531,
+                            z: -0.15849361,
+                        },
+                    },
+                },
+                Primitive {
+                    offset: 2,
+                    bounds: BoundingBox {
+                        min: Point {
+                            x: -0.21201906,
+                            y: 0.01674676,
+                            z: -1.2165064,
+                        },
+                        max: Point {
+                            x: 0.77900636,
+                            y: 1.2332531,
                             z: -0.28349364,
+                        },
+                    },
+                },
+                Primitive {
+                    offset: 3,
+                    bounds: BoundingBox {
+                        min: Point {
+                            x: -0.32027224,
+                            y: -0.17075324,
+                            z: -0.84150636,
+                        },
+                        max: Point {
+                            x: 0.45424685,
+                            y: 0.6707531,
+                            z: -0.15849361,
                         },
                     },
                 },
