@@ -82,8 +82,6 @@ impl BoundingVolume {
         nodes: &mut VecDeque<LinearBVHNode>,
         current_offset: &mut usize,
     ) -> usize {
-        println!("offset: {:?}", current_offset);
-
         // increase the current index used to index into nodes
         *current_offset += 1;
         match self {
@@ -227,7 +225,7 @@ impl SceneTree {
         bvh: &mut BoundingVolume,
     ) {
         let current_node = self.arena[current as usize].clone();
-        println!("apply transforms current: {:?}", current);
+
         match current_node {
             SceneNode::Object {
                 transform,
@@ -235,8 +233,6 @@ impl SceneTree {
                 material,
                 bounding_box,
             } => {
-                //println!("Transform object: {:?}", current);
-                println!("transforms ({:?}, {:?})", transform, current_transform);
                 let foo = transform.clone();
                 let new_transform = match (transform, current_transform) {
                     (Some(t), Some(ct)) => Some(ct * &t),
@@ -312,7 +308,6 @@ impl SceneTree {
                 children,
                 mut bounding_box,
             } => {
-                //println!("Transform group");
                 let new_transform = match (&transform, current_transform) {
                     (Some(t), Some(ct)) => Some(ct * t),
                     (None, Some(ct)) => Some(ct.clone()),
@@ -324,44 +319,18 @@ impl SceneTree {
                     bounds: BoundingBox::default(),
                 };
 
-                // apply transforms and merge bounds for the groups children
-                println!("children: {:?}", children.len());
-                // println!("bounds going in: {:?}", bounding_box);
-                // println!("current bounds in: {:?}", current_bounds);
-                // for c in &children {
-                //     println!("BUILD: {:?}", *c);
-                //     //if (*c != 3) {
-                //     self.apply_transforms_2(
-                //         render_primitives,
-                //         *c,
-                //         &new_transform,
-                //         &mut bounding_box,
-                //         &mut new_bvh_branch,
-                //     );
-                //     //}
-                // }
-
                 ////////////////////////////////////////
                 // Experiment
                 for c in &children {
-                    // let mut new_bvh_branch = BoundingVolume::BoundingVolumeNode {
-                    // children: vec![],
-                    // bounds: BoundingBox::default(),
-                    // };
-
                     let mut child_bounds = bounding_box.clone();
 
-                    //if(*c != 4) {
                     self.apply_transforms_2(
                         render_primitives,
                         *c,
                         &new_transform,
                         &mut bounding_box,
-                        ///&mut child_bounds,
                         &mut new_bvh_branch,
                     );
-                    //bvh.push_child(new_bvh_branch);
-                    //                    }
                 }
                 ////////////////////////////////////////
 
@@ -636,14 +605,14 @@ impl World {
         // TODO: keep track of total number of nodes
         //let mut nodes = Vec::with_capacity(64);
 
-        println!("BVH pre flatten: {:#?}", bvh);
+        //println!("BVH pre flatten: {:#?}", bvh);
         let mut node_deque = VecDeque::new();
         let linear = bvh.flatten(&mut node_deque, &mut 0);
 
-        println!("BVH POST flatten: {:#?}", node_deque);
+        //println!("BVH POST flatten: {:#?}", node_deque);
 
         self.bvh = node_deque.into();
-        println!("More: {:#?}", self.bvh);
+        //println!("More: {:#?}", self.bvh);
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -823,57 +792,21 @@ impl World {
         //nodes_to_visit.extend([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
         //nodes_to_visit.extend([0,1,2,3]);
         loop {
-            //println!("looping on index: {:?}", current_node_index);
-
-            // TODO: how can we transform this?
-            //let ray = world_ray.transform(&s.transform_inverse);
-
-            //println!("Nodes to visit: {:?}", nodes_to_visit);
-
             let node = &self.bvh[current_node_index];
-
-            // if current_node_index == 0 {
-            //     println!("root: {:?}", node);
-            // }
 
             match node {
                 LinearBVHNode::Node { children, bounds } => {
-                    //println!("Check bounds of Node: {:?}", current_node_index);
-                    // nodes_to_visit.extend(children);
-                    // self.intersect_bounding_box(&bounds, &world_ray, intersections, current_node_index);
-
                     if self.intersect_bounding_box(
                         &bounds,
                         &world_ray,
                         intersections,
                         current_node_index,
                     ) {
-                        //println!("Hit bounds of Node: {:?}", current_node_index);
                         // we hit this node, check children
-                        //nodes_to_visit.clear();
-                        //println!("children: {:?}", children);
                         nodes_to_visit.extend(children);
-                        //println!("nodes: {:?}", nodes_to_visit);
-                        //current_node_index = children[0];
-
-                        //continue;
                     }
-                    //else {
-
-                    // println!("Missed bounds of Node: {:?}", current_node_index);
-                    // // we missed this node, move on
-                    // //current_node_index += 1;
-                    // }
                 }
                 LinearBVHNode::Primitive { bounds, offset } => {
-                    //println!("Check bounds of Primitive: {:?}", current_node_index);
-                    // let hit = self.intersect_primitive(
-                    //         world_ray,
-                    //         intersections,
-                    //     &self.render_primitives[*offset],
-                    //     current_node_index,
-                    // );
-
                     if self.intersect_bounding_box(
                         &bounds,
                         &world_ray,
@@ -887,21 +820,11 @@ impl World {
                             &self.render_primitives[*offset],
                             current_node_index,
                         );
-
-                        //println!("hit: {:?}", hit);
                     }
-                    //else {
-                    //   println!("Missed bounds of Primitive: {:?}", current_node_index);
-
-                    //   }
                 }
             }
 
-            //println!("nodestovisit: {:?}", nodes_to_visit);
-            //println!("currentnodeindex: {:?}", current_node_index);
-
             if nodes_to_visit.is_empty() {
-                //println!("no hits");
                 break;
             } else {
                 // we just checked for empty
