@@ -70,7 +70,7 @@ impl Camera {
 
         let start_time = Instant::now();
         let colors = (0..(self.vsize - 1))
-            //.into_par_iter()
+            .into_par_iter()
             .map(|y| {
                 let mut intersections = Vec::<Intersection>::with_capacity(100);
                 let mut containers = Vec::<u32>::with_capacity(20);
