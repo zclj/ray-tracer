@@ -42,6 +42,7 @@ pub enum Shape {
 }
 
 #[must_use]
+#[allow(clippy::similar_names)]
 pub fn check_axis(origin: f32, direction: f32, min: f32, max: f32) -> (f32, f32) {
     let tmin_numerator = min - origin;
     let tmax_numerator = max - origin;
@@ -238,12 +239,13 @@ impl RenderObject {
 #[must_use]
 pub fn bounds(kind: &Shape) -> BoundingBox {
     match kind {
-        Shape::Sphere => BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0)),
+        Shape::Sphere | Shape::Cube => {
+            BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
+        }
         Shape::Plane => BoundingBox::new(
             Point::new(NEG_INFINITY, 0.0, NEG_INFINITY),
             Point::new(INFINITY, 0.0, INFINITY),
         ),
-        Shape::Cube => BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0)),
         Shape::Cylinder {
             closed,
             minimum,

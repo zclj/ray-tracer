@@ -10,11 +10,6 @@ use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 use std::collections::VecDeque;
 
-use crate::transformations::rotation_z;
-use crate::transformations::transform;
-use crate::transformations::translation;
-use std::f32::consts::PI;
-
 #[derive(Debug)]
 #[allow(dead_code)] // id is usefull for debug
 pub struct RenderGroup {
@@ -61,27 +56,28 @@ pub enum BoundingVolume {
 }
 
 impl BoundingVolume {
+    /// # Panics
+    ///
+    /// Panics if not colled on a Node
     pub fn push_child(&mut self, child: BoundingVolume) {
         match self {
             BoundingVolume::BoundingVolumeNode { children, .. } => children.push(child),
-            _ => panic!("'push_child' can only be performed on BoundingVolumeNode"),
+            BoundingVolume::BoundingVolumePrimitive { .. } => {
+                panic!("'push_child' can only be performed on BoundingVolumeNode")
+            }
         }
     }
 
     pub fn set_bounds(&mut self, new_bounds: BoundingBox) {
         match self {
-            BoundingVolume::BoundingVolumeNode { bounds, .. } => *bounds = new_bounds,
-            BoundingVolume::BoundingVolumePrimitive { bounds, .. } => *bounds = new_bounds,
+            BoundingVolume::BoundingVolumeNode { bounds, .. }
+            | BoundingVolume::BoundingVolumePrimitive { bounds, .. } => *bounds = new_bounds,
         }
     }
 
     //pub fn children(&self) ->
 
-    pub fn flatten(
-        &self,
-        nodes: &mut VecDeque<LinearBVHNode>,
-        current_offset: &mut usize,
-    ) -> usize {
+    pub fn flatten(&self, nodes: &mut VecDeque<LinearBVHNode>, current_offset: &mut usize) {
         // increase the current index used to index into nodes
         *current_offset += 1;
         match self {
@@ -102,22 +98,15 @@ impl BoundingVolume {
                     c.flatten(nodes, current_offset);
                 }
 
-                child_offsets.iter().for_each(|c| {
+                for c in &child_offsets {
                     nodes[node_idx].push_child(*c);
-                });
-
-                0
+                }
             }
             BoundingVolume::BoundingVolumePrimitive { bounds, id } => {
-                let position = nodes.len();
                 nodes.push_back(LinearBVHNode::Primitive {
                     bounds: bounds.clone(),
                     offset: *id as usize,
                 });
-
-                //*id as usize
-                //*current_offset += 1;
-                0 //position
             }
         }
     }
@@ -136,6 +125,9 @@ pub enum LinearBVHNode {
 }
 
 impl LinearBVHNode {
+    /// # Panics
+    ///
+    /// Will panic if not called on a Node
     pub fn push_child(&mut self, child: usize) -> usize {
         match self {
             LinearBVHNode::Node { children, .. } => {
@@ -143,7 +135,7 @@ impl LinearBVHNode {
                 children.push(child);
                 idx
             }
-            _ => panic!("Can only add child to Node"),
+            LinearBVHNode::Primitive { .. } => panic!("Can only add child to Node"),
         }
     }
 }
@@ -216,6 +208,7 @@ impl SceneTree {
 
     // we want to end up with a BVH
     // start with a basic one
+    #[allow(clippy::cast_possible_truncation)]
     pub fn apply_transforms_2(
         &mut self,
         render_primitives: &mut Vec<RenderObject>, //World,
@@ -233,7 +226,6 @@ impl SceneTree {
                 material,
                 bounding_box,
             } => {
-                let foo = transform.clone();
                 let new_transform = match (transform, current_transform) {
                     (Some(t), Some(ct)) => Some(ct * &t),
                     (None, Some(ct)) => Some(ct.clone()),
@@ -295,9 +287,9 @@ impl SceneTree {
                         id as u32,
                         &SceneObject {
                             // TODO: TEMP!
-                            kind: kind.clone(),
-                            transform: new_transform.clone(),
-                            material: material.clone(),
+                            kind,
+                            transform: new_transform,
+                            material,
                             bounding_box: bounding_box.clone(),
                         },
                     ));
@@ -322,8 +314,6 @@ impl SceneTree {
                 ////////////////////////////////////////
                 // Experiment
                 for c in &children {
-                    let mut child_bounds = bounding_box.clone();
-
                     self.apply_transforms_2(
                         render_primitives,
                         *c,
@@ -366,7 +356,7 @@ impl SceneTree {
         current_bounds: &mut BoundingBox,
     ) {
         let current_node = self.arena[current as usize].clone();
-        println!("apply transforms current: {:?}", current);
+
         match current_node {
             SceneNode::Object {
                 transform,
@@ -441,7 +431,7 @@ impl SceneTree {
                 SceneNode::Group {
                     transform,
                     bounding_box,
-                    children,
+                    ..
                 } => {
                     //println!("children: {:?}", children);
                     root.objects.push(RenderObject::new(
@@ -453,7 +443,7 @@ impl SceneTree {
                             material: None,
                             bounding_box: bounding_box.clone(),
                         },
-                    ))
+                    ));
                 }
                 SceneNode::Object {
                     kind,
@@ -607,7 +597,7 @@ impl World {
 
         //println!("BVH pre flatten: {:#?}", bvh);
         let mut node_deque = VecDeque::new();
-        let linear = bvh.flatten(&mut node_deque, &mut 0);
+        bvh.flatten(&mut node_deque, &mut 0);
 
         //println!("BVH POST flatten: {:#?}", node_deque);
 
@@ -749,8 +739,8 @@ impl World {
         &self,
         bbox: &BoundingBox,
         ray: &Ray,
-        intersections: &mut Vec<Intersection>,
-        index: usize,
+        _intersections: &mut [Intersection],
+        _index: usize,
     ) -> bool {
         let (xtmin, xtmax) = check_axis(ray.origin.x, ray.direction.x, bbox.min.x, bbox.max.x);
         let (ytmin, ytmax) = check_axis(ray.origin.y, ray.direction.y, bbox.min.y, bbox.max.y);
@@ -797,8 +787,8 @@ impl World {
             match node {
                 LinearBVHNode::Node { children, bounds } => {
                     if self.intersect_bounding_box(
-                        &bounds,
-                        &world_ray,
+                        bounds,
+                        world_ray,
                         intersections,
                         current_node_index,
                     ) {
@@ -808,8 +798,8 @@ impl World {
                 }
                 LinearBVHNode::Primitive { bounds, offset } => {
                     if self.intersect_bounding_box(
-                        &bounds,
-                        &world_ray,
+                        bounds,
+                        world_ray,
                         intersections,
                         current_node_index,
                     ) {
@@ -818,7 +808,6 @@ impl World {
                             world_ray,
                             intersections,
                             &self.render_primitives[*offset],
-                            current_node_index,
                         );
                     }
                 }
@@ -826,10 +815,9 @@ impl World {
 
             if nodes_to_visit.is_empty() {
                 break;
-            } else {
-                // we just checked for empty
-                current_node_index = nodes_to_visit.remove(0);
             }
+            // we just checked for empty
+            current_node_index = nodes_to_visit.remove(0);
         }
 
         sort_by_t(intersections);
@@ -844,7 +832,6 @@ impl World {
         world_ray: &Ray,
         intersections: &mut Vec<Intersection>,
         s: &RenderObject,
-        current_node_index: usize,
     ) -> Option<usize> {
         //intersections.clear();
 

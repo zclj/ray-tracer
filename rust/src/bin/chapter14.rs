@@ -1,4 +1,3 @@
-use ray_tracer::bounds::BoundingBox;
 use ray_tracer::camera::Camera;
 use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
