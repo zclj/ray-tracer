@@ -164,7 +164,7 @@ pub enum SceneNode {
 
 #[derive(Debug)]
 pub struct SceneTree {
-    arena: Vec<SceneNode>,
+    pub arena: Vec<SceneNode>,
 }
 
 impl Default for SceneTree {
@@ -251,12 +251,12 @@ impl SceneTree {
                     // current_bounds.merge(&bounding_box);
                     // bvh.set_bounds(bounding_box.clone());
 
-                    // TODO: Add this back
                     bvh.push_child(BoundingVolume::BoundingVolumePrimitive {
                         id: id as u32,
                         bounds: bbox.clone(),
                     });
 
+                    println!("push primitive");
                     render_primitives.push(RenderObject::new(
                         id as u32,
                         &SceneObject {
@@ -283,6 +283,7 @@ impl SceneTree {
                         bounds: bounding_box.clone(),
                     });
 
+                    println!("push primitive");
                     render_primitives.push(RenderObject::new(
                         id as u32,
                         &SceneObject {
@@ -426,7 +427,7 @@ impl SceneTree {
         // A bounding box includes its bounds and either a list of contained
         // children boxes, or, no children but a list of primitives
         for i in 0..self.arena.len() {
-            // println!("Build item: {:?}", i);
+            //println!("Build item: {:?}", i);
             match &self.arena[i] {
                 SceneNode::Group {
                     transform,
@@ -584,10 +585,6 @@ impl World {
             &mut self.render_primitives,
             self.root_group_id,
             &None,
-            // &Some(transform(&[
-            //     rotation_z(PI / 3.0),
-            //     translation(0.5, 1.0, 0.0),
-            // ])),
             &mut BoundingBox::default(),
             &mut bvh,
         );
@@ -731,6 +728,8 @@ impl World {
     #[must_use]
     pub fn get_object(&self, id: u32) -> &RenderObject {
         //&self.groups[0].objects[id as usize]
+        println!("GET OBJECT: {:?}", id);
+        println!("PRIMS: {:#?}", &self.render_primitives.len());
         &self.render_primitives[id as usize]
     }
 
@@ -827,7 +826,7 @@ impl World {
 
     #[allow(clippy::similar_names)]
     #[allow(clippy::too_many_lines)]
-    fn intersect_primitive(
+    pub fn intersect_primitive(
         &self,
         world_ray: &Ray,
         intersections: &mut Vec<Intersection>,
