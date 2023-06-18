@@ -95,15 +95,17 @@ mod test {
     use crate::color::Color;
     use crate::materials::Material;
     use crate::matrices::M4x4;
+    use crate::shape::*;
     use crate::transformations::{rotation_y, scaling, translation, view_transform};
     use crate::vector::{Point, Vector};
-    use crate::world::World;
+    use crate::world::{SceneObject, World};
     use std::f32::consts::PI;
 
     fn test_world() -> World {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -111,11 +113,17 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(Some(scaling(0.5, 0.5, 0.5)), Some(Material::default()));
+        world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(scaling(0.5, 0.5, 0.5)),
+            Some(Material::default()),
+        ));
 
-        w
+        world.build();
+
+        world
     }
     // Scenario: Constructing a camera
     //   Given hsize ← 160
