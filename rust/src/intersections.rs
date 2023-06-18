@@ -462,7 +462,11 @@ mod test {
     fn precomputing_the_state_of_an_intersection() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
 
         let i = Intersection::new(4.0, s_id);
         let mut containers = vec![];
@@ -990,7 +994,7 @@ mod test {
             Shape::Cylinder {
                 minimum: 1.0,
                 maximum: 2.0,
-                closed: false,
+                closed: true,
             },
             None,
             None,
@@ -1341,7 +1345,10 @@ mod test {
     #[test]
     fn precomputing_the_reflection_vector() {
         let mut world = World::new();
-        let s_id = world.push_plane(None, None);
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 1.0, -1.0),
@@ -1474,7 +1481,12 @@ mod test {
     fn the_under_point_is_offset_below_the_surface() {
         let mut world = World::new();
 
-        let s_id = world.push_sphere(Some(translation(0.0, 0.0, 1.0)), None);
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(0.0, 0.0, 1.0)),
+            None,
+        ));
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
@@ -1499,14 +1511,16 @@ mod test {
     fn the_schlick_approximation_under_total_internal_reflection() {
         let mut world = World::new();
 
-        let s_id = world.push_sphere(
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 transparency: 1.0,
                 refractive_index: 1.5,
                 ..Material::default()
             }),
-        );
+        ));
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 0.0, f32::sqrt(2.0) / 2.0),
@@ -1538,14 +1552,16 @@ mod test {
     fn the_schlick_approximation_with_a_perpendicular_viewing_angle() {
         let mut world = World::new();
 
-        let s_id = world.push_sphere(
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 transparency: 1.0,
                 refractive_index: 1.5,
                 ..Material::default()
             }),
-        );
+        ));
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0));
 
@@ -1569,14 +1585,16 @@ mod test {
     fn the_schlick_approximation_with_small_angle_and_n2_gt_n1() {
         let mut world = World::new();
 
-        let s_id = world.push_sphere(
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 transparency: 1.0,
                 refractive_index: 1.5,
                 ..Material::default()
             }),
-        );
+        ));
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
 
