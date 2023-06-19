@@ -138,6 +138,12 @@ impl LinearBVHNode {
             LinearBVHNode::Primitive { .. } => panic!("Can only add child to Node"),
         }
     }
+
+    pub fn bounds(&self) -> &BoundingBox {
+        match self {
+            LinearBVHNode::Node { bounds, .. } | LinearBVHNode::Primitive { bounds, .. } => bounds,
+        }
+    }
 }
 
 ////////////////////////////////////////

@@ -606,7 +606,17 @@ mod test {
     #[test]
     fn a_bounded_cone_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_cone(None, None, -5.0, 3.0, true);
+
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Cone {
+                minimum: -5.0,
+                maximum: 3.0,
+                closed: true,
+            },
+            None,
+            None,
+        ));
+        world.build();
 
         assert_eq!(
             bounds(&world.get_object(0).kind),
@@ -625,7 +635,10 @@ mod test {
     #[test]
     fn the_normal_of_a_plane_is_constant_everywhere() {
         let mut world = World::new();
-        let p_id = world.push_plane(None, None);
+        let p_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.build();
 
         let p = world.get_object(p_id);
 
@@ -657,7 +670,11 @@ mod test {
     #[test]
     fn the_normal_on_the_surface_of_a_cube() {
         let mut world = World::new();
-        let c_id = world.push_cube(None, None);
+
+        let c_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Cube, None, None));
+        world.build();
 
         let c = world.get_object(c_id);
 
@@ -694,7 +711,8 @@ mod test {
     #[test]
     fn normal_vector_on_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_shape(
+
+        let c_id = world.scene.insert_object(SceneObject::new(
             Shape::Cylinder {
                 minimum: -f32::INFINITY,
                 maximum: f32::INFINITY,
@@ -702,7 +720,8 @@ mod test {
             },
             None,
             None,
-        );
+        ));
+        world.build();
 
         let c = world.get_object(c_id);
 
@@ -724,7 +743,8 @@ mod test {
     #[test]
     fn the_default_minimum_and_maximum_for_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_shape(
+
+        let c_id = world.scene.insert_object(SceneObject::new(
             Shape::Cylinder {
                 minimum: -f32::INFINITY,
                 maximum: f32::INFINITY,
@@ -732,7 +752,8 @@ mod test {
             },
             None,
             None,
-        );
+        ));
+        world.build();
 
         let c = world.get_object(c_id);
 
@@ -746,7 +767,7 @@ mod test {
     #[test]
     fn the_default_closed_value_for_a_cylinder() {
         let mut world = World::new();
-        let c_id = world.push_shape(
+        let c_id = world.scene.insert_object(SceneObject::new(
             Shape::Cylinder {
                 minimum: -f32::INFINITY,
                 maximum: f32::INFINITY,
@@ -754,7 +775,8 @@ mod test {
             },
             None,
             None,
-        );
+        ));
+        world.build();
 
         let c = world.get_object(c_id);
 
@@ -780,7 +802,16 @@ mod test {
     #[test]
     fn the_normal_vector_on_a_cylinders_end_caps() {
         let mut world = World::new();
-        let c_id = world.push_cylinder(None, None, 1.0, 2.0, true);
+        let c_id = world.scene.insert_object(SceneObject::new(
+            Shape::Cylinder {
+                minimum: 1.0,
+                maximum: 2.0,
+                closed: true,
+            },
+            None,
+            None,
+        ));
+        world.build();
 
         let c = world.get_object(c_id);
 
@@ -1039,15 +1070,13 @@ mod test {
     fn a_group_has_a_bounding_box_that_contains_its_children() {
         let mut world = World::new();
 
-        let mut scene = SceneTree::new();
-
-        let s_id = scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(SceneObject::new(
             Shape::Sphere,
             Some(&translation(2.0, 5.0, -3.0) * &scaling(2.0, 2.0, 2.0)),
             None,
         ));
 
-        let c_id = scene.insert_object(SceneObject::new(
+        let c_id = world.scene.insert_object(SceneObject::new(
             Shape::Cylinder {
                 minimum: -2.0,
                 maximum: 2.0,
@@ -1057,15 +1086,13 @@ mod test {
             None,
         ));
 
-        let g1_id = scene.insert_group(SceneGroup::new(vec![s_id, c_id], None, None));
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s_id, c_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
-        scene.apply_transforms(g1_id, &None, &mut BoundingBox::default());
-
-        let scene_objects = scene.build();
-        println!("Scene objects: {:#?}", scene_objects);
-        world.groups = vec![scene_objects];
-
-        let bbox = &(world.get_object(g1_id)).bounding_box;
+        let bbox = world.bvh[0].bounds();
 
         assert_eq!(bbox.min, Point::new(-4.5, -3.0, -5.0));
         assert_eq!(bbox.max, Point::new(4.0, 7.0, 4.5))
