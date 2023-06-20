@@ -301,7 +301,10 @@ mod test {
     #[test]
     fn a_spheres_default_transformation() {
         let mut world = World::new();
-        world.push_sphere(None, None);
+        world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
 
         assert_eq!(world.get_object(0).transform, M4x4::IDENTITY)
     }
@@ -314,7 +317,12 @@ mod test {
     #[test]
     fn changing_a_spheres_transformation() {
         let mut world = World::new();
-        world.push_sphere(Some(translation(2.0, 3.0, 4.0)), None);
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(2.0, 3.0, 4.0)),
+            None,
+        ));
+        world.build();
 
         assert_eq!(world.get_object(0).transform, translation(2.0, 3.0, 4.0))
     }
@@ -326,7 +334,10 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_x_axis() {
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(1.0, 0.0, 0.0));
@@ -341,7 +352,10 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_y_axis() {
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.0, 0.0));
@@ -356,7 +370,11 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_point_on_the_z_axis() {
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
+
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 0.0, 1.0));
@@ -371,7 +389,11 @@ mod test {
     #[test]
     fn the_normal_on_a_sphere_at_a_nonaxial_point() {
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
+
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(
@@ -397,7 +419,11 @@ mod test {
     #[test]
     fn the_normal_is_a_normalized_vector() {
         let mut world = World::new();
-        let s_id = world.push_sphere(None, None);
+        let s_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
+
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(
@@ -417,7 +443,13 @@ mod test {
     #[test]
     fn computing_the_normal_on_a_translated_sphere() {
         let mut world = World::new();
-        let s_id = world.push_sphere(Some(translation(0.0, 1.0, 0.0)), None);
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(0.0, 1.0, 0.0)),
+            None,
+        ));
+        world.build();
+
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(0.0, 1.70711, -0.70711));
@@ -434,7 +466,13 @@ mod test {
     #[test]
     fn computing_the_normal_on_a_transformed_sphere() {
         let mut world = World::new();
-        let s_id = world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
+        let s_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)),
+            None,
+        ));
+        world.build();
+
         let s = world.get_object(s_id);
 
         let n = s.normal_at(&Point::new(
@@ -453,7 +491,10 @@ mod test {
     #[test]
     fn a_sphere_has_a_default_material() {
         let mut world = World::new();
-        world.push_sphere(Some(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0)), None);
+        world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
 
         let material: Material = Default::default();
         assert_eq!(world.get_object(0).material, material)
@@ -467,13 +508,15 @@ mod test {
     #[test]
     fn a_sphere_may_be_assigned_a_material() {
         let mut world = World::new();
-        world.push_sphere(
+        world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
+        world.build();
 
         let material = Material {
             ambient: 1.0,
@@ -491,7 +534,10 @@ mod test {
     #[test]
     fn a_sphere_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_sphere(None, None);
+        world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.build();
 
         assert_eq!(
             bounds(&world.get_object(0).kind),
@@ -507,7 +553,10 @@ mod test {
     #[test]
     fn a_plane_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_plane(None, None);
+        world
+            .scene
+            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.build();
 
         let bounds = bounds(&world.get_object(0).kind);
 
@@ -528,7 +577,10 @@ mod test {
     #[test]
     fn a_cube_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_cube(None, None);
+        world
+            .scene
+            .insert_object(SceneObject::new(Shape::Cube, None, None));
+        world.build();
 
         assert_eq!(
             bounds(&world.get_object(0).kind),
@@ -544,7 +596,16 @@ mod test {
     #[test]
     fn an_unbounded_cylinder_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_cylinder(None, None, -f32::INFINITY, f32::INFINITY, false);
+        let c_id = world.scene.insert_object(SceneObject::new(
+            Shape::Cylinder {
+                minimum: -f32::INFINITY,
+                maximum: f32::INFINITY,
+                closed: false,
+            },
+            None,
+            None,
+        ));
+        world.build();
 
         let bounds = bounds(&world.get_object(0).kind);
 
@@ -567,10 +628,24 @@ mod test {
     #[test]
     fn a_bounded_cylinder_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_cylinder(None, None, -5.0, 3.0, true);
+        let c_id = world.scene.insert_object(SceneObject::new(
+            Shape::Cylinder {
+                minimum: -5.0,
+                maximum: 3.0,
+                closed: true,
+            },
+            None,
+            None,
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![c_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         assert_eq!(
-            bounds(&world.get_object(0).kind),
+            *world.bvh[0].bounds(),
             BoundingBox::new(Point::new(-1.0, -5.0, -1.0), Point::new(1.0, 3.0, 1.0))
         )
     }
@@ -583,9 +658,23 @@ mod test {
     #[test]
     fn an_unbounded_cone_has_a_bounding_box() {
         let mut world = World::new();
-        world.push_cone(None, None, -f32::INFINITY, f32::INFINITY, false);
+        let c_id = world.scene.insert_object(SceneObject::new(
+            Shape::Cone {
+                minimum: -f32::INFINITY,
+                maximum: f32::INFINITY,
+                closed: false,
+            },
+            None,
+            None,
+        ));
 
-        let bounds = bounds(&world.get_object(0).kind);
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![c_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
+
+        let bounds = world.bvh[0].bounds();
 
         assert_eq!(bounds.min.x, NEG_INFINITY);
         assert_eq!(bounds.min.y, NEG_INFINITY);
@@ -994,30 +1083,25 @@ mod test {
     #[test]
     fn finding_the_normal_on_a_child_object() {
         let mut world = World::new();
-
-        let mut scene = SceneTree::new();
-
-        let o1_id = scene.insert_object(SceneObject::new(
+        let o1_id = world.scene.insert_object(SceneObject::new(
             Shape::Sphere,
             Some(translation(5.0, 0.0, 0.0)),
             None,
         ));
 
-        let g2_id = scene.insert_group(SceneGroup::new(
+        let g2_id = world.scene.insert_group(SceneGroup::new(
             vec![o1_id],
             Some(scaling(1.0, 2.0, 3.0)),
             None,
         ));
 
-        let g1_id = scene.insert_group(SceneGroup::new(
+        let g1_id = world.scene.insert_group(SceneGroup::new(
             vec![g2_id],
             Some(rotation_y(PI / 2.0)),
             None,
         ));
-
-        scene.apply_transforms(g1_id, &None, &mut BoundingBox::default());
-        let scene_objects = scene.build();
-        world.groups = vec![scene_objects];
+        world.root_group_id = g1_id;
+        world.build();
 
         let p = (world.get_object(o1_id)).normal_at(&Point::new(1.7321, 1.1547, -5.5774));
 
@@ -1034,20 +1118,19 @@ mod test {
     fn querying_a_shapes_bounding_box_in_its_parents_space() {
         let mut world = World::new();
 
-        let mut scene = SceneTree::new();
-
-        let o1_id = scene.insert_object(SceneObject::new(
+        let o1_id = world.scene.insert_object(SceneObject::new(
             Shape::Sphere,
             Some(&translation(1.0, -3.0, 5.0) * &scaling(0.5, 2.0, 4.0)),
             None,
         ));
 
-        scene.apply_transforms(o1_id, &None, &mut BoundingBox::default());
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![o1_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
-        let scene_objects = scene.build();
-        world.groups = vec![scene_objects];
-
-        let bbox = &(world.get_object(o1_id)).bounding_box;
+        let bbox = world.bvh[0].bounds();
 
         assert_eq!(bbox.min, Point::new(0.5, -5.0, 1.0));
         assert_eq!(bbox.max, Point::new(1.5, -1.0, 9.0))
