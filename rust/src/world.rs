@@ -1413,7 +1413,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
-        w.intersect(&r, &mut xs);
+        w.intersect_bvh(&r, &mut xs);
 
         assert_eq!(xs.len(), 4);
         assert_eq!(xs[0].t, 4.0);
@@ -1520,9 +1520,10 @@ mod test {
     //   Then c = inner.material.color
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
-        let mut w = World::default();
+        let mut world = World::default();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -1531,22 +1532,29 @@ mod test {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
 
-        let inner_id = w.push_sphere(
+        let inner_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Material::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s1_id, inner_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.75), Vector::new(0.0, 0.0, -1.0));
         let mut containers = vec![];
         let mut intersections = vec![];
-        let c = w.color_at(&r, 1, &mut intersections, &mut containers);
+        let c = world.color_at(&r, 1, &mut intersections, &mut containers);
 
-        assert_eq!(c, w.get_object(inner_id).material.color)
+        assert_eq!(c, world.get_object(inner_id).material.color)
     }
 
     // Scenario: There is no shadow when nothing is collinear with point and light
@@ -1624,18 +1632,32 @@ mod test {
     //   Then c = color(0.1, 0.1, 0.1)
     #[test]
     fn shade_hit_is_given_an_intersection_in_shadow() {
-        let mut w = World::new();
-        w.light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
-        w.push_sphere(None, None);
-        let s2_id = w.push_sphere(Some(translation(0.0, 0.0, 10.0)), None);
+        let mut world = World::new();
+        world.light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
+
+        let s1_id = world
+            .scene
+            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
+            Some(translation(0.0, 0.0, 10.0)),
+            None,
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let i = Intersection::new(4.0, s2_id);
 
         let mut containers = vec![];
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 0, &mut intersections, &mut containers);
+        let c = world.shade_hit(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.1, 0.1, 0.1))
     }
@@ -1651,9 +1673,10 @@ mod test {
     //   Then color = color(0, 0, 0)
     #[test]
     fn the_reflected_color_for_a_nonreflective_material() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -1661,23 +1684,30 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        );
+        ));
 
-        let sid = w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
-        let i = Intersection::new(1.0, sid);
+        let i = Intersection::new(1.0, s2_id);
         let mut containers = vec![];
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let color = w.reflected_color(&comps, 0, &mut intersections, &mut containers);
+        let color = world.reflected_color(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.0, 0.0, 0.0));
     }
@@ -1695,9 +1725,10 @@ mod test {
     //   Then color = color(0.19032, 0.2379, 0.14274)
     #[test]
     fn the_reflected_color_for_a_reflective_material() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -1705,33 +1736,41 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        );
+        ));
 
-        let pid = w.push_plane(
+        let p_id = world.scene.insert_object(SceneObject::new(
+            Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 0.5,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s1_id, s2_id, p_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 0.0, -3.0),
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let i = Intersection::new(f32::sqrt(2.0), pid);
+        let i = Intersection::new(f32::sqrt(2.0), p_id);
         let mut containers = vec![];
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
         let mut intersections = vec![];
-        let color = w.reflected_color(&comps, 1, &mut intersections, &mut containers);
+        let color = world.reflected_color(&comps, 1, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
     }
@@ -1749,9 +1788,10 @@ mod test {
     //   Then color = color(0.87677, 0.92436, 0.82918)
     #[test]
     fn shade_hit_with_a_reflective_material() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -1759,34 +1799,42 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        );
+        ));
 
-        let pid = w.push_plane(
+        let p_id = world.scene.insert_object(SceneObject::new(
+            Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 0.5,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s1_id, s2_id, p_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 0.0, -3.0),
             Vector::new(0.0, -f32::sqrt(2.0) / 2.0, f32::sqrt(2.0) / 2.0),
         );
 
-        let i = Intersection::new(f32::sqrt(2.0), pid);
+        let i = Intersection::new(f32::sqrt(2.0), p_id);
         let mut containers = vec![];
-        let comps = i.compute(&w, &r, &[i.clone()], EPSILON, &mut containers);
+        let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let color = w.shade_hit(&comps, 1, &mut intersections, &mut containers);
+        let color = world.shade_hit(&comps, 1, &mut intersections, &mut containers);
 
         assert_eq!(color, Color::new(0.876757, 0.92434, 0.82917));
     }
@@ -1917,9 +1965,10 @@ mod test {
     //   Then c = color(0, 0, 0)
     #[test]
     fn the_refracted_color_with_an_opaque_surface() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -1927,24 +1976,31 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        );
+        ));
 
-        let sid = w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
-        let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
+        let xs = [Intersection::new(4.0, s2_id), Intersection::new(6.0, s2_id)];
         let mut containers = vec![];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
+        let comps = xs[0].compute(&world, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 5, &mut intersections, &mut containers);
+        let c = world.refracted_color(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -1962,9 +2018,10 @@ mod test {
     //   Then c = color(0, 0, 0)
     #[test]
     fn the_refracted_color_at_the_maximum_recursive_depth() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        let sid = w.push_sphere(
+        let sid = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -1974,24 +2031,31 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![sid, s2_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
 
         let xs = [Intersection::new(4.0, sid), Intersection::new(6.0, sid)];
         let mut containers = vec![];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
+        let comps = xs[0].compute(&world, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 0, &mut intersections, &mut containers);
+        let c = world.refracted_color(&comps, 0, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -2011,9 +2075,10 @@ mod test {
     //   Then c = color(0, 0, 0)
     #[test]
     fn the_refracted_color_under_total_internal_reflection() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        let sid = w.push_sphere(
+        let sid = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -2023,15 +2088,22 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![sid, s2_id], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 0.0, f32::sqrt(2.0) / 2.0),
@@ -2043,10 +2115,10 @@ mod test {
             Intersection::new(f32::sqrt(2.0) / 2.0, sid),
         ];
         let mut containers = vec![];
-        let comps = xs[1].compute(&w, &r, &xs, EPSILON, &mut containers);
+        let comps = xs[1].compute(&world, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 5, &mut intersections, &mut containers);
+        let c = world.refracted_color(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.0, 0.0))
     }
@@ -2069,9 +2141,10 @@ mod test {
     use crate::materials::{Pattern, PatternKind};
     #[test]
     fn the_refracted_color_with_a_refracted_ray() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        let aid = w.push_sphere(
+        let aid = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -2086,9 +2159,10 @@ mod test {
                 )),
                 ..Default::default()
             }),
-        );
+        ));
 
-        let bid = w.push_sphere(
+        let bid = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
@@ -2096,7 +2170,13 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world
+            .scene
+            .insert_group(SceneGroup::new(vec![aid, bid], None, None));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.1), Vector::new(0.0, 1.0, 0.0));
 
@@ -2107,10 +2187,10 @@ mod test {
             Intersection::new(0.9899, aid),
         ];
         let mut containers = vec![];
-        let comps = xs[2].compute(&w, &r, &xs, EPSILON, &mut containers);
+        let comps = xs[2].compute(&world, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.refracted_color(&comps, 5, &mut intersections, &mut containers);
+        let c = world.refracted_color(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.0, 0.99888, 0.04725))
     }
@@ -2134,9 +2214,10 @@ mod test {
     //   Then color = color(0.93642, 0.68642, 0.68642)
     #[test]
     fn shade_hit_with_a_transparent_material() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -2149,32 +2230,43 @@ mod test {
                 refractive_index: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        );
+        ));
 
-        let floor_id = w.push_plane(
+        let floor_id = world.scene.insert_object(SceneObject::new(
+            Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 transparency: 0.5,
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        );
+        ));
 
-        let _ball = w.push_sphere(
+        let ball = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(translation(0.0, -3.5, -0.5)),
             Some(Material {
                 ambient: 0.5,
                 color: Color::new(1.0, 0.0, 0.0),
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world.scene.insert_group(SceneGroup::new(
+            vec![s1_id, s2_id, floor_id, ball],
+            None,
+            None,
+        ));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 0.0, -3.0),
@@ -2183,10 +2275,10 @@ mod test {
 
         let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
         let mut containers = vec![];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
+        let comps = xs[0].compute(&world, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 5, &mut intersections, &mut containers);
+        let c = world.shade_hit(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.93642, 0.68642, 0.68642))
     }
@@ -2211,9 +2303,10 @@ mod test {
     //   Then color = color(0.93391, 0.69643, 0.69243)
     #[test]
     fn shade_hit_with_a_reflective_transparent_material() {
-        let mut w = World::new();
+        let mut world = World::new();
 
-        w.push_sphere(
+        let s1_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             None,
             Some(Material {
                 color: Color::new(0.8, 1.0, 0.6),
@@ -2226,16 +2319,18 @@ mod test {
                 refractive_index: 1.0,
                 ..Default::default()
             }),
-        );
+        ));
 
-        w.push_sphere(
+        let s2_id = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        );
+        ));
 
-        let floor_id = w.push_plane(
+        let floor_id = world.scene.insert_object(SceneObject::new(
+            Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 0.5,
@@ -2243,16 +2338,25 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        );
+        ));
 
-        let _ball = w.push_sphere(
+        let ball = world.scene.insert_object(SceneObject::new(
+            Shape::Sphere,
             Some(translation(0.0, -3.5, -0.5)),
             Some(Material {
                 ambient: 0.5,
                 color: Color::new(1.0, 0.0, 0.0),
                 ..Default::default()
             }),
-        );
+        ));
+
+        let g1_id = world.scene.insert_group(SceneGroup::new(
+            vec![s1_id, s2_id, floor_id, ball],
+            None,
+            None,
+        ));
+        world.root_group_id = g1_id;
+        world.build();
 
         let r = Ray::new(
             Point::new(0.0, 0.0, -3.0),
@@ -2261,10 +2365,10 @@ mod test {
 
         let xs = [Intersection::new(f32::sqrt(2.0), floor_id)];
         let mut containers = vec![];
-        let comps = xs[0].compute(&w, &r, &xs, EPSILON, &mut containers);
+        let comps = xs[0].compute(&world, &r, &xs, EPSILON, &mut containers);
 
         let mut intersections = vec![];
-        let c = w.shade_hit(&comps, 5, &mut intersections, &mut containers);
+        let c = world.shade_hit(&comps, 5, &mut intersections, &mut containers);
 
         assert_eq!(c, Color::new(0.93391, 0.69643, 0.69243))
     }
