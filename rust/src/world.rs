@@ -984,7 +984,7 @@ impl World {
     pub fn intersect(
         &self,
         _world_ray: &Ray,
-        _intersections: &mut Vec<Intersection>,
+        _intersections: &mut [Intersection],
     ) -> Option<usize> {
         //intersections.clear();
 
