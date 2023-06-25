@@ -356,11 +356,6 @@ impl SceneTree {
     pub fn build(&self) -> RenderGroup {
         let mut root = RenderGroup::new(0, vec![], None, None);
 
-        // https://www.pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies
-        // TODO: Nodes should be pushed into their group, not all nodes
-        //  should be put in the root group
-        // - NOTE: it might be better to just use the bounding boxes as
-        //   hierarchy?
         // A bounding box includes its bounds and either a list of contained
         // children boxes, or, no children but a list of primitives
         for i in 0..self.arena.len() {
@@ -529,137 +524,10 @@ impl World {
         // TODO: keep track of total number of nodes
         //let mut nodes = Vec::with_capacity(64);
 
-        //println!("BVH pre flatten: {:#?}", bvh);
         let mut node_deque = VecDeque::new();
         bvh.flatten(&mut node_deque, &mut 0);
 
-        //println!("BVH POST flatten: {:#?}", node_deque);
-
         self.bvh = node_deque.into();
-        //println!("More: {:#?}", self.bvh);
-    }
-
-    #[allow(clippy::cast_possible_truncation)]
-    pub fn push_group(&mut self, objects: Vec<SceneObject>, transform: Option<M4x4>) -> u32 {
-        let gid = self.groups.len() as u32;
-
-        self.groups
-            .push(RenderGroup::new(gid, objects, transform, None));
-
-        // let mut pending = match transform {
-        //     Some(t) => self.update_group_transforms(gid, &t),
-        //     _ => Vec::new(),
-        // };
-
-        // for p in pending.clone() {
-        //     let current = pending.pop();
-        //     println!("current: {:?}", p)
-        // }
-
-        gid
-    }
-
-    pub fn push_sphere(
-        &mut self,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-    ) -> u32 {
-        self.push_shape(Shape::Sphere, transform_option, material_option)
-    }
-
-    pub fn push_plane(
-        &mut self,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-    ) -> u32 {
-        self.push_shape(Shape::Plane, transform_option, material_option)
-    }
-
-    pub fn push_cube(
-        &mut self,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-    ) -> u32 {
-        self.push_shape(Shape::Cube, transform_option, material_option)
-    }
-
-    #[allow(clippy::cast_possible_truncation)]
-    pub fn push_cylinder(
-        &mut self,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-        minimum: f32,
-        maximum: f32,
-        closed: bool,
-    ) -> u32 {
-        self.push_shape(
-            Shape::Cylinder {
-                minimum,
-                maximum,
-                closed,
-            },
-            transform_option,
-            material_option,
-        )
-    }
-
-    #[allow(clippy::cast_possible_truncation)]
-    pub fn push_cone(
-        &mut self,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-        minimum: f32,
-        maximum: f32,
-        closed: bool,
-    ) -> u32 {
-        self.push_shape(
-            Shape::Cone {
-                minimum,
-                maximum,
-                closed,
-            },
-            transform_option,
-            material_option,
-        )
-    }
-
-    #[allow(clippy::cast_possible_truncation)]
-    // TODO: this looks very much like the new for shape..
-    pub fn push_shape(
-        &mut self,
-        kind: Shape,
-        transform_option: Option<M4x4>,
-        material_option: Option<Material>,
-    ) -> u32 {
-        let transform = match transform_option {
-            Some(t) => t,
-            None => M4x4::IDENTITY,
-        };
-
-        let material = match material_option {
-            Some(m) => m,
-            None => Material::default(),
-        };
-
-        let transform_inverse = transform.inverse();
-        let transform_inverse_transpose = transform_inverse.transpose();
-
-        let bounding_box = (bounds(&kind)).transform(&transform);
-
-        // TODO: add const for default group id
-        let id = self.groups[0].objects.len() as u32;
-
-        self.groups[0].objects.push(RenderObject {
-            id,
-            kind,
-            transform,
-            material,
-            transform_inverse,
-            transform_inverse_transpose,
-            bounding_box,
-        });
-
-        id
     }
 
     #[must_use]

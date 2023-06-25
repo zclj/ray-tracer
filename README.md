@@ -13,6 +13,9 @@ Playing around with different language implementation. Should not be considered 
 - [Example in Rust](https://github.com/ahamez/ray-tracer)
 
 - [High performance example](https://www.reddit.com/r/rust/comments/zsrvss/strolle_raytracing_2_million_triangles_in_realtime/)
+
+- [Bounding Volume Hierarchies](https://www.pbr-book.org/3ed-2018/Primitives_and_Intersection_Acceleration/Bounding_Volume_Hierarchies)
+
 ### Models
 
 - https://benedikt-bitterli.me/resources/
