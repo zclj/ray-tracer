@@ -218,7 +218,7 @@ fn main() {
     ////////////////////////////////////////
     // world setup
 
-    let root = world.scene.insert_group(SceneGroup::new(
+    let planes = world.scene.insert_group(SceneGroup::new(
         vec![
             floor_plane_id,
             ceiling_plane_id,
@@ -226,13 +226,33 @@ fn main() {
             east_wall_id,
             north_wall_id,
             south_wall_id,
-            ball_1,
-            ball_2,
-            ball_3,
-            ball_4,
-            red_ball,
-            blue_ball,
-            green_ball,
+        ],
+        None,
+        None,
+    ));
+
+    let background_balls_1 =
+        world
+            .scene
+            .insert_group(SceneGroup::new(vec![ball_3, ball_4], None, None));
+
+    let background_balls_2 =
+        world
+            .scene
+            .insert_group(SceneGroup::new(vec![ball_1, ball_2], None, None));
+
+    let foreground_balls = world.scene.insert_group(SceneGroup::new(
+        vec![red_ball, blue_ball, green_ball],
+        None,
+        None,
+    ));
+
+    let root = world.scene.insert_group(SceneGroup::new(
+        vec![
+            planes,
+            background_balls_1,
+            background_balls_2,
+            foreground_balls,
         ],
         None,
         None,
