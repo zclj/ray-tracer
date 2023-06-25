@@ -18,7 +18,7 @@ use std::io::Write;
 use std::path::Path;
 
 fn main() {
-    //println!("Chapter 11 - demo");
+    //println!("Chapter 12 - demo");
 
     let mut world = World::new();
 
