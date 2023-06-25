@@ -2,10 +2,10 @@ use ray_tracer::camera::Camera;
 use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
+use ray_tracer::shape::*;
 use ray_tracer::transformations::{scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
 use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
-use ray_tracer::shape::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -24,12 +24,10 @@ fn main() {
     world.shadow_bias = 0.01;
 
     // shapes
-    
-    let floor_id = world.scene.insert_object(SceneObject::new(
-        Shape::Plane,
-        None,
-        None,
-    ));
+
+    let floor_id = world
+        .scene
+        .insert_object(SceneObject::new(Shape::Plane, None, None));
 
     let middle_sphere_id = world.scene.insert_object(SceneObject::new(
         Shape::Sphere,
@@ -69,17 +67,12 @@ fn main() {
             ..Material::default()
         }),
     ));
-        
+
     ////////////////////////////////////////
     // world setup
 
     let root = world.scene.insert_group(SceneGroup::new(
-        vec![
-            floor_id,
-            middle_sphere_id,
-            right_sphere_id,
-            left_sphere_id,
-        ],
+        vec![floor_id, middle_sphere_id, right_sphere_id, left_sphere_id],
         None,
         None,
     ));

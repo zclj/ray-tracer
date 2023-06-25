@@ -71,7 +71,7 @@ fn main() {
             color: Color::new(0.5, 1.0, 0.1),
             diffuse: 0.7,
             specular: 0.3,
-            pattern: Some(Pattern::new (
+            pattern: Some(Pattern::new(
                 Color::new(0.5, 1.0, 0.1),
                 Color::new(1.0, 0.5, 0.0),
                 PatternKind::Stripe,
