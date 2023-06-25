@@ -5,7 +5,7 @@ use ray_tracer::materials::{Material, Pattern, PatternKind};
 use ray_tracer::matrices::M4x4;
 use ray_tracer::shape::*;
 use ray_tracer::transformations::{
-    rotation_x, rotation_y, scaling, transform, translation, view_transform,
+    rotation_x, rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
 use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
@@ -71,12 +71,12 @@ fn main() {
             color: Color::new(0.5, 1.0, 0.1),
             diffuse: 0.7,
             specular: 0.3,
-            pattern: Some(Pattern {
-                a: Color::new(0.5, 1.0, 0.1),
-                b: Color::new(1.0, 0.5, 0.0),
-                transform: &scaling(0.3, 0.3, 0.3) * &rotation_y(PI / 4.0),
-                ..Pattern::default()
-            }),
+            pattern: Some(Pattern::new (
+                Color::new(0.5, 1.0, 0.1),
+                Color::new(1.0, 0.5, 0.0),
+                PatternKind::Stripe,
+                &rotation_y(PI / 3.0) * &scaling(0.3, 0.3, 0.3),
+            )),
             ..Material::default()
         }),
     ));
