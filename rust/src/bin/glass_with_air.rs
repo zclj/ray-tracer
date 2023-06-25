@@ -3,10 +3,10 @@ use ray_tracer::color::Color;
 use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::materials::{Pattern, PatternKind};
+use ray_tracer::shape::*;
 use ray_tracer::transformations::{rotation_x, scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
 use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
-use ray_tracer::shape::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -43,7 +43,6 @@ fn main() {
             ..Material::default()
         }),
     ));
-    
 
     let glass_ball_id = world.scene.insert_object(SceneObject::new(
         Shape::Sphere,
@@ -80,20 +79,12 @@ fn main() {
     ////////////////////////////////////////
     // world setup
 
-    let planes = world.scene.insert_group(SceneGroup::new(
-        vec![
-            wall_id,
-        ],
-        None,
-        None,
-    ));
-    
+    let planes = world
+        .scene
+        .insert_group(SceneGroup::new(vec![wall_id], None, None));
+
     let root = world.scene.insert_group(SceneGroup::new(
-        vec![
-            planes,
-            glass_ball_id,
-            hollow_center_id,
-        ],
+        vec![planes, glass_ball_id, hollow_center_id],
         None,
         None,
     ));
@@ -103,7 +94,7 @@ fn main() {
 
     ////////////////////////////////////////
     // Camera and rendering
-    
+
     let camera = Camera::new(
         600,
         600,
