@@ -4,7 +4,8 @@ use ray_tracer::lights::PointLight;
 use ray_tracer::materials::Material;
 use ray_tracer::transformations::{scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::World;
+use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
+use ray_tracer::shape::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -23,9 +24,15 @@ fn main() {
     world.shadow_bias = 0.01;
 
     // shapes
-    let _floor_id = world.push_plane(None, None);
+    
+    let floor_id = world.scene.insert_object(SceneObject::new(
+        Shape::Plane,
+        None,
+        None,
+    ));
 
-    let _middle_sphere_id = world.push_sphere(
+    let middle_sphere_id = world.scene.insert_object(SceneObject::new(
+        Shape::Sphere,
         Some(translation(-0.5, 1.0, 0.5)),
         Some(Material {
             color: Color::new(0.1, 1.0, 0.5),
@@ -33,9 +40,10 @@ fn main() {
             specular: 0.3,
             ..Material::default()
         }),
-    );
+    ));
 
-    let _right_sphere_id = world.push_sphere(
+    let right_sphere_id = world.scene.insert_object(SceneObject::new(
+        Shape::Sphere,
         Some(transform(&[
             scaling(0.5, 0.5, 0.5),
             translation(1.5, 0.5, -0.5),
@@ -46,9 +54,10 @@ fn main() {
             specular: 0.3,
             ..Material::default()
         }),
-    );
+    ));
 
-    let _left_sphere_id = world.push_sphere(
+    let left_sphere_id = world.scene.insert_object(SceneObject::new(
+        Shape::Sphere,
         Some(transform(&[
             scaling(0.33, 0.33, 0.33),
             translation(-1.5, 0.33, -0.75),
@@ -59,7 +68,27 @@ fn main() {
             specular: 0.3,
             ..Material::default()
         }),
-    );
+    ));
+        
+    ////////////////////////////////////////
+    // world setup
+
+    let root = world.scene.insert_group(SceneGroup::new(
+        vec![
+            floor_id,
+            middle_sphere_id,
+            right_sphere_id,
+            left_sphere_id,
+        ],
+        None,
+        None,
+    ));
+
+    world.root_group_id = root;
+    world.build();
+
+    ////////////////////////////////////////
+    // Camera and rendering
 
     let camera = Camera::new(
         1000,
