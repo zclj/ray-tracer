@@ -150,10 +150,6 @@ impl LinearBVHNode {
 ////////////////////////////////////////
 // Scene creation
 
-// TODO: separate 'build time' from 'render time'
-//  Groups should work with IDs when we build. When the tree is ready
-//  it can be reified to render objects holding local content
-
 #[derive(Debug, Clone)]
 pub enum SceneNode {
     Group {
@@ -345,70 +341,6 @@ impl SceneTree {
                 bvh.set_bounds(current_bounds.clone());
 
                 //println!("bvh: {:#?}", bvh);
-
-                self.arena[current as usize] = SceneNode::Group {
-                    transform: new_transform,
-                    children,
-                    bounding_box,
-                };
-            }
-        }
-    }
-
-    pub fn apply_transforms(
-        &mut self,
-        current: u32,
-        current_transform: &Option<M4x4>,
-        current_bounds: &mut BoundingBox,
-    ) {
-        let current_node = self.arena[current as usize].clone();
-
-        match current_node {
-            SceneNode::Object {
-                transform,
-                kind,
-                material,
-                bounding_box,
-            } => {
-                let new_transform = match (transform, current_transform) {
-                    (Some(t), Some(ct)) => Some(ct * &t),
-                    (None, Some(ct)) => Some(ct.clone()),
-                    (Some(t), None) => Some(t),
-                    (_, _) => None,
-                };
-
-                // if the transform was changed, we need to update the
-                // object and also transform the bounding box.
-                // If not, just add the shapes bounds to the total
-                if let Some(new_transform) = new_transform {
-                    let bbox = bounding_box.transform(&new_transform);
-                    current_bounds.merge(&bbox);
-
-                    self.arena[current as usize] = SceneNode::Object {
-                        kind,
-                        material,
-                        transform: Some(new_transform),
-                        bounding_box: bbox,
-                    }
-                } else {
-                    current_bounds.merge(&bounding_box);
-                }
-            }
-            SceneNode::Group {
-                transform,
-                children,
-                mut bounding_box,
-            } => {
-                let new_transform = match (&transform, current_transform) {
-                    (Some(t), Some(ct)) => Some(ct * t),
-                    (None, Some(ct)) => Some(ct.clone()),
-                    (_, _) => transform,
-                };
-
-                // apply transforms and merge bounds for the groups children
-                for c in &children {
-                    self.apply_transforms(*c, &new_transform, &mut bounding_box);
-                }
 
                 self.arena[current as usize] = SceneNode::Group {
                     transform: new_transform,
