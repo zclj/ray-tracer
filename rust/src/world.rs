@@ -262,7 +262,6 @@ impl SceneTree {
                         bounds: bbox.clone(),
                     });
 
-                    println!("push primitive");
                     render_primitives.push(RenderObject::new(
                         id as u32,
                         &SceneObject {
@@ -289,7 +288,6 @@ impl SceneTree {
                         bounds: bounding_box.clone(),
                     });
 
-                    println!("push primitive");
                     render_primitives.push(RenderObject::new(
                         id as u32,
                         &SceneObject {
@@ -733,9 +731,6 @@ impl World {
 
     #[must_use]
     pub fn get_object(&self, id: u32) -> &RenderObject {
-        //&self.groups[0].objects[id as usize]
-        println!("GET OBJECT: {:?}", id);
-        println!("PRIMS: {:#?}", &self.render_primitives.len());
         &self.render_primitives[id as usize]
     }
 
