@@ -317,7 +317,7 @@ mod test {
     #[test]
     fn changing_a_spheres_transformation() {
         let mut world = World::new();
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let _s_id = world.scene.insert_object(SceneObject::new(
             Shape::Sphere,
             Some(translation(2.0, 3.0, 4.0)),
             None,
@@ -596,7 +596,7 @@ mod test {
     #[test]
     fn an_unbounded_cylinder_has_a_bounding_box() {
         let mut world = World::new();
-        let c_id = world.scene.insert_object(SceneObject::new(
+        let _c_id = world.scene.insert_object(SceneObject::new(
             Shape::Cylinder {
                 minimum: -f32::INFINITY,
                 maximum: f32::INFINITY,
@@ -696,7 +696,7 @@ mod test {
     fn a_bounded_cone_has_a_bounding_box() {
         let mut world = World::new();
 
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let _s_id = world.scene.insert_object(SceneObject::new(
             Shape::Cone {
                 minimum: -5.0,
                 maximum: 3.0,
@@ -869,7 +869,7 @@ mod test {
 
         let c = world.get_object(c_id);
 
-        assert_eq!(c.closed(), false);
+        assert!(!c.closed());
     }
 
     // Scenario Outline: The normal vector on a cylinder's end caps
@@ -1079,7 +1079,7 @@ mod test {
     //     And add_child(g2, s)
     //   When n ← normal_at(s, point(1.7321, 1.1547, -5.5774))
     //   Then n = vector(0.2857, 0.4286, -0.8571)
-    use crate::world::{SceneGroup, SceneTree};
+    use crate::world::SceneGroup;
     #[test]
     fn finding_the_normal_on_a_child_object() {
         let mut world = World::new();

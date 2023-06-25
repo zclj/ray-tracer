@@ -495,7 +495,7 @@ mod tests {
         let v = Vector::new(1.0, 2.0, 3.0);
         let n = v.norm();
 
-        assert_eq!(epsilon_eq(n.mag(), 1.0), true);
+        assert!(epsilon_eq(n.mag(), 1.0));
     }
 
     // Scenario: The dot product of two tuples

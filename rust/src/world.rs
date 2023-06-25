@@ -139,6 +139,7 @@ impl LinearBVHNode {
         }
     }
 
+    #[must_use]
     pub fn bounds(&self) -> &BoundingBox {
         match self {
             LinearBVHNode::Node { bounds, .. } | LinearBVHNode::Primitive { bounds, .. } => bounds,
@@ -804,7 +805,7 @@ impl World {
                         current_node_index,
                     ) {
                         // we hit this primitive, check the primitive
-                        let hit = self.intersect_primitive(
+                        let _hit = self.intersect_primitive(
                             world_ray,
                             intersections,
                             &self.render_primitives[*offset],
@@ -982,8 +983,8 @@ impl World {
     #[allow(clippy::too_many_lines)]
     pub fn intersect(
         &self,
-        world_ray: &Ray,
-        intersections: &mut Vec<Intersection>,
+        _world_ray: &Ray,
+        _intersections: &mut Vec<Intersection>,
     ) -> Option<usize> {
         //intersections.clear();
 
@@ -1284,7 +1285,7 @@ mod test {
     use crate::shape::Shape;
     use crate::transformations::{rotation_y, rotation_z, scaling, transform, translation};
     use crate::vector::{Point, Vector};
-    use crate::world::LinearBVHNode::*;
+    use crate::world::LinearBVHNode::{Node, Primitive};
     use std::f32::consts::PI;
 
     fn test_default() -> World {
@@ -1343,7 +1344,7 @@ mod test {
     #[test]
     fn the_default_world() {
         let w = test_default();
-        println!("World: {:#?}", w);
+        println!("World: {w:#?}");
         let s1 = w.get_object(0);
         let s2 = w.get_object(1);
 
@@ -1564,7 +1565,7 @@ mod test {
         let mut intersections = vec![];
         let is_in_shadow = w.is_shadowed(&p, &mut intersections);
 
-        assert_eq!(is_in_shadow, false)
+        assert!(!is_in_shadow)
     }
 
     // Scenario: The shadow when an object is between the point and the light
@@ -1579,7 +1580,7 @@ mod test {
         let mut intersections = vec![];
         let is_in_shadow = w.is_shadowed(&p, &mut intersections);
 
-        assert_eq!(is_in_shadow, true)
+        assert!(is_in_shadow)
     }
 
     // Scenario: There is no shadow when an object is behind the light
@@ -1594,7 +1595,7 @@ mod test {
         let mut intersections = vec![];
         let is_in_shadow = w.is_shadowed(&p, &mut intersections);
 
-        assert_eq!(is_in_shadow, false)
+        assert!(!is_in_shadow)
     }
 
     // Scenario: There is no shadow when an object is behind the point
@@ -1609,7 +1610,7 @@ mod test {
         let mut intersections = vec![];
         let is_in_shadow = w.is_shadowed(&p, &mut intersections);
 
-        assert_eq!(is_in_shadow, false)
+        assert!(!is_in_shadow)
     }
 
     // Scenario: shade_hit() is given an intersection in shadow
@@ -1767,7 +1768,7 @@ mod test {
         let mut intersections = vec![];
         let color = world.reflected_color(&comps, 1, &mut intersections, &mut containers);
 
-        assert_eq!(color, Color::new(0.190332, 0.23791, 0.142749));
+        assert_eq!(color, Color::new(0.190_332, 0.23791, 0.142_749));
     }
 
     // Scenario: shade_hit() with a reflective material
@@ -1831,7 +1832,7 @@ mod test {
         let mut intersections = vec![];
         let color = world.shade_hit(&comps, 1, &mut intersections, &mut containers);
 
-        assert_eq!(color, Color::new(0.876757, 0.92434, 0.82917));
+        assert_eq!(color, Color::new(0.876_757, 0.92434, 0.82917));
     }
 
     // Scenario: color_at() with mutually reflective surfaces
@@ -1882,7 +1883,7 @@ mod test {
 
         assert_eq!(
             world.color_at(&r, 1, &mut intersections, &mut containers),
-            Color::new(0.7692048, 0.7692048, 0.7692048)
+            Color::new(0.769_204_8, 0.769_204_8, 0.769_204_8)
         );
     }
 
@@ -2465,7 +2466,7 @@ mod test {
         world.root_group_id = hexagon;
         world.build();
 
-        let mut intersections: Vec<Intersection> = vec![];
+        let _intersections: Vec<Intersection> = vec![];
 
         println!("Final BVH: {:#?}", world.bvh);
         //println!("World render primitives: {:?}", world.render_primitives);
@@ -2487,14 +2488,14 @@ mod test {
                     children: vec![1,],
                     bounds: BoundingBox {
                         min: Point {
-                            x: -0.32027224,
-                            y: -0.17075324,
+                            x: -0.320_272_24,
+                            y: -0.170_753_24,
                             z: -1.25,
                         },
                         max: Point {
-                            x: 1.2120191,
-                            y: 1.9832532,
-                            z: -0.15849361,
+                            x: 1.212_019_1,
+                            y: 1.983_253_2,
+                            z: -0.158_493_61,
                         },
                     },
                 },
@@ -2502,14 +2503,14 @@ mod test {
                     children: vec![2, 5,],
                     bounds: BoundingBox {
                         min: Point {
-                            x: -0.32027224,
-                            y: -0.17075324,
+                            x: -0.320_272_24,
+                            y: -0.170_753_24,
                             z: -1.25,
                         },
                         max: Point {
-                            x: 1.2120191,
-                            y: 1.9832532,
-                            z: -0.15849361,
+                            x: 1.212_019_1,
+                            y: 1.983_253_2,
+                            z: -0.158_493_61,
                         },
                     },
                 },
@@ -2517,14 +2518,14 @@ mod test {
                     children: vec![3, 4,],
                     bounds: BoundingBox {
                         min: Point {
-                            x: 0.15849364,
-                            y: 0.65849364,
+                            x: 0.158_493_64,
+                            y: 0.658_493_64,
                             z: -1.25,
                         },
                         max: Point {
-                            x: 1.2120191,
-                            y: 1.9832532,
-                            z: -0.28349364,
+                            x: 1.212_019_1,
+                            y: 1.983_253_2,
+                            z: -0.283_493_64,
                         },
                     },
                 },
@@ -2532,14 +2533,14 @@ mod test {
                     offset: 0,
                     bounds: BoundingBox {
                         min: Point {
-                            x: 0.22099364,
-                            y: 0.7667468,
-                            z: -1.2165064,
+                            x: 0.220_993_64,
+                            y: 0.766_746_8,
+                            z: -1.216_506_4,
                         },
                         max: Point {
-                            x: 1.2120191,
-                            y: 1.9832532,
-                            z: -0.28349364,
+                            x: 1.212_019_1,
+                            y: 1.983_253_2,
+                            z: -0.283_493_64,
                         },
                     },
                 },
@@ -2547,13 +2548,13 @@ mod test {
                     offset: 1,
                     bounds: BoundingBox {
                         min: Point {
-                            x: 0.15849364,
-                            y: 0.65849364,
+                            x: 0.158_493_64,
+                            y: 0.658_493_64,
                             z: -1.25,
                         },
                         max: Point {
-                            x: 0.84150636,
-                            y: 1.3415064,
+                            x: 0.841_506_36,
+                            y: 1.341_506_4,
                             z: -0.75,
                         },
                     },
@@ -2562,14 +2563,14 @@ mod test {
                     children: vec![6, 7,],
                     bounds: BoundingBox {
                         min: Point {
-                            x: -0.32027224,
-                            y: -0.17075324,
-                            z: -1.2165064,
+                            x: -0.320_272_24,
+                            y: -0.170_753_24,
+                            z: -1.216_506_4,
                         },
                         max: Point {
-                            x: 0.77900636,
-                            y: 1.2332531,
-                            z: -0.15849361,
+                            x: 0.779_006_36,
+                            y: 1.233_253_1,
+                            z: -0.158_493_61,
                         },
                     },
                 },
@@ -2577,14 +2578,14 @@ mod test {
                     offset: 2,
                     bounds: BoundingBox {
                         min: Point {
-                            x: -0.21201906,
-                            y: 0.01674676,
-                            z: -1.2165064,
+                            x: -0.212_019_06,
+                            y: 0.016_746_76,
+                            z: -1.216_506_4,
                         },
                         max: Point {
-                            x: 0.77900636,
-                            y: 1.2332531,
-                            z: -0.28349364,
+                            x: 0.779_006_36,
+                            y: 1.233_253_1,
+                            z: -0.283_493_64,
                         },
                     },
                 },
@@ -2592,14 +2593,14 @@ mod test {
                     offset: 3,
                     bounds: BoundingBox {
                         min: Point {
-                            x: -0.32027224,
-                            y: -0.17075324,
-                            z: -0.84150636,
+                            x: -0.320_272_24,
+                            y: -0.170_753_24,
+                            z: -0.841_506_36,
                         },
                         max: Point {
-                            x: 0.45424685,
-                            y: 0.6707531,
-                            z: -0.15849361,
+                            x: 0.454_246_85,
+                            y: 0.670_753_1,
+                            z: -0.158_493_61,
                         },
                     },
                 },

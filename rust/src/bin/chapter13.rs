@@ -11,7 +11,7 @@ use ray_tracer::transformations::{
     rotation_x, rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
+use ray_tracer::world::{SceneGroup, SceneObject, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;

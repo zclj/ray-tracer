@@ -95,7 +95,7 @@ mod test {
     use crate::color::Color;
     use crate::materials::Material;
     use crate::matrices::M4x4;
-    use crate::shape::*;
+    use crate::shape::Shape;
     use crate::transformations::{rotation_y, scaling, translation, view_transform};
     use crate::vector::{Point, Vector};
     use crate::world::{SceneObject, World};

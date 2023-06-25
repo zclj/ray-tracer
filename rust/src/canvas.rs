@@ -144,7 +144,7 @@ mod test {
 
         assert_eq!(c.width, 10);
         assert_eq!(c.height, 20);
-        assert_eq!(c.pixels.iter().all(|c| *c == black), true);
+        assert!(c.pixels.iter().all(|c| *c == black));
     }
 
     // Scenario: Writing pixels to a canvas

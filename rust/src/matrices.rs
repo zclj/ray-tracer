@@ -423,7 +423,7 @@ mod test {
             [5.0, 4.0, 3.0, 2.0],
         );
 
-        assert_eq!(a == b, true);
+        assert!(a == b);
     }
 
     // Scenario: Matrix equality with different matrices
@@ -454,7 +454,7 @@ mod test {
             [4.0, 3.0, 2.0, 1.0],
         );
 
-        assert_eq!(a == b, false);
+        assert!(a != b);
     }
 
     // Scenario: Multiplying two matrices

@@ -154,7 +154,7 @@ mod test {
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
-    use crate::world::{BoundingVolume, SceneGroup, SceneObject, World};
+    use crate::world::{SceneGroup, SceneObject, World};
 
     // Scenario: An intersection encapsulates t and object
     //   Given s ← sphere()
@@ -202,7 +202,7 @@ mod test {
     #[test]
     fn a_ray_intersects_a_sphere_at_two_points() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
         let mut xs = vec![];
@@ -223,7 +223,7 @@ mod test {
     #[test]
     fn a_ray_intersects_a_sphere_at_a_tangent() {
         let r = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
 
@@ -243,7 +243,7 @@ mod test {
     #[test]
     fn a_ray_misses_a_sphere() {
         let r = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
 
@@ -263,7 +263,7 @@ mod test {
     #[test]
     fn a_ray_originates_inside_a_sphere() {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
         let mut xs = vec![];
@@ -284,7 +284,7 @@ mod test {
     #[test]
     fn a_sphere_is_behind_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
         let mut xs = vec![];
@@ -305,7 +305,7 @@ mod test {
     #[test]
     fn intersect_sets_the_object_on_the_intersection() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s_id = 10;
         let s = RenderObject::new(s_id, &SceneObject::new(Shape::Sphere, None, None));
@@ -414,7 +414,7 @@ mod test {
     #[test]
     fn intersecting_a_scaled_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
 
         let s = RenderObject::new(
             0,
@@ -437,7 +437,7 @@ mod test {
     #[test]
     fn intersecting_a_translated_sphere_with_a_ray() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
-        let mut world = World::new();
+        let world = World::new();
         let s = RenderObject::new(
             0,
             &SceneObject::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
@@ -547,8 +547,8 @@ mod test {
         let i = Intersection::new(5.0, s_id);
         let mut containers = vec![];
         let comps = i.compute(&world, &r, &[i.clone()], EPSILON, &mut containers);
-        assert_eq!(comps.over_point.z < -EPSILON / 2.0, true);
-        assert_eq!(comps.point.z > comps.over_point.z, true);
+        assert!(comps.over_point.z < -EPSILON / 2.0);
+        assert!(comps.point.z > comps.over_point.z);
     }
 
     // Scenario: Intersect with a ray parallel to the plane
@@ -570,7 +570,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 10.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
-        world.intersect_primitive(&r, &mut xs, &p);
+        world.intersect_primitive(&r, &mut xs, p);
 
         assert_eq!(xs.len(), 0)
     }
@@ -594,7 +594,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
 
         let mut xs = vec![];
-        world.intersect_primitive(&r, &mut xs, &p);
+        world.intersect_primitive(&r, &mut xs, p);
 
         assert_eq!(xs.len(), 0)
     }
@@ -621,7 +621,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 1.0, 0.0), Vector::new(0.0, -1.0, 0.0));
 
         let mut xs = vec![];
-        world.intersect_primitive(&r, &mut xs, &p);
+        world.intersect_primitive(&r, &mut xs, p);
 
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);
@@ -650,7 +650,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, -1.0, 0.0), Vector::new(0.0, 1.0, 0.0));
 
         let mut xs = vec![];
-        world.intersect_primitive(&r, &mut xs, &p);
+        world.intersect_primitive(&r, &mut xs, p);
 
         assert_eq!(xs.len(), 1);
         assert_eq!(xs[0].t, 1.0);
@@ -700,7 +700,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -763,7 +763,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -816,7 +816,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -877,7 +877,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -891,8 +891,8 @@ mod test {
         assert_eq!(xss[1][1].t, 6.0);
 
         assert_eq!(xss[2].len(), 2);
-        assert_eq!(true, epsilon_eq(xss[2][0].t, 6.80798));
-        assert_eq!(true, epsilon_eq(xss[2][1].t, 7.08872));
+        assert!(epsilon_eq(xss[2][0].t, 6.80798));
+        assert!(epsilon_eq(xss[2][1].t, 7.08872));
     }
 
     // Scenario Outline: Intersecting a constrained cylinder
@@ -957,7 +957,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -1030,13 +1030,13 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
 
         for i in 0..5 {
-            println!("i: {:?}", i);
+            println!("i: {i:?}");
             assert_eq!(xss[i].len(), 2);
         }
     }
@@ -1091,7 +1091,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -1101,12 +1101,12 @@ mod test {
         assert_eq!(xss[0][1].t, 5.0);
 
         assert_eq!(xss[1].len(), 2);
-        assert_eq!(true, epsilon_eq(xss[1][0].t, 8.66025));
-        assert_eq!(true, epsilon_eq(xss[1][1].t, 8.66025));
+        assert!(epsilon_eq(xss[1][0].t, 8.66025));
+        assert!(epsilon_eq(xss[1][1].t, 8.66025));
 
         assert_eq!(xss[2].len(), 2);
-        assert_eq!(true, epsilon_eq(xss[2][0].t, 4.55006));
-        assert_eq!(true, epsilon_eq(xss[2][1].t, 49.44994));
+        assert!(epsilon_eq(xss[2][0].t, 4.55006));
+        assert!(epsilon_eq(xss[2][1].t, 49.44994));
     }
 
     // Scenario: Intersecting a cone with a ray parallel to one of its halves
@@ -1141,13 +1141,13 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
 
         assert_eq!(xss[0].len(), 1);
-        assert_eq!(true, epsilon_eq(xss[0][0].t, 0.35355));
+        assert!(epsilon_eq(xss[0][0].t, 0.35355));
     }
 
     // Scenario Outline: Intersecting a cone's end caps
@@ -1201,7 +1201,7 @@ mod test {
             .iter()
             .map(|r| {
                 let mut xs = vec![];
-                world.intersect_primitive(&r, &mut xs, &c);
+                world.intersect_primitive(r, &mut xs, c);
                 xs.clone()
             })
             .collect::<Vec<Vec<Intersection>>>();
@@ -1432,7 +1432,7 @@ mod test {
         println!("arena: {:#?}", world.scene.arena.len());
 
         let r = Ray::new(Point::new(0.0, 0.0, -4.0), Vector::new(0.0, 0.0, 1.0));
-        println!("id: {:?}, {:?}, {:?}", a_id, b_id, c_id);
+        println!("id: {a_id:?}, {b_id:?}, {c_id:?}");
 
         let xs = [
             Intersection::new(2.0, a_id),
@@ -1496,8 +1496,8 @@ mod test {
         let mut containers = vec![];
         let comps = i.compute(&world, &r, &xs, EPSILON, &mut containers);
 
-        assert_eq!(comps.under_point.z > EPSILON / 2.0, true);
-        assert_eq!(comps.point.z < comps.under_point.z, true)
+        assert!(comps.under_point.z > EPSILON / 2.0);
+        assert!(comps.point.z < comps.under_point.z)
     }
 
     // Scenario: The Schlick approximation under total internal reflection
@@ -1571,7 +1571,7 @@ mod test {
         let comps = xs[1].compute(&world, &r, &xs, EPSILON, &mut containers);
         let reflectance = comps.schlick();
 
-        assert_eq!(epsilon_eq(reflectance, 0.04), true)
+        assert!(epsilon_eq(reflectance, 0.04))
     }
 
     // Scenario: The Schlick approximation with small angle and n2 > n1
@@ -1603,7 +1603,7 @@ mod test {
         let comps = xs[0].compute(&world, &r, &xs, EPSILON, &mut containers);
         let reflectance = comps.schlick();
 
-        assert_eq!(epsilon_eq(reflectance, 0.48873), true)
+        assert!(epsilon_eq(reflectance, 0.48873))
     }
 
     // Scenario Outline: Intersecting a ray with a bounding box at the origin
@@ -1629,7 +1629,7 @@ mod test {
     //     | point(2, 2, 0)    | vector(-1, 0, 0) | false  |
     #[test]
     fn intersecting_a_ray_with_a_bounding_box_at_the_origin() {
-        let mut world = World::new();
+        let world = World::new();
 
         let bbox = BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0));
 
@@ -1654,7 +1654,7 @@ mod test {
 
         let is = rays
             .iter()
-            .map(|r| world.intersect_bounding_box(&bbox, r, &mut vec![], 0))
+            .map(|r| world.intersect_bounding_box(&bbox, r, &mut [], 0))
             .collect::<Vec<bool>>();
 
         assert_eq!(
@@ -1688,7 +1688,7 @@ mod test {
     //     | point(12, 5, 4)  | vector(-1, 0, 0) | false  |
     #[test]
     fn intersecting_a_ray_with_a_non_cubic_bounding_box() {
-        let mut world = World::new();
+        let world = World::new();
 
         let bbox = BoundingBox::new(Point::new(5.0, -2.0, 0.0), Point::new(11.0, 4.0, 7.0));
 
@@ -1713,7 +1713,7 @@ mod test {
 
         let is = rays
             .iter()
-            .map(|r| world.intersect_bounding_box(&bbox, r, &mut vec![], 0))
+            .map(|r| world.intersect_bounding_box(&bbox, r, &mut [], 0))
             .collect::<Vec<bool>>();
 
         assert_eq!(

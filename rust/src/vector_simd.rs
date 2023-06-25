@@ -125,7 +125,7 @@ mod tests {
 
             let res_bits: i32 = _mm_extract_ps::<2>(foo);
 
-            println!("Result : {:#b}", res_bits);
+            println!("Result : {res_bits:#b}");
 
             let res = f32::from_bits(res_bits as u32);
 

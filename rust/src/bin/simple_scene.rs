@@ -1,17 +1,3 @@
-use ray_tracer::camera::Camera;
-use ray_tracer::color::Color;
-use ray_tracer::lights::PointLight;
-use ray_tracer::materials::Material;
-use ray_tracer::transformations::{
-    rotation_x, rotation_y, scaling, transform, translation, view_transform,
-};
-use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::World;
-use std::f32::consts::PI;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
-
 fn main() {
     println!("Simple scene with shadows - demo");
 

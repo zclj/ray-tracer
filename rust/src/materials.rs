@@ -339,7 +339,7 @@ mod test {
 
         let result = m.lighting(&shape, &light, &position, &eyev, &normalv, false);
 
-        assert_eq!(result, Color::new(1.6363853, 1.6363853, 1.6363853))
+        assert_eq!(result, Color::new(1.636_385_3, 1.636_385_3, 1.636_385_3))
     }
 
     // Scenario: Lighting with the light behind the surface
@@ -562,7 +562,7 @@ mod test {
         let sphere = world.get_object(s_id);
         let pattern = sphere.material.pattern.as_ref().unwrap();
 
-        let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
+        let c = pattern.pattern_at_shape(sphere, &Point::new(1.5, 0.0, 0.0));
 
         assert_eq!(c, WHITE);
     }
@@ -593,7 +593,7 @@ mod test {
         let sphere = world.get_object(s_id);
         let pattern = sphere.material.pattern.as_ref().unwrap();
 
-        let c = pattern.pattern_at_shape(&sphere, &Point::new(1.5, 0.0, 0.0));
+        let c = pattern.pattern_at_shape(sphere, &Point::new(1.5, 0.0, 0.0));
 
         assert_eq!(c, WHITE);
     }
@@ -625,7 +625,7 @@ mod test {
         let sphere = world.get_object(s_id);
         let pattern = sphere.material.pattern.as_ref().unwrap();
 
-        let c = pattern.pattern_at_shape(&sphere, &Point::new(2.5, 0.0, 0.0));
+        let c = pattern.pattern_at_shape(sphere, &Point::new(2.5, 0.0, 0.0));
 
         assert_eq!(c, WHITE);
     }
