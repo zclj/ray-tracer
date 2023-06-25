@@ -5,7 +5,8 @@ use ray_tracer::materials::Material;
 use ray_tracer::materials::{Pattern, PatternKind};
 use ray_tracer::transformations::{rotation_x, scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::World;
+use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
+use ray_tracer::shape::*;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -23,7 +24,8 @@ fn main() {
 
     world.shadow_bias = 0.0001;
 
-    let _wall_id = world.push_plane(
+    let wall_id = world.scene.insert_object(SceneObject::new(
+        Shape::Plane,
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, 10.0),
@@ -40,9 +42,11 @@ fn main() {
             diffuse: 0.2,
             ..Material::default()
         }),
-    );
+    ));
+    
 
-    let _glass_ball_id = world.push_sphere(
+    let glass_ball_id = world.scene.insert_object(SceneObject::new(
+        Shape::Sphere,
         None,
         Some(Material {
             color: Color::new(1.0, 1.0, 1.0),
@@ -55,9 +59,10 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    );
+    ));
 
-    let _hollow_center = world.push_sphere(
+    let hollow_center_id = world.scene.insert_object(SceneObject::new(
+        Shape::Sphere,
         Some(scaling(0.5, 0.5, 0.5)),
         Some(Material {
             color: Color::new(1.0, 1.0, 1.0),
@@ -70,8 +75,35 @@ fn main() {
             refractive_index: 1.0000034,
             ..Material::default()
         }),
-    );
+    ));
 
+    ////////////////////////////////////////
+    // world setup
+
+    let planes = world.scene.insert_group(SceneGroup::new(
+        vec![
+            wall_id,
+        ],
+        None,
+        None,
+    ));
+    
+    let root = world.scene.insert_group(SceneGroup::new(
+        vec![
+            planes,
+            glass_ball_id,
+            hollow_center_id,
+        ],
+        None,
+        None,
+    ));
+
+    world.root_group_id = root;
+    world.build();
+
+    ////////////////////////////////////////
+    // Camera and rendering
+    
     let camera = Camera::new(
         600,
         600,
