@@ -11,39 +11,6 @@ use crate::vector::Point;
 use std::collections::VecDeque;
 
 #[derive(Debug)]
-#[allow(dead_code)] // id is usefull for debug
-pub struct RenderGroup {
-    id: u32,
-    pub objects: Vec<RenderObject>,
-    pub transform: Option<M4x4>,
-    pub material: Option<Material>,
-}
-
-impl RenderGroup {
-    #[must_use]
-    #[allow(clippy::cast_possible_truncation)]
-    pub fn new(
-        id: u32,
-        objects: Vec<SceneObject>,
-        transform: Option<M4x4>,
-        material: Option<Material>,
-    ) -> Self {
-        let render_objects = objects
-            .into_iter()
-            .enumerate()
-            .map(|(i, o)| RenderObject::new(i as u32, &o))
-            .collect::<Vec<RenderObject>>();
-
-        RenderGroup {
-            id,
-            objects: render_objects,
-            transform,
-            material,
-        }
-    }
-}
-
-#[derive(Debug)]
 pub enum BoundingVolume {
     BoundingVolumeNode {
         children: Vec<BoundingVolume>,
@@ -394,7 +361,6 @@ impl SceneObject {
 pub struct World {
     pub light: PointLight,
     pub shadow_bias: f32,
-    pub groups: Vec<RenderGroup>,
     pub render_primitives: Vec<RenderObject>,
     pub scene: SceneTree,
     pub root_group_id: u32,
@@ -444,7 +410,6 @@ impl World {
     #[must_use]
     pub fn new() -> Self {
         World {
-            groups: vec![RenderGroup::new(0, vec![], None, None)],
             render_primitives: vec![],
             light: PointLight {
                 position: Point::new(-10.0, 10.0, -10.0),
