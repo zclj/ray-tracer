@@ -75,8 +75,6 @@ impl BoundingVolume {
         }
     }
 
-    //pub fn children(&self) ->
-
     pub fn flatten(&self, nodes: &mut VecDeque<LinearBVHNode>, current_offset: &mut usize) {
         // increase the current index used to index into nodes
         *current_offset += 1;
@@ -350,53 +348,6 @@ impl SceneTree {
             }
         }
     }
-
-    #[allow(clippy::cast_possible_truncation)]
-    #[must_use]
-    pub fn build(&self) -> RenderGroup {
-        let mut root = RenderGroup::new(0, vec![], None, None);
-
-        // A bounding box includes its bounds and either a list of contained
-        // children boxes, or, no children but a list of primitives
-        for i in 0..self.arena.len() {
-            //println!("Build item: {:?}", i);
-            match &self.arena[i] {
-                SceneNode::Group {
-                    transform,
-                    bounding_box,
-                    ..
-                } => {
-                    //println!("children: {:?}", children);
-                    root.objects.push(RenderObject::new(
-                        i as u32,
-                        &SceneObject {
-                            // TODO: TEMP!
-                            kind: Shape::Sphere,
-                            transform: transform.clone(),
-                            material: None,
-                            bounding_box: bounding_box.clone(),
-                        },
-                    ));
-                }
-                SceneNode::Object {
-                    kind,
-                    transform,
-                    material,
-                    bounding_box,
-                } => root.objects.push(RenderObject::new(
-                    i as u32,
-                    &SceneObject {
-                        kind: kind.clone(),
-                        transform: transform.clone(),
-                        material: material.clone(),
-                        bounding_box: bounding_box.clone(),
-                    },
-                )),
-            }
-        }
-
-        root
-    }
 }
 
 #[derive(Debug)]
@@ -567,7 +518,6 @@ impl World {
         &self,
         world_ray: &Ray,
         intersections: &mut Vec<Intersection>,
-        //bounding_nodes: &[LinearBVHNode],
     ) -> Option<usize> {
         // TODO: This might be reduntant, check with intersect_primitives
         intersections.clear();
@@ -579,9 +529,6 @@ impl World {
         //let mut nodesToVisit: [usize; 64] = [0; 64];
         let mut nodes_to_visit: Vec<usize> = Vec::with_capacity(64);
 
-        //println!("Self bvh len: {:?}", &self.bvh.len());
-        //nodes_to_visit.extend([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-        //nodes_to_visit.extend([0,1,2,3]);
         loop {
             let node = &self.bvh[current_node_index];
 
@@ -634,12 +581,8 @@ impl World {
         intersections: &mut Vec<Intersection>,
         s: &RenderObject,
     ) -> Option<usize> {
-        //intersections.clear();
-
-        //println!("intersecting object: {s:#?}");
         let ray = world_ray.transform(&s.transform_inverse);
 
-        // self.intersect_bounding_box(&s.bounding_box, &world_ray, intersections, current_node_index);
         match s.kind {
             Shape::Sphere => {
                 let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
