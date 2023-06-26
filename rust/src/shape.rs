@@ -65,6 +65,7 @@ pub fn check_axis(origin: f32, direction: f32, min: f32, max: f32) -> (f32, f32)
 
 impl RenderObject {
     #[must_use]
+    // TODO: remove the template and take the params
     pub fn new(id: u32, template: &SceneObject) -> Self {
         let transform = match &template.transform {
             Some(t) => t.clone(),
@@ -88,15 +89,6 @@ impl RenderObject {
             transform_inverse_transpose,
             bounding_box: template.bounding_box.clone(),
         }
-    }
-
-    pub fn update_transform(&mut self, new_transform: M4x4) {
-        let transform_inverse = new_transform.inverse();
-        let transform_inverse_transpose = transform_inverse.transpose();
-
-        self.transform_inverse = transform_inverse;
-        self.transform_inverse_transpose = transform_inverse_transpose;
-        self.transform = new_transform;
     }
 
     /// # Panics
