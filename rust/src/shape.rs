@@ -66,15 +66,27 @@ pub fn check_axis(origin: f32, direction: f32, min: f32, max: f32) -> (f32, f32)
 impl RenderObject {
     #[must_use]
     // TODO: remove the template and take the params
-    pub fn new(id: u32, template: &SceneObject) -> Self {
-        let transform = match &template.transform {
+    pub fn new(
+        id: u32,
+        //template: &SceneObject
+        kind: Shape,
+        transform: Option<M4x4>,
+        material: Option<Material>,
+        bounding_box: Option<BoundingBox>,
+    ) -> Self {
+        let transform = match &transform {
             Some(t) => t.clone(),
             None => M4x4::IDENTITY,
         };
 
-        let material = match &template.material {
+        let material = match &material {
             Some(m) => m.clone(),
             None => Material::default(),
+        };
+
+        let bounds = match bounding_box {
+            Some(b) => b,
+            None => bounds(&kind),
         };
 
         let transform_inverse = transform.inverse();
@@ -82,12 +94,12 @@ impl RenderObject {
 
         RenderObject {
             id,
-            kind: template.kind.clone(),
+            kind,
             transform,
             material,
             transform_inverse,
             transform_inverse_transpose,
-            bounding_box: template.bounding_box.clone(),
+            bounding_box: bounds,
         }
     }
 

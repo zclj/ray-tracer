@@ -204,7 +204,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let world = World::new();
 
-        let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
+        let s = RenderObject::new(0, Shape::Sphere, None, None, None);
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
 
@@ -225,7 +225,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 1.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let world = World::new();
 
-        let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
+        let s = RenderObject::new(0, Shape::Sphere, None, None, None);
 
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
@@ -245,7 +245,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 2.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let world = World::new();
 
-        let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
+        let s = RenderObject::new(0, Shape::Sphere, None, None, None);
 
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
@@ -265,7 +265,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 0.0, 1.0));
         let world = World::new();
 
-        let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
+        let s = RenderObject::new(0, Shape::Sphere, None, None, None);
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
 
@@ -286,7 +286,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, 5.0), Vector::new(0.0, 0.0, 1.0));
         let world = World::new();
 
-        let s = RenderObject::new(0, &SceneObject::new(Shape::Sphere, None, None));
+        let s = RenderObject::new(0, Shape::Sphere, None, None, None);
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
 
@@ -308,7 +308,7 @@ mod test {
         let world = World::new();
 
         let s_id = 10;
-        let s = RenderObject::new(s_id, &SceneObject::new(Shape::Sphere, None, None));
+        let s = RenderObject::new(s_id, Shape::Sphere, None, None, None);
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
 
@@ -416,10 +416,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let world = World::new();
 
-        let s = RenderObject::new(
-            0,
-            &SceneObject::new(Shape::Sphere, Some(scaling(2.0, 2.0, 2.0)), None),
-        );
+        let s = RenderObject::new(0, Shape::Sphere, Some(scaling(2.0, 2.0, 2.0)), None, None);
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);
 
@@ -440,7 +437,10 @@ mod test {
         let world = World::new();
         let s = RenderObject::new(
             0,
-            &SceneObject::new(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None),
+            Shape::Sphere,
+            Some(translation(5.0, 0.0, 0.0)),
+            None,
+            None,
         );
         let mut xs = vec![];
         world.intersect_primitive(&r, &mut xs, &s);

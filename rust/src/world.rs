@@ -226,13 +226,10 @@ impl SceneTree {
 
                     render_primitives.push(RenderObject::new(
                         id as u32,
-                        &SceneObject {
-                            // TODO: TEMP!
-                            kind: kind.clone(),
-                            transform: Some(new_transform.clone()),
-                            material: material.clone(),
-                            bounding_box: bbox.clone(),
-                        },
+                        kind.clone(),
+                        Some(new_transform.clone()),
+                        material.clone(),
+                        Some(bbox.clone()),
                     ));
 
                     self.arena[current as usize] = SceneNode::Object {
@@ -252,13 +249,10 @@ impl SceneTree {
 
                     render_primitives.push(RenderObject::new(
                         id as u32,
-                        &SceneObject {
-                            // TODO: TEMP!
-                            kind,
-                            transform: new_transform,
-                            material,
-                            bounding_box: bounding_box.clone(),
-                        },
+                        kind,
+                        new_transform,
+                        material,
+                        Some(bounding_box.clone()),
                     ));
                 }
             }
