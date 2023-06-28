@@ -7,7 +7,7 @@ use ray_tracer::transformations::{
     rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneTree, World};
+use ray_tracer::world::{SceneTree, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -54,11 +54,10 @@ fn hex_side(scene: &mut SceneTree, i: u32) -> u32 {
 
     let hex_edge_id = hex_edge(scene);
 
-    scene.insert_group(SceneGroup::new(
+    scene.insert_group(
         vec![hex_edge_id, hex_corner_id],
         Some(rotation_y(i as f32 * PI / 3.0)),
-        None,
-    ))
+    )
 }
 
 fn main() {
@@ -75,14 +74,13 @@ fn main() {
         .map(|i| hex_side(&mut world.scene, i))
         .collect::<Vec<u32>>();
 
-    let hexagon = world.scene.insert_group(SceneGroup::new(
+    let hexagon = world.scene.insert_group(
         ids,
         Some(transform(&[
             rotation_z(PI / 3.0),
             translation(0.5, 1.0, 0.0),
         ])),
-        None,
-    ));
+    );
 
     world.root_group_id = hexagon;
     world.build();

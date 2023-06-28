@@ -617,9 +617,7 @@ mod test {
             None,
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![c_id], None, None));
+        let g1_id = world.scene.insert_group(vec![c_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -647,9 +645,7 @@ mod test {
             None,
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![c_id], None, None));
+        let g1_id = world.scene.insert_group(vec![c_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1054,7 +1050,7 @@ mod test {
     //     And add_child(g2, s)
     //   When n ← normal_at(s, point(1.7321, 1.1547, -5.5774))
     //   Then n = vector(0.2857, 0.4286, -0.8571)
-    use crate::world::SceneGroup;
+
     #[test]
     fn finding_the_normal_on_a_child_object() {
         let mut world = World::new();
@@ -1063,17 +1059,13 @@ mod test {
                 .scene
                 .insert_object(Shape::Sphere, Some(translation(5.0, 0.0, 0.0)), None);
 
-        let g2_id = world.scene.insert_group(SceneGroup::new(
-            vec![o1_id],
-            Some(scaling(1.0, 2.0, 3.0)),
-            None,
-        ));
+        let g2_id = world
+            .scene
+            .insert_group(vec![o1_id], Some(scaling(1.0, 2.0, 3.0)));
 
-        let g1_id = world.scene.insert_group(SceneGroup::new(
-            vec![g2_id],
-            Some(rotation_y(PI / 2.0)),
-            None,
-        ));
+        let g1_id = world
+            .scene
+            .insert_group(vec![g2_id], Some(rotation_y(PI / 2.0)));
         world.root_group_id = g1_id;
         world.build();
 
@@ -1098,9 +1090,7 @@ mod test {
             None,
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![o1_id], None, None));
+        let g1_id = world.scene.insert_group(vec![o1_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1143,9 +1133,7 @@ mod test {
             None,
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s_id, c_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s_id, c_id], None);
         world.root_group_id = g1_id;
         world.build();
 

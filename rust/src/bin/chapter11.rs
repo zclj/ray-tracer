@@ -11,7 +11,7 @@ use ray_tracer::transformations::{
     rotation_x, rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, World};
+use ray_tracer::world::World;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -218,7 +218,7 @@ fn main() {
     ////////////////////////////////////////
     // world setup
 
-    let planes = world.scene.insert_group(SceneGroup::new(
+    let planes = world.scene.insert_group(
         vec![
             floor_plane_id,
             ceiling_plane_id,
@@ -228,26 +228,17 @@ fn main() {
             south_wall_id,
         ],
         None,
-        None,
-    ));
+    );
 
-    let background_balls_1 =
-        world
-            .scene
-            .insert_group(SceneGroup::new(vec![ball_3, ball_4], None, None));
+    let background_balls_1 = world.scene.insert_group(vec![ball_3, ball_4], None);
 
-    let background_balls_2 =
-        world
-            .scene
-            .insert_group(SceneGroup::new(vec![ball_1, ball_2], None, None));
+    let background_balls_2 = world.scene.insert_group(vec![ball_1, ball_2], None);
 
-    let foreground_balls = world.scene.insert_group(SceneGroup::new(
-        vec![red_ball, blue_ball, green_ball],
-        None,
-        None,
-    ));
+    let foreground_balls = world
+        .scene
+        .insert_group(vec![red_ball, blue_ball, green_ball], None);
 
-    let root = world.scene.insert_group(SceneGroup::new(
+    let root = world.scene.insert_group(
         vec![
             planes,
             background_balls_1,
@@ -255,8 +246,7 @@ fn main() {
             foreground_balls,
         ],
         None,
-        None,
-    ));
+    );
 
     world.root_group_id = root;
     world.build();

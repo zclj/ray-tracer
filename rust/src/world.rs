@@ -167,12 +167,12 @@ impl SceneTree {
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    pub fn insert_group(&mut self, group: SceneGroup) -> u32 {
+    pub fn insert_group(&mut self, children: Vec<u32>, transform: Option<M4x4>) -> u32 {
         let id = self.arena.len() as u32;
 
         self.arena.push(SceneNode::Group {
-            children: group.children,
-            transform: group.transform,
+            children,
+            transform,
             bounding_box: BoundingBox::default(),
         });
 
@@ -312,24 +312,6 @@ impl SceneTree {
                     bounding_box,
                 };
             }
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct SceneGroup {
-    children: Vec<u32>,
-    pub transform: Option<M4x4>,
-    pub material: Option<Material>,
-}
-
-impl SceneGroup {
-    #[must_use]
-    pub fn new(children: Vec<u32>, transform: Option<M4x4>, material: Option<Material>) -> Self {
-        SceneGroup {
-            children,
-            transform,
-            material,
         }
     }
 }
@@ -832,9 +814,7 @@ mod test {
             Some(Material::default()),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1062,9 +1042,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, inner_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, inner_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1161,9 +1139,7 @@ mod test {
                 .scene
                 .insert_object(Shape::Sphere, Some(translation(0.0, 0.0, 10.0)), None);
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1211,9 +1187,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1271,9 +1245,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, s2_id, p_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id, p_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1334,9 +1306,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, s2_id, p_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id, p_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1391,9 +1361,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![lower_id, upper_id], None, None));
+        let g1_id = world.scene.insert_group(vec![lower_id, upper_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1450,10 +1418,7 @@ mod test {
             }),
         );
 
-        let g1_id =
-            world
-                .scene
-                .insert_group(SceneGroup::new(vec![s1_id, s2_id, p1_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id, p1_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1503,9 +1468,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s1_id, s2_id], None, None));
+        let g1_id = world.scene.insert_group(vec![s1_id, s2_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1558,9 +1521,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![sid, s2_id], None, None));
+        let g1_id = world.scene.insert_group(vec![sid, s2_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1615,9 +1576,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![sid, s2_id], None, None));
+        let g1_id = world.scene.insert_group(vec![sid, s2_id], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1688,9 +1647,7 @@ mod test {
             }),
         );
 
-        let g1_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![aid, bid], None, None));
+        let g1_id = world.scene.insert_group(vec![aid, bid], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1776,11 +1733,9 @@ mod test {
             }),
         );
 
-        let g1_id = world.scene.insert_group(SceneGroup::new(
-            vec![s1_id, s2_id, floor_id, ball],
-            None,
-            None,
-        ));
+        let g1_id = world
+            .scene
+            .insert_group(vec![s1_id, s2_id, floor_id, ball], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1866,11 +1821,9 @@ mod test {
             }),
         );
 
-        let g1_id = world.scene.insert_group(SceneGroup::new(
-            vec![s1_id, s2_id, floor_id, ball],
-            None,
-            None,
-        ));
+        let g1_id = world
+            .scene
+            .insert_group(vec![s1_id, s2_id, floor_id, ball], None);
         world.root_group_id = g1_id;
         world.build();
 
@@ -1945,32 +1898,27 @@ mod test {
 
         let hex_edge_id = hex_edge(scene);
 
-        scene.insert_group(SceneGroup::new(
+        scene.insert_group(
             vec![hex_edge_id, hex_corner_id],
             Some(rotation_y(i as f32 * PI / 3.0)),
-            None,
-        ))
+        )
     }
 
     #[test]
     fn creation_of_render_template() {
         let mut world = World::new();
-        //let mut scene = SceneTree::new();
 
         let ids = (0..2)
             .map(|i| hex_side(&mut world.scene, i))
             .collect::<Vec<u32>>();
 
-        let hexagon = world.scene.insert_group(SceneGroup::new(
-            //vec![g0, g1, g2, g3, g4], //ids, //,
-            //None,
+        let hexagon = world.scene.insert_group(
             ids,
             Some(transform(&[
                 rotation_z(PI / 3.0),
                 translation(0.5, 1.0, 0.0),
             ])),
-            None,
-        ));
+        );
 
         world.root_group_id = hexagon;
         world.build();

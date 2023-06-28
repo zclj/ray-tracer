@@ -8,7 +8,7 @@ use ray_tracer::transformations::{
     rotation_x, rotation_y, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, World};
+use ray_tracer::world::World;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -104,11 +104,10 @@ fn main() {
     ////////////////////////////////////////
     // world setup
 
-    let root = world.scene.insert_group(SceneGroup::new(
+    let root = world.scene.insert_group(
         vec![floor_id, middle_sphere_id, right_sphere_id, left_sphere_id],
         None,
-        None,
-    ));
+    );
 
     world.root_group_id = root;
     world.build();

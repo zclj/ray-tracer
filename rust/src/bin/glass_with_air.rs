@@ -6,7 +6,7 @@ use ray_tracer::materials::{Pattern, PatternKind};
 use ray_tracer::shape::*;
 use ray_tracer::transformations::{rotation_x, scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, World};
+use ray_tracer::world::World;
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -79,15 +79,11 @@ fn main() {
     ////////////////////////////////////////
     // world setup
 
-    let planes = world
-        .scene
-        .insert_group(SceneGroup::new(vec![wall_id], None, None));
+    let planes = world.scene.insert_group(vec![wall_id], None);
 
-    let root = world.scene.insert_group(SceneGroup::new(
-        vec![planes, glass_ball_id, hollow_center_id],
-        None,
-        None,
-    ));
+    let root = world
+        .scene
+        .insert_group(vec![planes, glass_ball_id, hollow_center_id], None);
 
     world.root_group_id = root;
     world.build();

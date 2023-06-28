@@ -154,7 +154,7 @@ mod test {
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
-    use crate::world::{SceneGroup, World};
+    use crate::world::World;
 
     // Scenario: An intersection encapsulates t and object
     //   Given s ← sphere()
@@ -1406,9 +1406,7 @@ mod test {
             }),
         );
 
-        let g_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![a_id, b_id, c_id], None, None));
+        let g_id = world.scene.insert_group(vec![a_id, b_id, c_id], None);
         world.root_group_id = g_id;
         world.build();
         println!("arena: {:#?}", world.scene.arena.len());
@@ -1717,9 +1715,7 @@ mod test {
 
         let s_id = world.scene.insert_object(Shape::Sphere, None, None);
 
-        let g_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s_id], None, None));
+        let g_id = world.scene.insert_group(vec![s_id], None);
 
         // let mut bvh = BoundingVolume::BoundingVolumeNode {
         //     children: vec![],
@@ -1767,9 +1763,7 @@ mod test {
 
         let s_id = world.scene.insert_object(Shape::Sphere, None, None);
 
-        let g_id = world
-            .scene
-            .insert_group(SceneGroup::new(vec![s_id], None, None));
+        let g_id = world.scene.insert_group(vec![s_id], None);
 
         world.root_group_id = g_id;
         world.build();
