@@ -1,4 +1,5 @@
 use crate::bounds::BoundingBox;
+use crate::bounds::{BoundingVolume, LinearBVHNode};
 use crate::color::Color;
 use crate::intersections::{sort_by_t, ComputedIntersection, Intersection};
 use crate::lights::PointLight;
@@ -9,108 +10,6 @@ use crate::shape::{bounds, check_axis, RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 use std::collections::VecDeque;
-
-#[derive(Debug)]
-pub enum BoundingVolume {
-    BoundingVolumeNode {
-        children: Vec<BoundingVolume>,
-        bounds: BoundingBox,
-    },
-    BoundingVolumePrimitive {
-        id: u32,
-        bounds: BoundingBox,
-    },
-}
-
-impl BoundingVolume {
-    /// # Panics
-    ///
-    /// Panics if not colled on a Node
-    pub fn push_child(&mut self, child: BoundingVolume) {
-        match self {
-            BoundingVolume::BoundingVolumeNode { children, .. } => children.push(child),
-            BoundingVolume::BoundingVolumePrimitive { .. } => {
-                panic!("'push_child' can only be performed on BoundingVolumeNode")
-            }
-        }
-    }
-
-    pub fn set_bounds(&mut self, new_bounds: BoundingBox) {
-        match self {
-            BoundingVolume::BoundingVolumeNode { bounds, .. }
-            | BoundingVolume::BoundingVolumePrimitive { bounds, .. } => *bounds = new_bounds,
-        }
-    }
-
-    pub fn flatten(&self, nodes: &mut VecDeque<LinearBVHNode>, current_offset: &mut usize) {
-        // increase the current index used to index into nodes
-        *current_offset += 1;
-        match self {
-            BoundingVolume::BoundingVolumeNode { bounds, children } => {
-                // Add the node, put its children next to it.
-                // Set the nodes childrens indexs
-
-                let mut child_offsets = Vec::with_capacity(children.len());
-                let node_idx = nodes.len();
-
-                nodes.push_back(LinearBVHNode::Node {
-                    bounds: bounds.clone(),
-                    children: vec![],
-                });
-
-                for c in children {
-                    child_offsets.push(*current_offset);
-                    c.flatten(nodes, current_offset);
-                }
-
-                for c in &child_offsets {
-                    nodes[node_idx].push_child(*c);
-                }
-            }
-            BoundingVolume::BoundingVolumePrimitive { bounds, id } => {
-                nodes.push_back(LinearBVHNode::Primitive {
-                    bounds: bounds.clone(),
-                    offset: *id as usize,
-                });
-            }
-        }
-    }
-}
-
-#[derive(Debug, PartialEq)]
-pub enum LinearBVHNode {
-    Node {
-        children: Vec<usize>,
-        bounds: BoundingBox,
-    },
-    Primitive {
-        offset: usize,
-        bounds: BoundingBox,
-    },
-}
-
-impl LinearBVHNode {
-    /// # Panics
-    ///
-    /// Will panic if not called on a Node
-    pub fn push_child(&mut self, child: usize) -> usize {
-        match self {
-            LinearBVHNode::Node { children, .. } => {
-                let idx = children.len();
-                children.push(child);
-                idx
-            }
-            LinearBVHNode::Primitive { .. } => panic!("Can only add child to Node"),
-        }
-    }
-
-    #[must_use]
-    pub fn bounds(&self) -> &BoundingBox {
-        match self {
-            LinearBVHNode::Node { bounds, .. } | LinearBVHNode::Primitive { bounds, .. } => bounds,
-        }
-    }
-}
 
 ////////////////////////////////////////
 // Scene creation
