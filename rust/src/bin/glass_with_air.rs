@@ -6,7 +6,7 @@ use ray_tracer::materials::{Pattern, PatternKind};
 use ray_tracer::shape::*;
 use ray_tracer::transformations::{rotation_x, scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneObject, World};
+use ray_tracer::world::{SceneGroup, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -24,7 +24,7 @@ fn main() {
 
     world.shadow_bias = 0.0001;
 
-    let wall_id = world.scene.insert_object(SceneObject::new(
+    let wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_x(PI / 2.0),
@@ -42,9 +42,9 @@ fn main() {
             diffuse: 0.2,
             ..Material::default()
         }),
-    ));
+    );
 
-    let glass_ball_id = world.scene.insert_object(SceneObject::new(
+    let glass_ball_id = world.scene.insert_object(
         Shape::Sphere,
         None,
         Some(Material {
@@ -58,9 +58,9 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    ));
+    );
 
-    let hollow_center_id = world.scene.insert_object(SceneObject::new(
+    let hollow_center_id = world.scene.insert_object(
         Shape::Sphere,
         Some(scaling(0.5, 0.5, 0.5)),
         Some(Material {
@@ -74,7 +74,7 @@ fn main() {
             refractive_index: 1.0000034,
             ..Material::default()
         }),
-    ));
+    );
 
     ////////////////////////////////////////
     // world setup

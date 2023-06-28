@@ -7,14 +7,14 @@ use ray_tracer::transformations::{
     rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneObject, SceneTree, World};
+use ray_tracer::world::{SceneGroup, SceneTree, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
 fn hex_corner(scene: &mut SceneTree) -> u32 {
-    scene.insert_object(SceneObject::new(
+    scene.insert_object(
         Shape::Sphere,
         Some(transform(&[
             scaling(0.25, 0.25, 0.25),
@@ -25,11 +25,11 @@ fn hex_corner(scene: &mut SceneTree) -> u32 {
             shininess: 50.0,
             ..Material::default()
         }),
-    ))
+    )
 }
 
 fn hex_edge(scene: &mut SceneTree) -> u32 {
-    scene.insert_object(SceneObject::new(
+    scene.insert_object(
         Shape::Cylinder {
             minimum: 0.0,
             maximum: 1.0,
@@ -46,7 +46,7 @@ fn hex_edge(scene: &mut SceneTree) -> u32 {
             shininess: 50.0,
             ..Material::default()
         }),
-    ))
+    )
 }
 
 fn hex_side(scene: &mut SceneTree, i: u32) -> u32 {

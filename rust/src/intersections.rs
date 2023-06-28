@@ -154,7 +154,7 @@ mod test {
     use crate::transformations::{scaling, translation};
     use crate::utils::EPSILON;
     use crate::vector::Vector;
-    use crate::world::{SceneGroup, SceneObject, World};
+    use crate::world::{SceneGroup, World};
 
     // Scenario: An intersection encapsulates t and object
     //   Given s ← sphere()
@@ -463,9 +463,7 @@ mod test {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
 
-        let s_id = world
-            .scene
-            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let s_id = world.scene.insert_object(Shape::Sphere, None, None);
         world.build();
 
         let i = Intersection::new(4.0, s_id);
@@ -536,11 +534,9 @@ mod test {
     fn the_hit_should_offset_the_point() {
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
         let mut world = World::new();
-        world.scene.insert_object(SceneObject::new(
-            Shape::Sphere,
-            Some(translation(0.0, 0.0, 1.0)),
-            None,
-        ));
+        world
+            .scene
+            .insert_object(Shape::Sphere, Some(translation(0.0, 0.0, 1.0)), None);
         let s_id = 0;
         world.build();
 
@@ -560,9 +556,7 @@ mod test {
     fn intersect_with_a_ray_parallel_to_the_plane() {
         let mut world = World::new();
         let p_id = 0;
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.scene.insert_object(Shape::Plane, None, None);
 
         world.build();
         let p = world.get_object(p_id);
@@ -584,9 +578,7 @@ mod test {
     fn intersect_with_a_coplanar_ray() {
         let mut world = World::new();
         let p_id = 0;
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.scene.insert_object(Shape::Plane, None, None);
 
         world.build();
         let p = world.get_object(p_id);
@@ -611,9 +603,7 @@ mod test {
         let mut world = World::new();
 
         let p_id = 0;
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.scene.insert_object(Shape::Plane, None, None);
 
         world.build();
         let p = world.get_object(p_id);
@@ -640,9 +630,7 @@ mod test {
         let mut world = World::new();
 
         let p_id = 0;
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        world.scene.insert_object(Shape::Plane, None, None);
 
         world.build();
         let p = world.get_object(p_id);
@@ -678,9 +666,7 @@ mod test {
     fn a_ray_intersects_a_cube() {
         let mut world = World::new();
 
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Cube, None, None));
+        world.scene.insert_object(Shape::Cube, None, None);
 
         world.build();
 
@@ -733,9 +719,7 @@ mod test {
     fn a_ray_misses_a_cube() {
         let mut world = World::new();
 
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Cube, None, None));
+        world.scene.insert_object(Shape::Cube, None, None);
 
         world.build();
 
@@ -789,7 +773,7 @@ mod test {
     #[test]
     fn a_ray_misses_a_cylinder() {
         let mut world = World::new();
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cylinder {
                 minimum: f32::MIN,
                 maximum: f32::MAX,
@@ -797,7 +781,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -844,7 +828,7 @@ mod test {
     #[test]
     fn a_ray_strikes_a_cylinder() {
         let mut world = World::new();
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cylinder {
                 minimum: f32::MIN,
                 maximum: f32::MAX,
@@ -852,7 +836,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -916,7 +900,7 @@ mod test {
     fn intersecting_a_constrained_cylinder() {
         let mut world = World::new();
 
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cylinder {
                 minimum: 1.0,
                 maximum: 2.0,
@@ -924,7 +908,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -990,7 +974,7 @@ mod test {
     fn intersecting_the_caps_of_a_closed_cylinder() {
         let mut world = World::new();
 
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cylinder {
                 minimum: 1.0,
                 maximum: 2.0,
@@ -998,7 +982,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -1059,7 +1043,7 @@ mod test {
     fn intersecting_a_cone_with_a_ray() {
         let mut world = World::new();
 
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cone {
                 minimum: f32::MIN,
                 maximum: f32::MAX,
@@ -1067,7 +1051,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -1119,7 +1103,7 @@ mod test {
     #[test]
     fn intersecting_a_cone_with_a_ray_parallel_to_one_of_its_halves() {
         let mut world = World::new();
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cone {
                 minimum: f32::MIN,
                 maximum: f32::MAX,
@@ -1127,7 +1111,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -1169,7 +1153,7 @@ mod test {
     fn intersecting_a_cones_end_caps() {
         let mut world = World::new();
 
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Cone {
                 minimum: -0.5,
                 maximum: 0.5,
@@ -1177,7 +1161,7 @@ mod test {
             },
             None,
             None,
-        ));
+        );
 
         world.build();
 
@@ -1345,9 +1329,7 @@ mod test {
     #[test]
     fn precomputing_the_reflection_vector() {
         let mut world = World::new();
-        let s_id = world
-            .scene
-            .insert_object(SceneObject::new(Shape::Plane, None, None));
+        let s_id = world.scene.insert_object(Shape::Plane, None, None);
         world.build();
 
         let r = Ray::new(
@@ -1394,7 +1376,7 @@ mod test {
     fn finding_n1_and_n2_at_various_intersections() {
         let mut world = World::new();
 
-        let a_id = world.scene.insert_object(SceneObject::new(
+        let a_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(2.0, 2.0, 2.0)),
             Some(Material {
@@ -1402,9 +1384,9 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let b_id = world.scene.insert_object(SceneObject::new(
+        let b_id = world.scene.insert_object(
             Shape::Sphere,
             Some(translation(0.0, 0.0, -0.25)),
             Some(Material {
@@ -1412,9 +1394,9 @@ mod test {
                 refractive_index: 2.0,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let c_id = world.scene.insert_object(SceneObject::new(
+        let c_id = world.scene.insert_object(
             Shape::Sphere,
             Some(translation(0.0, 0.0, 0.25)),
             Some(Material {
@@ -1422,7 +1404,7 @@ mod test {
                 refractive_index: 2.5,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g_id = world
             .scene
@@ -1481,11 +1463,9 @@ mod test {
     fn the_under_point_is_offset_below_the_surface() {
         let mut world = World::new();
 
-        let s_id = world.scene.insert_object(SceneObject::new(
-            Shape::Sphere,
-            Some(translation(0.0, 0.0, 1.0)),
-            None,
-        ));
+        let s_id = world
+            .scene
+            .insert_object(Shape::Sphere, Some(translation(0.0, 0.0, 1.0)), None);
         world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, -5.0), Vector::new(0.0, 0.0, 1.0));
@@ -1511,7 +1491,7 @@ mod test {
     fn the_schlick_approximation_under_total_internal_reflection() {
         let mut world = World::new();
 
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1519,7 +1499,7 @@ mod test {
                 refractive_index: 1.5,
                 ..Material::default()
             }),
-        ));
+        );
         world.build();
 
         let r = Ray::new(
@@ -1552,7 +1532,7 @@ mod test {
     fn the_schlick_approximation_with_a_perpendicular_viewing_angle() {
         let mut world = World::new();
 
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1560,7 +1540,7 @@ mod test {
                 refractive_index: 1.5,
                 ..Material::default()
             }),
-        ));
+        );
         world.build();
 
         let r = Ray::new(Point::new(0.0, 0.0, 0.0), Vector::new(0.0, 1.0, 0.0));
@@ -1585,7 +1565,7 @@ mod test {
     fn the_schlick_approximation_with_small_angle_and_n2_gt_n1() {
         let mut world = World::new();
 
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1593,7 +1573,7 @@ mod test {
                 refractive_index: 1.5,
                 ..Material::default()
             }),
-        ));
+        );
         world.build();
 
         let r = Ray::new(Point::new(0.0, 0.99, -2.0), Vector::new(0.0, 0.0, 1.0));
@@ -1735,9 +1715,7 @@ mod test {
     fn intersecting_ray_group_doesnt_test_children_if_box_is_missed() {
         let mut world = World::new();
 
-        let s_id = world
-            .scene
-            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let s_id = world.scene.insert_object(Shape::Sphere, None, None);
 
         let g_id = world
             .scene
@@ -1787,9 +1765,7 @@ mod test {
     fn intersecting_ray_group_tests_children_if_box_is_hit() {
         let mut world = World::new();
 
-        let s_id = world
-            .scene
-            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let s_id = world.scene.insert_object(Shape::Sphere, None, None);
 
         let g_id = world
             .scene

@@ -11,7 +11,7 @@ use ray_tracer::transformations::{
     rotation_x, rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneObject, World};
+use ray_tracer::world::{SceneGroup, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -43,7 +43,7 @@ fn main() {
         ..Material::default()
     };
 
-    let floor_plane_id = world.scene.insert_object(SceneObject::new(
+    let floor_plane_id = world.scene.insert_object(
         Shape::Plane,
         Some(rotation_y(0.31415)),
         Some(Material {
@@ -57,9 +57,9 @@ fn main() {
             reflective: 0.4,
             ..Material::default()
         }),
-    ));
+    );
 
-    let ceiling_plane_id = world.scene.insert_object(SceneObject::new(
+    let ceiling_plane_id = world.scene.insert_object(
         Shape::Plane,
         Some(translation(0.0, 5.0, 0.0)),
         Some(Material {
@@ -68,9 +68,9 @@ fn main() {
             specular: 0.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let west_wall_id = world.scene.insert_object(SceneObject::new(
+    let west_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_y(PI / 2.0),
@@ -78,9 +78,9 @@ fn main() {
             translation(-5.0, 0.0, 0.0),
         ])),
         Some(wall_material.clone()),
-    ));
+    );
 
-    let east_wall_id = world.scene.insert_object(SceneObject::new(
+    let east_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_y(PI / 2.0),
@@ -88,30 +88,30 @@ fn main() {
             translation(5.0, 0.0, 0.0),
         ])),
         Some(wall_material.clone()),
-    ));
+    );
 
-    let north_wall_id = world.scene.insert_object(SceneObject::new(
+    let north_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, 5.0),
         ])),
         Some(wall_material.clone()),
-    ));
+    );
 
-    let south_wall_id = world.scene.insert_object(SceneObject::new(
+    let south_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, -5.0),
         ])),
         Some(wall_material),
-    ));
+    );
 
     ////////////////////////////////////////
     // Background Cylinders
 
-    let cylinder_1 = world.scene.insert_object(SceneObject::new(
+    let cylinder_1 = world.scene.insert_object(
         Shape::Cylinder {
             minimum: 0.0,
             maximum: 0.2,
@@ -126,9 +126,9 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let cylinder_2 = world.scene.insert_object(SceneObject::new(
+    let cylinder_2 = world.scene.insert_object(
         Shape::Cylinder {
             minimum: 0.0,
             maximum: 0.6,
@@ -143,9 +143,9 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let cylinder_3 = world.scene.insert_object(SceneObject::new(
+    let cylinder_3 = world.scene.insert_object(
         Shape::Cylinder {
             minimum: -1.0,
             maximum: 0.4,
@@ -160,9 +160,9 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let cylinder_4 = world.scene.insert_object(SceneObject::new(
+    let cylinder_4 = world.scene.insert_object(
         Shape::Cylinder {
             minimum: -1.0,
             maximum: 0.5,
@@ -177,12 +177,12 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
     ////////////////////////////////////////
     // Foreground cylinders
 
-    let red_cylinder = world.scene.insert_object(SceneObject::new(
+    let red_cylinder = world.scene.insert_object(
         Shape::Cylinder {
             minimum: -1.0,
             maximum: 1.0,
@@ -195,9 +195,9 @@ fn main() {
             shininess: 5.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let red_cone = world.scene.insert_object(SceneObject::new(
+    let red_cone = world.scene.insert_object(
         Shape::Cone {
             minimum: -1.0,
             maximum: 1.0,
@@ -213,9 +213,9 @@ fn main() {
             shininess: 5.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let blue_cone = world.scene.insert_object(SceneObject::new(
+    let blue_cone = world.scene.insert_object(
         Shape::Cone {
             minimum: -1.0,
             maximum: 1.0,
@@ -236,9 +236,9 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    ));
+    );
 
-    let blue_glass_cylinder = world.scene.insert_object(SceneObject::new(
+    let blue_glass_cylinder = world.scene.insert_object(
         Shape::Cylinder {
             minimum: -1.1,
             maximum: 0.7,
@@ -259,9 +259,9 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    ));
+    );
 
-    let green_glass_cylinder = world.scene.insert_object(SceneObject::new(
+    let green_glass_cylinder = world.scene.insert_object(
         Shape::Cylinder {
             minimum: -1.0,
             maximum: 1.0,
@@ -282,7 +282,7 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    ));
+    );
 
     ////////////////////////////////////////
     // world setup

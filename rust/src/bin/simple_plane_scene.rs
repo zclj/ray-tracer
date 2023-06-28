@@ -5,7 +5,7 @@ use ray_tracer::materials::Material;
 use ray_tracer::shape::*;
 use ray_tracer::transformations::{scaling, transform, translation, view_transform};
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneObject, World};
+use ray_tracer::world::{SceneGroup, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -25,11 +25,9 @@ fn main() {
 
     // shapes
 
-    let floor_id = world
-        .scene
-        .insert_object(SceneObject::new(Shape::Plane, None, None));
+    let floor_id = world.scene.insert_object(Shape::Plane, None, None);
 
-    let middle_sphere_id = world.scene.insert_object(SceneObject::new(
+    let middle_sphere_id = world.scene.insert_object(
         Shape::Sphere,
         Some(translation(-0.5, 1.0, 0.5)),
         Some(Material {
@@ -38,9 +36,9 @@ fn main() {
             specular: 0.3,
             ..Material::default()
         }),
-    ));
+    );
 
-    let right_sphere_id = world.scene.insert_object(SceneObject::new(
+    let right_sphere_id = world.scene.insert_object(
         Shape::Sphere,
         Some(transform(&[
             scaling(0.5, 0.5, 0.5),
@@ -52,9 +50,9 @@ fn main() {
             specular: 0.3,
             ..Material::default()
         }),
-    ));
+    );
 
-    let left_sphere_id = world.scene.insert_object(SceneObject::new(
+    let left_sphere_id = world.scene.insert_object(
         Shape::Sphere,
         Some(transform(&[
             scaling(0.33, 0.33, 0.33),
@@ -66,7 +64,7 @@ fn main() {
             specular: 0.3,
             ..Material::default()
         }),
-    ));
+    );
 
     ////////////////////////////////////////
     // world setup

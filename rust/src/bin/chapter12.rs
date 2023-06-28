@@ -11,7 +11,7 @@ use ray_tracer::transformations::{
     rotation_x, rotation_y, rotation_z, scaling, transform, translation, view_transform,
 };
 use ray_tracer::vector::{Point, Vector};
-use ray_tracer::world::{SceneGroup, SceneObject, World};
+use ray_tracer::world::{SceneGroup, World};
 use std::f32::consts::PI;
 use std::fs::File;
 use std::io::Write;
@@ -43,7 +43,7 @@ fn main() {
         ..Material::default()
     };
 
-    let floor_plane_id = world.scene.insert_object(SceneObject::new(
+    let floor_plane_id = world.scene.insert_object(
         Shape::Plane,
         Some(rotation_y(0.31415)),
         Some(Material {
@@ -57,9 +57,9 @@ fn main() {
             reflective: 0.4,
             ..Material::default()
         }),
-    ));
+    );
 
-    let ceiling_plane_id = world.scene.insert_object(SceneObject::new(
+    let ceiling_plane_id = world.scene.insert_object(
         Shape::Plane,
         Some(translation(0.0, 5.0, 0.0)),
         Some(Material {
@@ -68,9 +68,9 @@ fn main() {
             specular: 0.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let west_wall_id = world.scene.insert_object(SceneObject::new(
+    let west_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_y(PI / 2.0),
@@ -78,9 +78,9 @@ fn main() {
             translation(-5.0, 0.0, 0.0),
         ])),
         Some(wall_material.clone()),
-    ));
+    );
 
-    let east_wall_id = world.scene.insert_object(SceneObject::new(
+    let east_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_y(PI / 2.0),
@@ -88,30 +88,30 @@ fn main() {
             translation(5.0, 0.0, 0.0),
         ])),
         Some(wall_material.clone()),
-    ));
+    );
 
-    let north_wall_id = world.scene.insert_object(SceneObject::new(
+    let north_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, 5.0),
         ])),
         Some(wall_material.clone()),
-    ));
+    );
 
-    let south_wall_id = world.scene.insert_object(SceneObject::new(
+    let south_wall_id = world.scene.insert_object(
         Shape::Plane,
         Some(transform(&[
             rotation_x(PI / 2.0),
             translation(0.0, 0.0, -5.0),
         ])),
         Some(wall_material),
-    ));
+    );
 
     ////////////////////////////////////////
     // Background cubes
 
-    let cube_1 = world.scene.insert_object(SceneObject::new(
+    let cube_1 = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[
             scaling(0.4, 0.4, 0.4),
@@ -122,9 +122,9 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let cube_2 = world.scene.insert_object(SceneObject::new(
+    let cube_2 = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[
             scaling(0.3, 0.3, 0.3),
@@ -135,9 +135,9 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let cube_3 = world.scene.insert_object(SceneObject::new(
+    let cube_3 = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[
             scaling(0.5, 0.5, 0.5),
@@ -148,9 +148,9 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let cube_4 = world.scene.insert_object(SceneObject::new(
+    let cube_4 = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[
             scaling(0.3, 0.3, 0.3),
@@ -161,12 +161,12 @@ fn main() {
             shininess: 50.0,
             ..Material::default()
         }),
-    ));
+    );
 
     ////////////////////////////////////////
     // Foreground balls
 
-    let red_glass_cube = world.scene.insert_object(SceneObject::new(
+    let red_glass_cube = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[translation(-0.6, 1.0, 0.6)])),
         Some(Material {
@@ -175,9 +175,9 @@ fn main() {
             shininess: 5.0,
             ..Material::default()
         }),
-    ));
+    );
 
-    let blue_glass_cube = world.scene.insert_object(SceneObject::new(
+    let blue_glass_cube = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[
             scaling(0.7, 0.7, 0.7),
@@ -194,9 +194,9 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    ));
+    );
 
-    let green_glass_cube = world.scene.insert_object(SceneObject::new(
+    let green_glass_cube = world.scene.insert_object(
         Shape::Cube,
         Some(transform(&[
             scaling(0.5, 0.5, 0.5),
@@ -213,7 +213,7 @@ fn main() {
             refractive_index: 1.5,
             ..Material::default()
         }),
-    ));
+    );
 
     ////////////////////////////////////////
     // world setup

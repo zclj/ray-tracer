@@ -148,14 +148,19 @@ impl SceneTree {
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    pub fn insert_object(&mut self, object: SceneObject) -> u32 {
+    pub fn insert_object(
+        &mut self,
+        kind: Shape,
+        transform: Option<M4x4>,
+        material: Option<Material>,
+    ) -> u32 {
         let id = self.arena.len() as u32;
 
         self.arena.push(SceneNode::Object {
-            transform: object.transform,
-            material: object.material,
-            bounding_box: bounds(&object.kind),
-            kind: object.kind,
+            transform,
+            material,
+            bounding_box: bounds(&kind),
+            kind,
         });
 
         id
@@ -325,26 +330,6 @@ impl SceneGroup {
             children,
             transform,
             material,
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct SceneObject {
-    pub kind: Shape,
-    pub transform: Option<M4x4>,
-    pub material: Option<Material>,
-    pub bounding_box: BoundingBox,
-}
-
-impl SceneObject {
-    #[must_use]
-    pub fn new(kind: Shape, transform: Option<M4x4>, material: Option<Material>) -> Self {
-        SceneObject {
-            transform,
-            material,
-            bounding_box: bounds(&kind),
-            kind,
         }
     }
 }
@@ -830,7 +815,7 @@ mod test {
 
     fn test_default() -> World {
         let mut world = World::new();
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -839,13 +824,13 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material::default()),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -859,9 +844,7 @@ mod test {
     #[test]
     fn world_contain_shapes() {
         let mut world = World::new();
-        world
-            .scene
-            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        world.scene.insert_object(Shape::Sphere, None, None);
         world.build();
 
         let s_id = world.get_object(0).id;
@@ -1058,7 +1041,7 @@ mod test {
     fn the_color_with_an_intersection_behind_the_ray() {
         let mut world = World::default();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1068,16 +1051,16 @@ mod test {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let inner_id = world.scene.insert_object(SceneObject::new(
+        let inner_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Material::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1171,15 +1154,12 @@ mod test {
         let mut world = World::new();
         world.light = PointLight::new(Point::new(0.0, 0.0, -10.0), Color::new(1.0, 1.0, 1.0));
 
-        let s1_id = world
-            .scene
-            .insert_object(SceneObject::new(Shape::Sphere, None, None));
+        let s1_id = world.scene.insert_object(Shape::Sphere, None, None);
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
-            Shape::Sphere,
-            Some(translation(0.0, 0.0, 10.0)),
-            None,
-        ));
+        let s2_id =
+            world
+                .scene
+                .insert_object(Shape::Sphere, Some(translation(0.0, 0.0, 10.0)), None);
 
         let g1_id = world
             .scene
@@ -1211,7 +1191,7 @@ mod test {
     fn the_reflected_color_for_a_nonreflective_material() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1220,16 +1200,16 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1263,7 +1243,7 @@ mod test {
     fn the_reflected_color_for_a_reflective_material() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1272,24 +1252,24 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        ));
+        );
 
-        let p_id = world.scene.insert_object(SceneObject::new(
+        let p_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 0.5,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1326,7 +1306,7 @@ mod test {
     fn shade_hit_with_a_reflective_material() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1335,24 +1315,24 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        ));
+        );
 
-        let p_id = world.scene.insert_object(SceneObject::new(
+        let p_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 0.5,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1393,23 +1373,23 @@ mod test {
         let mut world = World::new();
         world.light = PointLight::new(Point::new(0.0, 0.0, 0.0), Color::new(1.0, 1.0, 1.0));
 
-        let lower_id = world.scene.insert_object(SceneObject::new(
+        let lower_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let upper_id = world.scene.insert_object(SceneObject::new(
+        let upper_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, 1.0, 0.0)),
             Some(Material {
                 reflective: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1442,7 +1422,7 @@ mod test {
     fn the_reflected_color_at_the_maximum_recursive_depth() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1451,24 +1431,24 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        ));
+        );
 
-        let p1_id = world.scene.insert_object(SceneObject::new(
+        let p1_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
                 reflective: 0.5,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id =
             world
@@ -1503,7 +1483,7 @@ mod test {
     fn the_refracted_color_with_an_opaque_surface() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1512,16 +1492,16 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1556,7 +1536,7 @@ mod test {
     fn the_refracted_color_at_the_maximum_recursive_depth() {
         let mut world = World::new();
 
-        let sid = world.scene.insert_object(SceneObject::new(
+        let sid = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1567,16 +1547,16 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1613,7 +1593,7 @@ mod test {
     fn the_refracted_color_under_total_internal_reflection() {
         let mut world = World::new();
 
-        let sid = world.scene.insert_object(SceneObject::new(
+        let sid = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1624,16 +1604,16 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ambient: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1679,7 +1659,7 @@ mod test {
     fn the_refracted_color_with_a_refracted_ray() {
         let mut world = World::new();
 
-        let aid = world.scene.insert_object(SceneObject::new(
+        let aid = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1695,9 +1675,9 @@ mod test {
                 )),
                 ..Default::default()
             }),
-        ));
+        );
 
-        let bid = world.scene.insert_object(SceneObject::new(
+        let bid = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
@@ -1706,7 +1686,7 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world
             .scene
@@ -1752,7 +1732,7 @@ mod test {
     fn shade_hit_with_a_transparent_material() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1766,17 +1746,17 @@ mod test {
                 refractive_index: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        ));
+        );
 
-        let floor_id = world.scene.insert_object(SceneObject::new(
+        let floor_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
@@ -1784,9 +1764,9 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let ball = world.scene.insert_object(SceneObject::new(
+        let ball = world.scene.insert_object(
             Shape::Sphere,
             Some(translation(0.0, -3.5, -0.5)),
             Some(Material {
@@ -1794,7 +1774,7 @@ mod test {
                 color: Color::new(1.0, 0.0, 0.0),
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world.scene.insert_group(SceneGroup::new(
             vec![s1_id, s2_id, floor_id, ball],
@@ -1841,7 +1821,7 @@ mod test {
     fn shade_hit_with_a_reflective_transparent_material() {
         let mut world = World::new();
 
-        let s1_id = world.scene.insert_object(SceneObject::new(
+        let s1_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -1855,17 +1835,17 @@ mod test {
                 refractive_index: 1.0,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let s2_id = world.scene.insert_object(SceneObject::new(
+        let s2_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material {
                 ..Default::default()
             }),
-        ));
+        );
 
-        let floor_id = world.scene.insert_object(SceneObject::new(
+        let floor_id = world.scene.insert_object(
             Shape::Plane,
             Some(translation(0.0, -1.0, 0.0)),
             Some(Material {
@@ -1874,9 +1854,9 @@ mod test {
                 refractive_index: 1.5,
                 ..Default::default()
             }),
-        ));
+        );
 
-        let ball = world.scene.insert_object(SceneObject::new(
+        let ball = world.scene.insert_object(
             Shape::Sphere,
             Some(translation(0.0, -3.5, -0.5)),
             Some(Material {
@@ -1884,7 +1864,7 @@ mod test {
                 color: Color::new(1.0, 0.0, 0.0),
                 ..Default::default()
             }),
-        ));
+        );
 
         let g1_id = world.scene.insert_group(SceneGroup::new(
             vec![s1_id, s2_id, floor_id, ball],
@@ -1913,7 +1893,7 @@ mod test {
     // Render group experiment
 
     fn hex_corner(scene: &mut SceneTree) -> u32 {
-        scene.insert_object(SceneObject::new(
+        scene.insert_object(
             Shape::Sphere,
             Some(transform(&[
                 scaling(0.25, 0.25, 0.25),
@@ -1930,22 +1910,11 @@ mod test {
                 refractive_index: 1.0,
                 ..Material::default()
             }),
-            // Some(Material {
-            //     color: Color::new(0.8, 0.5, 0.3),
-            //     shininess: 50.0,
-            //     // pattern: Some(Pattern::new(
-            //     //     Color::new(0.1, 1.0, 0.5),
-            //     //     Color::new(1.0, 0.1, 0.5),
-            //     //     PatternKind::Ring,
-            //     //     &scaling(0.2, 0.2, 0.2) * &rotation_x(PI / 4.0),
-            //     // )),
-            //     ..Material::default()
-            // }),
-        ))
+        )
     }
 
     fn hex_edge(scene: &mut SceneTree) -> u32 {
-        scene.insert_object(SceneObject::new(
+        scene.insert_object(
             Shape::Cylinder {
                 minimum: 0.0,
                 maximum: 1.0,
@@ -1968,7 +1937,7 @@ mod test {
                 refractive_index: 1.0,
                 ..Material::default()
             }),
-        ))
+        )
     }
 
     fn hex_side(scene: &mut SceneTree, i: u32) -> u32 {

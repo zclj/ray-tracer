@@ -98,13 +98,13 @@ mod test {
     use crate::shape::Shape;
     use crate::transformations::{rotation_y, scaling, translation, view_transform};
     use crate::vector::{Point, Vector};
-    use crate::world::{SceneObject, World};
+    use crate::world::World;
     use std::f32::consts::PI;
 
     fn test_world() -> World {
         let mut world = World::new();
 
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -113,13 +113,13 @@ mod test {
                 specular: 0.2,
                 ..Default::default()
             }),
-        ));
+        );
 
-        world.scene.insert_object(SceneObject::new(
+        world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(0.5, 0.5, 0.5)),
             Some(Material::default()),
-        ));
+        );
 
         world.build();
 

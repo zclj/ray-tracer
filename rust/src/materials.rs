@@ -543,20 +543,19 @@ mod test {
     //   When c ← stripe_at_object(pattern, object, point(1.5, 0, 0))
     //   Then c = white
     use crate::transformations::{scaling, translation};
-    use crate::world::SceneObject;
     use crate::world::World;
 
     #[test]
     fn stripes_with_an_object_transformation() {
         let mut world = World::new();
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(2.0, 2.0, 2.0)),
             Some(Material {
                 pattern: Some(Pattern::default()),
                 ..Material::default()
             }),
-        ));
+        );
         world.build();
 
         let sphere = world.get_object(s_id);
@@ -576,7 +575,7 @@ mod test {
     #[test]
     fn stripes_with_a_pattern_transformation() {
         let mut world = World::new();
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(
             Shape::Sphere,
             None,
             Some(Material {
@@ -587,7 +586,7 @@ mod test {
                 }),
                 ..Material::default()
             }),
-        ));
+        );
         world.build();
 
         let sphere = world.get_object(s_id);
@@ -608,7 +607,7 @@ mod test {
     #[test]
     fn stripes_with_both_an_object_and_a_pattern_transformation() {
         let mut world = World::new();
-        let s_id = world.scene.insert_object(SceneObject::new(
+        let s_id = world.scene.insert_object(
             Shape::Sphere,
             Some(scaling(2.0, 2.0, 2.0)),
             Some(Material {
@@ -619,7 +618,7 @@ mod test {
                 }),
                 ..Material::default()
             }),
-        ));
+        );
         world.build();
 
         let sphere = world.get_object(s_id);
