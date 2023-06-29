@@ -81,7 +81,7 @@ impl SceneTree {
     // we want to end up with a BVH
     // start with a basic one
     #[allow(clippy::cast_possible_truncation)]
-    pub fn apply_transforms_2(
+    pub fn apply_transforms(
         &mut self,
         render_primitives: &mut Vec<RenderObject>, //World,
         current: u32,
@@ -179,7 +179,7 @@ impl SceneTree {
                 ////////////////////////////////////////
                 // Experiment
                 for c in &children {
-                    self.apply_transforms_2(
+                    self.apply_transforms(
                         render_primitives,
                         *c,
                         &new_transform,
@@ -289,7 +289,7 @@ impl World {
             bounds: BoundingBox::default(),
         };
 
-        self.scene.apply_transforms_2(
+        self.scene.apply_transforms(
             &mut self.render_primitives,
             self.root_group_id,
             &None,
@@ -344,7 +344,6 @@ impl World {
         world_ray: &Ray,
         intersections: &mut Vec<Intersection>,
     ) -> Option<usize> {
-        // TODO: This might be reduntant, check with intersect_primitives
         intersections.clear();
 
         // start with the root of the BVH tree
@@ -418,7 +417,6 @@ impl World {
 
                 let discriminant = b.powf(2.0) - (4.0 * a * c);
 
-                // invert?
                 if discriminant < 0.0 {
                     return None;
                 }
@@ -652,7 +650,7 @@ impl World {
         let shape = self.get_object(comp.object);
 
         let n_ratio = comp.n1 / comp.n2;
-        let cos_i = comp.cos_i; //comp.eyev.dot(&comp.normalv);
+        let cos_i = comp.cos_i;
         let sin2_t = n_ratio.powf(2.0) * (1.0 - cos_i.powf(2.0));
 
         // check for total internal reflection
