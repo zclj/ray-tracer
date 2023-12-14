@@ -83,6 +83,38 @@ impl BoundingBox {
 
         transformed_box
     }
+
+    #[must_use]
+    pub fn split_bounds(&self) -> (BoundingBox, BoundingBox) {
+        // find the largest dimension
+        let dx = self.max.x - self.min.x;
+        let dy = self.max.y - self.min.y;
+        let dz = self.max.z - self.min.z;
+
+        let greatest = f32::max(f32::max(dx, dy), dz);
+
+        let (mut x0, mut y0, mut z0) = (self.min.x, self.min.y, self.min.z);
+        let (mut x1, mut y1, mut z1) = (self.max.x, self.max.y, self.max.z);
+
+        if greatest == dx {
+            x0 += dx / 2.0;
+            x1 = x0;
+        } else if greatest == dy {
+            y0 += dy / 2.0;
+            y1 = y0;
+        } else {
+            z0 += dz / 2.0;
+            z1 = z0;
+        }
+
+        let mid_min = Point::new(x0, y0, z0);
+        let mid_max = Point::new(x1, y1, z1);
+
+        let left = BoundingBox::new(self.min.clone(), mid_max);
+        let right = BoundingBox::new(mid_min, self.max.clone());
+
+        (left, right)
+    }
 }
 
 #[derive(Debug)]
@@ -344,5 +376,85 @@ mod test {
 
         assert_eq!(bbox_2.min, Point::new(-1.4142, -1.7071, -1.7071));
         assert_eq!(bbox_2.max, Point::new(1.4142, 1.7071, 1.7071))
+    }
+
+    // Scenario: Splitting a perfect cube
+    // Given box ← bounding_box(min=point(-1, -4, -5) max=point(9, 6, 5))
+    // When (left, right) ← split_bounds(box)
+    // Then left.min = point(-1, -4, -5)
+    //   And left.max = point(4, 6, 5)
+    //   And right.min = point(4, -4, -5)
+    //   And right.max = point(9, 6, 5)
+    #[test]
+    fn splitting_a_perfect_cube() {
+        let bbox = BoundingBox::new(Point::new(-1.0, -4.0, -5.0), Point::new(9.0, 6.0, 5.0));
+
+        let (left, right) = bbox.split_bounds();
+
+        assert_eq!(left.min, Point::new(-1.0, -4.0, -5.0));
+        assert_eq!(left.max, Point::new(4.0, 6.0, 5.0));
+
+        assert_eq!(right.min, Point::new(4.0, -4.0, -5.0));
+        assert_eq!(right.max, Point::new(9.0, 6.0, 5.0));
+    }
+
+    //  Scenario: Splitting an x-wide box
+    //   Given box ← bounding_box(min=point(-1, -2, -3) max=point(9, 5.5, 3))
+    //   When (left, right) ← split_bounds(box)
+    //   Then left.min = point(-1, -2, -3)
+    //     And left.max = point(4, 5.5, 3)
+    //     And right.min = point(4, -2, -3)
+    //     And right.max = point(9, 5.5, 3)
+    #[test]
+    fn splitting_an_x_wide_box() {
+        let bbox = BoundingBox::new(Point::new(-1.0, -2.0, -3.0), Point::new(9.0, 5.5, 3.0));
+
+        let (left, right) = bbox.split_bounds();
+
+        assert_eq!(left.min, Point::new(-1.0, -2.0, -3.0));
+        assert_eq!(left.max, Point::new(4.0, 5.5, 3.0));
+
+        assert_eq!(right.min, Point::new(4.0, -2.0, -3.0));
+        assert_eq!(right.max, Point::new(9.0, 5.5, 3.0));
+    }
+
+    // Scenario: Splitting a y-wide box
+    //   Given box ← bounding_box(min=point(-1, -2, -3) max=point(5, 8, 3))
+    //   When (left, right) ← split_bounds(box)
+    //   Then left.min = point(-1, -2, -3)
+    //     And left.max = point(5, 3, 3)
+    //     And right.min = point(-1, 3, -3)
+    //     And right.max = point(5, 8, 3)
+    #[test]
+    fn splitting_a_y_wide_box() {
+        let bbox = BoundingBox::new(Point::new(-1.0, -2.0, -3.0), Point::new(5.0, 8.0, 3.0));
+
+        let (left, right) = bbox.split_bounds();
+
+        assert_eq!(left.min, Point::new(-1.0, -2.0, -3.0));
+        assert_eq!(left.max, Point::new(5.0, 3.0, 3.0));
+
+        assert_eq!(right.min, Point::new(-1.0, 3.0, -3.0));
+        assert_eq!(right.max, Point::new(5.0, 8.0, 3.0));
+    }
+
+    // Scenario: Splitting a z-wide box
+    //   Given box ← bounding_box(min=point(-1, -2, -3) max=point(5, 3, 7))
+    //   When (left, right) ← split_bounds(box)
+    //   Then left.min = point(-1, -2, -3)
+    //     And left.max = point(5, 3, 2)
+    //     And right.min = point(-1, -2, 2)
+    //     And right.max = point(5, 3, 7)
+    #[test]
+    fn splitting_a_z_wide_box() {
+        let bbox = BoundingBox::new(Point::new(-1.0, -2.0, -3.0), Point::new(5.0, 3.0, 7.0));
+
+        let (left, right) = bbox.split_bounds();
+
+        assert_eq!(left.min, Point::new(-1.0, -2.0, -3.0));
+        assert_eq!(left.max, Point::new(5.0, 3.0, 2.0));
+
+        assert_eq!(right.min, Point::new(-1.0, -2.0, 2.0));
+        assert_eq!(right.max, Point::new(5.0, 3.0, 7.0));
     }
 }
