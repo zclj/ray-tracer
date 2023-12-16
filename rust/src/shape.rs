@@ -37,6 +37,32 @@ pub enum Shape {
     // Group {
     //     id: u32,
     // },
+    Triangle {
+        p1: Point,
+        p2: Point,
+        p3: Point,
+        e1: Vector,
+        e2: Vector,
+        normal: Vector,
+    },
+}
+
+impl Shape {
+    #[must_use]
+    pub fn new_triangle(p1: Point, p2: Point, p3: Point) -> Self {
+        let e1 = &p2 - &p1;
+        let e2 = &p3 - &p1;
+        let normal = (e2.cross(&e1)).norm();
+
+        Shape::Triangle {
+            p1,
+            p2,
+            p3,
+            e1,
+            e2,
+            normal,
+        }
+    }
 }
 
 #[must_use]
@@ -63,10 +89,8 @@ pub fn check_axis(origin: f32, direction: f32, min: f32, max: f32) -> (f32, f32)
 
 impl RenderObject {
     #[must_use]
-    // TODO: remove the template and take the params
     pub fn new(
         id: u32,
-        //template: &SceneObject
         kind: Shape,
         transform: Option<M4x4>,
         material: Option<Material>,
@@ -108,7 +132,7 @@ impl RenderObject {
     pub fn normal_at(&self, world_point: &Point) -> Vector {
         let object_point = &self.transform_inverse * world_point;
 
-        let object_normal = match self.kind {
+        let object_normal = match &self.kind {
             Shape::Sphere { .. } => object_point - Point::new(0., 0., 0.),
             Shape::Plane { .. } => Vector::new(0.0, 1.0, 0.0),
             Shape::Cube { .. } => {
@@ -161,6 +185,7 @@ impl RenderObject {
                     object_point.z,
                 )
             }
+            Shape::Triangle { normal, .. } => normal.clone(),
         };
 
         let world_normal = &self.transform_inverse_transpose * &object_normal;
@@ -241,6 +266,7 @@ impl RenderObject {
 #[must_use]
 pub fn bounds(kind: &Shape) -> BoundingBox {
     match kind {
+        Shape::Triangle { .. } => todo!(),
         Shape::Sphere | Shape::Cube => {
             BoundingBox::new(Point::new(-1.0, -1.0, -1.0), Point::new(1.0, 1.0, 1.0))
         }
@@ -1141,5 +1167,46 @@ mod test {
 
         assert_eq!(bbox.min, Point::new(-4.5, -3.0, -5.0));
         assert_eq!(bbox.max, Point::new(4.0, 7.0, 4.5))
+    }
+
+    // Scenario: Constructing a triangle
+    //   Given p1 ← point(0, 1, 0)
+    //     And p2 ← point(-1, 0, 0)
+    //     And p3 ← point(1, 0, 0)
+    //     And t ← triangle(p1, p2, p3)
+    //   Then t.p1 = p1
+    //     And t.p2 = p2
+    //     And t.p3 = p3
+    //     And t.e1 = vector(-1, -1, 0)
+    //     And t.e2 = vector(1, -1, 0)
+    //     And t.normal = vector(0, 0, -1)
+    #[test]
+    fn constructing_a_triangle() {
+        let p1 = Point::new(0.0, 1.0, 0.0);
+        let p2 = Point::new(-1.0, 0.0, 0.0);
+        let p3 = Point::new(1.0, 0.0, 0.0);
+
+        let t = Shape::new_triangle(p1, p2, p3);
+
+        match t {
+            Shape::Triangle {
+                p1,
+                p2,
+                p3,
+                e1,
+                e2,
+                normal,
+            } => {
+                assert_eq!(p1, Point::new(0.0, 1.0, 0.0));
+                assert_eq!(p2, Point::new(-1.0, 0.0, 0.0));
+                assert_eq!(p3, Point::new(1.0, 0.0, 0.0));
+
+                assert_eq!(e1, Vector::new(-1.0, -1.0, 0.0));
+                assert_eq!(e2, Vector::new(1.0, -1.0, 0.0));
+
+                assert_eq!(normal, Vector::new(0.0, 0.0, -1.0));
+            }
+            _ => panic!("Wrong shape"),
+        }
     }
 }
