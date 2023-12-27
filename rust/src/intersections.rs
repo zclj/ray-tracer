@@ -1777,4 +1777,157 @@ mod test {
 
         assert_eq!(2, intersections.len())
     }
+
+    // Scenario: Intersecting a ray parallel to the triangle
+    //   Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+    //     And r ← ray(point(0, -1, -2), vector(0, 1, 0))
+    //   When xs ← local_intersect(t, r)
+    //   Then xs is empty
+    #[test]
+    fn intersecting_a_ray_parallel_to_the_triangle() {
+        let mut world = World::new();
+        let p1 = Point::new(0.0, 1.0, 0.0);
+        let p2 = Point::new(-1.0, 0.0, 0.0);
+        let p3 = Point::new(1.0, 0.0, 0.0);
+
+        let t = Shape::new_triangle(p1, p2, p3);
+
+        let s_id = world.scene.insert_object(t, None, None);
+        let g_id = world.scene.insert_group(vec![s_id], None);
+
+        world.root_group_id = g_id;
+        world.build();
+
+        let mut intersections = vec![];
+
+        world.intersect_bvh(
+            &Ray::new(Point::new(0.0, -1.0, -2.0), Vector::new(0.0, 1.0, 0.0)),
+            &mut intersections,
+        );
+
+        assert_eq!(0, intersections.len())
+    }
+
+    // Scenario: A ray misses the p1-p3 edge
+    //   Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+    //     And r ← ray(point(1, 1, -2), vector(0, 0, 1))
+    //   When xs ← local_intersect(t, r)
+    //   Then xs is empty
+    #[test]
+    fn a_ray_misses_the_p1_p3_edge() {
+        let mut world = World::new();
+        let p1 = Point::new(0.0, 1.0, 0.0);
+        let p2 = Point::new(-1.0, 0.0, 0.0);
+        let p3 = Point::new(1.0, 0.0, 0.0);
+
+        let t = Shape::new_triangle(p1, p2, p3);
+
+        let s_id = world.scene.insert_object(t, None, None);
+        let g_id = world.scene.insert_group(vec![s_id], None);
+
+        world.root_group_id = g_id;
+        world.build();
+
+        let mut intersections = vec![];
+
+        world.intersect_bvh(
+            &Ray::new(Point::new(1.0, 1.0, -2.0), Vector::new(0.0, 0.0, 1.0)),
+            &mut intersections,
+        );
+
+        assert_eq!(0, intersections.len())
+    }
+
+    // Scenario: A ray misses the p1-p2 edge
+    //   Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+    //     And r ← ray(point(-1, 1, -2), vector(0, 0, 1))
+    //   When xs ← local_intersect(t, r)
+    //   Then xs is empty
+    #[test]
+    fn a_ray_misses_the_p1_p2_edge() {
+        let mut world = World::new();
+        let p1 = Point::new(0.0, 1.0, 0.0);
+        let p2 = Point::new(-1.0, 0.0, 0.0);
+        let p3 = Point::new(1.0, 0.0, 0.0);
+
+        let t = Shape::new_triangle(p1, p2, p3);
+
+        let s_id = world.scene.insert_object(t, None, None);
+        let g_id = world.scene.insert_group(vec![s_id], None);
+
+        world.root_group_id = g_id;
+        world.build();
+
+        let mut intersections = vec![];
+
+        world.intersect_bvh(
+            &Ray::new(Point::new(-1.0, 1.0, -2.0), Vector::new(0.0, 0.0, 1.0)),
+            &mut intersections,
+        );
+
+        assert_eq!(0, intersections.len())
+    }
+
+    // Scenario: A ray misses the p2-p3 edge
+    //   Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+    //     And r ← ray(point(0, -1, -2), vector(0, 0, 1))
+    //   When xs ← local_intersect(t, r)
+    //   Then xs is empty
+    #[test]
+    fn a_ray_misses_the_p2_p3_edge() {
+        let mut world = World::new();
+        let p1 = Point::new(0.0, 1.0, 0.0);
+        let p2 = Point::new(-1.0, 0.0, 0.0);
+        let p3 = Point::new(1.0, 0.0, 0.0);
+
+        let t = Shape::new_triangle(p1, p2, p3);
+
+        let s_id = world.scene.insert_object(t, None, None);
+        let g_id = world.scene.insert_group(vec![s_id], None);
+
+        world.root_group_id = g_id;
+        world.build();
+
+        let mut intersections = vec![];
+
+        world.intersect_bvh(
+            &Ray::new(Point::new(0.0, -1.0, -2.0), Vector::new(0.0, 0.0, 1.0)),
+            &mut intersections,
+        );
+
+        assert_eq!(0, intersections.len())
+    }
+
+    // Scenario: A ray strikes a triangle
+    //   Given t ← triangle(point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0))
+    //     And r ← ray(point(0, 0.5, -2), vector(0, 0, 1))
+    //   When xs ← local_intersect(t, r)
+    //   Then xs.count = 1
+    //     And xs[0].t = 2
+    #[test]
+    fn a_ray_strikes_a_triangle() {
+        let mut world = World::new();
+        let p1 = Point::new(0.0, 1.0, 0.0);
+        let p2 = Point::new(-1.0, 0.0, 0.0);
+        let p3 = Point::new(1.0, 0.0, 0.0);
+
+        let t = Shape::new_triangle(p1, p2, p3);
+
+        let s_id = world.scene.insert_object(t, None, None);
+        let g_id = world.scene.insert_group(vec![s_id], None);
+
+        world.root_group_id = g_id;
+        world.build();
+
+        let mut intersections = vec![];
+
+        world.intersect_bvh(
+            &Ray::new(Point::new(0.0, 0.5, -2.0), Vector::new(0.0, 0.0, 1.0)),
+            &mut intersections,
+        );
+
+        let t0 = intersections[0].t;
+        assert_eq!(1, intersections.len());
+        assert_eq!(2.0, t0)
+    }
 }

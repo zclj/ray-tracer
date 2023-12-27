@@ -10,6 +10,7 @@ use crate::shape::{bounds, check_axis, RenderObject, Shape};
 use crate::utils::{epsilon_eq, EPSILON};
 use crate::vector::Point;
 use std::collections::VecDeque;
+use std::ops::Sub;
 
 ////////////////////////////////////////
 // Scene creation
@@ -407,8 +408,40 @@ impl World {
     ) -> Option<usize> {
         let ray = world_ray.transform(&s.transform_inverse);
 
-        match s.kind {
-            Shape::Triangle { .. } => todo!(),
+        match &s.kind {
+            Shape::Triangle {
+                p1,
+                p2,
+                p3,
+                e1,
+                e2,
+                normal,
+            } => {
+                let dir_cross_e2 = &ray.direction.cross(&e2);
+                let det = e1.dot(dir_cross_e2);
+
+                if det.abs() < EPSILON {
+                    return None;
+                }
+
+                let f = 1.0 / det;
+
+                let p1_to_origin = &ray.origin - p1;
+                let u = f * p1_to_origin.dot(dir_cross_e2);
+                if u < 0.0 || u > 1.0 {
+                    return None;
+                }
+
+                let origin_cross_e1 = p1_to_origin.cross(&e1);
+                let v = f * &ray.direction.dot(&origin_cross_e1);
+                if v < 0.0 || (u + v) > 1.0 {
+                    return None;
+                }
+
+                let t = f * e2.dot(&origin_cross_e1);
+
+                intersections.push(Intersection::new(t, s.id))
+            }
             Shape::Sphere => {
                 let sphere_to_ray = &ray.origin - &Point::new(0.0, 0.0, 0.0);
 
