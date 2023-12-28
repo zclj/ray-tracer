@@ -52,7 +52,7 @@ pub fn parse(content: &str) -> ParseResult {
                     let idxs = parts.collect::<Vec<&str>>();
                     // println!("Line: {}", line);
                     // println!("Parts: {:#?}", idxs);
-                    let zero_idx:usize = idxs[0].parse().unwrap();
+                    let zero_idx: usize = idxs[0].parse().unwrap();
 
                     for idx_str in 1..(idxs.len() - 1) {
                         let idx_1: usize = idxs[idx_str].parse().unwrap();
