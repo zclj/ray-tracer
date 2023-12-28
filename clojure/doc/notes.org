@@ -1,4 +1,0 @@
-* Notes
-
-** Tuple
-   - Come back to the PBT tests of tuples
