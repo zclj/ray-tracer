@@ -1,28 +1,27 @@
-use crate::{
-    shape::Shape,
-    vector::Point,
-    world::{SceneNode, SceneTree, World},
-};
+use crate::{shape::Shape, vector::Point, world::World};
 
 #[derive(Debug)]
 pub struct ParseResult {
     ignored: Vec<String>,
     vertices: Vec<Point>,
-    default_group: Option<SceneNode>,
     world: World,
 }
 
 impl ParseResult {
+    #[must_use]
     pub fn new() -> Self {
         ParseResult {
             ignored: vec![],
             vertices: vec![],
-            default_group: None,
             world: World::new(),
         }
     }
 }
 
+/// # Panics
+///
+/// Will panic on OBJ file unknowns
+#[must_use]
 pub fn parse(content: &str) -> ParseResult {
     let mut result = ParseResult::new();
     let mut default_group_ids = vec![];
@@ -47,7 +46,7 @@ pub fn parse(content: &str) -> ParseResult {
                     let p2 = parts.next().unwrap().parse().unwrap();
                     let p3 = parts.next().unwrap().parse().unwrap();
 
-                    result.vertices.push(Point::new(p1, p2, p3))
+                    result.vertices.push(Point::new(p1, p2, p3));
                 }
                 "f" => {
                     let idxs = parts.collect::<Vec<&str>>();
@@ -66,7 +65,7 @@ pub fn parse(content: &str) -> ParseResult {
                         );
 
                         if let Some(ref mut current_group) = current_group_ids {
-                            current_group.push(s_id)
+                            current_group.push(s_id);
                         } else {
                             default_group_ids.push(s_id);
                         }
@@ -88,7 +87,7 @@ pub fn parse(content: &str) -> ParseResult {
                 _ => result.ignored.push(line.to_string()),
             }
         } else {
-            result.ignored.push(line.to_string())
+            result.ignored.push(line.to_string());
         }
     }
 
@@ -107,8 +106,6 @@ pub fn parse(content: &str) -> ParseResult {
 
 #[cfg(test)]
 mod tests {
-
-    use crate::shape::RenderObject;
 
     use super::*;
 
@@ -207,7 +204,7 @@ mod tests {
 
         println!("World: {:#?}", res.world);
 
-        let group = &res.world.scene.arena[g_id as usize];
+        let _group = &res.world.scene.arena[g_id as usize];
         println!("Group {:#?}", res.world.scene.arena[g_id as usize]);
 
         match &res.world.get_object(0).kind {
