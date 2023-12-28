@@ -22,7 +22,7 @@ Playing around with different language implementation. Should not be considered 
 
 ## License
 
-Copyright © 2019-2022 Stefan Karlsson
+Copyright © 2019-2023 Stefan Karlsson
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
