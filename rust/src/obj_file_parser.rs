@@ -2,9 +2,9 @@ use crate::{shape::Shape, vector::Point, world::World};
 
 #[derive(Debug)]
 pub struct ParseResult {
-    ignored: Vec<String>,
+    pub ignored: Vec<String>,
     vertices: Vec<Point>,
-    world: World,
+    pub world: World,
 }
 
 impl ParseResult {
@@ -50,13 +50,17 @@ pub fn parse(content: &str) -> ParseResult {
                 }
                 "f" => {
                     let idxs = parts.collect::<Vec<&str>>();
+                    // println!("Line: {}", line);
+                    // println!("Parts: {:#?}", idxs);
+                    let zero_idx:usize = idxs[0].parse().unwrap();
 
                     for idx_str in 1..(idxs.len() - 1) {
-                        let idx: usize = idxs[idx_str].parse().unwrap();
+                        let idx_1: usize = idxs[idx_str].parse().unwrap();
+                        let idx_2: usize = idxs[idx_str + 1].parse().unwrap();
 
-                        let p1 = result.vertices[0].clone();
-                        let p2 = result.vertices[idx - 1].clone();
-                        let p3 = result.vertices[idx].clone();
+                        let p1 = result.vertices[zero_idx - 1].clone();
+                        let p2 = result.vertices[idx_1 - 1].clone();
+                        let p3 = result.vertices[idx_2 - 1].clone();
 
                         let s_id = result.world.scene.insert_object(
                             Shape::new_triangle(p1, p2, p3),
