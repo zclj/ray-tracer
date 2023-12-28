@@ -47,21 +47,23 @@ pub fn parse(content: &str) -> ParseResult {
                     result.vertices.push(Point::new(p1, p2, p3))
                 }
                 "f" => {
-                    let p1_idx: usize = parts.next().unwrap().parse().unwrap();
-                    let p2_idx: usize = parts.next().unwrap().parse().unwrap();
-                    let p3_idx: usize = parts.next().unwrap().parse().unwrap();
+                    let idxs = parts.collect::<Vec<&str>>();
+                    
+                    for idx_str in 1..(idxs.len() - 1) {
+                        let idx:usize = idxs[idx_str].parse().unwrap();
+                        
+                        let p1 = result.vertices[0].clone();
+                        let p2 = result.vertices[idx - 1].clone();
+                        let p3 = result.vertices[idx].clone();
 
-                    let p1 = result.vertices[p1_idx - 1].clone();
-                    let p2 = result.vertices[p2_idx - 1].clone();
-                    let p3 = result.vertices[p3_idx - 1].clone();
+                        let s_id = result.world.scene.insert_object(
+                            Shape::new_triangle(p1, p2, p3),
+                            None,
+                            None,
+                        );
 
-                    let s_id = result.world.scene.insert_object(
-                        Shape::new_triangle(p1, p2, p3),
-                        None,
-                        None,
-                    );
-
-                    default_group_ids.push(s_id);
+                        default_group_ids.push(s_id);
+                    }
                 }
                 _ => result.ignored.push(line.to_string()),
             }
@@ -202,4 +204,82 @@ mod tests {
         assert_eq!(4, res.vertices.len());
         assert_eq!(0, res.ignored.len())
     }
+
+    // Scenario: Triangulating polygons
+    //   Given file ← a file containing:
+    //     """
+    //     v -1 1 0
+    //     v -1 0 0
+    //     v 1 0 0
+    //     v 1 1 0
+    //     v 0 2 0
+    
+    //     f 1 2 3 4 5
+    //     """
+    //   When parser ← parse_obj_file(file)
+    //     And g ← parser.default_group
+    //     And t1 ← first child of g
+    //     And t2 ← second child of g
+    //     And t3 ← third child of g
+    //   Then t1.p1 = parser.vertices[1]
+    //     And t1.p2 = parser.vertices[2]
+    //     And t1.p3 = parser.vertices[3]
+    //     And t2.p1 = parser.vertices[1]
+    //     And t2.p2 = parser.vertices[3]
+    //     And t2.p3 = parser.vertices[4]
+    //     And t3.p1 = parser.vertices[1]
+    //     And t3.p2 = parser.vertices[4]
+    //     And t3.p3 = parser.vertices[5]
+    #[test]
+    fn triangulating_polygons() {
+        let content = "
+            v -1 1 0
+            v -1 0 0
+            v 1 0 0
+            v 1 1 0
+            v 0 2 0
+
+            f 1 2 3 4 5";
+
+        let mut res = parse(content);
+        res.world.build();
+
+        let g_id = res.world.root_group_id;
+
+        println!("World: {:#?}", res.world);
+
+        let group = &res.world.scene.arena[g_id as usize];
+        println!("Group {:#?}", res.world.scene.arena[g_id as usize]);
+
+        match &res.world.get_object(0).kind {
+            Shape::Triangle { p1, p2, p3, .. } => {
+                assert_eq!(p1, &res.vertices[0]);
+                assert_eq!(p2, &res.vertices[1]);
+                assert_eq!(p3, &res.vertices[2]);
+            }
+            _ => panic!(),
+        };
+
+        match &res.world.get_object(1).kind {
+            Shape::Triangle { p1, p2, p3, .. } => {
+                assert_eq!(p1, &res.vertices[0]);
+                assert_eq!(p2, &res.vertices[2]);
+                assert_eq!(p3, &res.vertices[3]);
+            }
+            _ => panic!(),
+        };
+
+        match &res.world.get_object(2).kind {
+            Shape::Triangle { p1, p2, p3, .. } => {
+                assert_eq!(p1, &res.vertices[0]);
+                assert_eq!(p2, &res.vertices[3]);
+                assert_eq!(p3, &res.vertices[4]);
+            }
+            _ => panic!(),
+        };
+
+        assert_eq!(5, res.vertices.len());
+        assert_eq!(0, res.ignored.len())
+    }
+
 }
